@@ -48,9 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-17` — Build the board screen: tile grid, tile states
-  (cracked/worn/gone double-tile visuals), hint highlighting, the
-  kangaroo's hop animation and facing.
 - [P2] `CANGUPA-18` — Wire touch input: tapping a highlighted tile plays
   that move, mirroring the web version's click-to-move
   ([apps/web-classic/js/ui.js](apps/web-classic/js/ui.js)).
