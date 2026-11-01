@@ -7,6 +7,27 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-01
+
+### Added
+
+- The Expo/React Native port is now a playable app: the board, level
+  picker, rules and settings screens are wired together. On launch it
+  resumes the last level and saved settings (theme, rule toggles)
+  automatically. A toolbar under the board switches to "Níveis" (levels),
+  "Regras" (rules) or "Definições" (settings), each with a "‹ Voltar" button
+  back to the board; picking a level, or pressing Next after clearing one,
+  returns straight to the board on that level.
+- A "Regras" screen was added to the app, with the same rules text as the
+  web game's help panel (step, jump, single-use tiles, double tiles, undo
+  and restart when stuck), minus the keyboard shortcuts the app doesn't
+  have.
+
+### Changed
+
+- Toggling "Saltos de duas casas" (two-tile jumps) mid-level now restarts
+  the level with a fresh board, matching the web game.
+
 ## 2026-10-27
 
 ### Added

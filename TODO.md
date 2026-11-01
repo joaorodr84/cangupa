@@ -48,9 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-22` — Wire the app shell: board, levels and settings
-  screens together, resuming the last-played level on launch the way the
-  web version does.
 - [P3] `CANGUPA-23` — Design and wire the Expo icon, splash screen and
   adaptive-icon set for `apps/app`, adapted from the existing logo assets
   (`TILE-JUMPER-7`).

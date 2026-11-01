@@ -1,20 +1,195 @@
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
+import BoardScreen from './src/components/BoardScreen';
+import HelpScreen from './src/components/HelpScreen';
+import LevelsScreen from './src/components/LevelsScreen';
+import SettingsScreen from './src/components/SettingsScreen';
+import { LEVELS } from './src/game/levels';
+import { isDone, type Progress } from './src/state/progress';
+import { type Settings, type Theme } from './src/state/settings';
+import { useProgress } from './src/state/useProgress';
+import { useSettings } from './src/state/useSettings';
+import { paletteFor, type Palette } from './src/theme/palette';
+
+type Panel = 'board' | 'levels' | 'help' | 'settings';
+
+// The app root. Settings and progress are read before anything is shown, so
+// no panel flashes the wrong theme or the wrong level while they load —
+// the same guard apps/web-classic/js/ui.js gets for free from localStorage
+// being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
+  const { settings, setTheme, setJumps, setHints, setAnim } = useSettings();
+  const { progress, recordDone, recordLevel, clearProgress } = useProgress();
+
+  if (!settings || !progress) {
+    return <View style={styles.app} />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <SafeAreaProvider>
+      <Shell
+        settings={settings}
+        onChangeTheme={setTheme}
+        onChangeJumps={setJumps}
+        onChangeHints={setHints}
+        onChangeAnim={setAnim}
+        progress={progress}
+        onLevelDone={recordDone}
+        onChangeLevel={recordLevel}
+        onClearProgress={clearProgress}
+      />
+    </SafeAreaProvider>
+  );
+}
+
+interface ShellProps {
+  readonly settings: Settings;
+  readonly onChangeTheme: (theme: Theme) => void;
+  readonly onChangeJumps: (jumps: boolean) => void;
+  readonly onChangeHints: (hints: boolean) => void;
+  readonly onChangeAnim: (anim: boolean) => void;
+  readonly progress: Progress;
+  readonly onLevelDone: (levelIndex: number) => void;
+  readonly onChangeLevel: (levelIndex: number) => void;
+  readonly onClearProgress: () => void;
+}
+
+function Shell({
+  settings,
+  onChangeTheme,
+  onChangeJumps,
+  onChangeHints,
+  onChangeAnim,
+  progress,
+  onLevelDone,
+  onChangeLevel,
+  onClearProgress,
+}: ShellProps) {
+  const insets = useSafeAreaInsets();
+  const [panel, setPanel] = useState<Panel>('board');
+  const palette = paletteFor(settings.theme);
+  const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
+
+  const goToLevel = (levelIndex: number) => {
+    onChangeLevel(levelIndex);
+    setPanel('board');
+  };
+
+  let content;
+  if (panel === 'levels') {
+    content = (
+      <LevelsScreen
+        totalLevels={LEVELS.length}
+        progress={progress}
+        currentLevel={currentLevel}
+        palette={palette}
+        onSelectLevel={goToLevel}
+      />
+    );
+  } else if (panel === 'help') {
+    content = <HelpScreen palette={palette} />;
+  } else if (panel === 'settings') {
+    content = (
+      <SettingsScreen
+        settings={settings}
+        palette={palette}
+        onChangeTheme={onChangeTheme}
+        onChangeJumps={onChangeJumps}
+        onChangeHints={onChangeHints}
+        onChangeAnim={onChangeAnim}
+        onClearProgress={() => {
+          onClearProgress();
+          setPanel('board');
+        }}
+      />
+    );
+  } else {
+    content = (
+      // Keyed on the level and on the jumps rule: a new level starts from a
+      // fresh board, and so does a jumps toggle mid-level — ui.js's reset()
+      // call on a rule change, achieved here by remounting rather than by
+      // useBoard reacting to a changed prop (see useBoard.ts).
+      <BoardScreen
+        key={`${currentLevel}-${settings.jumps}`}
+        level={LEVELS[currentLevel]}
+        rules={{ jumps: settings.jumps }}
+        hints={settings.hints}
+        anim={settings.anim}
+        palette={palette}
+        levelNumber={currentLevel + 1}
+        totalLevels={LEVELS.length}
+        hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
+        onNext={() => onChangeLevel(currentLevel + 1)}
+        onLevelComplete={() => onLevelDone(currentLevel)}
+      />
+    );
+  }
+
+  return (
+    <View style={[styles.app, { backgroundColor: palette.bg2 }]}>
+      <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
+        <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
+        {panel !== 'board' && (
+          <Pressable style={styles.back} onPress={() => setPanel('board')}>
+            <Text style={{ color: palette.ink }}>‹ Voltar</Text>
+          </Pressable>
+        )}
+        <View style={styles.body}>{content}</View>
+        {panel === 'board' && (
+          <View style={styles.nav}>
+            <NavButton label="Níveis" palette={palette} onPress={() => setPanel('levels')} />
+            <NavButton label="Regras" palette={palette} onPress={() => setPanel('help')} />
+            <NavButton label="Definições" palette={palette} onPress={() => setPanel('settings')} />
+          </View>
+        )}
+      </View>
+      <StatusBar style="light" />
     </View>
   );
 }
 
+function NavButton({ label, palette, onPress }: { label: string; palette: Palette; onPress: () => void }) {
+  return (
+    <Pressable style={[styles.navButton, { backgroundColor: palette.panel }]} onPress={onPress}>
+      <Text style={{ color: palette.ink }}>{label}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
+  app: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 16,
+    gap: 14,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  back: {
+    alignSelf: 'flex-start',
+  },
+  body: {
+    flex: 1,
+  },
+  nav: {
+    flexDirection: 'row',
+    gap: 10,
     justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  navButton: {
+    paddingVertical: 9,
+    paddingHorizontal: 18,
+    borderRadius: 999,
   },
 });

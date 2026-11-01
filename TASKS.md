@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-26`**
+**Next ID to assign: `CANGUPA-27`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -28,7 +28,6 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-5 | P3 | Play a sound effect on falling. Depends on `TILE-JUMPER-3` — there's nothing to cue a sound off until falling itself exists | open | — |
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
-| CANGUPA-22 | P2 | Wire the app shell: board, levels and settings together, resuming the last-played level | open | — |
 | CANGUPA-23 | P3 | Design and wire the Expo icon, splash and adaptive-icon set for `apps/app` | open | — |
 | CANGUPA-24 | P2 | Full parity pass on iOS/Android/web before calling the port done | open | — |
 | CANGUPA-25 | P4 | Configure EAS build profiles and store metadata for `apps/app` — unscoped until publishing it is actually decided | open | — |
@@ -52,3 +51,5 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-19 | P2 | Add the HUD controls (Undo, Restart, Hint, Next level) and the status line | done | 2026-11-01 | — |
 | CANGUPA-20 | P2 | Build the levels screen: 50-level grid with cleared/current/locked state | done | 2026-11-01 | — |
 | CANGUPA-21 | P2 | Build the settings screen: theme picker, rule toggles, clear-progress action | done | 2026-11-01 | — |
+| CANGUPA-22 | P2 | Wire the app shell: board, levels and settings screens together, resuming the last-played level | done | 2026-11-01 | — |
+| CANGUPA-26 | P2 | Port the "Regras" (rules/help) screen to `apps/app`, a fourth reachable panel the CANGUPA-10..25 backlog never accounted for | done | 2026-11-01 | — |
