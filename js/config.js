@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS = {
 const THEMES = ['cosmos', 'space', 'sand', 'ice', 'classic'];
 
 const Settings = {
-  key: 'tilejumper.settings',
+  key: 'cangupa.settings',
   load() {
     try {
       const s = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(this.key) || '{}') };
@@ -24,7 +24,7 @@ const Settings = {
 
 // Which levels have been cleared, and the level to resume.
 const Progress = {
-  key: 'tilejumper.progress',
+  key: 'cangupa.progress',
   load() {
     try {
       const p = JSON.parse(localStorage.getItem(this.key) || '{}');

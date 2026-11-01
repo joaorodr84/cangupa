@@ -1,4 +1,4 @@
-# Tile Jumper
+# Cangupa
 
 A puzzle game in plain HTML, CSS and JavaScript — no build step, no backend,
 no dependencies. What the game does and how the pieces fit together lives in
@@ -13,7 +13,7 @@ first if `HEAD` isn't already there — so no work lands in the working tree
 while `HEAD` is on `develop` or `main`.
 
 - `<name>` is a plain `kebab-case-summary` of the change, prefixed with the
-  task ID: `tile-jumper-3-double-tile-fix`.
+  task ID: `cangupa-3-double-tile-fix`.
 - Already on a feature branch (anything other than `develop` or `main`): stay
   on it, don't branch off a branch.
 - Skip branching for read-only work: answering questions, reading code,
@@ -73,7 +73,7 @@ acceptable.
 
 ## Task IDs
 
-Every task carries an ID `TILE-JUMPER-<n>`, registered in
+Every task carries an ID `CANGUPA-<n>`, registered in
 [TASKS.md](TASKS.md), which holds the next free number at the top — take it
 and increment it in the same commit that uses it.
 
@@ -81,23 +81,27 @@ and increment it in the same commit that uses it.
 `TODO.md` entry gets one immediately; the commit that closes it reuses that
 same ID. One ID per *task*.
 
-- Commit subject: `feat: Add a third visit to triple tiles (TILE-JUMPER-3)`.
-- Branch name: `tile-jumper-3-triple-tiles`.
+- Commit subject: `feat: Add a third visit to triple tiles (CANGUPA-3)`.
+- Branch name: `cangupa-3-triple-tiles`.
 - Bookkeeping (typo fixes, formatting, `TODO.md` tidying) may go unnumbered.
 - Never renumber, never reuse, never rewrite an ID into an existing commit.
+
+Tasks opened before the project was renamed from Tile Jumper to Cangupa keep
+their original `TILE-JUMPER-<n>` ID — the counter continues under the new
+prefix, it doesn't restart.
 
 If `TASKS.md` and history disagree, history wins:
 
 ```sh
-git log --oneline | grep -oE 'TILE-JUMPER-[0-9]+' | sort -t- -k3 -n | tail -1
+git log --oneline | grep -oE 'CANGUPA-[0-9]+' | sort -t- -k2 -n | tail -1
 ```
 
 ## Commit messages
 
-Tile Jumper follows [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+Cangupa follows [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
 
 ```text
-<type>[optional scope][!]: <description> (TILE-JUMPER-<n>)
+<type>[optional scope][!]: <description> (CANGUPA-<n>)
 
 [body]
 
@@ -120,8 +124,8 @@ Tile Jumper follows [Conventional Commits 1.0.0](https://www.conventionalcommits
 
 ## Versions
 
-`package.json`'s `version` is the source of truth. Tile Jumper starts at
-`0.1.0` and stays `0.x` until the first tagged release.
+`package.json`'s `version` is the source of truth. Cangupa (as Tile Jumper)
+started at `0.1.0` and stays `0.x` until the first tagged release.
 
 ## Tests
 

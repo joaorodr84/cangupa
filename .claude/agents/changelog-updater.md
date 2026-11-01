@@ -14,7 +14,7 @@ If `CHANGELOG.md` is missing, create it with this header, then add your entry un
 ```
 # Changelog
 
-Notable changes to Tile Jumper, newest first. Entries describe what the
+Notable changes to Cangupa, newest first. Entries describe what the
 game does now, not how it was built.
 
 ## [Unreleased]
@@ -40,7 +40,7 @@ Read the actual diff, not just the commit subject. The subject says what someone
 
 ## Where the entry goes
 
-The file is grouped by **date**, newest first. Tile Jumper is `0.x` and has no release tags yet, so **never invent a version number or a `## [0.2.0]`-style heading.**
+The file is grouped by **date**, newest first. Cangupa is `0.x` and has no release tags yet, so **never invent a version number or a `## [0.2.0]`-style heading.**
 
 Structure, top to bottom:
 
@@ -86,7 +86,7 @@ Match the voice already in the file: plain language, present tense, describing w
 Rules:
 
 - One bullet per player-facing change. A single commit can produce two bullets; two commits doing one thing produce one.
-- No conventional-commit prefixes (`feat:`, `fix:`), no task IDs (`(TILE-JUMPER-4)`), no commit hashes. Commit *subjects* carry the type prefix and the ID by convention (`CLAUDE.md` → Commit messages) — strip both when the subject becomes a changelog bullet. The changelog is read by players, who have neither the type taxonomy nor the ledger.
+- No conventional-commit prefixes (`feat:`, `fix:`), no task IDs (`(CANGUPA-4)`), no commit hashes. Commit *subjects* carry the type prefix and the ID by convention (`CLAUDE.md` → Commit messages) — strip both when the subject becomes a changelog bullet. The changelog is read by players, who have neither the type taxonomy nor the ledger.
 - Name files or symbols only when they're genuinely the clearest way to say it. Otherwise describe behaviour.
 - Include the *why* when the change would otherwise look arbitrary, in the same sentence — don't add a separate rationale line.
 - Wrap prose at roughly 80 columns, matching the rest of the file.

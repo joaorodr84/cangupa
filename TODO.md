@@ -1,6 +1,6 @@
-# Tile Jumper TODO
+# Cangupa TODO
 
-The active backlog. Every item carries a `TILE-JUMPER-<n>` ID registered in
+The active backlog. Every item carries a `CANGUPA-<n>` ID registered in
 [TASKS.md](TASKS.md). An item leaves this file in the commit that closes it.
 
 ## Priorities
@@ -17,7 +17,7 @@ is added.
 - **P4 — parked.** Speculative or large-and-unscoped. Revisit when
   something forces the question.
 
-The priority can change at any time; the `TILE-JUMPER-<n>` ID never does.
+The priority can change at any time; the ID never does.
 
 ## Backlog
 
@@ -35,6 +35,6 @@ The priority can change at any time; the `TILE-JUMPER-<n>` ID never does.
   that exists.
 - [P3] `TILE-JUMPER-6` — Redo the main character's art, and draw a small
   joey riding inside the pouch.
-- [P4] `TILE-JUMPER-7` — Design a logo for Tile Jumper. Unscoped: where it
+- [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.

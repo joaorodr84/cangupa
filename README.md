@@ -1,4 +1,4 @@
-# Tile Jumper
+# Cangupa
 
 A puzzle game in plain HTML, CSS and JavaScript, inspired by the DOS game WESP (*Weltraumspringen*, "space jumping"). No build step: open `index.html` in a browser.
 
