@@ -22,6 +22,14 @@ Open work is listed in [TODO.md](TODO.md).
   web game's help panel (step, jump, single-use tiles, double tiles, undo
   and restart when stuck), minus the keyboard shortcuts the app doesn't
   have.
+- The app now shows Cangupa's own icon on the home screen, instead of the
+  generic placeholder it launched with. iOS shows the mark on a cream
+  background in light mode and on a near-black background in dark mode,
+  matching the system appearance; Android shows the same mark over a
+  near-black background, plus a white silhouette version for phones using
+  Android's themed icons. The launch screen now shows the Cangupa mark and
+  name as the app opens, in the same light or dark styling, and the web
+  version's browser tab icon was updated to match.
 
 ### Changed
 

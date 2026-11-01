@@ -4,12 +4,16 @@
     "slug": "cangupa",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-light.png",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.joaorodr84.cangupa",
       "buildNumber": "1",
+      "icon": {
+        "light": "./assets/icon-light.png",
+        "dark": "./assets/icon-dark.png"
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -18,9 +22,8 @@
       "package": "com.joaorodr84.cangupa",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#121212",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
@@ -29,7 +32,19 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-splash-screen"
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-light.png",
+          "imageWidth": 220,
+          "resizeMode": "contain",
+          "backgroundColor": "#f7f3ec",
+          "dark": {
+            "image": "./assets/splash-dark.png",
+            "backgroundColor": "#121212"
+          }
+        }
+      ]
     ],
     "owner": "joaorodr84"
   }

@@ -79,6 +79,10 @@ confirming the app actually boots end to end rather than just that its
 pieces pass in isolation. Full interactive QA on device is left to
 CANGUPA-24.
 
+CANGUPA-23 followed with the platform-ready icon, adaptive-icon and
+splash assets Expo's pipeline expects, derived from `TILE-JUMPER-7`'s
+existing logo design rather than designed from scratch.
+
 ---
 
 ## Patterns, and what's still open

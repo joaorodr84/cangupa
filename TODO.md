@@ -48,9 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P3] `CANGUPA-23` — Design and wire the Expo icon, splash screen and
-  adaptive-icon set for `apps/app`, adapted from the existing logo assets
-  (`TILE-JUMPER-7`).
 - [P2] `CANGUPA-24` — Full parity pass: run the app on iOS/Android/web
   (`expo start`) and check every `apps/web-classic` feature side by side
   before calling the port done.
