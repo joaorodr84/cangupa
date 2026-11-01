@@ -48,9 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-18` — Wire touch input: tapping a highlighted tile plays
-  that move, mirroring the web version's click-to-move
-  ([apps/web-classic/js/ui.js](apps/web-classic/js/ui.js)).
 - [P2] `CANGUPA-19` — Add the HUD controls (Undo, Restart, Hint via the
   ported solver, Next level) and the status line (move count, tiles
   remaining, won/stuck).

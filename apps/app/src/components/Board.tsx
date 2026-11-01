@@ -1,10 +1,10 @@
 // The game board: tile grid, tile states, hint highlighting, and the
 // kangaroo's hop and facing. Ported from apps/web-classic/js/ui.js's
-// build()/render() and style.css's #board/.cell/.tile rules. No touch
-// handling here — see useBoard.ts, which owns the Game and calls `hop()`
-// through the ref after a played move.
+// build()/render() and style.css's #board/.cell/.tile rules. Owning the Game
+// and calling `hop()` through the ref after a played move is useBoard.ts's
+// job, not this component's — see PlayableBoard.tsx for the two wired together.
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
 import { type TileView } from '../game/boardView';
 import { type Palette } from '../theme/palette';
@@ -26,6 +26,10 @@ interface BoardProps {
   readonly flip: boolean;
   readonly palette: Palette;
   readonly anim: boolean;
+  // Tapping a highlighted tile calls this with its cell. Tiles that are not
+  // a legal destination (tile.hint false) are not pressable at all, the same
+  // way ui.js's click handler only ever resolves a move among legalMoves().
+  readonly onPressTile?: (x: number, y: number) => void;
 }
 
 export interface BoardHandle {
@@ -36,7 +40,7 @@ export interface BoardHandle {
 }
 
 const Board = forwardRef<BoardHandle, BoardProps>(function Board(
-  { w, h, tiles, rooX, rooY, face, flip, palette, anim }: BoardProps,
+  { w, h, tiles, rooX, rooY, face, flip, palette, anim, onPressTile }: BoardProps,
   ref,
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
@@ -72,7 +76,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
       testID="board"
     >
       {tiles.map((tile) => (
-        <Tile key={`${tile.x}-${tile.y}`} tile={tile} w={w} h={h} palette={palette} anim={anim} />
+        <Tile key={`${tile.x}-${tile.y}`} tile={tile} w={w} h={h} palette={palette} anim={anim} onPress={onPressTile} />
       ))}
       <View
         pointerEvents="none"
@@ -97,9 +101,10 @@ interface TileProps {
   readonly h: number;
   readonly palette: Palette;
   readonly anim: boolean;
+  readonly onPress?: (x: number, y: number) => void;
 }
 
-function Tile({ tile, w, h, palette, anim }: TileProps) {
+function Tile({ tile, w, h, palette, anim, onPress }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
   useAnimatedTip(pulse, tile.tip && anim);
@@ -107,33 +112,47 @@ function Tile({ tile, w, h, palette, anim }: TileProps) {
   const outlineColor = tile.tip ? 'rgba(255,214,90,0.95)' : 'rgba(255,255,255,0.7)';
   const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] });
 
+  const content = (
+    <Animated.View
+      testID={`tile-${tile.x}-${tile.y}`}
+      style={[
+        styles.tile,
+        { backgroundColor: tile.double ? palette.tile2 : palette.tile, borderBottomColor: tile.double ? palette.edge2 : palette.edge },
+        (tile.hint || tile.tip) && {
+          borderWidth: 3,
+          borderColor: outlineColor,
+          borderStyle: tile.jump && !tile.tip ? 'dashed' : 'solid',
+        },
+        tile.worn && styles.worn,
+        tile.gone && styles.gone,
+        tile.tip && { transform: [{ scale }] },
+      ]}
+    >
+      {tile.double && !tile.cracked && (
+        <>
+          <View style={[styles.pip, { top: '34%' }]} />
+          <View style={[styles.pip, { top: '58%' }]} />
+        </>
+      )}
+      {tile.cracked && <View style={styles.crack} />}
+    </Animated.View>
+  );
+
   return (
     <View
       style={[styles.cell, { width: `${100 / w}%`, height: `${100 / h}%`, left: `${(100 * tile.x) / w}%`, top: `${(100 * tile.y) / h}%` }]}
     >
-      <Animated.View
-        testID={`tile-${tile.x}-${tile.y}`}
-        style={[
-          styles.tile,
-          { backgroundColor: tile.double ? palette.tile2 : palette.tile, borderBottomColor: tile.double ? palette.edge2 : palette.edge },
-          (tile.hint || tile.tip) && {
-            borderWidth: 3,
-            borderColor: outlineColor,
-            borderStyle: tile.jump && !tile.tip ? 'dashed' : 'solid',
-          },
-          tile.worn && styles.worn,
-          tile.gone && styles.gone,
-          tile.tip && { transform: [{ scale }] },
-        ]}
-      >
-        {tile.double && !tile.cracked && (
-          <>
-            <View style={[styles.pip, { top: '34%' }]} />
-            <View style={[styles.pip, { top: '58%' }]} />
-          </>
-        )}
-        {tile.cracked && <View style={styles.crack} />}
-      </Animated.View>
+      {tile.hint ? (
+        <Pressable
+          testID={`tile-press-${tile.x}-${tile.y}`}
+          style={styles.pressable}
+          onPress={() => onPress?.(tile.x, tile.y)}
+        >
+          {content}
+        </Pressable>
+      ) : (
+        content
+      )}
     </View>
   );
 }
@@ -165,6 +184,9 @@ const styles = StyleSheet.create({
   },
   cell: {
     position: 'absolute',
+  },
+  pressable: {
+    flex: 1,
   },
   tile: {
     position: 'absolute',

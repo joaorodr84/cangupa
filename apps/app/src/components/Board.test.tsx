@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import Board, { type BoardHandle } from './Board';
 import { Game } from '../game/board';
@@ -68,4 +68,41 @@ test('hop() does not throw when animations are off', async () => {
   );
 
   expect(() => ref.current?.hop()).not.toThrow();
+});
+
+test('tapping a hinted tile reports its cell', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+  const onPressTile = jest.fn();
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      onPressTile={onPressTile}
+    />,
+  );
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+
+  expect(onPressTile).toHaveBeenCalledWith(1, 0);
+});
+
+test('a tile that is not a legal destination is not pressable', async () => {
+  // A 1x3 row with a gap in the middle and jumps off: x=2 is out of reach.
+  const g = new Game(['S.1'], { jumps: false });
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  expect(screen.queryByTestId('tile-press-2-0')).toBeNull();
 });
