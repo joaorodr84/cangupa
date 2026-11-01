@@ -48,10 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-16` — Port the kangaroo sprite
-  ([apps/web-classic/js/sprites.js](apps/web-classic/js/sprites.js)'s
-  three inline SVGs: side, front, back) to a `react-native-svg` component
-  with left/right mirroring.
 - [P2] `CANGUPA-17` — Build the board screen: tile grid, tile states
   (cracked/worn/gone double-tile visuals), hint highlighting, the
   kangaroo's hop animation and facing.
