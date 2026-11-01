@@ -48,8 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-21` — Build the settings screen: theme picker,
-  jumps/hints/anim toggles, and a clear-progress action.
 - [P2] `CANGUPA-22` — Wire the app shell: board, levels and settings
   screens together, resuming the last-played level on launch the way the
   web version does.
