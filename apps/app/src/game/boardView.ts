@@ -72,3 +72,36 @@ export function facingFor(dx: number, dy: number): Facing {
 }
 
 export const DEFAULT_FACING: Facing = { face: 'front', flip: false };
+
+export interface StatusProgress {
+  readonly levelNumber: number;
+  readonly totalLevels: number;
+  readonly moves: number;
+  readonly remaining: number;
+}
+
+// Ported from ui.js's render()'s status-line branches, plus hint()'s dead-end
+// message. `hintFailed` wins over everything else: it is the direct response
+// to the button just pressed, the same way the web version's hint() replaces
+// the status outright rather than folding into the usual won/stuck/playing text.
+export type Status =
+  | { readonly kind: 'hintFailed' }
+  | { readonly kind: 'won'; readonly moves: number; readonly hasNext: boolean }
+  | ({ readonly kind: 'stuck' } & StatusProgress)
+  | ({ readonly kind: 'playing' } & StatusProgress);
+
+export function statusFor(
+  progress: StatusProgress,
+  state: { readonly won: boolean; readonly stuck: boolean; readonly hintFailed: boolean; readonly hasNext: boolean },
+): Status {
+  if (state.hintFailed) {
+    return { kind: 'hintFailed' };
+  }
+  if (state.won) {
+    return { kind: 'won', moves: progress.moves, hasNext: state.hasNext };
+  }
+  if (state.stuck) {
+    return { kind: 'stuck', ...progress };
+  }
+  return { kind: 'playing', ...progress };
+}

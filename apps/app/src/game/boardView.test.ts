@@ -1,5 +1,5 @@
 import { Game } from './board';
-import { DEFAULT_FACING, facingFor, tilesOf } from './boardView';
+import { DEFAULT_FACING, facingFor, statusFor, tilesOf } from './boardView';
 
 describe('tilesOf', () => {
   it('skips empty cells', () => {
@@ -76,5 +76,42 @@ describe('facingFor', () => {
 
   it('defaults to facing front, unflipped', () => {
     expect(DEFAULT_FACING).toEqual({ face: 'front', flip: false });
+  });
+});
+
+describe('statusFor', () => {
+  const progress = { levelNumber: 3, totalLevels: 50, moves: 4, remaining: 2 };
+
+  it('reports playing by default', () => {
+    expect(statusFor(progress, { won: false, stuck: false, hintFailed: false, hasNext: true })).toEqual({
+      kind: 'playing',
+      ...progress,
+    });
+  });
+
+  it('reports stuck over playing', () => {
+    expect(statusFor(progress, { won: false, stuck: true, hintFailed: false, hasNext: true })).toEqual({
+      kind: 'stuck',
+      ...progress,
+    });
+  });
+
+  it('reports won over stuck, with whether there is a next level', () => {
+    expect(statusFor(progress, { won: true, stuck: false, hintFailed: false, hasNext: true })).toEqual({
+      kind: 'won',
+      moves: progress.moves,
+      hasNext: true,
+    });
+    expect(statusFor(progress, { won: true, stuck: false, hintFailed: false, hasNext: false })).toEqual({
+      kind: 'won',
+      moves: progress.moves,
+      hasNext: false,
+    });
+  });
+
+  it('reports a dead-end hint over everything else', () => {
+    expect(statusFor(progress, { won: true, stuck: true, hintFailed: true, hasNext: true })).toEqual({
+      kind: 'hintFailed',
+    });
   });
 });

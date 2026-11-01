@@ -28,7 +28,6 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-5 | P3 | Play a sound effect on falling. Depends on `TILE-JUMPER-3` — there's nothing to cue a sound off until falling itself exists | open | — |
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
-| CANGUPA-19 | P2 | Add the HUD controls (Undo, Restart, Hint, Next level) and the status line | open | — |
 | CANGUPA-20 | P2 | Build the levels screen: 50-level grid with cleared/current/locked state | open | — |
 | CANGUPA-21 | P2 | Build the settings screen: theme picker, rule toggles, clear-progress action | open | — |
 | CANGUPA-22 | P2 | Wire the app shell: board, levels and settings together, resuming the last-played level | open | — |
@@ -52,3 +51,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-16 | P2 | Port the kangaroo sprite (`sprites.js`'s three inline SVGs) to a `react-native-svg` component | done | 2026-11-01 | — |
 | CANGUPA-17 | P2 | Build the board screen: tile grid, tile states, hint highlighting, hop animation and facing | done | 2026-11-01 | — |
 | CANGUPA-18 | P2 | Wire touch input: tapping a highlighted tile plays that move | done | 2026-11-01 | — |
+| CANGUPA-19 | P2 | Add the HUD controls (Undo, Restart, Hint, Next level) and the status line | done | 2026-11-01 | — |
