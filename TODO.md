@@ -48,10 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-12` — Port the 50 generated levels
-  ([apps/web-classic/js/levels.js](apps/web-classic/js/levels.js)) into
-  `apps/app/src/game` as typed data, with the solvability check from
-  `tools/test.js` ported against them.
 - [P2] `CANGUPA-13` — Port settings persistence
   ([apps/web-classic/js/config.js](apps/web-classic/js/config.js)'s
   `Settings`: theme, jumps, hints, anim) to an AsyncStorage-backed hook.

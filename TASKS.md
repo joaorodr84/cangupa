@@ -28,7 +28,6 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-5 | P3 | Play a sound effect on falling. Depends on `TILE-JUMPER-3` — there's nothing to cue a sound off until falling itself exists | open | — |
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
-| CANGUPA-12 | P2 | Port the 50 generated levels (`levels.js`) into `apps/app` as typed data, with the solvability check ported against them | open | — |
 | CANGUPA-13 | P2 | Port settings persistence (`config.js`'s `Settings`) to an AsyncStorage-backed hook | open | — |
 | CANGUPA-14 | P2 | Port progress persistence (`config.js`'s `Progress`) to an AsyncStorage-backed hook | open | — |
 | CANGUPA-15 | P2 | Port the five board themes (`style.css`) to React Native style tokens, including the starfield background | open | — |
@@ -52,3 +51,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-9 | P1 | Move the web game into `apps/web-classic/`, to leave the repo root free for the planned Expo/React Native app | done | 2026-11-01 | — |
 | CANGUPA-10 | P1 | Scaffold a React Native + Expo (TypeScript) app at `apps/app`, on DigiSpin's and Sphinx's toolchain, and install its dependencies | done | 2026-11-01 | — |
 | CANGUPA-11 | P2 | Port the move rules and solver (`game.js`'s `Game` class) to `apps/app`, with `tools/test.js`'s rules assertions ported alongside | done | 2026-11-01 | — |
+| CANGUPA-12 | P2 | Port the 50 generated levels (`levels.js`) into `apps/app` as typed data, with the solvability check ported against them | done | 2026-11-01 | — |
