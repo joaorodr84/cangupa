@@ -1,6 +1,6 @@
 # Changelog
 
-Notable changes to Tile Jumper, newest first. Entries describe what the
+Notable changes to Cangupa, newest first. Entries describe what the
 game does now, not how it was built.
 
 ## [Unreleased]

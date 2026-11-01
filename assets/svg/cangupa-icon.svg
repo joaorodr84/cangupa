@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+<defs><mask id="mIcon" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="240">
+      <rect x="5" y="5" width="110" height="110" rx="20" fill="#fff"/>
+      <g transform="translate(10,10)" fill="#000">
+        <path d="M34 78 C26 60 34 40 50 36 C62 34 68 46 66 60 C64 72 56 82 44 84 Z"/>
+<path d="M50 38 C48 26 56 18 66 20 C75 21 84.5 29 84.5 36 C84.5 42 76 44 70 42 C62 46 54 46 50 38 Z"/>
+<ellipse cx="59" cy="13" rx="5.5" ry="12" transform="rotate(-2 59 13)"/>
+<path d="M32 66 C26 78 34 90 44 88 C56 86 60 78 54 72 C48 66 38 62 32 66 Z"/>
+<path d="M40 88 L74 90 C80 90 80 96 74 96 L36 96 C32 96 32 90 40 88 Z"/>
+      </g>
+    </mask></defs>
+<rect x="5" y="5" width="110" height="110" rx="20" fill="#29C5D6" mask="url(#mIcon)"/>
+    <rect x="125" y="5" width="110" height="110" rx="20" fill="#F2B544"/>
+    <rect x="5" y="125" width="110" height="110" rx="20" fill="#29C5D6"/>
+    <rect x="125" y="125" width="110" height="110" rx="20" fill="#29C5D6"/>
+</svg>
