@@ -1,7 +1,9 @@
 # Cangupa
 
 A puzzle game in plain HTML, CSS and JavaScript — no build step, no backend,
-no dependencies. What the game does and how the pieces fit together lives in
+no dependencies. It lives in [apps/web-classic/](apps/web-classic/), set
+apart from the repo root to leave room for the Expo/React Native app planned
+alongside it. What the game does and how the pieces fit together lives in
 [README.md](README.md); this file is about process.
 
 ## Branch before you work
@@ -17,8 +19,8 @@ while `HEAD` is on `develop` or `main`.
 - Already on a feature branch (anything other than `develop` or `main`): stay
   on it, don't branch off a branch.
 - Skip branching for read-only work: answering questions, reading code,
-  running `node tools/test.js`, investigating a bug without fixing it. Branch
-  the moment an investigation becomes a fix.
+  running `node apps/web-classic/tools/test.js`, investigating a bug without
+  fixing it. Branch the moment an investigation becomes a fix.
 - Don't ask permission — this rule *is* the standing authorization.
 
 `develop` and `main` are the two long-lived branches. `develop` is where
@@ -33,13 +35,13 @@ squash) → delete the branch.
 `main` only changes when we're cutting a new version, never as a side effect
 of closing an ordinary task. To release:
 
-1. Bump `package.json`'s `version` if this version hasn't already been
-   bumped on `develop`.
+1. Bump `apps/web-classic/package.json`'s `version` if this version hasn't
+   already been bumped on `develop`.
 2. Fast-forward `main` to `develop` (`git checkout main && git merge
    --ff-only develop`) and push it. If `main` can't fast-forward, stop and
    ask — don't force or rebase `main` to make it fit.
-3. Tag the release (`vX.Y.Z`, matching `package.json`'s `version`) and push
-   the tag.
+3. Tag the release (`vX.Y.Z`, matching `apps/web-classic/package.json`'s
+   `version`) and push the tag.
 4. `develop` keeps going unchanged; it's never reset or rebased onto `main`.
 
 This is a deliberate, owner-requested action ("release", "ship", "cut
@@ -56,9 +58,9 @@ acceptable.
 - Branch name starts with `hotfix-`, not just the task ID, so it's
   unmistakable at a glance: `hotfix-9-save-corruption`.
 - Cut from `main`, fixed, then landed on **both** `main` (with a patch
-  version bump in `package.json` and a `vX.Y.Z` tag, same as a release) and
-  `develop` (so the fix survives the next regular release) — never just one
-  side.
+  version bump in `apps/web-classic/package.json` and a `vX.Y.Z` tag, same
+  as a release) and `develop` (so the fix survives the next regular
+  release) — never just one side.
 - Reserved for genuinely urgent fixes. Anything that can wait for the normal
   cycle goes through `develop` like everything else in "Branch before you
   work" above.
@@ -124,27 +126,28 @@ Cangupa follows [Conventional Commits 1.0.0](https://www.conventionalcommits.org
 
 ## Versions
 
-`package.json`'s `version` is the source of truth. Cangupa (as Tile Jumper)
-started at `0.1.0` and stays `0.x` until the first tagged release.
+`apps/web-classic/package.json`'s `version` is the source of truth. Cangupa
+(as Tile Jumper) started at `0.1.0` and stays `0.x` until the first tagged
+release.
 
 ## Tests
 
 | Suite | Command | What it is |
 | --- | --- | --- |
-| Rules + levels | `node tools/test.js` | Plain Node, no dependencies — checks the move rules behave and that every level in `js/levels.js` is solvable |
+| Rules + levels | `node apps/web-classic/tools/test.js` | Plain Node, no dependencies — checks the move rules behave and that every level in `js/levels.js` is solvable |
 
 What a change owes it:
 
-- **A rule change gets a rules assertion.** `js/game.js` has no DOM, so the
-  move legality, jumps, double tiles and undo/stuck detection are testable
-  directly.
+- **A rule change gets a rules assertion.** `apps/web-classic/js/game.js`
+  has no DOM, so the move legality, jumps, double tiles and undo/stuck
+  detection are testable directly.
 - **A new or edited level gets re-checked for solvability** before it ships
   — `tools/test.js` already does this for every level in `js/levels.js`, so
   a change just has to not skip running it.
 - **A bug fix gets the test that would have caught it**, failing against the
   unfixed code and passing after.
 - **A UI or rendering change is also looked at in a browser** before it
-  lands — `tools/test.js` never touches `js/ui.js`.
+  lands — `apps/web-classic/tools/test.js` never touches `js/ui.js`.
 
 ## Comments
 

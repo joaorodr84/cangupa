@@ -18,7 +18,7 @@ Everything in this file up to here, and the numbered steps below, assume a featu
 A hotfix follows the same five numbered steps below, with these substitutions:
 
 1. **Branch (step 1)** — off `main`, not `develop`: `git checkout main && git pull --ff-only origin main && git checkout -b hotfix-<name>`.
-2. **Commit (step 2)** — as written, but also bump the patch version in `package.json` (e.g. `0.1.0` → `0.1.1`). A hotfix almost always fixes something a player can see, so don't skip `changelog-updater` here the way a bookkeeping-only closure would.
+2. **Commit (step 2)** — as written, but also bump the patch version in `apps/web-classic/package.json` (e.g. `0.1.0` → `0.1.1`). A hotfix almost always fixes something a player can see, so don't skip `changelog-updater` here the way a bookkeeping-only closure would.
 3. **Land it (step 4)** — twice, not once:
    - First on `main`: same mechanics as "Land it on `develop`" below, but targeting `main`. Once it's landed and pushed, tag it — `git tag -a vX.Y.Z -m "..."` matching the bumped version — and `git push origin vX.Y.Z`.
    - Then on `develop` too, so the fix isn't lost the next time `develop` releases: same mechanics again, targeting `develop`. A conflict here is a real signal the same code changed on both branches since they diverged, and needs the user, not you, to resolve it — don't guess.
@@ -50,7 +50,7 @@ A hotfix follows the same five numbered steps below, with these substitutions:
    - If you're unsure whether a task is a subject shift, say so in your report and leave `HISTORY.md` untouched rather than guessing.
 4. **Invoke `changelog-updater` before committing, when this commit closes a task.** Use the `Agent` tool to run the `changelog-updater` agent so `CHANGELOG.md` gets an entry for what shipped, and wait for it to finish before staging. Skip this for a bookkeeping-only closure (a typo fix, a `TODO.md` tidy) that carries no player-facing change — the same case step 3 skips for `HISTORY.md`. Include the agent's edit to `CHANGELOG.md` in this same commit.
 5. **Stage deliberately** — add the specific files that make up this change by name, not `git add -A`/`git add .`. Before staging anything, check for files that look like secrets or personal data and leave them out; if something suspicious is already staged, unstage it and flag it in your report instead of committing it.
-6. **Run `node tools/test.js` before committing anything that touches `js/game.js`, `js/levels.js` or `tools/gen-levels.js`.** A red run means the commit doesn't happen until it's fixed.
+6. **Run `node apps/web-classic/tools/test.js` before committing anything that touches `apps/web-classic/js/game.js`, `apps/web-classic/js/levels.js` or `apps/web-classic/tools/gen-levels.js`.** A red run means the commit doesn't happen until it's fixed.
 7. Create the commit with a HEREDOC-authored message ending in:
    ```
    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
