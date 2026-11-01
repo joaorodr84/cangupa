@@ -48,11 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-11` — Port the move rules and solver
-  ([apps/web-classic/js/game.js](apps/web-classic/js/game.js)'s `Game`
-  class) to `apps/app/src/game`, with the rules assertions from
-  [apps/web-classic/tools/test.js](apps/web-classic/tools/test.js) ported
-  alongside as Jest tests.
 - [P2] `CANGUPA-12` — Port the 50 generated levels
   ([apps/web-classic/js/levels.js](apps/web-classic/js/levels.js)) into
   `apps/app/src/game` as typed data, with the solvability check from

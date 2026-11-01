@@ -1,0 +1,182 @@
+// Pure game state and rules, ported from apps/web-classic/js/game.js. No React/RN here.
+// A level is an array of strings:
+//   .  empty     1  tile needing one visit     2  tile needing two visits
+//   S  start on a 1-tile                        s  start on a 2-tile
+// Coordinates: x is the column, y the row, both counted from the top-left.
+//
+// cells[i] is how many visits a tile still needs. The start tile counts as
+// visited. Landing needs cells[i] > 0 and takes one off. A tile that reaches 0
+// is used up: it stays under the player and drops away when they leave.
+// The level is cleared when every cell is 0.
+
+export type Level = readonly string[];
+
+export interface Rules {
+  readonly jumps: boolean;
+}
+
+export interface Move {
+  readonly x: number;
+  readonly y: number;
+  readonly jump: boolean;
+}
+
+interface HistoryEntry {
+  readonly pos: number;
+  readonly cells: Uint8Array;
+}
+
+const DIRS: ReadonlyArray<readonly [number, number]> = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
+
+export class Game {
+  readonly rules: Rules;
+  readonly w: number;
+  readonly h: number;
+  readonly max: Uint8Array;
+  readonly start: number;
+  cells!: Uint8Array;
+  pos!: number;
+  private history!: HistoryEntry[];
+
+  constructor(rows: Level, rules: Rules = { jumps: true }) {
+    this.rules = rules;
+    this.h = rows.length;
+    this.w = Math.max(...rows.map((r) => r.length));
+    this.max = new Uint8Array(this.w * this.h);
+    let start = -1;
+    rows.forEach((row, y) => {
+      for (let x = 0; x < this.w; x++) {
+        const c = row[x] || '.';
+        const i = y * this.w + x;
+        if (c === '1' || c === 'S') this.max[i] = 1;
+        else if (c === '2' || c === 's') this.max[i] = 2;
+        if (c === 'S' || c === 's') start = i;
+      }
+    });
+    if (start < 0) throw new Error('level has no start');
+    this.start = start;
+    this.reset();
+  }
+
+  reset(): void {
+    this.cells = Uint8Array.from(this.max);
+    this.cells[this.start] -= 1;
+    this.pos = this.start;
+    this.history = [];
+  }
+
+  get x(): number {
+    return this.pos % this.w;
+  }
+
+  get y(): number {
+    return (this.pos / this.w) | 0;
+  }
+
+  get moves(): number {
+    return this.history.length;
+  }
+
+  at(x: number, y: number): number {
+    return this.cells[y * this.w + x];
+  }
+
+  remaining(cells: Uint8Array = this.cells): number {
+    let n = 0;
+    for (const v of cells) n += v;
+    return n;
+  }
+
+  get won(): boolean {
+    return this.remaining() === 0;
+  }
+
+  get stuck(): boolean {
+    return !this.won && this.legalMoves().length === 0;
+  }
+
+  // Steps of one tile, plus jumps of two when the rule is on.
+  legalMoves(cells: Uint8Array = this.cells, pos: number = this.pos): Move[] {
+    const px = pos % this.w;
+    const py = (pos / this.w) | 0;
+    const out: Move[] = [];
+    for (const [dx, dy] of DIRS) {
+      for (let d = 1; d <= (this.rules.jumps ? 2 : 1); d++) {
+        const x = px + dx * d;
+        const y = py + dy * d;
+        if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
+        if (cells[y * this.w + x] > 0) out.push({ x, y, jump: d === 2 });
+      }
+    }
+    return out;
+  }
+
+  // Play a move from legalMoves().
+  play(move: Pick<Move, 'x' | 'y'>): void {
+    this.history.push({ pos: this.pos, cells: Uint8Array.from(this.cells) });
+    this.pos = move.y * this.w + move.x;
+    this.cells[this.pos] -= 1;
+  }
+
+  undo(): boolean {
+    const s = this.history.pop();
+    if (!s) return false;
+    this.pos = s.pos;
+    this.cells = s.cells;
+    return true;
+  }
+
+  // Moves that clear the level from here, or null. Dead positions are remembered.
+  solve(): Move[] | null {
+    const dead = new Set<string>();
+    const path: Move[] = [];
+    const rec = (cells: Uint8Array, pos: number): boolean => {
+      if (this.remaining(cells) === 0) return true;
+      const k = pos + ':' + cells.join('');
+      if (dead.has(k)) return false;
+      for (const m of this.legalMoves(cells, pos)) {
+        const next = Uint8Array.from(cells);
+        const i = m.y * this.w + m.x;
+        next[i] -= 1;
+        path.push(m);
+        if (rec(next, i)) return true;
+        path.pop();
+      }
+      dead.add(k);
+      return false;
+    };
+    return rec(this.cells, this.pos) ? path : null;
+  }
+
+  // Number of solutions from the start, each subtree capped at `cap`.
+  // Gives up and returns -1 after `budget` distinct positions.
+  countSolutions(cap = 2, budget = Infinity): number {
+    const memo = new Map<string, number>();
+    const rec = (cells: Uint8Array, pos: number): number => {
+      if (this.remaining(cells) === 0) return 1;
+      const k = pos + ':' + cells.join('');
+      const memoized = memo.get(k);
+      if (memoized !== undefined) return memoized;
+      if (memo.size > budget) return 0;
+      let n = 0;
+      for (const m of this.legalMoves(cells, pos)) {
+        const next = Uint8Array.from(cells);
+        const i = m.y * this.w + m.x;
+        next[i] -= 1;
+        n = Math.min(cap, n + rec(next, i));
+        if (n >= cap) break;
+      }
+      memo.set(k, n);
+      return n;
+    };
+    const first = Uint8Array.from(this.max);
+    first[this.start] -= 1;
+    const n = rec(first, this.start);
+    return memo.size > budget ? -1 : n;
+  }
+}
