@@ -48,9 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-13` — Port settings persistence
-  ([apps/web-classic/js/config.js](apps/web-classic/js/config.js)'s
-  `Settings`: theme, jumps, hints, anim) to an AsyncStorage-backed hook.
 - [P2] `CANGUPA-14` — Port progress persistence (`config.js`'s `Progress`:
   cleared levels, last-played level) to an AsyncStorage-backed hook.
 - [P2] `CANGUPA-15` — Port the five board themes (cosmos, space, sand, ice,
