@@ -48,13 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P1] `CANGUPA-10` — Scaffold a React Native + Expo (TypeScript) app at
-  `apps/app`: `package.json`, `app.json`, `tsconfig.json`, `index.ts`/`App.tsx`,
-  jest-expo test setup, and install the dependencies (Expo, React, React
-  Native, `react-native-web`, `react-native-svg`,
-  `@react-native-async-storage/async-storage`,
-  `react-native-safe-area-context`). No gameplay yet — this just gets the
-  app running under `expo start`.
 - [P2] `CANGUPA-11` — Port the move rules and solver
   ([apps/web-classic/js/game.js](apps/web-classic/js/game.js)'s `Game`
   class) to `apps/app/src/game`, with the rules assertions from
