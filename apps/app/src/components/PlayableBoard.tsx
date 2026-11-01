@@ -6,6 +6,7 @@
 // (BoardScreen.tsx), so that screen and this component share one Game
 // rather than each calling useBoard and getting their own.
 import { useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { type UseBoardResult } from '../game/useBoard';
 import { type Palette } from '../theme/palette';
@@ -33,18 +34,30 @@ export default function PlayableBoard({ board, anim, palette, onMoved }: Playabl
   };
 
   return (
-    <Board
-      ref={boardRef}
-      w={game.w}
-      h={game.h}
-      tiles={tiles}
-      rooX={game.x}
-      rooY={game.y}
-      face={facing.face}
-      flip={facing.flip}
-      palette={palette}
-      anim={anim}
-      onPressTile={handlePressTile}
-    />
+    // ports style.css's #board-wrap: the padded card the board itself (the
+    // "pit") sits in — found missing in the CANGUPA-24 parity pass, where
+    // the board rendered edge-to-edge with no frame around it.
+    <View style={[styles.frame, { backgroundColor: palette.frame }]}>
+      <Board
+        ref={boardRef}
+        w={game.w}
+        h={game.h}
+        tiles={tiles}
+        rooX={game.x}
+        rooY={game.y}
+        face={facing.face}
+        flip={facing.flip}
+        palette={palette}
+        anim={anim}
+        onPressTile={handlePressTile}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  frame: {
+    padding: 12,
+    borderRadius: 14,
+  },
+});

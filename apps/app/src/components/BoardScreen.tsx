@@ -24,6 +24,8 @@ interface BoardScreenProps {
   readonly totalLevels: number;
   readonly hasNext: boolean;
   readonly onNext: () => void;
+  readonly onPrevLevel: () => void;
+  readonly canGoPrevLevel: boolean;
   // Fired once per win (not again until a reset is followed by another win),
   // the moment ui.js's move() would have added the level to progress.done.
   readonly onLevelComplete?: () => void;
@@ -39,6 +41,8 @@ export default function BoardScreen({
   totalLevels,
   hasNext,
   onNext,
+  onPrevLevel,
+  canGoPrevLevel,
   onLevelComplete,
 }: BoardScreenProps) {
   const board = useBoard(level, rules, hints);
@@ -57,7 +61,18 @@ export default function BoardScreen({
   return (
     <View style={styles.wrap}>
       <PlayableBoard board={board} anim={anim} palette={palette} />
-      <BoardHud status={status} canUndo={canUndo} palette={palette} onUndo={undo} onReset={reset} onHint={hint} onNext={onNext} />
+      <BoardHud
+        status={status}
+        canUndo={canUndo}
+        palette={palette}
+        onUndo={undo}
+        onReset={reset}
+        onHint={hint}
+        onNext={onNext}
+        onPrevLevel={onPrevLevel}
+        canGoPrevLevel={canGoPrevLevel}
+        canGoNextLevel={hasNext}
+      />
     </View>
   );
 }

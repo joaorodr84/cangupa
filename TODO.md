@@ -48,9 +48,6 @@ task's dependencies land first: scaffold, then game logic/data, then
 persistence, then visuals, then screens, then the shell, then assets, then
 a parity pass.
 
-- [P2] `CANGUPA-24` — Full parity pass: run the app on iOS/Android/web
-  (`expo start`) and check every `apps/web-classic` feature side by side
-  before calling the port done.
 - [P4] `CANGUPA-25` — Configure EAS build profiles and store metadata
   (bundle identifier, EAS project, `app.json` store fields) for
   `apps/app`. Parked: publishing it hasn't been decided yet.

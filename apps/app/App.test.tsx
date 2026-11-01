@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import App from './App';
 import { PROGRESS_KEY } from './src/state/progress';
-import { SETTINGS_KEY } from './src/state/settings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY } from './src/state/settings';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
@@ -60,4 +60,13 @@ test('opens the settings screen and changing the theme is reflected on return', 
 
   const saved = await AsyncStorage.getItem(SETTINGS_KEY);
   expect(JSON.parse(saved ?? '{}').theme).toBe('ice');
+});
+
+test('shows the starfield for the space theme and not for the default theme', async () => {
+  await render(<App />);
+  expect(screen.queryByTestId('starfield')).toBeNull();
+
+  await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, theme: 'space' }));
+  await render(<App />);
+  expect(await screen.findByTestId('starfield')).toBeTruthy();
 });

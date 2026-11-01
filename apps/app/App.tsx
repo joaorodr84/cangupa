@@ -7,6 +7,7 @@ import BoardScreen from './src/components/BoardScreen';
 import HelpScreen from './src/components/HelpScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
+import Starfield from './src/components/Starfield';
 import { LEVELS } from './src/game/levels';
 import { isDone, type Progress } from './src/state/progress';
 import { type Settings, type Theme } from './src/state/settings';
@@ -123,6 +124,8 @@ function Shell({
         totalLevels={LEVELS.length}
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
         onNext={() => onChangeLevel(currentLevel + 1)}
+        onPrevLevel={() => onChangeLevel(currentLevel - 1)}
+        canGoPrevLevel={currentLevel > 0}
         onLevelComplete={() => onLevelDone(currentLevel)}
       />
     );
@@ -130,6 +133,7 @@ function Shell({
 
   return (
     <View style={[styles.app, { backgroundColor: palette.bg2 }]}>
+      <Starfield stars={palette.stars} />
       <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
         <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
         {panel !== 'board' && (

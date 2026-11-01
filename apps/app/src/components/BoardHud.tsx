@@ -14,16 +14,39 @@ interface BoardHudProps {
   readonly onReset: () => void;
   readonly onHint: () => void;
   readonly onNext: () => void;
+  // The toolbar's own ‹/› level navigation (ui.js's #prev/#next), always
+  // present and just enabled/disabled, unlike the "Próximo nível" button
+  // above, which only exists at all right at the win. Both ‹ and this
+  // toolbar › were found missing entirely in the CANGUPA-24 parity pass —
+  // only the win-triggered button had been built (CANGUPA-19). › reuses
+  // onNext: ui.js's #next and its status-text "go-next" button both just
+  // call loadLevel(levelIndex + 1).
+  readonly onPrevLevel: () => void;
+  readonly canGoPrevLevel: boolean;
+  readonly canGoNextLevel: boolean;
 }
 
-export default function BoardHud({ status, canUndo, palette, onUndo, onReset, onHint, onNext }: BoardHudProps) {
+export default function BoardHud({
+  status,
+  canUndo,
+  palette,
+  onUndo,
+  onReset,
+  onHint,
+  onNext,
+  onPrevLevel,
+  canGoPrevLevel,
+  canGoNextLevel,
+}: BoardHudProps) {
   return (
     <View style={styles.wrap}>
       <StatusLine status={status} palette={palette} onNext={onNext} />
       <View style={styles.toolbar}>
+        <HudButton label="‹" palette={palette} disabled={!canGoPrevLevel} onPress={onPrevLevel} />
         <HudButton label="Desfazer" palette={palette} disabled={!canUndo} onPress={onUndo} />
         <HudButton label="Reiniciar" palette={palette} onPress={onReset} />
         <HudButton label="Dica" palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
+        <HudButton label="›" palette={palette} disabled={!canGoNextLevel} onPress={onNext} />
       </View>
     </View>
   );

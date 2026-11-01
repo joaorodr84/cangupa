@@ -30,11 +30,24 @@ Open work is listed in [TODO.md](TODO.md).
   Android's themed icons. The launch screen now shows the Cangupa mark and
   name as the app opens, in the same light or dark styling, and the web
   version's browser tab icon was updated to match.
+- The board screen's toolbar now has ‹ and › buttons to jump straight to
+  the previous or next level, alongside Desfazer/Reiniciar/Dica. Before
+  this, the only way to move on was the "Próximo nível" button that
+  appears after winning, and there was no way to go back to an earlier
+  level at all.
 
 ### Changed
 
 - Toggling "Saltos de duas casas" (two-tile jumps) mid-level now restarts
   the level with a fresh board, matching the web game.
+
+### Fixed
+
+- The board now sits inside a padded, rounded-corner frame, matching the
+  web version, instead of running edge-to-edge with nothing around it.
+- The space theme's starfield background now actually shows up; the star
+  data had been in place since an earlier change, but nothing was
+  rendering it.
 
 ## 2026-10-27
 

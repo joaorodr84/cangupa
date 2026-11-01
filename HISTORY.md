@@ -83,6 +83,60 @@ CANGUPA-23 followed with the platform-ready icon, adaptive-icon and
 splash assets Expo's pipeline expects, derived from `TILE-JUMPER-7`'s
 existing logo design rather than designed from scratch.
 
+Era 3 closes here: Nov 1, 14 commits, CANGUPA-10 through CANGUPA-23 and
+CANGUPA-26 — the port built from nothing to a playable, themed, five-screen
+app, with nowhere left unbuilt.
+
+## Era 4 — Nov 1 (continued): the parity pass
+
+CANGUPA-24 closes out the port by checking it, not just reviewing its
+code: a feature-by-feature comparison against `apps/web-classic`'s
+`index.html`, `ui.js` and `style.css` surfaced two gaps confirmed by
+`grep` turning up no reference anywhere in `apps/app` — the board had
+no outer frame (`style.css`'s `#board-wrap`), and the space theme's
+starfield data (ported in CANGUPA-15) was never actually rendered by
+anything. A third gap, the toolbar's ‹/› level-navigation buttons, was
+missed by that code-level pass entirely and only turned up once the app
+was actually run and compared side by side with a screenshot of the real
+`apps/web-classic` — only the win-triggered "Próximo nível" button
+(CANGUPA-19) had ever been built.
+
+All three were fixed, not just logged. `PlayableBoard.tsx` now wraps the
+board in a padded, `palette.frame`-coloured card. A new `Starfield.tsx`
+renders `palette.stars` tiled at `STARFIELD_TILE_SIZE` across the screen,
+wired into `App.tsx` as the background layer behind everything, the same
+role `body::before` plays in the CSS. `BoardHud.tsx` gained an
+always-visible ‹/› pair: › reuses the `onNext` callback the win-triggered
+button already called, since `ui.js`'s `#next` and its status-text
+"go-next" button both already did the identical `loadLevel(levelIndex +
+1)`; ‹ is new, threaded through `BoardScreen.tsx` and `App.tsx` as
+`onPrevLevel`.
+
+Verified with `tsc --noEmit`, the full Jest suite (205 tests across 17
+files), and — unlike CANGUPA-22's commit, which stopped at a
+non-interactive `expo export` — a real interactive session: `expo start
+--web` driven headlessly with Playwright (resolved ad hoc from its npx
+cache, not added as a project dependency), tapping tiles, watching the
+move counter, opening and returning from every panel, switching to the
+space theme to confirm the starfield actually renders, and pressing Dica
+to watch the hint highlight appear, with the browser console staying
+empty throughout. The same session screenshotted `apps/web-classic`'s
+`index.html` directly over `file://` for the side-by-side comparisons,
+including the one that caught the missing toolbar buttons, and a second
+pass after the fix confirmed the toolbar now matches it exactly.
+
+Three things were found and left alone on purpose, not missed: keyboard
+shortcuts (this port is touch-only by design, CANGUPA-18, and
+`HelpScreen`'s note text already says so); the page background is a flat
+`palette.bg2` colour rather than the CSS's `bg1`→`bg2` radial gradient,
+since no gradient library is installed and one wasn't judged worth adding
+for a background; and the CSS-to-RN approximations already called out in
+comments from earlier tasks (`outline` for `outline`, `opacity` for
+`filter: brightness()`, box-shadow dropped) were re-confirmed reasonable
+rather than revisited. No native iOS or Android run happened in this
+session, for lack of a simulator or device — that still needs a session
+that has one.
+
 ---
 
 ## Patterns, and what's still open
