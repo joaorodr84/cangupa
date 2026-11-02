@@ -27,24 +27,24 @@ test('renders without crashing', async () => {
 test('starts on the home screen, and the board screen has its own way back to it', async () => {
   await render(<App />);
 
-  expect(await screen.findByText('Jogar')).toBeTruthy();
-  expect(screen.queryByText(/Nível \d+\/50/)).toBeNull();
+  expect(await screen.findByText('Play')).toBeTruthy();
+  expect(screen.queryByText(/Level \d+\/50/)).toBeNull();
 
-  await fireEvent.press(screen.getByText('Jogar'));
-  expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
-  expect(screen.queryByText('Jogar')).toBeNull();
+  await fireEvent.press(screen.getByText('Play'));
+  expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
+  expect(screen.queryByText('Play')).toBeNull();
 
-  await fireEvent.press(screen.getByLabelText('Voltar ao início'));
-  expect(await screen.findByText('Jogar')).toBeTruthy();
+  await fireEvent.press(screen.getByLabelText('Back to home'));
+  expect(await screen.findByText('Play')).toBeTruthy();
 });
 
 test('resumes the last-played level', async () => {
   await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: [0], level: 2 }));
 
   await render(<App />);
-  await fireEvent.press(await screen.findByText('Jogar'));
+  await fireEvent.press(await screen.findByText('Play'));
 
-  expect(await screen.findByText(/Nível 3\/50/)).toBeTruthy();
+  expect(await screen.findByText(/Level 3\/50/)).toBeTruthy();
 });
 
 test('the footer nav opens the levels screen, and picking a level opens the board', async () => {
@@ -54,17 +54,17 @@ test('the footer nav opens the levels screen, and picking a level opens the boar
   expect(screen.getByTestId('level-2')).toBeTruthy();
 
   await fireEvent.press(screen.getByTestId('level-1'));
-  expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
+  expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
 });
 
-test('the home screen\'s Rules button opens the rules screen, and Voltar returns to the board', async () => {
+test('the home screen\'s Rules button opens the rules screen, and Back returns to the board', async () => {
   await render(<App />);
 
-  await fireEvent.press(await screen.findByText('Regras'));
-  expect(screen.getByText('Regras')).toBeTruthy();
+  await fireEvent.press(await screen.findByText('Rules'));
+  expect(screen.getByText('Rules')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('‹ Voltar'));
-  expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
+  await fireEvent.press(screen.getByText('‹ Back'));
+  expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
 });
 
 test('the footer nav opens the settings screen, and changing the theme is reflected on return', async () => {
@@ -77,12 +77,24 @@ test('the footer nav opens the settings screen, and changing the theme is reflec
   expect(JSON.parse(saved ?? '{}').theme).toBe('ice');
 });
 
+test('changing the language is reflected at once and saved', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-settings'));
+  await fireEvent.press(screen.getByTestId('language-pt'));
+
+  expect(await screen.findByText('Definições')).toBeTruthy();
+
+  const saved = await AsyncStorage.getItem(SETTINGS_KEY);
+  expect(JSON.parse(saved ?? '{}').language).toBe('pt');
+});
+
 test('the settings screen has no back button of its own, unlike the rules screen', async () => {
   await render(<App />);
 
   await fireEvent.press(await screen.findByTestId('footer-settings'));
-  expect(await screen.findByText('Definições')).toBeTruthy();
-  expect(screen.queryByText('‹ Voltar')).toBeNull();
+  expect(await screen.findByText('Settings')).toBeTruthy();
+  expect(screen.queryByText('‹ Back')).toBeNull();
 });
 
 test('the footer nav opens the stats screen, which reflects a cleared level', async () => {
@@ -91,9 +103,9 @@ test('the footer nav opens the stats screen, which reflects a cleared level', as
   await render(<App />);
   await fireEvent.press(await screen.findByTestId('footer-stats'));
 
-  expect(screen.getByText(/Níveis limpos: 1\/50/)).toBeTruthy();
-  expect(screen.getByText('Nível 1')).toBeTruthy();
-  expect(screen.getByText('3 jogadas')).toBeTruthy();
+  expect(screen.getByText(/Levels cleared: 1\/50/)).toBeTruthy();
+  expect(screen.getByText('Level 1')).toBeTruthy();
+  expect(screen.getByText('3 moves')).toBeTruthy();
 });
 
 test('the footer nav\'s Home tab returns to the home screen from levels, stats and settings', async () => {
@@ -103,14 +115,14 @@ test('the footer nav\'s Home tab returns to the home screen from levels, stats a
   expect(screen.getByTestId('level-1')).toBeTruthy();
 
   await fireEvent.press(screen.getByTestId('footer-home'));
-  expect(await screen.findByText('Jogar')).toBeTruthy();
+  expect(await screen.findByText('Play')).toBeTruthy();
 });
 
 test('the board screen has no footer nav of its own', async () => {
   await render(<App />);
 
-  await fireEvent.press(await screen.findByText('Jogar'));
-  await screen.findByText(/Nível 1\/50/);
+  await fireEvent.press(await screen.findByText('Play'));
+  await screen.findByText(/Level 1\/50/);
 
   expect(screen.queryByTestId('footer-home')).toBeNull();
   expect(screen.queryByTestId('footer-levels')).toBeNull();

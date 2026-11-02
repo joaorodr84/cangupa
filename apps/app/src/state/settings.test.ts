@@ -29,12 +29,20 @@ describe('parseSettings', () => {
   it.each(CORRUPT_RECORDS)('reads %s as the defaults', (_name, raw) => {
     expect(parseSettings(raw)).toEqual(DEFAULT_SETTINGS);
   });
+
+  it.each(['en', 'pt', 'system'] as const)('reads a saved %s language', (language) => {
+    expect(parseSettings(`{"language":"${language}"}`).language).toBe(language);
+  });
+
+  it('falls back to the default language for one it does not know, e.g. a later locale this build predates', () => {
+    expect(parseSettings('{"language":"fr"}')).toEqual(DEFAULT_SETTINGS);
+  });
 });
 
 describe('saving and loading', () => {
   it('round-trips every setting through the store', async () => {
     const storage = memoryStorage();
-    const settings = { theme: 'space' as const, jumps: false, hints: false, anim: false };
+    const settings = { theme: 'space' as const, jumps: false, hints: false, anim: false, language: 'pt' as const };
 
     await saveSettings(storage, settings);
 
@@ -47,7 +55,7 @@ describe('saving and loading', () => {
     await saveSettings(storage, DEFAULT_SETTINGS);
 
     expect(await storage.getItem(SETTINGS_KEY)).toBe(
-      '{"theme":"cosmos","jumps":true,"hints":true,"anim":true}',
+      '{"theme":"cosmos","jumps":true,"hints":true,"anim":true,"language":"system"}',
     );
   });
 

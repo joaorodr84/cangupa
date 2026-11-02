@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-38`**
+**Next ID to assign: `CANGUPA-39`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -64,3 +64,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-35 | P1 | Give the `apps/app` board screen (`BoardHud.tsx`) a plain arrow back button, upper-left, matching DigiSpin's board-header back icon, pointing to the home screen — CANGUPA-32 removed the previous-level `‹` toolbar button outright with no replacement, leaving the board screen with no way back to the home screen at all | done | 2026-11-02 | — |
 | CANGUPA-36 | P2 | Swap the home screen's `FooterNav` text labels for icons, styled after DigiSpin's bottom-nav buttons | done | 2026-11-02 | — |
 | CANGUPA-37 | P2 | On `apps/app`'s settings screen: drop the `‹ Voltar` back button, redundant now that Settings is a footer tab (CANGUPA-31) a Home tap away; and rearrange the Tema/toggle items into labelled sections of full-width rows, similarly to DigiSpin's `SettingsScreen.tsx` | done | 2026-11-02 | — |
+| CANGUPA-38 | P1 | Add multi-language support to `apps/app`, on DigiSpin's `i18n` pattern: a `Locale`/`LanguageSetting` type, a `LanguageContext` + `useLocale`/`useStrings` pair, and a `Strings` table per screen. Ship English and Portuguese (the app's existing hardcoded text, extracted as-is); the language setting defaults to `'system'`, following the device's own language and falling back to English for anything else — matching DigiSpin's own default. Scoped to `apps/app` only; `apps/web-classic` keeps its hardcoded Portuguese | done | 2026-11-02 | — |

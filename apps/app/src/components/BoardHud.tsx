@@ -13,6 +13,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { type Status } from '../game/boardView';
+import { useStrings } from '../i18n/useStrings';
+import { type Strings } from '../i18n/strings';
 import { type Palette } from '../theme/palette';
 
 interface BoardHudProps {
@@ -26,23 +28,24 @@ interface BoardHudProps {
 }
 
 export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onReset, onHint }: BoardHudProps) {
+  const t = useStrings();
   return (
     <View style={styles.wrap}>
       <Pressable
         onPress={onBack}
         accessibilityRole="button"
-        accessibilityLabel="Voltar ao início"
+        accessibilityLabel={t.boardHud.backToHome}
         style={[styles.backButton, { backgroundColor: palette.panel }]}
       >
         <BackArrow color={palette.ink} />
       </Pressable>
       <View style={styles.status}>
-        <StatusLine status={status} palette={palette} />
+        <StatusLine status={status} palette={palette} t={t} />
       </View>
       <View style={styles.buttons}>
-        <HudButton label="Desfazer" palette={palette} disabled={!canUndo} onPress={onUndo} />
-        <HudButton label="Reiniciar" palette={palette} onPress={onReset} />
-        <HudButton label="Dica" palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
+        <HudButton label={t.boardHud.undo} palette={palette} disabled={!canUndo} onPress={onUndo} />
+        <HudButton label={t.boardHud.restart} palette={palette} onPress={onReset} />
+        <HudButton label={t.boardHud.hint} palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
       </View>
     </View>
   );
@@ -62,14 +65,14 @@ function BackArrow({ color }: { readonly color: string }) {
 
 // The win state has its own presentation (WinPopup.tsx), so there is nothing
 // to show here once won — the status row just goes empty.
-function StatusLine({ status, palette }: { status: Status; palette: Palette }) {
+function StatusLine({ status, palette, t }: { status: Status; palette: Palette; t: Strings }) {
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
 
   if (status.kind === 'hintFailed') {
     return (
       <Text style={ink}>
-        <Text style={styles.bold}>Beco sem saída.</Text> <Text style={muted}>Desfaz algumas jogadas.</Text>
+        <Text style={styles.bold}>{t.boardHud.deadEnd}</Text> <Text style={muted}>{t.boardHud.undoSomeMoves}</Text>
       </Text>
     );
   }
@@ -78,11 +81,11 @@ function StatusLine({ status, palette }: { status: Status; palette: Palette }) {
     return null;
   }
 
-  const head = `Nível ${status.levelNumber}/${status.totalLevels} · Jogadas ${status.moves} · Faltam ${status.remaining}`;
+  const head = t.boardHud.status(status.levelNumber, status.totalLevels, status.moves, status.remaining);
   if (status.kind === 'stuck') {
     return (
       <Text style={ink}>
-        {head} · <Text style={styles.bold}>Sem jogadas.</Text> <Text style={muted}>Desfaz ou reinicia.</Text>
+        {head} · <Text style={styles.bold}>{t.boardHud.stuck}</Text> <Text style={muted}>{t.boardHud.undoOrRestart}</Text>
       </Text>
     );
   }

@@ -39,6 +39,13 @@ Open work is listed in [TODO.md](TODO.md).
   only via the button on the home screen.
 - The board screen now has a plain back arrow in the upper-left corner
   that returns to the home screen.
+- The app now has an English translation alongside its original
+  Portuguese. A new "Idioma"/"Language" setting offers "Seguir o
+  dispositivo"/"Follow the device", English and Português — the first
+  option follows the device's own language and defaults to English if
+  that's neither. Every screen — home, settings, stats, rules, the board
+  HUD, the win pop-up and the footer nav — follows the chosen language.
+  The original web version is unaffected and stays Portuguese-only.
 
 ### Changed
 

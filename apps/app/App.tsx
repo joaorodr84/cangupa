@@ -12,6 +12,9 @@ import SettingsScreen from './src/components/SettingsScreen';
 import Starfield from './src/components/Starfield';
 import StatsScreen from './src/components/StatsScreen';
 import { LEVELS } from './src/game/levels';
+import { LanguageContext } from './src/i18n/LanguageContext';
+import { type LanguageSetting } from './src/i18n/locale';
+import { useStrings } from './src/i18n/useStrings';
 import { isDone, type Progress } from './src/state/progress';
 import { type Settings, type Theme } from './src/state/settings';
 import { useProgress } from './src/state/useProgress';
@@ -32,7 +35,7 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
-  const { settings, setTheme, setJumps, setHints, setAnim } = useSettings();
+  const { settings, setTheme, setJumps, setHints, setAnim, setLanguage } = useSettings();
   const { progress, recordDone, recordLevel, clearProgress } = useProgress();
 
   if (!settings || !progress) {
@@ -41,17 +44,20 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <Shell
-        settings={settings}
-        onChangeTheme={setTheme}
-        onChangeJumps={setJumps}
-        onChangeHints={setHints}
-        onChangeAnim={setAnim}
-        progress={progress}
-        onLevelDone={recordDone}
-        onChangeLevel={recordLevel}
-        onClearProgress={clearProgress}
-      />
+      <LanguageContext.Provider value={settings.language}>
+        <Shell
+          settings={settings}
+          onChangeTheme={setTheme}
+          onChangeJumps={setJumps}
+          onChangeHints={setHints}
+          onChangeAnim={setAnim}
+          onChangeLanguage={setLanguage}
+          progress={progress}
+          onLevelDone={recordDone}
+          onChangeLevel={recordLevel}
+          onClearProgress={clearProgress}
+        />
+      </LanguageContext.Provider>
     </SafeAreaProvider>
   );
 }
@@ -62,6 +68,7 @@ interface ShellProps {
   readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
+  readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly progress: Progress;
   readonly onLevelDone: (levelIndex: number, moves: number) => void;
   readonly onChangeLevel: (levelIndex: number) => void;
@@ -74,12 +81,14 @@ function Shell({
   onChangeJumps,
   onChangeHints,
   onChangeAnim,
+  onChangeLanguage,
   progress,
   onLevelDone,
   onChangeLevel,
   onClearProgress,
 }: ShellProps) {
   const insets = useSafeAreaInsets();
+  const t = useStrings();
   const [panel, setPanel] = useState<Panel>('home');
   const palette = paletteFor(settings.theme);
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
@@ -122,6 +131,7 @@ function Shell({
         onChangeJumps={onChangeJumps}
         onChangeHints={onChangeHints}
         onChangeAnim={onChangeAnim}
+        onChangeLanguage={onChangeLanguage}
         onClearProgress={() => {
           onClearProgress();
           setPanel('board');
@@ -156,13 +166,13 @@ function Shell({
       <Starfield stars={palette.stars} />
       <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
         {panel !== 'board' && panel !== 'home' && (
-          <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
+          <Text style={[styles.title, { color: palette.ink }]}>{t.appTitle}</Text>
         )}
         {/* Redundant on 'settings': it's a footer tab (CANGUPA-31), already one
-            tap from Home, so "Voltar" only duplicated that path. */}
+            tap from Home, so the back link only duplicated that path. */}
         {panel !== 'board' && panel !== 'home' && panel !== 'settings' && (
           <Pressable style={styles.back} onPress={() => setPanel('board')}>
-            <Text style={{ color: palette.ink }}>‹ Voltar</Text>
+            <Text style={{ color: palette.ink }}>{t.common.back}</Text>
           </Pressable>
         )}
         <View style={styles.body}>{content}</View>

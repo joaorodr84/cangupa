@@ -28,7 +28,7 @@ function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { 
 test('shows the level number and move count while playing', async () => {
   await renderScreen({ level: ['S1.'], rules: { jumps: true }, levelNumber: 5 });
 
-  expect(screen.getByText('Nível 5/50 · Jogadas 0 · Faltam 1')).toBeTruthy();
+  expect(screen.getByText('Level 5/50 · Moves 0 · 1 left')).toBeTruthy();
 });
 
 test('calls onLevelComplete with the move count exactly once when the level is won, and shows the win popup', async () => {
@@ -40,7 +40,7 @@ test('calls onLevelComplete with the move count exactly once when the level is w
 
   expect(onLevelComplete).toHaveBeenCalledTimes(1);
   expect(onLevelComplete).toHaveBeenCalledWith(1);
-  expect(screen.getByText('Nível completo!')).toBeTruthy();
+  expect(screen.getByText('Level complete!')).toBeTruthy();
 });
 
 test('pressing the back arrow calls onBack', async () => {
@@ -48,7 +48,7 @@ test('pressing the back arrow calls onBack', async () => {
 
   await renderScreen({ level: ['S1.'], rules: { jumps: true }, onBack });
 
-  await fireEvent.press(screen.getByLabelText('Voltar ao início'));
+  await fireEvent.press(screen.getByLabelText('Back to home'));
   expect(onBack).toHaveBeenCalledTimes(1);
 });
 
@@ -56,16 +56,16 @@ test('undo, reset and hint operate on the same board the HUD reflects', async ()
   await renderScreen({ level: ['S11'], rules: { jumps: true } });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
-  expect(screen.getByText('Nível 1/50 · Jogadas 1 · Faltam 1')).toBeTruthy();
+  expect(screen.getByText('Level 1/50 · Moves 1 · 1 left')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('Desfazer'));
-  expect(screen.getByText('Nível 1/50 · Jogadas 0 · Faltam 2')).toBeTruthy();
+  await fireEvent.press(screen.getByText('Undo'));
+  expect(screen.getByText('Level 1/50 · Moves 0 · 2 left')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('Dica'));
+  await fireEvent.press(screen.getByText('Hint'));
   expect(screen.getByTestId('tile-1-0').props.style).toBeDefined();
 
-  await fireEvent.press(screen.getByText('Reiniciar'));
-  expect(screen.getByText('Nível 1/50 · Jogadas 0 · Faltam 2')).toBeTruthy();
+  await fireEvent.press(screen.getByText('Restart'));
+  expect(screen.getByText('Level 1/50 · Moves 0 · 2 left')).toBeTruthy();
 });
 
 test('pressing the win popup\'s next-level button calls onNext', async () => {
@@ -74,7 +74,7 @@ test('pressing the win popup\'s next-level button calls onNext', async () => {
   await renderScreen({ level: ['S1'], rules: { jumps: true }, onNext });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
-  await fireEvent.press(screen.getByText('Próximo nível'));
+  await fireEvent.press(screen.getByText('Next level'));
 
   expect(onNext).toHaveBeenCalledTimes(1);
 });
@@ -84,19 +84,19 @@ test('the win popup shows no next-level button on the last level', async () => {
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
-  expect(screen.queryByText('Próximo nível')).toBeNull();
-  expect(screen.getByText('Acabaste o jogo!')).toBeTruthy();
+  expect(screen.queryByText('Next level')).toBeNull();
+  expect(screen.getByText("You've finished the game!")).toBeTruthy();
 });
 
 test('closing the win popup leaves the board reachable through Reset', async () => {
   await renderScreen({ level: ['S1'], rules: { jumps: true } });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
-  expect(screen.getByText('Nível completo!')).toBeTruthy();
+  expect(screen.getByText('Level complete!')).toBeTruthy();
 
   await fireEvent.press(screen.getByText('✕'));
-  expect(screen.queryByText('Nível completo!')).toBeNull();
+  expect(screen.queryByText('Level complete!')).toBeNull();
 
-  await fireEvent.press(screen.getByText('Reiniciar'));
-  expect(screen.getByText('Nível 1/50 · Jogadas 0 · Faltam 1')).toBeTruthy();
+  await fireEvent.press(screen.getByText('Restart'));
+  expect(screen.getByText('Level 1/50 · Moves 0 · 1 left')).toBeTruthy();
 });

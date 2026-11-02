@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { type LanguageSetting } from '../i18n/locale';
 import { deviceStorage } from './deviceStorage';
 import { DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings, type Theme } from './settings';
 import { type Storage } from './storage';
@@ -54,6 +55,7 @@ export function useSettings(storage: Storage = deviceStorage) {
   const setJumps = useCallback((jumps: boolean) => update({ jumps }), [update]);
   const setHints = useCallback((hints: boolean) => update({ hints }), [update]);
   const setAnim = useCallback((anim: boolean) => update({ anim }), [update]);
+  const setLanguage = useCallback((language: LanguageSetting) => update({ language }), [update]);
 
-  return { settings, setTheme, setJumps, setHints, setAnim };
+  return { settings, setTheme, setJumps, setHints, setAnim, setLanguage };
 }

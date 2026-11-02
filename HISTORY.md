@@ -399,6 +399,32 @@ change from the outside.
 One commit. Verified with the full Jest suite (235 tests across 22
 suites) and `tsc --noEmit`, both passing.
 
+## Era 14 — Nov 2 (continued): English joins Portuguese
+
+CANGUPA-38 gives `apps/app` a second language, mirroring DigiSpin's own
+i18n layer rather than inventing a new one: a new `src/i18n/` module with
+`locale.ts` (resolving a `language` setting of 'system'/'en'/'pt' into a
+concrete locale, following the device's own language and falling back to
+English for anything else), a `LanguageContext` plus `useLocale`/
+`useStrings` pair, and a `strings/` folder holding `types.ts`, `en.ts`,
+`pt.ts` and an `index.ts` tying them together. Every component in
+`apps/app` — `App.tsx`'s Shell, `BoardHud`, `BoardScreen`, `FooterNav`,
+`HelpScreen`, `HomeScreen`, `SettingsScreen`, `StatsScreen` and
+`WinPopup` — is rewired from hardcoded Portuguese strings to
+`useStrings()`. Settings (`state/settings.ts`, `useSettings.ts`) gains a
+`language` field persisted alongside the app's other settings, and
+`SettingsScreen.tsx` gets a new Language section with a System/English/
+Português picker — the language names themselves (endonyms) are left
+untranslated. Every existing component and `App` test is updated to
+assert the new English defaults, and new tests cover `locale.ts`'s
+locale resolution, `useStrings`' context wiring, and the language
+picker. Scoped to `apps/app` only; `apps/web-classic` is unchanged.
+
+One commit. Verified with the full Jest suite (251 tests across 24
+suites), and manually in the browser via the Expo web build, confirming
+the language switch applies live across the Home, Settings and Stats
+screens, and that the choice persists.
+
 ---
 
 ## Patterns, and what's still open

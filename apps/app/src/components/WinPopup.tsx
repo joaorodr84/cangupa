@@ -6,6 +6,7 @@
 // up, the same as before.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 
 interface WinPopupProps {
@@ -17,6 +18,7 @@ interface WinPopupProps {
 }
 
 export default function WinPopup({ moves, hasNext, palette, onNext, onClose }: WinPopupProps) {
+  const t = useStrings();
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
 
@@ -26,14 +28,14 @@ export default function WinPopup({ moves, hasNext, palette, onNext, onClose }: W
         <Pressable style={styles.close} onPress={onClose}>
           <Text style={ink}>✕</Text>
         </Pressable>
-        <Text style={[styles.heading, ink]}>Nível completo!</Text>
-        <Text style={muted}>em {moves} jogadas</Text>
+        <Text style={[styles.heading, ink]}>{t.winPopup.levelComplete}</Text>
+        <Text style={muted}>{t.winPopup.inMoves(moves)}</Text>
         {hasNext ? (
           <Pressable style={[styles.primary, { backgroundColor: 'rgba(255,214,90,0.3)' }]} onPress={onNext}>
-            <Text style={[styles.primaryLabel, ink]}>Próximo nível</Text>
+            <Text style={[styles.primaryLabel, ink]}>{t.winPopup.nextLevel}</Text>
           </Pressable>
         ) : (
-          <Text style={[styles.done, muted]}>Acabaste o jogo!</Text>
+          <Text style={[styles.done, muted]}>{t.winPopup.gameComplete}</Text>
         )}
       </View>
     </View>

@@ -1,25 +1,25 @@
 // Ported from apps/web-classic/index.html's `#settings` aside and ui.js's
-// settings wiring and clear-progress confirm(). Text stays the Portuguese
-// of the original — the web version has no i18n layer either, so this port
-// doesn't add one.
+// settings wiring and clear-progress confirm(). The web version still has no
+// i18n layer (CANGUPA-38 only covers apps/app).
 //
 // Laid out in labelled sections of rounded rows (CANGUPA-37), matching
 // DigiSpin's SettingsScreen.tsx: an uppercase section label above a group of
-// full-width rows, each with a trailing mark for the selected choice. Cangupa
-// has only one radio-style group (Tema) plus a toggle group, so it keeps
-// those two and drops DigiSpin's digit-colour and language sections, which
-// this game has nothing equivalent to.
+// full-width rows, each with a trailing mark for the selected choice. The
+// language section (CANGUPA-38) follows DigiSpin's own language picker:
+// 'system' listed first, each language shown in its own name (an endonym),
+// not translated — the same convention every mainstream OS language picker
+// follows, so "Português" still reads as "Português" while the app is
+// currently showing English.
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { LOCALES, type LanguageSetting, type Locale } from '../i18n/locale';
+import { useStrings } from '../i18n/useStrings';
 import { type Settings, THEMES, type Theme } from '../state/settings';
 import { type Palette } from '../theme/palette';
 
-const THEME_LABELS: Readonly<Record<Theme, string>> = {
-  cosmos: 'Cosmos',
-  space: 'Espaço (verde)',
-  sand: 'Areia',
-  ice: 'Gelo',
-  classic: 'Clássico',
+const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = {
+  en: 'English',
+  pt: 'Português',
 };
 
 interface SettingsScreenProps {
@@ -29,6 +29,7 @@ interface SettingsScreenProps {
   readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
+  readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly onClearProgress: () => void;
 }
 
@@ -39,24 +40,31 @@ export default function SettingsScreen({
   onChangeJumps,
   onChangeHints,
   onChangeAnim,
+  onChangeLanguage,
   onClearProgress,
 }: SettingsScreenProps) {
+  const t = useStrings();
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
 
+  const languageChoices: readonly { readonly language: LanguageSetting; readonly label: string }[] = [
+    { language: 'system', label: t.settings.followDevice },
+    ...LOCALES.map((locale) => ({ language: locale, label: LANGUAGE_NAMES[locale] })),
+  ];
+
   const confirmClear = () => {
-    Alert.alert('Apagar todo o progresso?', undefined, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Apagar', style: 'destructive', onPress: onClearProgress },
+    Alert.alert(t.settings.clearProgressTitle, undefined, [
+      { text: t.settings.cancel, style: 'cancel' },
+      { text: t.settings.confirmClear, style: 'destructive', onPress: onClearProgress },
     ]);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={[styles.heading, ink]}>Definições</Text>
+      <Text style={[styles.heading, ink]}>{t.settings.heading}</Text>
 
-      <Text style={[styles.sectionLabel, muted]}>Tema</Text>
-      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel="Tema">
+      <Text style={[styles.sectionLabel, muted]}>{t.settings.theme}</Text>
+      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.theme}>
         {THEMES.map((theme) => {
           const selected = theme === settings.theme;
           return (
@@ -68,18 +76,18 @@ export default function SettingsScreen({
               accessibilityState={{ checked: selected }}
               style={[styles.row, { backgroundColor: palette.panel }, selected && styles.rowSelected]}
             >
-              <Text style={ink}>{THEME_LABELS[theme]}</Text>
+              <Text style={ink}>{t.settings.themeLabels[theme]}</Text>
               <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
             </Pressable>
           );
         })}
       </View>
 
-      <Text style={[styles.sectionLabel, muted]}>Jogabilidade</Text>
+      <Text style={[styles.sectionLabel, muted]}>{t.settings.gameplay}</Text>
       <View style={styles.group}>
         <ToggleRow
           testID="toggle-jumps"
-          label="Saltos de duas casas"
+          label={t.settings.jumps}
           value={settings.jumps}
           onChange={onChangeJumps}
           ink={ink}
@@ -87,17 +95,37 @@ export default function SettingsScreen({
         />
         <ToggleRow
           testID="toggle-hints"
-          label="Destacar jogadas possíveis"
+          label={t.settings.hints}
           value={settings.hints}
           onChange={onChangeHints}
           ink={ink}
           palette={palette}
         />
-        <ToggleRow testID="toggle-anim" label="Animações" value={settings.anim} onChange={onChangeAnim} ink={ink} palette={palette} />
+        <ToggleRow testID="toggle-anim" label={t.settings.anim} value={settings.anim} onChange={onChangeAnim} ink={ink} palette={palette} />
+      </View>
+
+      <Text style={[styles.sectionLabel, muted]}>{t.settings.language}</Text>
+      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.language}>
+        {languageChoices.map((choice) => {
+          const selected = choice.language === settings.language;
+          return (
+            <Pressable
+              key={choice.language}
+              testID={`language-${choice.language}`}
+              onPress={() => onChangeLanguage(choice.language)}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: selected }}
+              style={[styles.row, { backgroundColor: palette.panel }, selected && styles.rowSelected]}
+            >
+              <Text style={ink}>{choice.label}</Text>
+              <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
+            </Pressable>
+          );
+        })}
       </View>
 
       <Pressable style={[styles.row, { backgroundColor: palette.panel }]} onPress={confirmClear}>
-        <Text style={ink}>Apagar progresso</Text>
+        <Text style={ink}>{t.settings.clearProgress}</Text>
       </Pressable>
     </ScrollView>
   );

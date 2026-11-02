@@ -12,27 +12,27 @@ test('shows the level Play is about to open', async () => {
     <HomeScreen palette={paletteFor('cosmos')} levelNumber={7} onPlay={noop} onRules={noop} />,
   );
 
-  expect(screen.getByText('Nível 7')).toBeTruthy();
+  expect(screen.getByText('Level 7')).toBeTruthy();
 });
 
-test('pressing Jogar fires onPlay', async () => {
+test('pressing Play fires onPlay', async () => {
   const onPlay = jest.fn();
   await render(
     <HomeScreen palette={paletteFor('cosmos')} levelNumber={1} onPlay={onPlay} onRules={noop} />,
   );
 
-  await fireEvent.press(screen.getByText('Jogar'));
+  await fireEvent.press(screen.getByText('Play'));
 
   expect(onPlay).toHaveBeenCalledTimes(1);
 });
 
-test('pressing Regras fires onRules', async () => {
+test('pressing Rules fires onRules', async () => {
   const onRules = jest.fn();
   await render(
     <HomeScreen palette={paletteFor('cosmos')} levelNumber={1} onPlay={noop} onRules={onRules} />,
   );
 
-  await fireEvent.press(screen.getByText('Regras'));
+  await fireEvent.press(screen.getByText('Rules'));
 
   expect(onRules).toHaveBeenCalledTimes(1);
 });

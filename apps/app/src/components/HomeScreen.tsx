@@ -5,6 +5,7 @@
 // Rules button into the existing Regras screen (HelpScreen.tsx, CANGUPA-26).
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 
 interface HomeScreenProps {
@@ -15,15 +16,16 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ palette, levelNumber, onPlay, onRules }: HomeScreenProps) {
+  const t = useStrings();
   return (
     <View style={styles.wrap}>
       <Image source={palette.logo} style={styles.logo} resizeMode="contain" accessibilityRole="image" />
-      <Text style={[styles.level, { color: palette.muted }]}>Nível {levelNumber}</Text>
+      <Text style={[styles.level, { color: palette.muted }]}>{t.home.level(levelNumber)}</Text>
       <Pressable style={[styles.button, { backgroundColor: 'rgba(255,214,90,0.3)' }]} onPress={onPlay}>
-        <Text style={[styles.label, { color: palette.ink }]}>Jogar</Text>
+        <Text style={[styles.label, { color: palette.ink }]}>{t.home.play}</Text>
       </Pressable>
       <Pressable style={[styles.rulesButton, { backgroundColor: palette.panel }]} onPress={onRules}>
-        <Text style={[styles.rulesLabel, { color: palette.ink }]}>Regras</Text>
+        <Text style={[styles.rulesLabel, { color: palette.ink }]}>{t.home.rules}</Text>
       </Pressable>
     </View>
   );

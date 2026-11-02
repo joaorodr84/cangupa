@@ -8,10 +8,10 @@ const palette = paletteFor('cosmos');
 test('renders all four tabs, labelled for accessibility rather than as visible text', async () => {
   await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} />);
 
-  expect(screen.getByLabelText('Início')).toBeTruthy();
-  expect(screen.getByLabelText('Níveis')).toBeTruthy();
-  expect(screen.getByLabelText('Estatísticas')).toBeTruthy();
-  expect(screen.getByLabelText('Definições')).toBeTruthy();
+  expect(screen.getByLabelText('Home')).toBeTruthy();
+  expect(screen.getByLabelText('Levels')).toBeTruthy();
+  expect(screen.getByLabelText('Stats')).toBeTruthy();
+  expect(screen.getByLabelText('Settings')).toBeTruthy();
 });
 
 test('only the active tab is marked selected', async () => {

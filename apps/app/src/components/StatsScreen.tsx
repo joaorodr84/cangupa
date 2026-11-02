@@ -4,6 +4,7 @@
 // a destination for CANGUPA-31's footer "Stats" tab.
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { useStrings } from '../i18n/useStrings';
 import { type Progress, totalBestMoves } from '../state/progress';
 import { type Palette } from '../theme/palette';
 
@@ -14,29 +15,28 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ totalLevels, progress, palette }: StatsScreenProps) {
+  const t = useStrings();
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
   const cleared = progress.done.length;
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={[styles.heading, ink]}>Estatísticas</Text>
+      <Text style={[styles.heading, ink]}>{t.stats.heading}</Text>
 
       <View style={styles.summary}>
-        <Text style={ink}>
-          Níveis limpos: {cleared}/{totalLevels}
-        </Text>
-        <Text style={ink}>Jogadas totais: {totalBestMoves(progress)}</Text>
+        <Text style={ink}>{t.stats.levelsCleared(cleared, totalLevels)}</Text>
+        <Text style={ink}>{t.stats.totalMoves(totalBestMoves(progress))}</Text>
       </View>
 
       {cleared === 0 ? (
-        <Text style={[styles.empty, muted]}>Ainda sem estatísticas. Joga um nível para começares.</Text>
+        <Text style={[styles.empty, muted]}>{t.stats.empty}</Text>
       ) : (
         <View style={styles.list}>
           {progress.done.map((levelIndex) => (
             <View key={levelIndex} style={[styles.row, { backgroundColor: palette.panel }]}>
-              <Text style={ink}>Nível {levelIndex + 1}</Text>
-              <Text style={muted}>{progress.bestMoves[levelIndex]} jogadas</Text>
+              <Text style={ink}>{t.stats.level(levelIndex + 1)}</Text>
+              <Text style={muted}>{t.stats.moves(progress.bestMoves[levelIndex])}</Text>
             </View>
           ))}
         </View>

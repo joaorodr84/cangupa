@@ -15,18 +15,12 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 
 export type FooterTab = 'home' | 'levels' | 'stats' | 'settings';
 
 const ICON_SIZE = 28;
-
-const TABS: readonly { readonly id: FooterTab; readonly label: string }[] = [
-  { id: 'home', label: 'Início' },
-  { id: 'levels', label: 'Níveis' },
-  { id: 'stats', label: 'Estatísticas' },
-  { id: 'settings', label: 'Definições' },
-];
 
 interface TabIconProps {
   readonly id: FooterTab;
@@ -81,9 +75,16 @@ interface FooterNavProps {
 }
 
 export default function FooterNav({ active, palette, onSelect }: FooterNavProps) {
+  const t = useStrings();
+  const tabs: readonly { readonly id: FooterTab; readonly label: string }[] = [
+    { id: 'home', label: t.tabs.home },
+    { id: 'levels', label: t.tabs.levels },
+    { id: 'stats', label: t.tabs.stats },
+    { id: 'settings', label: t.tabs.settings },
+  ];
   return (
     <View style={[styles.wrap, { backgroundColor: palette.panel, borderTopColor: palette.muted }]}>
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const selected = tab.id === active;
         return (
           <Pressable

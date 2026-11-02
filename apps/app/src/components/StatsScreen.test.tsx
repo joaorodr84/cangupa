@@ -9,20 +9,20 @@ const palette = paletteFor('cosmos');
 test('shows the empty state when nothing is cleared yet', async () => {
   await render(<StatsScreen totalLevels={50} progress={NO_PROGRESS} palette={palette} />);
 
-  expect(screen.getByText('Níveis limpos: 0/50')).toBeTruthy();
-  expect(screen.getByText('Jogadas totais: 0')).toBeTruthy();
-  expect(screen.getByText(/Ainda sem estatísticas/)).toBeTruthy();
+  expect(screen.getByText('Levels cleared: 0/50')).toBeTruthy();
+  expect(screen.getByText('Total moves: 0')).toBeTruthy();
+  expect(screen.getByText(/No stats yet/)).toBeTruthy();
 });
 
 test('shows the cleared count and the per-level best move counts', async () => {
   const progress: Progress = { done: [0, 2], level: 2, bestMoves: { 0: 3, 2: 7 } };
   await render(<StatsScreen totalLevels={50} progress={progress} palette={palette} />);
 
-  expect(screen.getByText('Níveis limpos: 2/50')).toBeTruthy();
-  expect(screen.getByText('Jogadas totais: 10')).toBeTruthy();
-  expect(screen.getByText('Nível 1')).toBeTruthy();
-  expect(screen.getByText('3 jogadas')).toBeTruthy();
-  expect(screen.getByText('Nível 3')).toBeTruthy();
-  expect(screen.getByText('7 jogadas')).toBeTruthy();
-  expect(screen.queryByText(/Ainda sem estatísticas/)).toBeNull();
+  expect(screen.getByText('Levels cleared: 2/50')).toBeTruthy();
+  expect(screen.getByText('Total moves: 10')).toBeTruthy();
+  expect(screen.getByText('Level 1')).toBeTruthy();
+  expect(screen.getByText('3 moves')).toBeTruthy();
+  expect(screen.getByText('Level 3')).toBeTruthy();
+  expect(screen.getByText('7 moves')).toBeTruthy();
+  expect(screen.queryByText(/No stats yet/)).toBeNull();
 });
