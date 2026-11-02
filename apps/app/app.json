@@ -46,6 +46,11 @@
         }
       ]
     ],
-    "owner": "joaorodr84"
+    "owner": "joaorodr84",
+    "extra": {
+      "eas": {
+        "projectId": "919a3820-dac4-4a6b-b2a3-42a23b37694f"
+      }
+    }
   }
 }

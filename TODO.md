@@ -39,15 +39,3 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
-
-### Expo/React Native port
-
-Replicates `apps/web-classic` as a React Native + Expo (TypeScript) app at
-`apps/app`, on the same toolchain DigiSpin and Sphinx use. Ordered so each
-task's dependencies land first: scaffold, then game logic/data, then
-persistence, then visuals, then screens, then the shell, then assets, then
-a parity pass.
-
-- [P4] `CANGUPA-25` — Configure EAS build profiles and store metadata
-  (bundle identifier, EAS project, `app.json` store fields) for
-  `apps/app`. Parked: publishing it hasn't been decided yet.

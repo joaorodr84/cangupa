@@ -28,7 +28,6 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-5 | P3 | Play a sound effect on falling. Depends on `TILE-JUMPER-3` — there's nothing to cue a sound off until falling itself exists | open | — |
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
-| CANGUPA-25 | P4 | Configure EAS build profiles and store metadata for `apps/app` — unscoped until publishing it is actually decided | open | — |
 
 ## Done
 
@@ -53,3 +52,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-26 | P2 | Port the "Regras" (rules/help) screen to `apps/app`, a fourth reachable panel the CANGUPA-10..25 backlog never accounted for | done | 2026-11-01 | — |
 | CANGUPA-23 | P3 | Design and wire the Expo icon, splash and adaptive-icon set for `apps/app` | done | 2026-11-01 | — |
 | CANGUPA-24 | P2 | Full parity pass on iOS/Android/web before calling the port done | done | 2026-11-01 | — |
+| CANGUPA-25 | P4 | Configure EAS build profiles and store metadata for `apps/app` | done | 2026-11-02 | — |
