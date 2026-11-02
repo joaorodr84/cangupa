@@ -44,7 +44,8 @@
             "backgroundColor": "#121212"
           }
         }
-      ]
+      ],
+      "expo-status-bar"
     ],
     "owner": "joaorodr84",
     "extra": {
