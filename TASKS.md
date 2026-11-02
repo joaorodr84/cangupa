@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-27`**
+**Next ID to assign: `CANGUPA-28`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -53,3 +53,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-23 | P3 | Design and wire the Expo icon, splash and adaptive-icon set for `apps/app` | done | 2026-11-01 | — |
 | CANGUPA-24 | P2 | Full parity pass on iOS/Android/web before calling the port done | done | 2026-11-01 | — |
 | CANGUPA-25 | P4 | Configure EAS build profiles and store metadata for `apps/app` | done | 2026-11-02 | — |
+| CANGUPA-27 | P2 | Add `start-services`/`stop-services` agents for `apps/app`'s Expo dev server, on Sphinx's and DigiSpin's pattern | done | 2026-11-02 | — |
