@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-32`**
+**Next ID to assign: `CANGUPA-33`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -31,6 +31,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-29 | P1 | On the `apps/app` home screen (`HomeScreen.tsx`, CANGUPA-28), stack four things top to bottom: the logo; the number of the level the Play button points at; the Play button; and a Rules button underneath it that opens the existing Regras/rules screen (`HelpScreen.tsx`, CANGUPA-26) | open | — |
 | CANGUPA-30 | P2 | Build a stats screen for `apps/app` — scope (which stats: levels cleared, moves, time, streak?) still to be decided. Needed as a destination for CANGUPA-31's footer "Stats" tab | open | — |
 | CANGUPA-31 | P1 | Add a reusable bottom-footer nav component to `apps/app` with four tabs — Home, Levels, Stats, Settings — shown on the home, levels, stats and settings screens. The Levels tab opens the existing levels screen unchanged (`LevelsScreen.tsx`, CANGUPA-20); the Settings tab opens the existing settings screen unchanged (CANGUPA-21). Once the Levels, Rules (CANGUPA-29) and Settings destinations all work through their new entry points, remove the board screen's now-redundant inline nav row (`App.tsx`'s `Níveis`/`Regras`/`Definições` row) as the finishing step of this task — Regras has no footer tab of its own; CANGUPA-29's home-screen button is its only remaining entry point. Blocked on CANGUPA-30 for the Stats tab to have a real destination | open | — |
+| CANGUPA-32 | P1 | Rework the `apps/app` game (board) screen's HUD, similarly to DigiSpin: move the Undo/Restart/Hint buttons (`BoardHud.tsx`'s "Desfazer"/"Reiniciar"/"Dica") to the screen's upper-right corner; remove the previous-level `‹` toolbar button entirely; remove the next-level `›` toolbar button and the win-triggered "Próximo nível" button, replacing both with a pop-up shown on level completion; and remove the "Cangupa" title from the top of this screen specifically — `App.tsx`'s `Shell` currently renders that title unconditionally above every panel, so this needs it hidden only when `panel === 'board'`, keeping it on the other screens, including the home screen's logo (CANGUPA-29) | open | — |
 
 ## Done
 
