@@ -265,6 +265,43 @@ the running app yet, it was only checked via its own component tests,
 not in a browser — that manual look is expected to happen as part of
 CANGUPA-31 once the nav tab exists, not skipped here by oversight.
 
+## Era 9 — Nov 2 (continued): a footer nav ties the screens together
+
+CANGUPA-31 adds a reusable bottom-footer nav to `apps/app`:
+`FooterNav.tsx` renders four tabs, in order — Início (home), Níveis
+(levels), Estatísticas (stats), Definições (settings) — with the active
+tab outlined, and exports a `FooterTab` type (`'home' | 'levels' |
+'stats' | 'settings'`). `App.tsx` gains a `'stats'` panel wired to the
+stats screen built in CANGUPA-30, and a new `isFooterTab` type guard
+shows the footer on exactly those four screens — not on the board
+screen, left chrome-free by CANGUPA-32, and not on the Regras/help
+screen, reachable only through the home screen's Rules button from
+CANGUPA-29. The board screen's old inline Níveis/Regras/Definições nav
+row, and the now-unused `NavButton` helper and `nav`/`navButton` styles
+it depended on, are gone, replaced by `FooterNav`.
+
+One commit. `App.test.tsx`'s navigation tests were rewritten to drive
+the footer instead of the old board nav row (opening Levels, Settings
+and now Stats), plus new tests for the footer's Home tab returning to
+the home screen from levels/stats/settings, and for the board screen
+showing no footer at all; a new `FooterNav.test.tsx` covers rendering,
+the active outline, and press-reports-id. Verified with the full Jest
+suite (231 tests across 22 suites) and `tsc --noEmit`, both passing, and
+with a throwaway Playwright script against a running Expo web dev
+server confirming the footer on home/levels/stats/settings with the
+active tab outlined, the stats screen reachable, and no footer at all
+on the board screen.
+
+Closing out CANGUPA-30's open thread, this also surfaced something
+worth flagging rather than fixing quietly: once the board's old inline
+nav row is gone, the board screen has no way off it at all except
+clearing the level — no back button, no footer, nothing. That's a
+direct consequence of CANGUPA-29's home screen, CANGUPA-32's
+chrome-free HUD rework, and this task's explicit instruction to remove
+the board's old inline nav as its finishing step, with no replacement
+specified anywhere — implemented as written rather than second-guessed,
+but a real gap for the project owner to decide on.
+
 ---
 
 ## Patterns, and what's still open

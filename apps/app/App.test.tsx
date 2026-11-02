@@ -45,20 +45,18 @@ test('resumes the last-played level', async () => {
   expect(await screen.findByText(/Nível 3\/50/)).toBeTruthy();
 });
 
-test('opens the levels screen and picking a level returns to the board', async () => {
+test('the footer nav opens the levels screen, and picking a level opens the board', async () => {
   await render(<App />);
-  await fireEvent.press(await screen.findByText('Jogar'));
 
-  await fireEvent.press(await screen.findByText('Níveis'));
+  await fireEvent.press(await screen.findByTestId('footer-levels'));
   expect(screen.getByTestId('level-2')).toBeTruthy();
 
   await fireEvent.press(screen.getByTestId('level-1'));
   expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
 });
 
-test('opens the rules screen and returns to the board', async () => {
+test('the home screen\'s Rules button opens the rules screen, and Voltar returns to the board', async () => {
   await render(<App />);
-  await fireEvent.press(await screen.findByText('Jogar'));
 
   await fireEvent.press(await screen.findByText('Regras'));
   expect(screen.getByText('Regras')).toBeTruthy();
@@ -67,15 +65,47 @@ test('opens the rules screen and returns to the board', async () => {
   expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
 });
 
-test('opens the settings screen and changing the theme is reflected on return', async () => {
+test('the footer nav opens the settings screen, and changing the theme is reflected on return', async () => {
   await render(<App />);
-  await fireEvent.press(await screen.findByText('Jogar'));
 
-  await fireEvent.press(await screen.findByText('Definições'));
+  await fireEvent.press(await screen.findByTestId('footer-settings'));
   await fireEvent.press(screen.getByTestId('theme-ice'));
 
   const saved = await AsyncStorage.getItem(SETTINGS_KEY);
   expect(JSON.parse(saved ?? '{}').theme).toBe('ice');
+});
+
+test('the footer nav opens the stats screen, which reflects a cleared level', async () => {
+  await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: [0], level: 1, bestMoves: { 0: 3 } }));
+
+  await render(<App />);
+  await fireEvent.press(await screen.findByTestId('footer-stats'));
+
+  expect(screen.getByText(/Níveis limpos: 1\/50/)).toBeTruthy();
+  expect(screen.getByText('Nível 1')).toBeTruthy();
+  expect(screen.getByText('3 jogadas')).toBeTruthy();
+});
+
+test('the footer nav\'s Home tab returns to the home screen from levels, stats and settings', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-levels'));
+  expect(screen.getByTestId('level-1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByTestId('footer-home'));
+  expect(await screen.findByText('Jogar')).toBeTruthy();
+});
+
+test('the board screen has no footer nav of its own', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByText('Jogar'));
+  await screen.findByText(/Nível 1\/50/);
+
+  expect(screen.queryByTestId('footer-home')).toBeNull();
+  expect(screen.queryByTestId('footer-levels')).toBeNull();
+  expect(screen.queryByTestId('footer-stats')).toBeNull();
+  expect(screen.queryByTestId('footer-settings')).toBeNull();
 });
 
 test('shows the starfield for the space theme and not for the default theme', async () => {

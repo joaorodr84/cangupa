@@ -29,9 +29,14 @@ Open work is listed in [TODO.md](TODO.md).
   out of the total), "Jogadas totais" (total moves, summed from each
   level's best move count), and every cleared level alongside the fewest
   moves it's ever been cleared in; before anything's been cleared, it
-  shows an empty-state message instead. It isn't reachable from anywhere
-  in the app yet — there's no navigation entry point into it (coming
-  separately).
+  shows an empty-state message instead.
+- The home, levels, stats and settings screens now share a bottom footer
+  nav with four tabs — Início, Níveis, Estatísticas, Definições — with
+  the current one marked by a gold outline; tapping a tab jumps straight
+  to that screen. This is what makes the stats screen reachable for the
+  first time. The footer doesn't appear on the board screen, which keeps
+  its own chrome-free HUD, or on the Regras screen, which stays reachable
+  only via the button on the home screen.
 
 ### Changed
 
@@ -59,6 +64,9 @@ Open work is listed in [TODO.md](TODO.md).
 - The board toolbar's › next-level button and the old inline "Próximo
   nível" button in the win status line are gone, replaced by the new
   win pop-up's own "Próximo nível" button.
+- The board screen's old inline "Níveis" / "Regras" / "Definições" button
+  row below the board is gone, replaced by the new footer nav. Regras is
+  no longer reachable while playing — only from the home screen's button.
 
 ## 2026-11-01
 

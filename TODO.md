@@ -39,18 +39,3 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
-- [P1] `CANGUPA-31` — Add a reusable bottom-footer nav to `apps/app`: four
-  tabs, in order — Home, Levels, Stats, Settings — shown on the home,
-  levels, stats and settings screens. The Levels tab opens the existing
-  levels screen unchanged
-  ([LevelsScreen.tsx](apps/app/src/components/LevelsScreen.tsx),
-  CANGUPA-20) — everything already reachable from today's `Níveis` button.
-  The Settings tab opens the existing settings screen unchanged
-  (CANGUPA-21). The Stats tab opens the new stats screen
-  ([StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx),
-  CANGUPA-30). Once Levels, Rules (`CANGUPA-29`'s home-screen button) and
-  Settings all work through these new entry points, remove the board
-  screen's now-redundant inline nav row (`Níveis` / `Regras` /
-  `Definições`, built in [App.tsx](apps/app/App.tsx)'s `Shell`) as this
-  task's finishing step — Regras has no footer tab of its own, so
-  `CANGUPA-29`'s home-screen button becomes its only entry point.

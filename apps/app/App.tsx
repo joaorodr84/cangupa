@@ -4,19 +4,28 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { StatusBar } from 'expo-status-bar';
 
 import BoardScreen from './src/components/BoardScreen';
+import FooterNav, { type FooterTab } from './src/components/FooterNav';
 import HelpScreen from './src/components/HelpScreen';
 import HomeScreen from './src/components/HomeScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import Starfield from './src/components/Starfield';
+import StatsScreen from './src/components/StatsScreen';
 import { LEVELS } from './src/game/levels';
 import { isDone, type Progress } from './src/state/progress';
 import { type Settings, type Theme } from './src/state/settings';
 import { useProgress } from './src/state/useProgress';
 import { useSettings } from './src/state/useSettings';
-import { paletteFor, type Palette } from './src/theme/palette';
+import { paletteFor } from './src/theme/palette';
 
-type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings';
+type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
+
+// Which panels FooterNav covers (CANGUPA-31) — 'board' (reworked chrome-free
+// in CANGUPA-32) and 'help' (reachable only via the home screen's Rules
+// button, CANGUPA-29) are deliberately left out.
+function isFooterTab(panel: Panel): panel is FooterTab {
+  return panel === 'home' || panel === 'levels' || panel === 'stats' || panel === 'settings';
+}
 
 // The app root. Settings and progress are read before anything is shown, so
 // no panel flashes the wrong theme or the wrong level while they load —
@@ -100,6 +109,8 @@ function Shell({
         onSelectLevel={goToLevel}
       />
     );
+  } else if (panel === 'stats') {
+    content = <StatsScreen totalLevels={LEVELS.length} progress={progress} palette={palette} />;
   } else if (panel === 'help') {
     content = <HelpScreen palette={palette} />;
   } else if (panel === 'settings') {
@@ -150,24 +161,10 @@ function Shell({
           </Pressable>
         )}
         <View style={styles.body}>{content}</View>
-        {panel === 'board' && (
-          <View style={styles.nav}>
-            <NavButton label="Níveis" palette={palette} onPress={() => setPanel('levels')} />
-            <NavButton label="Regras" palette={palette} onPress={() => setPanel('help')} />
-            <NavButton label="Definições" palette={palette} onPress={() => setPanel('settings')} />
-          </View>
-        )}
+        {isFooterTab(panel) && <FooterNav active={panel} palette={palette} onSelect={setPanel} />}
       </View>
       <StatusBar style="light" />
     </View>
-  );
-}
-
-function NavButton({ label, palette, onPress }: { label: string; palette: Palette; onPress: () => void }) {
-  return (
-    <Pressable style={[styles.navButton, { backgroundColor: palette.panel }]} onPress={onPress}>
-      <Text style={{ color: palette.ink }}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -192,16 +189,5 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-  },
-  nav: {
-    flexDirection: 'row',
-    gap: 10,
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  navButton: {
-    paddingVertical: 9,
-    paddingHorizontal: 18,
-    borderRadius: 999,
   },
 });
