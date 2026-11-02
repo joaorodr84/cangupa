@@ -81,3 +81,9 @@ The priority can change at any time; the ID never does.
     unconditionally above every panel, so this needs it hidden only when
     `panel === 'board'`, keeping it on the other screens — including the
     home screen, where it doubles as the logo (`CANGUPA-29`).
+- [P2] `CANGUPA-33` — Similarly to DigiSpin, shrink the board when the
+  screen is wider than it is tall (landscape), so it fits inside the
+  screen instead of overflowing.
+  [Board.tsx](apps/app/src/components/Board.tsx) currently sizes itself
+  purely off container width (`width: '100%'` plus `aspectRatio: w / h`),
+  with nothing capping it by the available height.
