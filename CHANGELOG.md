@@ -95,6 +95,10 @@ Open work is listed in [TODO.md](TODO.md).
   panel colours now read live from the shared theme package instead of a
   copied-in snapshot of it, so a future update to that package's colours
   reaches this app automatically. No visible change today.
+- The home screen's "Jogar" button no longer has a fixed gold-tinted
+  background; it now uses DigiSpin's own control colour for the
+  equivalent button in both Light and Dark. The Jogar and Regras buttons
+  are also bigger, matching DigiSpin's sizing.
 
 ### Removed
 

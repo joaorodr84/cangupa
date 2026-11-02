@@ -475,7 +475,9 @@ its light/dark/system model. CANGUPA-43 then replaces that verbatim copy
 with a live read of @joaorodr84/themes's own DARK/LIGHT fields, so a
 future version bump of that package carries its colour changes into this
 app automatically instead of drifting out of sync with a frozen hex
-snapshot.
+snapshot. CANGUPA-44 then gives the home screen's Play button that same
+package's own control colour instead of a hardcoded rgba(255,214,90,0.3),
+and enlarges the Play and Rules buttons to match DigiSpin's sizing.
 
 One commit. Verified with `npx tsc --noEmit` clean and the full Jest suite
 green, 258 tests.

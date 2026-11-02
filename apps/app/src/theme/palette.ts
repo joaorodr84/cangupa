@@ -48,6 +48,9 @@ export interface Palette {
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
+  // The home screen's Play button background — DigiSpin's own control
+  // colour for the same button (HomeScreen.tsx), read live from the package.
+  readonly control: string;
   // The starfield dots drawn over the page background (dark only).
   readonly stars: readonly Star[];
   // The home screen's logo (CANGUPA-34), picked for contrast against bg1/bg2.
@@ -91,6 +94,7 @@ export const DARK: Palette = {
   ink: THEMES_DARK.text,
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
+  control: THEMES_DARK.control,
   stars: STARFIELD,
   logo: LOGO_DARK,
 };
@@ -107,6 +111,7 @@ export const LIGHT: Palette = {
   ink: THEMES_LIGHT.text,
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,
+  control: THEMES_LIGHT.control,
   stars: [],
   logo: LOGO_LIGHT,
 };
