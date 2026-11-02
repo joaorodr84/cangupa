@@ -46,3 +46,15 @@ The priority can change at any time; the ID never does.
   shown anywhere on that screen, and the "logo" is the `Cangupa` wordmark
   `App.tsx`'s `Shell` already renders above every panel, home included, so
   it only needs the level number added in between.
+- [P2] `CANGUPA-30` — Build a stats screen for `apps/app`. Unscoped: which
+  stats to show (levels cleared, moves taken, time, streak, something else)
+  isn't decided yet. Exists as a destination for `CANGUPA-31`'s footer
+  "Stats" tab.
+- [P1] `CANGUPA-31` — Add a reusable bottom-footer nav to `apps/app`: four
+  tabs, in order — Home, Levels, Stats, Settings — shown on the home,
+  levels, stats and settings screens. It replaces the board screen's
+  current inline nav row (`Níveis` / `Regras` / `Definições`, built in
+  [App.tsx](apps/app/App.tsx)'s `Shell`) with the same four-tab footer, so
+  Regras (the rules/help screen) drops out of the top-level nav and needs a
+  new way in — e.g. a link from the settings screen. Blocked on
+  `CANGUPA-30`: the Stats tab has nowhere to go until that screen exists.

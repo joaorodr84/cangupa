@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-30`**
+**Next ID to assign: `CANGUPA-32`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -29,6 +29,8 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
 | CANGUPA-29 | P1 | On the `apps/app` home screen (`HomeScreen.tsx`, CANGUPA-28), show the number of the level the Play button points at, stacked between the logo and the button: logo on top, level number in the middle, button underneath | open | — |
+| CANGUPA-30 | P2 | Build a stats screen for `apps/app` — scope (which stats: levels cleared, moves, time, streak?) still to be decided. Needed as a destination for CANGUPA-31's footer "Stats" tab | open | — |
+| CANGUPA-31 | P1 | Add a reusable bottom-footer nav component to `apps/app` with four tabs — Home, Levels, Stats, Settings — shown on the home, levels, stats and settings screens, and replacing the board screen's current inline nav (`App.tsx`'s `Níveis`/`Regras`/`Definições` row) with the same four-tab footer. Regras (the rules/help screen) drops out of the top-level nav as part of this change and needs a new way in, e.g. a link from the settings screen. Blocked on CANGUPA-30 for the Stats tab to have a real destination | open | — |
 
 ## Done
 
