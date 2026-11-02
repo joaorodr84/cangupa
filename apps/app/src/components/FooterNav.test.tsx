@@ -5,20 +5,31 @@ import { paletteFor } from '../theme/palette';
 
 const palette = paletteFor('cosmos');
 
-test('renders all four tabs', async () => {
+test('renders all four tabs, labelled for accessibility rather than as visible text', async () => {
   await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} />);
 
-  expect(screen.getByText('Início')).toBeTruthy();
-  expect(screen.getByText('Níveis')).toBeTruthy();
-  expect(screen.getByText('Estatísticas')).toBeTruthy();
-  expect(screen.getByText('Definições')).toBeTruthy();
+  expect(screen.getByLabelText('Início')).toBeTruthy();
+  expect(screen.getByLabelText('Níveis')).toBeTruthy();
+  expect(screen.getByLabelText('Estatísticas')).toBeTruthy();
+  expect(screen.getByLabelText('Definições')).toBeTruthy();
 });
 
-test('the active tab is outlined', async () => {
+test('only the active tab is marked selected', async () => {
   await render(<FooterNav active="stats" palette={palette} onSelect={jest.fn()} />);
 
-  const flat = [screen.getByTestId('footer-stats').props.style].flat();
-  expect(flat.some((s) => s?.borderColor === 'rgba(255,214,90,0.9)')).toBe(true);
+  expect(screen.getByTestId('footer-stats').props.accessibilityState).toEqual({ selected: true });
+  expect(screen.getByTestId('footer-home').props.accessibilityState).toEqual({ selected: false });
+  expect(screen.getByTestId('footer-levels').props.accessibilityState).toEqual({ selected: false });
+  expect(screen.getByTestId('footer-settings').props.accessibilityState).toEqual({ selected: false });
+});
+
+test('each tab renders its own icon', async () => {
+  await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} />);
+
+  expect(screen.getByTestId('footer-icon-home')).toBeTruthy();
+  expect(screen.getByTestId('footer-icon-levels')).toBeTruthy();
+  expect(screen.getByTestId('footer-icon-stats')).toBeTruthy();
+  expect(screen.getByTestId('footer-icon-settings')).toBeTruthy();
 });
 
 test('pressing a tab reports its id', async () => {

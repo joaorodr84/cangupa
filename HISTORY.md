@@ -356,6 +356,28 @@ Playwright script against a running Expo web dev server confirming the
 back button renders on the board screen and returns to the home screen
 when pressed.
 
+## Era 12 — Nov 2 (continued): the footer nav trades labels for icons
+
+CANGUPA-36 swaps `FooterNav`'s four text labels (Início/Níveis/
+Estatísticas/Definições) for icons, styled after DigiSpin's own TabBar.
+Rather than pull in a vector-icons dependency neither app installs, the
+icons are hand-drawn `react-native-svg` glyphs on a 24-unit grid — a
+house, three stacked bars, three bar-chart columns and a sliders glyph
+for home/levels/stats/settings respectively. The tray itself changes
+shape to match: a flat strip with a hairline top border in
+`palette.panel`, replacing the old floating pill buttons, and the
+active tab is now marked by swapping the icon's own color between
+`palette.ink` and `palette.muted` rather than a border or background.
+The text labels aren't gone, just invisible — each tab keeps its
+Portuguese label as an `accessibilityLabel`/`accessibilityRole="tab"`
+pair instead of visible `Text`, so `FooterNav.test.tsx` now queries
+`getByLabelText` and asserts `accessibilityState.selected` instead of
+checking border color, plus a new test confirming each tab renders its
+own icon.
+
+One commit. Verified with the full Jest suite (234 tests across 22
+suites) and `tsc --noEmit`, both passing.
+
 ---
 
 ## Patterns, and what's still open

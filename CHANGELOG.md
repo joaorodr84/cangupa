@@ -62,6 +62,12 @@ Open work is listed in [TODO.md](TODO.md).
   remembered which levels were done. This feeds the new stats screen's
   numbers. A save from before this change still loads fine; it just
   starts out with no move history.
+- The footer nav's four tabs now show as icons (a house, stacked bars, a
+  bar chart and sliders) instead of the Início/Níveis/Estatísticas/
+  Definições text, and the current tab is marked by the icon itself
+  changing color rather than a gold outline. The tray is now a flat
+  strip with a hairline top border instead of floating pill buttons. The
+  names are still there for screen readers, just not as visible text.
 
 ### Removed
 
