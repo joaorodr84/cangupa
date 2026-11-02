@@ -157,6 +157,10 @@ the app starts on the home screen and that pressing Jogar removes it
 with no way back. Verified with the full Jest suite (18 suites, 207
 tests across `apps/app`) and `tsc --noEmit`, both passing.
 
+CANGUPA-29 followed, stacking the level number Play is about to open and a
+Regras (rules) button beneath it on the same screen, with tests added for both
+and the full suite (209 tests) and `tsc --noEmit` passing again.
+
 ---
 
 ## Patterns, and what's still open

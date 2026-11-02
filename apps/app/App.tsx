@@ -82,7 +82,14 @@ function Shell({
 
   let content;
   if (panel === 'home') {
-    content = <HomeScreen palette={palette} onPlay={() => setPanel('board')} />;
+    content = (
+      <HomeScreen
+        palette={palette}
+        levelNumber={currentLevel + 1}
+        onPlay={() => setPanel('board')}
+        onRules={() => setPanel('help')}
+      />
+    );
   } else if (panel === 'levels') {
     content = (
       <LevelsScreen

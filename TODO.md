@@ -39,15 +39,6 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
-- [P1] `CANGUPA-29` — On the `apps/app` home screen, stack four things top
-  to bottom: the logo; the number of the level the Play button is about to
-  open; the Play button; and, underneath that, a Rules button that opens
-  the existing Regras/rules screen
-  ([HelpScreen.tsx](apps/app/src/components/HelpScreen.tsx), from
-  CANGUPA-26). [HomeScreen.tsx](apps/app/src/components/HomeScreen.tsx)
-  (from CANGUPA-28) currently only renders the Play button — no level
-  number or Rules button yet — and the "logo" is the `Cangupa` wordmark
-  `App.tsx`'s `Shell` already renders above every panel, home included.
 - [P2] `CANGUPA-30` — Build a stats screen for `apps/app`. Unscoped: which
   stats to show (levels cleared, moves taken, time, streak, something else)
   isn't decided yet. Exists as a destination for `CANGUPA-31`'s footer

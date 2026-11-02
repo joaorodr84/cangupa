@@ -17,6 +17,9 @@ Open work is listed in [TODO.md](TODO.md).
   as before. There's no way back to this screen once you've moved past
   it, same as the board's own back button, which only ever returns as
   far as the board.
+- The home screen now also shows which level "Jogar" is about to open
+  (e.g. "Nível 7"), and has a "Regras" button beneath Play that opens the
+  rules screen directly, without having to go into the board first.
 
 ## 2026-11-01
 
