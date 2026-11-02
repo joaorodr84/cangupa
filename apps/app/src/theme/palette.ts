@@ -2,7 +2,20 @@
 // property blocks. Colour values are copied as-is; CSS custom properties
 // with no React Native equivalent (gradients, box-shadows) are approximated
 // in the board screen that consumes this palette, not here.
+import { type ImageSourcePropType } from 'react-native';
+
 import { type Theme } from '../state/settings';
+
+// cangupa-logo-{light,dark}-vertical from assets/png at the repo root
+// (TILE-JUMPER-7), re-exported here cropped tight to its content — the
+// source canvas carries ~38% of empty transparent margin below the
+// wordmark that would otherwise show up as dead space in the stack
+// HomeScreen.tsx puts below it. "light"/"dark" name the text colour,
+// matching apps/app/assets/icon-light.png's convention, so a theme with
+// dark ink (a light background) takes the dark-text "light" logo and vice
+// versa.
+const LOGO_LIGHT = require('../../assets/logo-light.png') as ImageSourcePropType;
+const LOGO_DARK = require('../../assets/logo-dark.png') as ImageSourcePropType;
 
 export interface Star {
   readonly xPct: number;
@@ -31,6 +44,8 @@ export interface Palette {
   readonly panel: string;
   // The starfield dots drawn over the page background (space only).
   readonly stars: readonly Star[];
+  // The home screen's logo (CANGUPA-34), picked for contrast against bg1/bg2.
+  readonly logo: ImageSourcePropType;
 }
 
 // The period, in px, the starfield tiles at — style.css's `--stars-size`.
@@ -66,6 +81,7 @@ export const PALETTES: Readonly<Record<Theme, Palette>> = {
     muted: DEFAULT_MUTED,
     panel: DEFAULT_PANEL,
     stars: [],
+    logo: LOGO_DARK,
   },
   space: {
     bg1: '#0b0b2a',
@@ -80,6 +96,7 @@ export const PALETTES: Readonly<Record<Theme, Palette>> = {
     muted: DEFAULT_MUTED,
     panel: DEFAULT_PANEL,
     stars: STARFIELD,
+    logo: LOGO_DARK,
   },
   sand: {
     bg1: '#e9d8b4',
@@ -94,6 +111,7 @@ export const PALETTES: Readonly<Record<Theme, Palette>> = {
     muted: '#6a5638',
     panel: 'rgba(0,0,0,.07)',
     stars: [],
+    logo: LOGO_LIGHT,
   },
   ice: {
     bg1: '#e8f1f8',
@@ -108,6 +126,7 @@ export const PALETTES: Readonly<Record<Theme, Palette>> = {
     muted: '#52667c',
     panel: 'rgba(0,0,0,.06)',
     stars: [],
+    logo: LOGO_LIGHT,
   },
   classic: {
     bg1: '#1d4d36',
@@ -122,6 +141,7 @@ export const PALETTES: Readonly<Record<Theme, Palette>> = {
     muted: DEFAULT_MUTED,
     panel: DEFAULT_PANEL,
     stars: [],
+    logo: LOGO_DARK,
   },
 };
 

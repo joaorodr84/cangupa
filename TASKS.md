@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-34`**
+**Next ID to assign: `CANGUPA-35`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -60,3 +60,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-33 | P2 | On `apps/app`, similarly to DigiSpin, shrink the board when the screen is wider than it is tall (landscape): `Board.tsx` currently sizes itself purely off container width (`width: '100%'` + `aspectRatio: w/h`), with nothing capping it by available height, so on a wide/short window it can overflow vertically instead of fitting inside the screen | done | 2026-11-02 | — |
 | CANGUPA-30 | P2 | Build a stats screen for `apps/app`, scoped to what the saved `Progress` record already tracks: levels cleared (X/total), the fewest moves each cleared level has ever taken, and a total-moves summary. Needed as a destination for CANGUPA-31's footer "Stats" tab — not yet wired into any navigation, which CANGUPA-31 adds | done | 2026-11-02 | — |
 | CANGUPA-31 | P1 | Add a reusable bottom-footer nav component to `apps/app` with four tabs — Home, Levels, Stats, Settings — shown on the home, levels, stats and settings screens. The Levels tab opens the existing levels screen unchanged (`LevelsScreen.tsx`, CANGUPA-20); the Settings tab opens the existing settings screen unchanged (CANGUPA-21); the Stats tab opens the new stats screen (`StatsScreen.tsx`, CANGUPA-30). Once the Levels, Rules (CANGUPA-29) and Settings destinations all work through their new entry points, remove the board screen's now-redundant inline nav row (`App.tsx`'s `Níveis`/`Regras`/`Definições` row) as the finishing step of this task — Regras has no footer tab of its own; CANGUPA-29's home-screen button is its only remaining entry point | done | 2026-11-02 | — |
+| CANGUPA-34 | P1 | Wire the actual Cangupa logo (TILE-JUMPER-7's `assets/png/cangupa-logo-*-vertical.png`, trimmed of its canvas margin) into the `apps/app` home screen (`HomeScreen.tsx`, CANGUPA-29), which until now stood in for it with Shell's plain "Cangupa" text title | done | 2026-11-02 | — |

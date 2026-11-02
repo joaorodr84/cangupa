@@ -154,7 +154,9 @@ function Shell({
     <View style={[styles.app, { backgroundColor: palette.bg2 }]}>
       <Starfield stars={palette.stars} />
       <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
-        {panel !== 'board' && <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>}
+        {panel !== 'board' && panel !== 'home' && (
+          <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
+        )}
         {panel !== 'board' && panel !== 'home' && (
           <Pressable style={styles.back} onPress={() => setPanel('board')}>
             <Text style={{ color: palette.ink }}>‹ Voltar</Text>

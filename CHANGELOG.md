@@ -46,6 +46,11 @@ Open work is listed in [TODO.md](TODO.md).
 - The "Cangupa" title above every screen no longer shows on the board
   screen, so it doesn't compete with the new corner controls; it still
   shows on the home, levels, settings and rules screens.
+- The home screen now shows the actual Cangupa logo artwork above the
+  level number, Jogar and Regras buttons, instead of standing in with the
+  plain "Cangupa" text title; it no longer shows that title at all. Each
+  theme picks whichever of a light or dark version of the logo contrasts
+  better against its background.
 - On the board screen, when the device or window is wider than it is
   tall (landscape), the board now shrinks to fit within the screen
   instead of overflowing past the bottom. Portrait is unchanged — the

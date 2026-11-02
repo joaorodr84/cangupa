@@ -302,6 +302,32 @@ the board's old inline nav as its finishing step, with no replacement
 specified anywhere — implemented as written rather than second-guessed,
 but a real gap for the project owner to decide on.
 
+## Era 10 — Nov 2 (continued): the home screen gets its real logo
+
+CANGUPA-34 wires the actual Cangupa logo into the `apps/app` home
+screen, replacing the "Cangupa" text title Shell showed there as a
+stand-in since CANGUPA-28. New `assets/logo-light.png` and
+`assets/logo-dark.png` are cropped tight from TILE-JUMPER-7’s
+`cangupa-logo-{light,dark}-vertical.png` in `apps/web-classic`’s
+asset set, trimmed of the ~38% transparent canvas margin below the
+wordmark that would otherwise show up as dead space under the
+level/Play/Rules stack. `palette.ts` adds a `logo` field per theme,
+picked for contrast against `bg1`/`bg2` and following the light/dark
+naming convention `assets/icon-light.png` already uses, and
+`HomeScreen.tsx` renders the chosen logo above that stack at a fixed
+200×233 size — the trimmed PNGs’ own aspect ratio — rather than
+`width: '%'` plus `aspectRatio`, which do not combine reliably on
+react-native-web, where the image fell back to its native pixel size
+instead of scaling down. `App.tsx`’s Shell now also hides its
+"Cangupa" text title on the home panel, since the logo replaces it
+there.
+
+One commit. Verified with the full Jest suite (231 tests across 22
+suites) and `tsc --noEmit`, both passing, and visually with a
+Playwright screenshot against a running Expo web dev server,
+confirming the logo renders clearly against the default theme’s
+background with no stretching or clipping.
+
 ---
 
 ## Patterns, and what's still open
