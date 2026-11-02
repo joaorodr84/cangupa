@@ -14,6 +14,7 @@ function renderHud(overrides: Partial<Parameters<typeof BoardHud>[0]> & { status
   const props = {
     canUndo: true,
     palette,
+    onBack: noop,
     onUndo: noop,
     onReset: noop,
     onHint: noop,
@@ -52,6 +53,15 @@ test('disables hint once won', async () => {
 
   await fireEvent.press(screen.getByText('Dica'));
   expect(onHint).not.toHaveBeenCalled();
+});
+
+test('pressing the back arrow calls onBack', async () => {
+  const status: Status = { kind: 'playing', levelNumber: 1, totalLevels: 50, moves: 0, remaining: 3 };
+  const onBack = jest.fn();
+  await renderHud({ status, onBack });
+
+  await fireEvent.press(screen.getByLabelText('Voltar ao início'));
+  expect(onBack).toHaveBeenCalledTimes(1);
 });
 
 test('reset is always enabled', async () => {

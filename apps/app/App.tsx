@@ -144,6 +144,7 @@ function Shell({
         levelNumber={currentLevel + 1}
         totalLevels={LEVELS.length}
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
+        onBack={() => setPanel('home')}
         onNext={() => onChangeLevel(currentLevel + 1)}
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
       />

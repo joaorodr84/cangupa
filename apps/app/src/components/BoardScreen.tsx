@@ -24,6 +24,7 @@ interface BoardScreenProps {
   readonly levelNumber: number;
   readonly totalLevels: number;
   readonly hasNext: boolean;
+  readonly onBack: () => void;
   readonly onNext: () => void;
   // Fired once per win (not again until a reset is followed by another win),
   // the moment ui.js's move() would have added the level to progress.done —
@@ -40,6 +41,7 @@ export default function BoardScreen({
   levelNumber,
   totalLevels,
   hasNext,
+  onBack,
   onNext,
   onLevelComplete,
 }: BoardScreenProps) {
@@ -77,7 +79,15 @@ export default function BoardScreen({
 
   return (
     <View style={styles.wrap}>
-      <BoardHud status={status} canUndo={canUndo} palette={palette} onUndo={undo} onReset={reset} onHint={hint} />
+      <BoardHud
+        status={status}
+        canUndo={canUndo}
+        palette={palette}
+        onBack={onBack}
+        onUndo={undo}
+        onReset={reset}
+        onHint={hint}
+      />
       <View
         style={styles.boardArea}
         onLayout={(event) => {

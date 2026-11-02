@@ -18,6 +18,7 @@ function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { 
     levelNumber: 1,
     totalLevels: 50,
     hasNext: true,
+    onBack: noop,
     onNext: noop,
     ...overrides,
   };
@@ -40,6 +41,15 @@ test('calls onLevelComplete with the move count exactly once when the level is w
   expect(onLevelComplete).toHaveBeenCalledTimes(1);
   expect(onLevelComplete).toHaveBeenCalledWith(1);
   expect(screen.getByText('Nível completo!')).toBeTruthy();
+});
+
+test('pressing the back arrow calls onBack', async () => {
+  const onBack = jest.fn();
+
+  await renderScreen({ level: ['S1.'], rules: { jumps: true }, onBack });
+
+  await fireEvent.press(screen.getByLabelText('Voltar ao início'));
+  expect(onBack).toHaveBeenCalledTimes(1);
 });
 
 test('undo, reset and hint operate on the same board the HUD reflects', async () => {

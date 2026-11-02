@@ -24,7 +24,7 @@ test('renders without crashing', async () => {
   expect(toJSON()).not.toBeNull();
 });
 
-test('starts on the home screen, with no way back to it once past it', async () => {
+test('starts on the home screen, and the board screen has its own way back to it', async () => {
   await render(<App />);
 
   expect(await screen.findByText('Jogar')).toBeTruthy();
@@ -33,7 +33,9 @@ test('starts on the home screen, with no way back to it once past it', async () 
   await fireEvent.press(screen.getByText('Jogar'));
   expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
   expect(screen.queryByText('Jogar')).toBeNull();
-  expect(screen.queryByText('‹ Voltar')).toBeNull();
+
+  await fireEvent.press(screen.getByLabelText('Voltar ao início'));
+  expect(await screen.findByText('Jogar')).toBeTruthy();
 });
 
 test('resumes the last-played level', async () => {

@@ -37,6 +37,8 @@ Open work is listed in [TODO.md](TODO.md).
   first time. The footer doesn't appear on the board screen, which keeps
   its own chrome-free HUD, or on the Regras screen, which stays reachable
   only via the button on the home screen.
+- The board screen now has a plain back arrow in the upper-left corner
+  that returns to the home screen.
 
 ### Changed
 

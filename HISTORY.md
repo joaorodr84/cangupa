@@ -328,6 +328,34 @@ Playwright screenshot against a running Expo web dev server,
 confirming the logo renders clearly against the default theme’s
 background with no stretching or clipping.
 
+## Era 11 — Nov 2 (continued): the board screen gets a way back home
+
+CANGUPA-35 gives the `apps/app` board screen a plain arrow back button,
+upper-left, matching DigiSpin's own board-header back icon, that
+returns to the home screen — closing the gap Era 9's CANGUPA-31 entry
+flagged and left open: once that task's finishing step removed the
+board's old inline nav row, the board screen had no way back to the
+home screen at all short of clearing the level. `BoardHud.tsx` adds an
+icon-only `Pressable` in a circular `palette.panel`-coloured button,
+drawing a plain left-pointing arrow with `react-native-svg` (already a
+dependency), with an accessibility label of "Voltar ao início" rather
+than a text label, so it reads as "leave the board" at a glance instead
+of competing with the Desfazer/Reiniciar/Dica labels beside it. A new
+`onBack` prop threads from `App.tsx`'s Shell, through `BoardScreen.tsx`,
+to `BoardHud.tsx`, wired to the same `setPanel('home')` the home
+screen's own navigation already uses. `App.test.tsx`'s
+"starts on the home screen, with no way back to it once past it" test
+is rewritten to "starts on the home screen, and the board screen has
+its own way back to it", now exercising the new button instead of
+asserting its absence; new tests in `BoardHud.test.tsx` and
+`BoardScreen.test.tsx` cover pressing it.
+
+One commit. Verified with the full Jest suite (233 tests across 22
+suites) and `tsc --noEmit`, both passing, and with a throwaway
+Playwright script against a running Expo web dev server confirming the
+back button renders on the board screen and returns to the home screen
+when pressed.
+
 ---
 
 ## Patterns, and what's still open

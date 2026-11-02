@@ -6,8 +6,11 @@
 // "Próximo nível" button) moved out to WinPopup.tsx, since the row here is
 // about controlling the board, not what happens once it's cleared. The
 // level-navigation ‹/› buttons this toolbar used to carry are gone outright —
-// ‹ had no replacement, › became WinPopup's "Próximo nível".
+// › became WinPopup's "Próximo nível", and CANGUPA-35 gives ‹ its own
+// replacement: a plain arrow back to the home screen, upper-left, the same
+// corner DigiSpin's board header puts its own back arrow in.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 import { type Status } from '../game/boardView';
 import { type Palette } from '../theme/palette';
@@ -16,14 +19,23 @@ interface BoardHudProps {
   readonly status: Status;
   readonly canUndo: boolean;
   readonly palette: Palette;
+  readonly onBack: () => void;
   readonly onUndo: () => void;
   readonly onReset: () => void;
   readonly onHint: () => void;
 }
 
-export default function BoardHud({ status, canUndo, palette, onUndo, onReset, onHint }: BoardHudProps) {
+export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onReset, onHint }: BoardHudProps) {
   return (
     <View style={styles.wrap}>
+      <Pressable
+        onPress={onBack}
+        accessibilityRole="button"
+        accessibilityLabel="Voltar ao início"
+        style={[styles.backButton, { backgroundColor: palette.panel }]}
+      >
+        <BackArrow color={palette.ink} />
+      </Pressable>
       <View style={styles.status}>
         <StatusLine status={status} palette={palette} />
       </View>
@@ -33,6 +45,18 @@ export default function BoardHud({ status, canUndo, palette, onUndo, onReset, on
         <HudButton label="Dica" palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
       </View>
     </View>
+  );
+}
+
+// A plain left arrow rather than a label, matching DigiSpin's board-screen
+// back button (its ControlIcon "back" glyph) — icon-only so it reads as
+// "leave the board" at a glance instead of competing with the text labels on
+// Desfazer/Reiniciar/Dica.
+function BackArrow({ color }: { readonly color: string }) {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M19 12 H6 M11 7 L6 12 L11 17" />
+    </Svg>
   );
 }
 
@@ -89,6 +113,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
+  },
+  backButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   status: {
     flex: 1,
