@@ -95,6 +95,41 @@ test('tapping a hinted tile reports its cell', async () => {
   expect(onPressTile).toHaveBeenCalledWith(1, 0);
 });
 
+test('falls back to a 100% width when none is given', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  const flat = [screen.getByTestId('board').props.style].flat();
+  expect(flat.some((s) => s?.width === '100%')).toBe(true);
+});
+
+test('uses an explicit width when one is given, capping the board (CANGUPA-33)', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      width={120}
+    />,
+  );
+
+  const flat = [screen.getByTestId('board').props.style].flat();
+  expect(flat.some((s) => s?.width === 120)).toBe(true);
+});
+
 test('a tile that is not a legal destination is not pressable', async () => {
   // A 1x3 row with a gap in the middle and jumps off: x=2 is out of reach.
   const g = new Game(['S.1'], { jumps: false });

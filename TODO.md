@@ -58,9 +58,3 @@ The priority can change at any time; the ID never does.
   `CANGUPA-29`'s home-screen button becomes its only entry point. Blocked
   on `CANGUPA-30`: the Stats tab has nowhere to go until that screen
   exists.
-- [P2] `CANGUPA-33` — Similarly to DigiSpin, shrink the board when the
-  screen is wider than it is tall (landscape), so it fits inside the
-  screen instead of overflowing.
-  [Board.tsx](apps/app/src/components/Board.tsx) currently sizes itself
-  purely off container width (`width: '100%'` plus `aspectRatio: w / h`),
-  with nothing capping it by the available height.

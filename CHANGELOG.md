@@ -34,6 +34,10 @@ Open work is listed in [TODO.md](TODO.md).
 - The "Cangupa" title above every screen no longer shows on the board
   screen, so it doesn't compete with the new corner controls; it still
   shows on the home, levels, settings and rules screens.
+- On the board screen, when the device or window is wider than it is
+  tall (landscape), the board now shrinks to fit within the screen
+  instead of overflowing past the bottom. Portrait is unchanged — the
+  board still fills the width and sits at the top.
 
 ### Removed
 

@@ -192,6 +192,41 @@ three buttons sitting top-right, the win popup appearing on clearing a
 level with a working close button, and the board and controls staying
 usable after closing it.
 
+Era 6 closes here: Nov 2, 1 commit, CANGUPA-32 — the board screen's HUD
+moved into a corner, with its old toolbar and inline next-level button
+gone.
+
+## Era 7 — Nov 2 (continued): the board shrinks to fit landscape
+
+CANGUPA-33 fixes the board overflowing vertically on a wide/short
+(landscape) window, similarly to DigiSpin: `Board.tsx` had sized itself
+purely off container width (`width: '100%'` plus `aspectRatio: w/h`),
+with nothing capping it by the available height. A new
+`boardLayout.ts` exposes a pure `fitBoardWidth(w, h, maxWidth, maxHeight)`
+helper that caps the board's width by whichever of width or height,
+converted through the board's own aspect ratio, is the tighter fit.
+`Board.tsx` gained an optional `width` prop overriding its old
+`width: '100%'` (omitted, behaviour is unchanged). `PlayableBoard.tsx`
+takes optional `maxWidth`/`maxHeight` props — the space on screen
+available for the whole board component — subtracts its frame's own
+padding, and feeds the result to `fitBoardWidth` before passing a width
+down to `Board`; the padded frame around the board only shrinks and
+centers itself once that capped width is actually known, so there is no
+change before the first layout measurement or in the normal,
+width-constrained (portrait) case. `BoardScreen.tsx` now measures its own
+available size via `onLayout`, which needed `flex: 1` threaded up through
+its wrapper so the measurement reflects the real space available rather
+than content height, and passes it down as `maxWidth`/`maxHeight`.
+
+One commit. `boardLayout.test.ts` is new, with width/cap assertions also
+added to `Board.test.tsx` and `PlayableBoard.test.tsx`. Verified with the
+full Jest suite (217 tests across 20 suites) and `tsc --noEmit`, both
+passing, plus a manual check in a running Expo web dev server via
+throwaway Playwright scripts: a landscape viewport (844x390) shows the
+board capped and centered well within the viewport height, and a
+portrait viewport (390x844) screenshot is pixel-for-pixel unchanged from
+before this change.
+
 ---
 
 ## Patterns, and what's still open

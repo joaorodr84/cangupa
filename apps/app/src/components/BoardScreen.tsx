@@ -67,11 +67,30 @@ export default function BoardScreen({
     }
   }, [status.kind]);
 
+  // The space left for the board once BoardHud has taken its own height
+  // (CANGUPA-33) — measured rather than computed from constants, since it
+  // already varies with the safe-area insets and with which HUD lines are
+  // showing. Zero until the first layout, which PlayableBoard treats as
+  // "not yet known" and falls back to width:'100%' for.
+  const [boardArea, setBoardArea] = useState({ width: 0, height: 0 });
+
   return (
     <View style={styles.wrap}>
       <BoardHud status={status} canUndo={canUndo} palette={palette} onUndo={undo} onReset={reset} onHint={hint} />
-      <View style={styles.boardArea}>
-        <PlayableBoard board={board} anim={anim} palette={palette} />
+      <View
+        style={styles.boardArea}
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout;
+          setBoardArea({ width, height });
+        }}
+      >
+        <PlayableBoard
+          board={board}
+          anim={anim}
+          palette={palette}
+          maxWidth={boardArea.width}
+          maxHeight={boardArea.height}
+        />
         {status.kind === 'won' && !popupClosed && (
           <WinPopup
             moves={status.moves}
@@ -87,10 +106,22 @@ export default function BoardScreen({
 }
 
 const styles = StyleSheet.create({
+  // flex: 1 so boardArea below gets whatever vertical room the screen
+  // actually has to give it, rather than only ever being as tall as the
+  // board wants to be — the signal fitBoardWidth needs to cap a landscape
+  // board by height instead of overflowing it (CANGUPA-33).
   wrap: {
+    flex: 1,
     gap: 14,
   },
+  // No alignItems/justifyContent override here: both stay their defaults
+  // ('stretch' and 'flex-start'), so the frame fills the full width and
+  // sits at the top exactly as it always did — flex:1 only exists so this
+  // view's own measured height is the real space available, not its
+  // content's height, which is what fitBoardWidth needs to cap a landscape
+  // board by height instead of overflowing it (CANGUPA-33).
   boardArea: {
+    flex: 1,
     position: 'relative',
   },
 });

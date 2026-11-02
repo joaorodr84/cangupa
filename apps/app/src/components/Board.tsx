@@ -26,6 +26,11 @@ interface BoardProps {
   readonly flip: boolean;
   readonly palette: Palette;
   readonly anim: boolean;
+  // Caps the board at this many px wide (CANGUPA-33), overriding the default
+  // width:'100%' — set by PlayableBoard once it knows the height available
+  // isn't the looser constraint. Omitted: falls back to 100% of the
+  // container, as before.
+  readonly width?: number;
   // Tapping a highlighted tile calls this with its cell. Tiles that are not
   // a legal destination (tile.hint false) are not pressable at all, the same
   // way ui.js's click handler only ever resolves a move among legalMoves().
@@ -40,7 +45,7 @@ export interface BoardHandle {
 }
 
 const Board = forwardRef<BoardHandle, BoardProps>(function Board(
-  { w, h, tiles, rooX, rooY, face, flip, palette, anim, onPressTile }: BoardProps,
+  { w, h, tiles, rooX, rooY, face, flip, palette, anim, width, onPressTile }: BoardProps,
   ref,
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
@@ -72,7 +77,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 
   return (
     <View
-      style={[styles.board, { aspectRatio: w / h, backgroundColor: palette.pit }]}
+      style={[styles.board, { aspectRatio: w / h, backgroundColor: palette.pit }, width !== undefined && { width }]}
       testID="board"
     >
       {tiles.map((tile) => (
