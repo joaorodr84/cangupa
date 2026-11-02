@@ -2,9 +2,19 @@
 // property blocks. Colour values are copied as-is; CSS custom properties
 // with no React Native equivalent (gradients, box-shadows) are approximated
 // in the board screen that consumes this palette, not here.
+//
+// ThemeMode/SystemScheme (CANGUPA-40) come from the shared @joaorodr84/themes
+// package, the same mode-resolution types DigiSpin uses (DIGISPIN-194), so
+// both apps agree on what 'system'/'light'/'dark' and a device's reported
+// scheme mean. The package's own DARK/LIGHT/paletteFor are DigiSpin's own
+// shape (surface/text tokens for a well-and-tray board) and do not fit this
+// game's gradient-background, tile-based board, so Palette, DARK, LIGHT and
+// paletteFor below stay local, built the same way DigiSpin's package builds
+// its own two sets.
 import { type ImageSourcePropType } from 'react-native';
+import { type SystemScheme, type ThemeMode } from '@joaorodr84/themes';
 
-import { type Theme } from '../state/settings';
+export type { SystemScheme, ThemeMode };
 
 // cangupa-logo-{light,dark}-vertical from assets/png at the repo root
 // (TILE-JUMPER-7), re-exported here cropped tight to its content — the
@@ -42,7 +52,7 @@ export interface Palette {
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
-  // The starfield dots drawn over the page background (space only).
+  // The starfield dots drawn over the page background (dark only).
   readonly stars: readonly Star[];
   // The home screen's logo (CANGUPA-34), picked for contrast against bg1/bg2.
   readonly logo: ImageSourcePropType;
@@ -62,89 +72,51 @@ const STARFIELD: readonly Star[] = [
   { xPct: 22, yPct: 44, size: 1.6, color: '#fff' },
 ];
 
-// style.css's `:root` defaults, used by any theme that does not override them.
-const DEFAULT_INK = '#f4ecdf';
-const DEFAULT_MUTED = '#b9a98f';
-const DEFAULT_PANEL = 'rgba(255,255,255,.06)';
-
-export const PALETTES: Readonly<Record<Theme, Palette>> = {
-  cosmos: {
-    bg1: '#1b1546',
-    bg2: '#07051a',
-    frame: '#120e33',
-    pit: '#0a0722',
-    tile: '#4cc9f0',
-    tile2: '#ffc857',
-    edge: '#1f7a99',
-    edge2: '#a8741a',
-    ink: DEFAULT_INK,
-    muted: DEFAULT_MUTED,
-    panel: DEFAULT_PANEL,
-    stars: [],
-    logo: LOGO_DARK,
-  },
-  space: {
-    bg1: '#0b0b2a',
-    bg2: '#02020c',
-    frame: 'rgba(8,8,32,.55)',
-    pit: 'transparent',
-    tile: '#2fbf5a',
-    tile2: '#b9e63a',
-    edge: '#13702f',
-    edge2: '#6f8f12',
-    ink: DEFAULT_INK,
-    muted: DEFAULT_MUTED,
-    panel: DEFAULT_PANEL,
-    stars: STARFIELD,
-    logo: LOGO_DARK,
-  },
-  sand: {
-    bg1: '#e9d8b4',
-    bg2: '#c9a96e',
-    frame: '#8a6a3b',
-    pit: '#6d522d',
-    tile: '#e07a5f',
-    tile2: '#f2cc8f',
-    edge: '#a2503a',
-    edge2: '#b98a3e',
-    ink: '#2b2013',
-    muted: '#6a5638',
-    panel: 'rgba(0,0,0,.07)',
-    stars: [],
-    logo: LOGO_LIGHT,
-  },
-  ice: {
-    bg1: '#e8f1f8',
-    bg2: '#b8cfe3',
-    frame: '#7d9bb8',
-    pit: '#587592',
-    tile: '#ffffff',
-    tile2: '#9ad1f5',
-    edge: '#9db4c9',
-    edge2: '#4f8fbd',
-    ink: '#1c2a3a',
-    muted: '#52667c',
-    panel: 'rgba(0,0,0,.06)',
-    stars: [],
-    logo: LOGO_LIGHT,
-  },
-  classic: {
-    bg1: '#1d4d36',
-    bg2: '#0e2a1c',
-    frame: '#3b2a1a',
-    pit: '#1a110a',
-    tile: '#8fce6a',
-    tile2: '#f0c24a',
-    edge: '#4c8a34',
-    edge2: '#a37d17',
-    ink: DEFAULT_INK,
-    muted: DEFAULT_MUTED,
-    panel: DEFAULT_PANEL,
-    stars: [],
-    logo: LOGO_DARK,
-  },
+// The two surfaces left after CANGUPA-40 dropped the other three decorative
+// skins (space, sand, classic) in favour of a plain light/dark/system
+// choice, matching DigiSpin's own appearance setting. DARK carries over the
+// former "cosmos" skin's colours (the game's previous default look, so a
+// player who never opens Settings sees the same thing as before on a dark
+// or unknown device) plus "space"'s starfield, now dark mode's distinguishing
+// flourish rather than a fifth skin. LIGHT carries over "ice"'s colours.
+export const DARK: Palette = {
+  bg1: '#1b1546',
+  bg2: '#07051a',
+  frame: '#120e33',
+  pit: '#0a0722',
+  tile: '#4cc9f0',
+  tile2: '#ffc857',
+  edge: '#1f7a99',
+  edge2: '#a8741a',
+  ink: '#f4ecdf',
+  muted: '#b9a98f',
+  panel: 'rgba(255,255,255,.06)',
+  stars: STARFIELD,
+  logo: LOGO_DARK,
 };
 
-export function paletteFor(theme: Theme): Palette {
-  return PALETTES[theme];
+export const LIGHT: Palette = {
+  bg1: '#e8f1f8',
+  bg2: '#b8cfe3',
+  frame: '#7d9bb8',
+  pit: '#587592',
+  tile: '#ffffff',
+  tile2: '#9ad1f5',
+  edge: '#9db4c9',
+  edge2: '#4f8fbd',
+  ink: '#1c2a3a',
+  muted: '#52667c',
+  panel: 'rgba(0,0,0,.06)',
+  stars: [],
+  logo: LOGO_LIGHT,
+};
+
+// The palette for a mode, resolved against the device's own appearance when
+// the mode is 'system' — the same resolution DigiSpin's shared package
+// implements for its own palette. An unknown or unreported device scheme
+// (`'unspecified'`/`null`/`undefined`) gets DARK: a dark default cannot be
+// worse than a light one on a device that won't say.
+export function paletteFor(mode: ThemeMode, system: SystemScheme): Palette {
+  const resolved = mode === 'system' ? system : mode;
+  return resolved === 'light' ? LIGHT : DARK;
 }

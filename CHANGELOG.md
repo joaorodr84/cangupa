@@ -79,6 +79,13 @@ Open work is listed in [TODO.md](TODO.md).
   "Tema" and "Jogabilidade" section headings, instead of a loose stack of
   a theme chip row and separate toggle rows. Each theme choice is now its
   own row with a trailing selection mark instead of a small rounded chip.
+- The settings screen's theme picker no longer offers five decorative
+  skins; it's now a plain choice of "Seguir o dispositivo"/"Follow the
+  device", "Claro"/"Light" or "Escuro"/"Dark". Following the device makes
+  the app match the phone or tablet's own light/dark setting. Anyone who
+  had picked one of the old skins will find their choice reset to
+  "Seguir o dispositivo" the next time they open the app; their other
+  settings, progress and best move counts are unaffected.
 
 ### Removed
 

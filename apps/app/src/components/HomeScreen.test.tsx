@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import HomeScreen from './HomeScreen';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
 function noop() {
   /* not under test */
@@ -9,7 +9,7 @@ function noop() {
 
 test('shows the level Play is about to open', async () => {
   await render(
-    <HomeScreen palette={paletteFor('cosmos')} levelNumber={7} onPlay={noop} onRules={noop} />,
+    <HomeScreen palette={DARK} levelNumber={7} onPlay={noop} onRules={noop} />,
   );
 
   expect(screen.getByText('Level 7')).toBeTruthy();
@@ -18,7 +18,7 @@ test('shows the level Play is about to open', async () => {
 test('pressing Play fires onPlay', async () => {
   const onPlay = jest.fn();
   await render(
-    <HomeScreen palette={paletteFor('cosmos')} levelNumber={1} onPlay={onPlay} onRules={noop} />,
+    <HomeScreen palette={DARK} levelNumber={1} onPlay={onPlay} onRules={noop} />,
   );
 
   await fireEvent.press(screen.getByText('Play'));
@@ -29,7 +29,7 @@ test('pressing Play fires onPlay', async () => {
 test('pressing Rules fires onRules', async () => {
   const onRules = jest.fn();
   await render(
-    <HomeScreen palette={paletteFor('cosmos')} levelNumber={1} onPlay={noop} onRules={onRules} />,
+    <HomeScreen palette={DARK} levelNumber={1} onPlay={noop} onRules={onRules} />,
   );
 
   await fireEvent.press(screen.getByText('Rules'));

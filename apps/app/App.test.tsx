@@ -67,14 +67,14 @@ test('the home screen\'s Rules button opens the rules screen, and Back returns t
   expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
 });
 
-test('the footer nav opens the settings screen, and changing the theme is reflected on return', async () => {
+test('the footer nav opens the settings screen, and changing the theme mode is reflected on return', async () => {
   await render(<App />);
 
   await fireEvent.press(await screen.findByTestId('footer-settings'));
-  await fireEvent.press(screen.getByTestId('theme-ice'));
+  await fireEvent.press(screen.getByTestId('theme-mode-dark'));
 
   const saved = await AsyncStorage.getItem(SETTINGS_KEY);
-  expect(JSON.parse(saved ?? '{}').theme).toBe('ice');
+  expect(JSON.parse(saved ?? '{}').themeMode).toBe('dark');
 });
 
 test('changing the language is reflected at once and saved', async () => {
@@ -130,11 +130,11 @@ test('the board screen has no footer nav of its own', async () => {
   expect(screen.queryByTestId('footer-settings')).toBeNull();
 });
 
-test('shows the starfield for the space theme and not for the default theme', async () => {
+test('shows the starfield for the dark theme and not for the default (light, in this test environment)', async () => {
   await render(<App />);
   expect(screen.queryByTestId('starfield')).toBeNull();
 
-  await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, theme: 'space' }));
+  await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, themeMode: 'dark' }));
   await render(<App />);
   expect(await screen.findByTestId('starfield')).toBeTruthy();
 });

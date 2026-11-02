@@ -59,14 +59,9 @@ export const pt: Strings = {
   },
   settings: {
     heading: 'Definições',
-    themeLabels: {
-      cosmos: 'Cosmos',
-      space: 'Espaço (verde)',
-      sand: 'Areia',
-      ice: 'Gelo',
-      classic: 'Clássico',
-    },
-    theme: 'Tema',
+    appearance: 'Aparência',
+    light: 'Claro',
+    dark: 'Escuro',
     gameplay: 'Jogabilidade',
     jumps: 'Saltos de duas casas',
     hints: 'Destacar jogadas possíveis',

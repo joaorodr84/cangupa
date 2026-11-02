@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react-native';
 
 import StatsScreen from './StatsScreen';
 import { NO_PROGRESS, type Progress } from '../state/progress';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 test('shows the empty state when nothing is cleared yet', async () => {
   await render(<StatsScreen totalLevels={50} progress={NO_PROGRESS} palette={palette} />);

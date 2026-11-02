@@ -14,8 +14,8 @@ import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 're
 
 import { LOCALES, type LanguageSetting, type Locale } from '../i18n/locale';
 import { useStrings } from '../i18n/useStrings';
-import { type Settings, THEMES, type Theme } from '../state/settings';
-import { type Palette } from '../theme/palette';
+import { type Settings } from '../state/settings';
+import { type Palette, type ThemeMode } from '../theme/palette';
 
 const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = {
   en: 'English',
@@ -25,7 +25,7 @@ const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = {
 interface SettingsScreenProps {
   readonly settings: Settings;
   readonly palette: Palette;
-  readonly onChangeTheme: (theme: Theme) => void;
+  readonly onChangeThemeMode: (themeMode: ThemeMode) => void;
   readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
@@ -36,7 +36,7 @@ interface SettingsScreenProps {
 export default function SettingsScreen({
   settings,
   palette,
-  onChangeTheme,
+  onChangeThemeMode,
   onChangeJumps,
   onChangeHints,
   onChangeAnim,
@@ -46,6 +46,14 @@ export default function SettingsScreen({
   const t = useStrings();
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
+
+  // 'system' first, as the default and the choice most players want
+  // (DigiSpin's SettingsScreen.tsx lists its own equivalent the same way).
+  const themeChoices: readonly { readonly mode: ThemeMode; readonly label: string }[] = [
+    { mode: 'system', label: t.settings.followDevice },
+    { mode: 'light', label: t.settings.light },
+    { mode: 'dark', label: t.settings.dark },
+  ];
 
   const languageChoices: readonly { readonly language: LanguageSetting; readonly label: string }[] = [
     { language: 'system', label: t.settings.followDevice },
@@ -63,20 +71,20 @@ export default function SettingsScreen({
     <ScrollView contentContainerStyle={styles.wrap}>
       <Text style={[styles.heading, ink]}>{t.settings.heading}</Text>
 
-      <Text style={[styles.sectionLabel, muted]}>{t.settings.theme}</Text>
-      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.theme}>
-        {THEMES.map((theme) => {
-          const selected = theme === settings.theme;
+      <Text style={[styles.sectionLabel, muted]}>{t.settings.appearance}</Text>
+      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
+        {themeChoices.map((choice) => {
+          const selected = choice.mode === settings.themeMode;
           return (
             <Pressable
-              key={theme}
-              testID={`theme-${theme}`}
-              onPress={() => onChangeTheme(theme)}
+              key={choice.mode}
+              testID={`theme-mode-${choice.mode}`}
+              onPress={() => onChangeThemeMode(choice.mode)}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
               style={[styles.row, { backgroundColor: palette.panel }, selected && styles.rowSelected]}
             >
-              <Text style={ink}>{t.settings.themeLabels[theme]}</Text>
+              <Text style={ink}>{choice.label}</Text>
               <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
             </Pressable>
           );

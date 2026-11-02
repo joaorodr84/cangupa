@@ -4,9 +4,9 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import Board, { type BoardHandle } from './Board';
 import { Game } from '../game/board';
 import { tilesOf } from '../game/boardView';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 test('renders one tile view per existing cell', async () => {
   const g = new Game(['S1.']);

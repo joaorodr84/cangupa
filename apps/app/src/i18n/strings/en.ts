@@ -62,14 +62,9 @@ export const en: Strings = {
   },
   settings: {
     heading: 'Settings',
-    themeLabels: {
-      cosmos: 'Cosmos',
-      space: 'Space (green)',
-      sand: 'Sand',
-      ice: 'Ice',
-      classic: 'Classic',
-    },
-    theme: 'Theme',
+    appearance: 'Appearance',
+    light: 'Light',
+    dark: 'Dark',
     gameplay: 'Gameplay',
     jumps: 'Two-tile jumps',
     hints: 'Highlight possible moves',

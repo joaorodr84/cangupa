@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import LevelsScreen from './LevelsScreen';
 import { NO_PROGRESS, type Progress } from '../state/progress';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 test('renders one button per level', async () => {
   await render(

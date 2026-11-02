@@ -3,9 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import PlayableBoard from './PlayableBoard';
 import { type Level, type Rules } from '../game/board';
 import { useBoard } from '../game/useBoard';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 // PlayableBoard takes an already-constructed useBoard result (so a screen
 // can share one Game with its HUD, see BoardScreen.tsx) — this harness is

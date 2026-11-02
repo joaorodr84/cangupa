@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import BoardScreen from './BoardScreen';
 import { type Level, type Rules } from '../game/board';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 function noop() {
   /* not under test */

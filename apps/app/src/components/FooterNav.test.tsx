@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import FooterNav from './FooterNav';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 test('renders all four tabs, labelled for accessibility rather than as visible text', async () => {
   await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} />);

@@ -1,23 +1,35 @@
 import { contrastRatio } from '@joaorodr84/themes';
 
-import { PALETTES, paletteFor, STARFIELD_TILE_SIZE } from './palette';
-import { THEMES } from '../state/settings';
+import { DARK, LIGHT, paletteFor, STARFIELD_TILE_SIZE } from './palette';
 
-test('every theme has a palette', () => {
-  for (const theme of THEMES) {
-    expect(paletteFor(theme)).toBe(PALETTES[theme]);
-  }
+// Generic mode-resolution behaviour (ThemeMode/SystemScheme's meaning) is
+// shared with DigiSpin via the @joaorodr84/themes package (CANGUPA-40); this
+// only checks this app's own resolution against its own two palettes.
+describe('paletteFor', () => {
+  it('resolves an explicit light or dark mode regardless of the device', () => {
+    expect(paletteFor('light', 'dark')).toBe(LIGHT);
+    expect(paletteFor('dark', 'light')).toBe(DARK);
+  });
+
+  it("follows the device's scheme when the mode is 'system'", () => {
+    expect(paletteFor('system', 'light')).toBe(LIGHT);
+    expect(paletteFor('system', 'dark')).toBe(DARK);
+  });
+
+  it('defaults to dark for system mode on a device that reports no scheme', () => {
+    expect(paletteFor('system', 'unspecified')).toBe(DARK);
+    expect(paletteFor('system', null)).toBe(DARK);
+    expect(paletteFor('system', undefined)).toBe(DARK);
+  });
 });
 
-test('only the space theme has a starfield', () => {
-  for (const theme of THEMES) {
-    const hasStars = paletteFor(theme).stars.length > 0;
-    expect(hasStars).toBe(theme === 'space');
-  }
+test('only dark has a starfield', () => {
+  expect(DARK.stars.length).toBeGreaterThan(0);
+  expect(LIGHT.stars).toHaveLength(0);
 });
 
 test('the starfield has 8 dots, each inside the board', () => {
-  const { stars } = paletteFor('space');
+  const { stars } = DARK;
   expect(stars).toHaveLength(8);
   for (const star of stars) {
     expect(star.xPct).toBeGreaterThanOrEqual(0);
@@ -32,13 +44,8 @@ test('the starfield tiles at 260px, matching style.css', () => {
   expect(STARFIELD_TILE_SIZE).toBe(260);
 });
 
-test("the sand and ice themes use a dark ink on their light backgrounds", () => {
-  expect(paletteFor('sand').ink).toBe('#2b2013');
-  expect(paletteFor('ice').ink).toBe('#1c2a3a');
-});
-
-test('the space theme has a transparent pit, so the starfield behind it shows through', () => {
-  expect(paletteFor('space').pit).toBe('transparent');
+test('light uses a dark ink on its light background', () => {
+  expect(LIGHT.ink).toBe('#1c2a3a');
 });
 
 // ink is the primary text colour everywhere it appears, so it is held to
@@ -48,9 +55,9 @@ test('the space theme has a transparent pit, so the starfield behind it shows th
 // gradient it sits on. contrastRatio itself comes from the shared
 // @joaorodr84/themes package (CANGUPA-39), which also covers its own tests.
 describe('text colours stay readable against the background gradient', () => {
-  for (const theme of THEMES) {
-    describe(theme, () => {
-      const { bg1, bg2, ink, muted } = paletteFor(theme);
+  for (const [name, palette] of Object.entries({ dark: DARK, light: LIGHT })) {
+    describe(name, () => {
+      const { bg1, bg2, ink, muted } = palette;
 
       it('ink clears 4.5:1 against both ends of the gradient', () => {
         expect(contrastRatio(ink, bg1)).toBeGreaterThanOrEqual(4.5);

@@ -443,6 +443,34 @@ secondary colour) against both ends of that theme's background gradient.
 One commit. Verified with `npx tsc --noEmit` and the full Jest suite,
 green at 261 tests.
 
+## Era 16 — Nov 2 (continued): five skins become light, dark, and system
+
+CANGUPA-40 replaces the five decorative skins (cosmos/space/sand/ice/classic)
+with a plain light/dark/system appearance setting, matching DigiSpin's own
+`themeMode`/`useColorScheme` pattern. `@joaorodr84/themes` is bumped to
+`^2.0.0` first (owner-requested); its own `DARK`/`LIGHT`/`paletteFor` are
+DigiSpin's own well-and-tray shape and don't fit cangupa's gradient-background
+tile board, so only its `ThemeMode`/`SystemScheme` types are reused —
+`theme/palette.ts` keeps a local `Palette` shape with its own `DARK` (cosmos's
+colours plus space's starfield, so the previous default look is unchanged on a
+dark or unreported device) and `LIGHT` (ice's colours), plus a local
+`paletteFor(mode, system)`. `Settings.theme` becomes `Settings.themeMode`
+(`'system' | 'light' | 'dark'`, default `'system'`) — a record saved before
+this change has `theme`, not `themeMode`, so it falls through the existing
+missing-field fallback to the new default rather than needing explicit
+migration code; `jumps`/`hints`/`anim`/`language` are unaffected.
+`SettingsScreen.tsx`'s theme picker now lists Follow the device/Light/Dark,
+and `App.tsx` resolves the palette via
+`paletteFor(settings.themeMode, useColorScheme())`, switching the status bar
+style on it. Before removing the old skins, `develop`'s pre-change tip was
+archived as `archive-five-skin-themes-pre-cangupa-40` and pushed to the
+remote (owner-requested). This is a breaking change to the saved settings
+shape: a previously-chosen skin is lost and the theme resets to 'system' on
+upgrade, though other settings and progress are untouched.
+
+One commit. Verified with `npx tsc --noEmit` clean and the full Jest suite
+green, 258 tests.
+
 ---
 
 ## Patterns, and what's still open

@@ -1,5 +1,5 @@
 // Ported from style.css's `body::before { background: var(--stars); }`:
-// the page-wide starfield behind everything, used by the space theme only
+// the page-wide starfield behind everything, used by the dark theme only
 // (see theme/palette.ts). Found missing in the CANGUPA-24 parity pass — the
 // star data was ported in CANGUPA-15 but nothing ever rendered it.
 import { Dimensions, StyleSheet, View } from 'react-native';

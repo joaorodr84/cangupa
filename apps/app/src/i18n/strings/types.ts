@@ -1,5 +1,3 @@
-import { type Theme } from '../../state/settings';
-
 // Every user-facing string in Cangupa (CANGUPA-38), grouped by the screen or
 // module that owns it. A templated string is a function instead of a plain
 // one, so each locale can order its words, and pluralise, however its own
@@ -60,8 +58,11 @@ export interface Strings {
   };
   readonly settings: {
     readonly heading: string;
-    readonly themeLabels: Readonly<Record<Theme, string>>;
-    readonly theme: string;
+    // The light/dark/system choice (CANGUPA-40), matching DigiSpin's own
+    // naming for the same three-way appearance setting.
+    readonly appearance: string;
+    readonly light: string;
+    readonly dark: string;
     readonly gameplay: string;
     readonly jumps: string;
     readonly hints: string;

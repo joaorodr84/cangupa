@@ -3,15 +3,15 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import SettingsScreen from './SettingsScreen';
 import { DEFAULT_SETTINGS } from '../state/settings';
-import { paletteFor } from '../theme/palette';
+import { DARK } from '../theme/palette';
 
-const palette = paletteFor('cosmos');
+const palette = DARK;
 
 function renderScreen(overrides: Partial<Parameters<typeof SettingsScreen>[0]> = {}) {
   const props = {
     settings: DEFAULT_SETTINGS,
     palette,
-    onChangeTheme: jest.fn(),
+    onChangeThemeMode: jest.fn(),
     onChangeJumps: jest.fn(),
     onChangeHints: jest.fn(),
     onChangeAnim: jest.fn(),
@@ -22,13 +22,20 @@ function renderScreen(overrides: Partial<Parameters<typeof SettingsScreen>[0]> =
   return { props, result: render(<SettingsScreen {...props} />) };
 }
 
-test('tapping a theme chip reports it', async () => {
-  const onChangeTheme = jest.fn();
-  const { result } = renderScreen({ onChangeTheme });
+test('tapping a theme mode chip reports it', async () => {
+  const onChangeThemeMode = jest.fn();
+  const { result } = renderScreen({ onChangeThemeMode });
   await result;
 
-  await fireEvent.press(screen.getByTestId('theme-ice'));
-  expect(onChangeTheme).toHaveBeenCalledWith('ice');
+  await fireEvent.press(screen.getByTestId('theme-mode-light'));
+  expect(onChangeThemeMode).toHaveBeenCalledWith('light');
+});
+
+test('marks the current theme mode choice as selected', async () => {
+  await renderScreen({ settings: { ...DEFAULT_SETTINGS, themeMode: 'dark' } }).result;
+
+  expect(screen.getByTestId('theme-mode-dark').props.accessibilityState).toEqual({ checked: true });
+  expect(screen.getByTestId('theme-mode-system').props.accessibilityState).toEqual({ checked: false });
 });
 
 test('toggling a switch reports its new value', async () => {

@@ -1,17 +1,27 @@
 import { CORRUPT_RECORDS, memoryStorage } from './storage.testUtil';
-import { DEFAULT_SETTINGS, loadSettings, parseSettings, saveSettings, SETTINGS_KEY, THEMES } from './settings';
+import { DEFAULT_SETTINGS, loadSettings, parseSettings, saveSettings, SETTINGS_KEY } from './settings';
+
+const THEME_MODES = ['system', 'light', 'dark'] as const;
 
 describe('parseSettings', () => {
   it('uses the defaults when nothing is saved', () => {
     expect(parseSettings(null)).toEqual(DEFAULT_SETTINGS);
   });
 
-  it('reads a saved theme', () => {
-    expect(parseSettings('{"theme":"ice"}')).toEqual({ ...DEFAULT_SETTINGS, theme: 'ice' });
+  it.each(THEME_MODES)('reads a saved %s theme mode', (themeMode) => {
+    expect(parseSettings(`{"themeMode":"${themeMode}"}`)).toEqual({ ...DEFAULT_SETTINGS, themeMode });
   });
 
-  it('falls back to the default theme for one it does not know, e.g. a renamed theme', () => {
-    expect(parseSettings('{"theme":"retro"}')).toEqual(DEFAULT_SETTINGS);
+  it('falls back to the default theme mode for one it does not know, e.g. a later mode this build predates', () => {
+    expect(parseSettings('{"themeMode":"retro"}')).toEqual(DEFAULT_SETTINGS);
+  });
+
+  // CANGUPA-40 replaced the five decorative skins with themeMode. A record
+  // saved before that change has `theme`, not `themeMode`, so it falls into
+  // the same missing-field case as any other upgrade and resolves to the new
+  // default ('system') rather than needing an explicit migration.
+  it('falls back to the default theme mode for a pre-CANGUPA-40 record, which has `theme` instead', () => {
+    expect(parseSettings('{"theme":"ice"}')).toEqual(DEFAULT_SETTINGS);
   });
 
   it.each(['jumps', 'hints', 'anim'] as const)('reads a saved %s toggle', (key) => {
@@ -23,7 +33,7 @@ describe('parseSettings', () => {
   });
 
   it('ignores fields it does not know, so a record from a later version still reads', () => {
-    expect(parseSettings('{"theme":"sand","sound":false}')).toEqual({ ...DEFAULT_SETTINGS, theme: 'sand' });
+    expect(parseSettings('{"themeMode":"light","sound":false}')).toEqual({ ...DEFAULT_SETTINGS, themeMode: 'light' });
   });
 
   it.each(CORRUPT_RECORDS)('reads %s as the defaults', (_name, raw) => {
@@ -42,7 +52,7 @@ describe('parseSettings', () => {
 describe('saving and loading', () => {
   it('round-trips every setting through the store', async () => {
     const storage = memoryStorage();
-    const settings = { theme: 'space' as const, jumps: false, hints: false, anim: false, language: 'pt' as const };
+    const settings = { themeMode: 'dark' as const, jumps: false, hints: false, anim: false, language: 'pt' as const };
 
     await saveSettings(storage, settings);
 
@@ -55,7 +65,7 @@ describe('saving and loading', () => {
     await saveSettings(storage, DEFAULT_SETTINGS);
 
     expect(await storage.getItem(SETTINGS_KEY)).toBe(
-      '{"theme":"cosmos","jumps":true,"hints":true,"anim":true,"language":"system"}',
+      '{"themeMode":"system","jumps":true,"hints":true,"anim":true,"language":"system"}',
     );
   });
 
@@ -63,10 +73,10 @@ describe('saving and loading', () => {
     expect(await loadSettings(memoryStorage())).toEqual(DEFAULT_SETTINGS);
   });
 
-  it.each(THEMES)('keeps the %s theme', async (theme) => {
+  it.each(THEME_MODES)('keeps the %s theme mode', async (themeMode) => {
     const storage = memoryStorage();
-    await saveSettings(storage, { ...DEFAULT_SETTINGS, theme });
+    await saveSettings(storage, { ...DEFAULT_SETTINGS, themeMode });
 
-    expect((await loadSettings(storage)).theme).toBe(theme);
+    expect((await loadSettings(storage)).themeMode).toBe(themeMode);
   });
 });

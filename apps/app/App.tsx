@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
@@ -16,10 +16,10 @@ import { LanguageContext } from './src/i18n/LanguageContext';
 import { type LanguageSetting } from './src/i18n/locale';
 import { useStrings } from './src/i18n/useStrings';
 import { isDone, type Progress } from './src/state/progress';
-import { type Settings, type Theme } from './src/state/settings';
+import { type Settings } from './src/state/settings';
 import { useProgress } from './src/state/useProgress';
 import { useSettings } from './src/state/useSettings';
-import { paletteFor } from './src/theme/palette';
+import { DARK, paletteFor, type ThemeMode } from './src/theme/palette';
 
 type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
 
@@ -35,7 +35,7 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
-  const { settings, setTheme, setJumps, setHints, setAnim, setLanguage } = useSettings();
+  const { settings, setThemeMode, setJumps, setHints, setAnim, setLanguage } = useSettings();
   const { progress, recordDone, recordLevel, clearProgress } = useProgress();
 
   if (!settings || !progress) {
@@ -47,7 +47,7 @@ export default function App() {
       <LanguageContext.Provider value={settings.language}>
         <Shell
           settings={settings}
-          onChangeTheme={setTheme}
+          onChangeThemeMode={setThemeMode}
           onChangeJumps={setJumps}
           onChangeHints={setHints}
           onChangeAnim={setAnim}
@@ -64,7 +64,7 @@ export default function App() {
 
 interface ShellProps {
   readonly settings: Settings;
-  readonly onChangeTheme: (theme: Theme) => void;
+  readonly onChangeThemeMode: (themeMode: ThemeMode) => void;
   readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
@@ -77,7 +77,7 @@ interface ShellProps {
 
 function Shell({
   settings,
-  onChangeTheme,
+  onChangeThemeMode,
   onChangeJumps,
   onChangeHints,
   onChangeAnim,
@@ -90,7 +90,7 @@ function Shell({
   const insets = useSafeAreaInsets();
   const t = useStrings();
   const [panel, setPanel] = useState<Panel>('home');
-  const palette = paletteFor(settings.theme);
+  const palette = paletteFor(settings.themeMode, useColorScheme());
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
 
   const goToLevel = (levelIndex: number) => {
@@ -127,7 +127,7 @@ function Shell({
       <SettingsScreen
         settings={settings}
         palette={palette}
-        onChangeTheme={onChangeTheme}
+        onChangeThemeMode={onChangeThemeMode}
         onChangeJumps={onChangeJumps}
         onChangeHints={onChangeHints}
         onChangeAnim={onChangeAnim}
@@ -178,7 +178,11 @@ function Shell({
         <View style={styles.body}>{content}</View>
         {isFooterTab(panel) && <FooterNav active={panel} palette={palette} onSelect={setPanel} />}
       </View>
-      <StatusBar style="light" />
+      {/* Light status-bar content reads against the dark palette's near-black
+          bg2; the light palette needs the inverse (DigiSpin's App.tsx does
+          the same identity check rather than going through resolvedThemeOf,
+          since the only two values are its own DARK/LIGHT constants). */}
+      <StatusBar style={palette === DARK ? 'light' : 'dark'} />
     </View>
   );
 }

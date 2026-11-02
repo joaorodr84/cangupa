@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react-native';
 
 import Starfield from './Starfield';
-import { paletteFor } from '../theme/palette';
+import { DARK, LIGHT } from '../theme/palette';
 
 test('renders nothing for a theme with no stars', async () => {
-  await render(<Starfield stars={paletteFor('cosmos').stars} />);
+  await render(<Starfield stars={LIGHT.stars} />);
   expect(screen.queryByTestId('starfield')).toBeNull();
 });
 
-test('tiles the space theme stars across the screen', async () => {
-  await render(<Starfield stars={paletteFor('space').stars} />);
+test('tiles the dark theme stars across the screen', async () => {
+  await render(<Starfield stars={DARK.stars} />);
   expect(screen.getByTestId('starfield')).toBeTruthy();
 });
