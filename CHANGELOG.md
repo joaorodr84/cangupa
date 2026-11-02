@@ -20,6 +20,29 @@ Open work is listed in [TODO.md](TODO.md).
 - The home screen now also shows which level "Jogar" is about to open
   (e.g. "Nível 7"), and has a "Regras" button beneath Play that opens the
   rules screen directly, without having to go into the board first.
+- Clearing a level now shows a dismissable pop-up over the board with the
+  move count, and either a "Próximo nível" button or, on the last level,
+  an "Acabaste o jogo!" message. Closing it with ✕ just hides it — the
+  cleared board and the Undo/Reiniciar/Dica controls underneath stay
+  usable, and it reopens on the next win.
+
+### Changed
+
+- The board screen's Undo ("Desfazer"), Reiniciar and Dica buttons now sit
+  in a row in the upper-right corner, with the status text on the left,
+  instead of a centred toolbar below the board.
+- The "Cangupa" title above every screen no longer shows on the board
+  screen, so it doesn't compete with the new corner controls; it still
+  shows on the home, levels, settings and rules screens.
+
+### Removed
+
+- The board toolbar's ‹ previous-level button is gone, with no
+  replacement — once you're on a level there's no way back to the
+  previous one from here.
+- The board toolbar's › next-level button and the old inline "Próximo
+  nível" button in the win status line are gone, replaced by the new
+  win pop-up's own "Próximo nível" button.
 
 ## 2026-11-01
 

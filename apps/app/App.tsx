@@ -134,8 +134,6 @@ function Shell({
         totalLevels={LEVELS.length}
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
         onNext={() => onChangeLevel(currentLevel + 1)}
-        onPrevLevel={() => onChangeLevel(currentLevel - 1)}
-        canGoPrevLevel={currentLevel > 0}
         onLevelComplete={() => onLevelDone(currentLevel)}
       />
     );
@@ -145,7 +143,7 @@ function Shell({
     <View style={[styles.app, { backgroundColor: palette.bg2 }]}>
       <Starfield stars={palette.stars} />
       <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
-        <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
+        {panel !== 'board' && <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>}
         {panel !== 'board' && panel !== 'home' && (
           <Pressable style={styles.back} onPress={() => setPanel('board')}>
             <Text style={{ color: palette.ink }}>‹ Voltar</Text>

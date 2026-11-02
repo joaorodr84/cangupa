@@ -58,20 +58,6 @@ The priority can change at any time; the ID never does.
   `CANGUPA-29`'s home-screen button becomes its only entry point. Blocked
   on `CANGUPA-30`: the Stats tab has nowhere to go until that screen
   exists.
-- [P1] `CANGUPA-32` — Rework the `apps/app` game (board) screen's HUD,
-  similarly to DigiSpin:
-  - Move the Undo/Restart/Hint buttons
-    ([BoardHud.tsx](apps/app/src/components/BoardHud.tsx)'s
-    "Desfazer"/"Reiniciar"/"Dica") to the screen's upper-right corner.
-  - Remove the previous-level `‹` toolbar button entirely.
-  - Remove the next-level `›` toolbar button and the win-triggered
-    "Próximo nível" button, replacing both with a pop-up shown on level
-    completion.
-  - Remove the "Cangupa" title from the top of this screen specifically.
-    [App.tsx](apps/app/App.tsx)'s `Shell` currently renders that title
-    unconditionally above every panel, so this needs it hidden only when
-    `panel === 'board'`, keeping it on the other screens — including the
-    home screen, where it doubles as the logo (`CANGUPA-29`).
 - [P2] `CANGUPA-33` — Similarly to DigiSpin, shrink the board when the
   screen is wider than it is tall (landscape), so it fits inside the
   screen instead of overflowing.

@@ -19,8 +19,6 @@ function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { 
     totalLevels: 50,
     hasNext: true,
     onNext: noop,
-    onPrevLevel: noop,
-    canGoPrevLevel: true,
     ...overrides,
   };
   return render(<BoardScreen {...props} />);
@@ -32,7 +30,7 @@ test('shows the level number and move count while playing', async () => {
   expect(screen.getByText('Nível 5/50 · Jogadas 0 · Faltam 1')).toBeTruthy();
 });
 
-test('calls onLevelComplete exactly once when the level is won', async () => {
+test('calls onLevelComplete exactly once when the level is won, and shows the win popup', async () => {
   const onLevelComplete = jest.fn();
 
   await renderScreen({ level: ['S1'], rules: { jumps: true }, onLevelComplete });
@@ -59,7 +57,7 @@ test('undo, reset and hint operate on the same board the HUD reflects', async ()
   expect(screen.getByText('Nível 1/50 · Jogadas 0 · Faltam 2')).toBeTruthy();
 });
 
-test('pressing the next-level button calls onNext', async () => {
+test('pressing the win popup\'s next-level button calls onNext', async () => {
   const onNext = jest.fn();
 
   await renderScreen({ level: ['S1'], rules: { jumps: true }, onNext });
@@ -70,20 +68,24 @@ test('pressing the next-level button calls onNext', async () => {
   expect(onNext).toHaveBeenCalledTimes(1);
 });
 
-test('pressing the toolbar ‹ button calls onPrevLevel', async () => {
-  const onPrevLevel = jest.fn();
+test('the win popup shows no next-level button on the last level', async () => {
+  await renderScreen({ level: ['S1'], rules: { jumps: true }, hasNext: false });
 
-  await renderScreen({ level: ['S1.'], rules: { jumps: true }, onPrevLevel, canGoPrevLevel: true });
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
-  await fireEvent.press(screen.getByText('‹'));
-  expect(onPrevLevel).toHaveBeenCalledTimes(1);
+  expect(screen.queryByText('Próximo nível')).toBeNull();
+  expect(screen.getByText('Acabaste o jogo!')).toBeTruthy();
 });
 
-test('the toolbar › button is disabled while hasNext (the level is not yet cleared) is false', async () => {
-  const onNext = jest.fn();
+test('closing the win popup leaves the board reachable through Reset', async () => {
+  await renderScreen({ level: ['S1'], rules: { jumps: true } });
 
-  await renderScreen({ level: ['S1.'], rules: { jumps: true }, onNext, hasNext: false });
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  expect(screen.getByText('Nível completo!')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('›'));
-  expect(onNext).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByText('✕'));
+  expect(screen.queryByText('Nível completo!')).toBeNull();
+
+  await fireEvent.press(screen.getByText('Reiniciar'));
+  expect(screen.getByText('Nível 1/50 · Jogadas 0 · Faltam 1')).toBeTruthy();
 });

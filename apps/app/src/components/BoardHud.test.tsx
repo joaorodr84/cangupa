@@ -17,10 +17,6 @@ function renderHud(overrides: Partial<Parameters<typeof BoardHud>[0]> & { status
     onUndo: noop,
     onReset: noop,
     onHint: noop,
-    onNext: noop,
-    onPrevLevel: noop,
-    canGoPrevLevel: true,
-    canGoNextLevel: true,
     ...overrides,
   };
   return render(<BoardHud {...props} />);
@@ -33,22 +29,11 @@ test('shows the playing status line', async () => {
   expect(screen.getByText('Nível 3/50 · Jogadas 4 · Faltam 2')).toBeTruthy();
 });
 
-test('shows a next-level button once won, and calls onNext when pressed', async () => {
+test('shows nothing in the status line once won — WinPopup carries that message', async () => {
   const status: Status = { kind: 'won', moves: 7, hasNext: true };
-  const onNext = jest.fn();
-  await renderHud({ status, onNext });
-
-  const next = screen.getByText('Próximo nível');
-  await fireEvent.press(next);
-  expect(onNext).toHaveBeenCalledTimes(1);
-});
-
-test('shows no next-level button on the last level', async () => {
-  const status: Status = { kind: 'won', moves: 7, hasNext: false };
   await renderHud({ status });
 
-  expect(screen.queryByText('Próximo nível')).toBeNull();
-  expect(screen.getByText(/Acabaste o jogo!/)).toBeTruthy();
+  expect(screen.queryByText(/Nível completo/)).toBeNull();
 });
 
 test('disables undo when canUndo is false', async () => {
@@ -90,38 +75,4 @@ test('shows the dead-end hint message', async () => {
   await renderHud({ status });
 
   expect(screen.getByText('Beco sem saída.')).toBeTruthy();
-});
-
-const PLAYING: Status = { kind: 'playing', levelNumber: 2, totalLevels: 50, moves: 0, remaining: 3 };
-
-test('the ‹ toolbar button calls onPrevLevel when enabled', async () => {
-  const onPrevLevel = jest.fn();
-  await renderHud({ status: PLAYING, onPrevLevel, canGoPrevLevel: true });
-
-  await fireEvent.press(screen.getByText('‹'));
-  expect(onPrevLevel).toHaveBeenCalledTimes(1);
-});
-
-test('the ‹ toolbar button is disabled on the first level', async () => {
-  const onPrevLevel = jest.fn();
-  await renderHud({ status: PLAYING, onPrevLevel, canGoPrevLevel: false });
-
-  await fireEvent.press(screen.getByText('‹'));
-  expect(onPrevLevel).not.toHaveBeenCalled();
-});
-
-test('the › toolbar button reuses onNext when enabled', async () => {
-  const onNext = jest.fn();
-  await renderHud({ status: PLAYING, onNext, canGoNextLevel: true });
-
-  await fireEvent.press(screen.getByText('›'));
-  expect(onNext).toHaveBeenCalledTimes(1);
-});
-
-test('the › toolbar button is disabled until the current level is cleared', async () => {
-  const onNext = jest.fn();
-  await renderHud({ status: PLAYING, onNext, canGoNextLevel: false });
-
-  await fireEvent.press(screen.getByText('›'));
-  expect(onNext).not.toHaveBeenCalled();
 });

@@ -161,6 +161,37 @@ CANGUPA-29 followed, stacking the level number Play is about to open and a
 Regras (rules) button beneath it on the same screen, with tests added for both
 and the full suite (209 tests) and `tsc --noEmit` passing again.
 
+Era 5 closes here: Nov 2, 2 commits, CANGUPA-28 and CANGUPA-29 — the app
+gained a front door, with nowhere left on that screen unbuilt.
+
+## Era 6 — Nov 2 (continued): the board screen's HUD, cleared of its toolbar
+
+CANGUPA-32 reworks the board screen's HUD, similarly to DigiSpin's: the
+Undo ("Desfazer"), Reiniciar and Dica buttons move out of a centred
+toolbar below the board into one row in the screen's upper-right corner,
+status text on the left. The toolbar's ‹ previous-level button is
+removed entirely, with no replacement. Its › next-level button and the
+win-triggered inline "Próximo nível" button both built in CANGUPA-19 and
+CANGUPA-24 are also gone, replaced by a new `WinPopup.tsx`: a dismissable
+overlay shown over the board once a level is cleared, carrying the move
+count and either a "Próximo nível" button or, on the last level, an
+"Acabaste o jogo!" message. Closing it with ✕ only hides it — the
+cleared board and BoardHud's Undo/Reiniciar/Dica corner stay reachable
+underneath, and it reopens on the next win. `App.tsx`'s `Shell` now hides
+the "Cangupa" title specifically when `panel === 'board'`, instead of
+rendering it unconditionally above every panel, keeping it on the other
+screens including the home screen, where it doubles as that screen's
+logo (CANGUPA-29).
+
+One commit. `BoardHud.test.tsx` and `BoardScreen.test.tsx` were updated
+for the new shape, and a new `WinPopup.test.tsx` added. Verified with the
+full Jest suite (208 tests across 19 suites) and `tsc --noEmit`, both
+passing, plus a manual pass in a running Expo web dev server driven by a
+throwaway Playwright script, confirming no title on the board screen, the
+three buttons sitting top-right, the win popup appearing on clearing a
+level with a working close button, and the board and controls staying
+usable after closing it.
+
 ---
 
 ## Patterns, and what's still open

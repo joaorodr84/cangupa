@@ -1,6 +1,12 @@
-// Status line and controls, ported from apps/web-classic/js/ui.js's
-// render() status branches and its undo/reset/hint/next buttons.
-import { Fragment } from 'react';
+// Status line and board controls, ported from apps/web-classic/js/ui.js's
+// render() status branches and its undo/reset/hint buttons. Reworked for
+// CANGUPA-32, similarly to DigiSpin's BoardScreen header: Undo/Reset/Hint
+// sit in one row in the screen's upper-right corner instead of a centred
+// toolbar below the board, and the win state (previously this row's inline
+// "Próximo nível" button) moved out to WinPopup.tsx, since the row here is
+// about controlling the board, not what happens once it's cleared. The
+// level-navigation ‹/› buttons this toolbar used to carry are gone outright —
+// ‹ had no replacement, › became WinPopup's "Próximo nível".
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { type Status } from '../game/boardView';
@@ -13,46 +19,26 @@ interface BoardHudProps {
   readonly onUndo: () => void;
   readonly onReset: () => void;
   readonly onHint: () => void;
-  readonly onNext: () => void;
-  // The toolbar's own ‹/› level navigation (ui.js's #prev/#next), always
-  // present and just enabled/disabled, unlike the "Próximo nível" button
-  // above, which only exists at all right at the win. Both ‹ and this
-  // toolbar › were found missing entirely in the CANGUPA-24 parity pass —
-  // only the win-triggered button had been built (CANGUPA-19). › reuses
-  // onNext: ui.js's #next and its status-text "go-next" button both just
-  // call loadLevel(levelIndex + 1).
-  readonly onPrevLevel: () => void;
-  readonly canGoPrevLevel: boolean;
-  readonly canGoNextLevel: boolean;
 }
 
-export default function BoardHud({
-  status,
-  canUndo,
-  palette,
-  onUndo,
-  onReset,
-  onHint,
-  onNext,
-  onPrevLevel,
-  canGoPrevLevel,
-  canGoNextLevel,
-}: BoardHudProps) {
+export default function BoardHud({ status, canUndo, palette, onUndo, onReset, onHint }: BoardHudProps) {
   return (
     <View style={styles.wrap}>
-      <StatusLine status={status} palette={palette} onNext={onNext} />
-      <View style={styles.toolbar}>
-        <HudButton label="‹" palette={palette} disabled={!canGoPrevLevel} onPress={onPrevLevel} />
+      <View style={styles.status}>
+        <StatusLine status={status} palette={palette} />
+      </View>
+      <View style={styles.buttons}>
         <HudButton label="Desfazer" palette={palette} disabled={!canUndo} onPress={onUndo} />
         <HudButton label="Reiniciar" palette={palette} onPress={onReset} />
         <HudButton label="Dica" palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
-        <HudButton label="›" palette={palette} disabled={!canGoNextLevel} onPress={onNext} />
       </View>
     </View>
   );
 }
 
-function StatusLine({ status, palette, onNext }: { status: Status; palette: Palette; onNext: () => void }) {
+// The win state has its own presentation (WinPopup.tsx), so there is nothing
+// to show here once won — the status row just goes empty.
+function StatusLine({ status, palette }: { status: Status; palette: Palette }) {
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
 
@@ -65,18 +51,7 @@ function StatusLine({ status, palette, onNext }: { status: Status; palette: Pale
   }
 
   if (status.kind === 'won') {
-    return (
-      <Fragment>
-        <Text style={ink}>
-          <Text style={styles.bold}>Nível completo!</Text> <Text style={muted}>em {status.moves} jogadas</Text>
-          {!status.hasNext && <Text style={muted}> · Acabaste o jogo!</Text>}
-        </Text>
-        {/* RN's Text cannot nest a Pressable, unlike the web version's
-            inline <button> inside the status paragraph — this sits right
-            below it instead. */}
-        {status.hasNext && <HudButton label="Próximo nível" palette={palette} primary onPress={onNext} />}
-      </Fragment>
-    );
+    return null;
   }
 
   const head = `Nível ${status.levelNumber}/${status.totalLevels} · Jogadas ${status.moves} · Faltam ${status.remaining}`;
@@ -95,19 +70,14 @@ interface HudButtonProps {
   readonly palette: Palette;
   readonly onPress: () => void;
   readonly disabled?: boolean;
-  readonly primary?: boolean;
 }
 
-function HudButton({ label, palette, onPress, disabled = false, primary = false }: HudButtonProps) {
+function HudButton({ label, palette, onPress, disabled = false }: HudButtonProps) {
   return (
     <Pressable
       disabled={disabled}
       onPress={onPress}
-      style={[
-        styles.button,
-        { backgroundColor: primary ? 'rgba(255,214,90,0.3)' : palette.panel },
-        disabled && styles.buttonDisabled,
-      ]}
+      style={[styles.button, { backgroundColor: palette.panel }, disabled && styles.buttonDisabled]}
     >
       <Text style={{ color: palette.ink }}>{label}</Text>
     </Pressable>
@@ -116,13 +86,20 @@ function HudButton({ label, palette, onPress, disabled = false, primary = false 
 
 const styles = StyleSheet.create({
   wrap: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     gap: 10,
   },
-  toolbar: {
+  status: {
+    flex: 1,
+  },
+  // Right-aligned, so the row reads as the board's controls sitting in its
+  // upper-right corner rather than a full-width toolbar.
+  buttons: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   bold: {
     fontWeight: '600',
