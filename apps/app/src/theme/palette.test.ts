@@ -1,3 +1,5 @@
+import { contrastRatio } from '@joaorodr84/themes';
+
 import { PALETTES, paletteFor, STARFIELD_TILE_SIZE } from './palette';
 import { THEMES } from '../state/settings';
 
@@ -37,4 +39,28 @@ test("the sand and ice themes use a dark ink on their light backgrounds", () => 
 
 test('the space theme has a transparent pit, so the starfield behind it shows through', () => {
   expect(paletteFor('space').pit).toBe('transparent');
+});
+
+// ink is the primary text colour everywhere it appears, so it is held to
+// WCAG AA's normal-text bar (4.5:1). muted is explicitly the lower-contrast
+// secondary colour (FooterNav labels, screen subtitles), so it only has to
+// clear the large-text bar (3:1) against either end of the page background
+// gradient it sits on. contrastRatio itself comes from the shared
+// @joaorodr84/themes package (CANGUPA-39), which also covers its own tests.
+describe('text colours stay readable against the background gradient', () => {
+  for (const theme of THEMES) {
+    describe(theme, () => {
+      const { bg1, bg2, ink, muted } = paletteFor(theme);
+
+      it('ink clears 4.5:1 against both ends of the gradient', () => {
+        expect(contrastRatio(ink, bg1)).toBeGreaterThanOrEqual(4.5);
+        expect(contrastRatio(ink, bg2)).toBeGreaterThanOrEqual(4.5);
+      });
+
+      it('muted clears 3:1 against both ends of the gradient', () => {
+        expect(contrastRatio(muted, bg1)).toBeGreaterThanOrEqual(3);
+        expect(contrastRatio(muted, bg2)).toBeGreaterThanOrEqual(3);
+      });
+    });
+  }
 });

@@ -425,6 +425,24 @@ suites), and manually in the browser via the Expo web build, confirming
 the language switch applies live across the Home, Settings and Stats
 screens, and that the choice persists.
 
+## Era 15 — Nov 2 (continued): borrowing DigiSpin's shared themes package
+
+CANGUPA-39 wires `apps/app` up to install from the external
+`joaorodr84/themes` repo, the same way DigiSpin already does: a git
+dependency pinned by semver tag (`github:joaorodr84/themes#semver:^1.0.0`),
+no registry needed. This is scoped to the dependency mechanism only, not
+a redesign of cangupa's own theming — `theme/palette.ts` still models
+cangupa's own five decorative skins (cosmos/space/sand/ice/classic), not
+DigiSpin's light/dark surface appearance, so its `Palette` shape stays
+local. The one piece genuinely shared is `contrastRatio`, now imported
+in `palette.test.ts` for a new describe block asserting every theme's
+`ink` text colour clears 4.5:1 (WCAG AA, normal text) and `muted` clears
+3:1 (WCAG AA, large text, since muted is deliberately the lower-contrast
+secondary colour) against both ends of that theme's background gradient.
+
+One commit. Verified with `npx tsc --noEmit` and the full Jest suite,
+green at 261 tests.
+
 ---
 
 ## Patterns, and what's still open

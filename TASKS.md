@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-39`**
+**Next ID to assign: `CANGUPA-40`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -65,3 +65,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-36 | P2 | Swap the home screen's `FooterNav` text labels for icons, styled after DigiSpin's bottom-nav buttons | done | 2026-11-02 | — |
 | CANGUPA-37 | P2 | On `apps/app`'s settings screen: drop the `‹ Voltar` back button, redundant now that Settings is a footer tab (CANGUPA-31) a Home tap away; and rearrange the Tema/toggle items into labelled sections of full-width rows, similarly to DigiSpin's `SettingsScreen.tsx` | done | 2026-11-02 | — |
 | CANGUPA-38 | P1 | Add multi-language support to `apps/app`, on DigiSpin's `i18n` pattern: a `Locale`/`LanguageSetting` type, a `LanguageContext` + `useLocale`/`useStrings` pair, and a `Strings` table per screen. Ship English and Portuguese (the app's existing hardcoded text, extracted as-is); the language setting defaults to `'system'`, following the device's own language and falling back to English for anything else — matching DigiSpin's own default. Scoped to `apps/app` only; `apps/web-classic` keeps its hardcoded Portuguese | done | 2026-11-02 | — |
+| CANGUPA-39 | P3 | Wire `apps/app` up to install from the external `@joaorodr84/themes` repo, the same way DigiSpin does (DIGISPIN-194): added as a git dependency pinned by semver tag (`github:joaorodr84/themes#semver:^1.0.0`). Scoped to the dependency mechanism only, not a redesign — cangupa's `theme/palette.ts` models five decorative skins (cosmos/space/sand/ice/classic), not DigiSpin's light/dark surface appearance, so its `Palette` shape stays local; the one piece that is genuinely shared is `contrastRatio`, now used in `palette.test.ts` to assert every skin's `ink` (4.5:1, WCAG AA normal text) and `muted` (3:1, AA large text, since it is the deliberately-lower-contrast secondary colour) stay readable against both ends of that skin's background gradient. Verified: `npx tsc --noEmit` clean, full `apps/app` Jest suite green (261 tests) | done | 2026-11-02 | — |

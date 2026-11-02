@@ -4,6 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@expo/metro-runtime": "~57.0.17",
+    "@joaorodr84/themes": "github:joaorodr84/themes#semver:^1.0.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.31",
     "expo-splash-screen": "~57.0.10",
