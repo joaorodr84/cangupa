@@ -138,6 +138,10 @@ Open work is listed in [TODO.md](TODO.md).
 - The settings screen's "‹ Voltar" back button is gone — Settings is
   already one tap from Home via the footer nav, so the button only
   duplicated that path. The rules screen still has its own back button.
+- The app's dark theme no longer shows its decorative starfield of dots
+  behind the screens — it was a dark-only flourish and is gone with no
+  replacement; the light theme never had one. The unrelated `--stars`
+  starfield in the separate web-classic game is untouched.
 
 ## 2026-11-01
 

@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import App from './App';
 import { PROGRESS_KEY } from './src/state/progress';
-import { DEFAULT_SETTINGS, SETTINGS_KEY } from './src/state/settings';
+import { SETTINGS_KEY } from './src/state/settings';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
@@ -128,13 +128,4 @@ test('the board screen has no footer nav of its own', async () => {
   expect(screen.queryByTestId('footer-levels')).toBeNull();
   expect(screen.queryByTestId('footer-stats')).toBeNull();
   expect(screen.queryByTestId('footer-settings')).toBeNull();
-});
-
-test('shows the starfield for the dark theme and not for the default (light, in this test environment)', async () => {
-  await render(<App />);
-  expect(screen.queryByTestId('starfield')).toBeNull();
-
-  await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, themeMode: 'dark' }));
-  await render(<App />);
-  expect(await screen.findByTestId('starfield')).toBeTruthy();
 });

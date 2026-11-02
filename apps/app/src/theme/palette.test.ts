@@ -1,6 +1,6 @@
 import { contrastRatio } from '@joaorodr84/themes';
 
-import { DARK, LIGHT, paletteFor, STARFIELD_TILE_SIZE } from './palette';
+import { DARK, LIGHT, paletteFor } from './palette';
 
 // Generic mode-resolution behaviour (ThemeMode/SystemScheme's meaning) is
 // shared with DigiSpin via the @joaorodr84/themes package (CANGUPA-40); this
@@ -21,27 +21,6 @@ describe('paletteFor', () => {
     expect(paletteFor('system', null)).toBe(DARK);
     expect(paletteFor('system', undefined)).toBe(DARK);
   });
-});
-
-test('only dark has a starfield', () => {
-  expect(DARK.stars.length).toBeGreaterThan(0);
-  expect(LIGHT.stars).toHaveLength(0);
-});
-
-test('the starfield has 8 dots, each inside the board', () => {
-  const { stars } = DARK;
-  expect(stars).toHaveLength(8);
-  for (const star of stars) {
-    expect(star.xPct).toBeGreaterThanOrEqual(0);
-    expect(star.xPct).toBeLessThanOrEqual(100);
-    expect(star.yPct).toBeGreaterThanOrEqual(0);
-    expect(star.yPct).toBeLessThanOrEqual(100);
-    expect(star.size).toBeGreaterThan(0);
-  }
-});
-
-test('the starfield tiles at 260px, matching style.css', () => {
-  expect(STARFIELD_TILE_SIZE).toBe(260);
 });
 
 test('light uses a dark ink on its light background', () => {

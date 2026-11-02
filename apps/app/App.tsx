@@ -10,7 +10,6 @@ import HelpScreen from './src/components/HelpScreen';
 import HomeScreen from './src/components/HomeScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
-import Starfield from './src/components/Starfield';
 import StatsScreen from './src/components/StatsScreen';
 import { LEVELS } from './src/game/levels';
 import { LanguageContext } from './src/i18n/LanguageContext';
@@ -166,7 +165,6 @@ function Shell({
 
   return (
     <View style={[styles.app, { backgroundColor: palette.bg2 }]}>
-      <Starfield stars={palette.stars} />
       <View
         style={[
           styles.content,

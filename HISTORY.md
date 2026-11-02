@@ -532,6 +532,28 @@ One commit. Verified with the full `apps/app` Jest suite green (272 tests).
 
 ---
 
+## Era 19 — Nov 2 (continued): the starfield background is removed
+
+CANGUPA-47 removes the apps/app `Starfield` component — the dark-theme-only
+decorative background rendered behind the whole app — and all of its
+associated code, per explicit owner request to remove the feature outright
+rather than adjust it. `Starfield.tsx` and its test are deleted, its
+import and `<Starfield stars={palette.stars} />` render call are removed
+from `App.tsx`, and `theme/palette.ts` loses the `Star` interface, the
+`STARFIELD` data array, the `STARFIELD_TILE_SIZE` export, the `stars`
+field from the `Palette` interface and from `DARK`/`LIGHT`, and a stale
+comment referencing the starfield. `App.test.tsx` and `palette.test.ts`
+lose their now-dead starfield-related tests and assertions. The unrelated
+apps/web-classic `--stars` CSS custom property (part of its old "space"
+theme preset) is untouched.
+
+One commit. Verified with the full apps/app Jest suite (265/266 passing;
+the one failure is a pre-existing flaky timeout in SettingsScreen.test.tsx
+unrelated to this change, confirmed passing 10/10 when re-run in
+isolation).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

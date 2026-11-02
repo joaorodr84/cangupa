@@ -23,15 +23,6 @@ export type { SystemScheme, ThemeMode };
 const LOGO_LIGHT = require('../../assets/logo-light.png') as ImageSourcePropType;
 const LOGO_DARK = require('../../assets/logo-dark.png') as ImageSourcePropType;
 
-export interface Star {
-  readonly xPct: number;
-  readonly yPct: number;
-  // Diameter in px, at the tile size the starfield was designed at
-  // (STARFIELD_TILE_SIZE) — twice style.css's radial-gradient radius.
-  readonly size: number;
-  readonly color: string;
-}
-
 export interface Palette {
   // The two ends of the page's background gradient.
   readonly bg1: string;
@@ -51,25 +42,9 @@ export interface Palette {
   // The home screen's Play button background — DigiSpin's own control
   // colour for the same button (HomeScreen.tsx), read live from the package.
   readonly control: string;
-  // The starfield dots drawn over the page background (dark only).
-  readonly stars: readonly Star[];
   // The home screen's logo (CANGUPA-34), picked for contrast against bg1/bg2.
   readonly logo: ImageSourcePropType;
 }
-
-// The period, in px, the starfield tiles at — style.css's `--stars-size`.
-export const STARFIELD_TILE_SIZE = 260;
-
-const STARFIELD: readonly Star[] = [
-  { xPct: 12, yPct: 18, size: 2.4, color: '#fff' },
-  { xPct: 33, yPct: 72, size: 2, color: '#cfe4ff' },
-  { xPct: 58, yPct: 34, size: 3, color: '#fff' },
-  { xPct: 81, yPct: 12, size: 2, color: '#fff6cf' },
-  { xPct: 90, yPct: 66, size: 2.4, color: '#fff' },
-  { xPct: 47, yPct: 90, size: 2, color: '#cfe4ff' },
-  { xPct: 70, yPct: 55, size: 1.6, color: '#fff' },
-  { xPct: 22, yPct: 44, size: 1.6, color: '#fff' },
-];
 
 // DARK and LIGHT's surface/text fields (CANGUPA-43) read live from
 // @joaorodr84/themes's own DARK/LIGHT — bg1/bg2 both take its flat
@@ -80,8 +55,7 @@ const STARFIELD: readonly Star[] = [
 // than this file holding a hex snapshot that drifts out of sync with it.
 // tile/tile2/edge/edge2 are this game's own accent colours and, per that
 // package's design comment, belong to the consuming app and stay fixed
-// across both modes rather than being themed; the starfield (dark only) is
-// the same kind of app-owned flourish the package has no concept of.
+// across both modes rather than being themed.
 export const DARK: Palette = {
   bg1: THEMES_DARK.background,
   bg2: THEMES_DARK.background,
@@ -95,7 +69,6 @@ export const DARK: Palette = {
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
   control: THEMES_DARK.control,
-  stars: STARFIELD,
   logo: LOGO_DARK,
 };
 
@@ -112,7 +85,6 @@ export const LIGHT: Palette = {
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,
   control: THEMES_LIGHT.control,
-  stars: [],
   logo: LOGO_LIGHT,
 };
 
