@@ -39,3 +39,10 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
+- [P1] `CANGUPA-29` — On the `apps/app` home screen, stack three things top
+  to bottom: the logo, the number of the level the Play button is about to
+  open, then the button itself. [HomeScreen.tsx](apps/app/src/components/HomeScreen.tsx)
+  (from CANGUPA-28) currently only renders the button — no level number is
+  shown anywhere on that screen, and the "logo" is the `Cangupa` wordmark
+  `App.tsx`'s `Shell` already renders above every panel, home included, so
+  it only needs the level number added in between.

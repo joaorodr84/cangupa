@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-29`**
+**Next ID to assign: `CANGUPA-30`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -28,6 +28,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-5 | P3 | Play a sound effect on falling. Depends on `TILE-JUMPER-3` — there's nothing to cue a sound off until falling itself exists | open | — |
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
+| CANGUPA-29 | P1 | On the `apps/app` home screen (`HomeScreen.tsx`, CANGUPA-28), show the number of the level the Play button points at, stacked between the logo and the button: logo on top, level number in the middle, button underneath | open | — |
 
 ## Done
 
