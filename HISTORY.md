@@ -468,6 +468,11 @@ remote (owner-requested). This is a breaking change to the saved settings
 shape: a previously-chosen skin is lost and the theme resets to 'system' on
 upgrade, though other settings and progress are untouched.
 
+CANGUPA-42 later replaces DARK and LIGHT's carried-over cosmos/ice colours
+with values copied verbatim from @joaorodr84/themes's own DARK/LIGHT, so
+the two appearances are colour-identical to DigiSpin's, not just matching
+its light/dark/system model.
+
 One commit. Verified with `npx tsc --noEmit` clean and the full Jest suite
 green, 258 tests.
 

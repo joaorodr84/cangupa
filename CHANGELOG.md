@@ -86,6 +86,11 @@ Open work is listed in [TODO.md](TODO.md).
   had picked one of the old skins will find their choice reset to
   "Seguir o dispositivo" the next time they open the app; their other
   settings, progress and best move counts are unaffected.
+- The app's Light and Dark appearances now use the exact same colours as
+  DigiSpin's own Light and Dark themes — backgrounds, frame, pit, text
+  and panel colours all match. Tile and edge colours are unchanged in
+  value, but no longer differ between Light and Dark — they're now the
+  same fixed colours in both, as in DigiSpin.
 
 ### Removed
 

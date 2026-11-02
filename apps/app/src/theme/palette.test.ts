@@ -45,7 +45,7 @@ test('the starfield tiles at 260px, matching style.css', () => {
 });
 
 test('light uses a dark ink on its light background', () => {
-  expect(LIGHT.ink).toBe('#1c2a3a');
+  expect(LIGHT.ink).toBe('#1d1d1f');
 });
 
 // ink is the primary text colour everywhere it appears, so it is held to

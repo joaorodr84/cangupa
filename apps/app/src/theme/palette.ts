@@ -72,41 +72,44 @@ const STARFIELD: readonly Star[] = [
   { xPct: 22, yPct: 44, size: 1.6, color: '#fff' },
 ];
 
-// The two surfaces left after CANGUPA-40 dropped the other three decorative
-// skins (space, sand, classic) in favour of a plain light/dark/system
-// choice, matching DigiSpin's own appearance setting. DARK carries over the
-// former "cosmos" skin's colours (the game's previous default look, so a
-// player who never opens Settings sees the same thing as before on a dark
-// or unknown device) plus "space"'s starfield, now dark mode's distinguishing
-// flourish rather than a fifth skin. LIGHT carries over "ice"'s colours.
+// DARK and LIGHT's surface/text fields (CANGUPA-42) are copied verbatim from
+// @joaorodr84/themes's own DARK/LIGHT (bg1/bg2 both set to its flat
+// `background` — this app paints bg2 only, nothing here renders an actual
+// gradient yet) — frame from `surface`, pit from `wellBody`, panel from
+// `panel`, ink from `text`, muted from `textMuted` — so this app's two
+// appearances are pixel-identical to DigiSpin's, not just colour-matched.
+// tile/tile2/edge/edge2 are this game's own accent colours and, per that
+// package's design comment, belong to the consuming app and stay fixed
+// across both modes rather than being themed; the starfield (dark only) is
+// the same kind of app-owned flourish the package has no concept of.
 export const DARK: Palette = {
-  bg1: '#1b1546',
-  bg2: '#07051a',
-  frame: '#120e33',
-  pit: '#0a0722',
+  bg1: '#0c0d10',
+  bg2: '#0c0d10',
+  frame: '#15171c',
+  pit: '#1c1f26',
   tile: '#4cc9f0',
   tile2: '#ffc857',
   edge: '#1f7a99',
   edge2: '#a8741a',
-  ink: '#f4ecdf',
-  muted: '#b9a98f',
-  panel: 'rgba(255,255,255,.06)',
+  ink: '#e6e8ec',
+  muted: '#8a909c',
+  panel: '#181b21',
   stars: STARFIELD,
   logo: LOGO_DARK,
 };
 
 export const LIGHT: Palette = {
-  bg1: '#e8f1f8',
-  bg2: '#b8cfe3',
-  frame: '#7d9bb8',
-  pit: '#587592',
-  tile: '#ffffff',
-  tile2: '#9ad1f5',
-  edge: '#9db4c9',
-  edge2: '#4f8fbd',
-  ink: '#1c2a3a',
-  muted: '#52667c',
-  panel: 'rgba(0,0,0,.06)',
+  bg1: '#eef0f4',
+  bg2: '#eef0f4',
+  frame: '#ffffff',
+  pit: '#d9dee6',
+  tile: '#4cc9f0',
+  tile2: '#ffc857',
+  edge: '#1f7a99',
+  edge2: '#a8741a',
+  ink: '#1d1d1f',
+  muted: '#62676f',
+  panel: '#f7f8fa',
   stars: [],
   logo: LOGO_LIGHT,
 };
