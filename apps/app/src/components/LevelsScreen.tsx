@@ -1,10 +1,14 @@
 // Ported from apps/web-classic/js/ui.js's renderLevels() and style.css's
 // #level-grid rules: a numbered grid of every level, showing which are
-// cleared, which is the current one, and which are still locked.
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+// cleared, which is the current one, and which are still locked. Laid out
+// in explicit rows sized off the window width (levelGrid.ts, CANGUPA-46),
+// the same technique DigiSpin's own LevelsScreen uses for its level grid,
+// rather than a fixed-width cell left to flexbox's own wrap behaviour.
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { isDone, isUnlocked, type Progress } from '../state/progress';
 import { type Palette } from '../theme/palette';
+import { GAP_PT, levelRows, levelsPerRow, squareSize } from './levelGrid';
 
 interface LevelsScreenProps {
   readonly totalLevels: number;
@@ -21,59 +25,69 @@ export default function LevelsScreen({
   palette,
   onSelectLevel,
 }: LevelsScreenProps) {
+  const { width } = useWindowDimensions();
+  const perRow = levelsPerRow(width);
+  const size = squareSize(width, perRow);
+  const rows = levelRows(
+    Array.from({ length: totalLevels }, (_, levelIndex) => levelIndex),
+    perRow,
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.grid}>
-      {Array.from({ length: totalLevels }, (_, levelIndex) => {
-        const done = isDone(progress, levelIndex);
-        const unlocked = isUnlocked(progress, levelIndex);
-        const current = levelIndex === currentLevel;
-        return (
-          <Pressable
-            key={levelIndex}
-            testID={`level-${levelIndex + 1}`}
-            disabled={!unlocked}
-            onPress={() => onSelectLevel(levelIndex)}
-            style={[
-              styles.cell,
-              { backgroundColor: palette.panel },
-              done && styles.done,
-              current && styles.current,
-              !unlocked && styles.locked,
-            ]}
-          >
-            <Text style={{ color: palette.ink }}>{levelIndex + 1}</Text>
-          </Pressable>
-        );
-      })}
+      {rows.map((row, rowIndex) => (
+        <View key={rowIndex} style={styles.row}>
+          {row.map((levelIndex) => {
+            const done = isDone(progress, levelIndex);
+            const unlocked = isUnlocked(progress, levelIndex);
+            const current = levelIndex === currentLevel;
+            return (
+              <Pressable
+                key={levelIndex}
+                testID={`level-${levelIndex + 1}`}
+                disabled={!unlocked}
+                onPress={() => onSelectLevel(levelIndex)}
+                style={[
+                  styles.cell,
+                  { width: size, height: size },
+                  // Solid either way — done takes the theme's one accent
+                  // colour (the same one the Play button uses) instead of
+                  // the previous translucent green tint, and locked drops
+                  // the opacity-0.4 fade for a plain panel background with
+                  // dimmed text below, so no cell is ever see-through
+                  // (CANGUPA-46).
+                  { backgroundColor: done ? palette.control : palette.panel },
+                  current && styles.current,
+                ]}
+              >
+                <Text style={{ color: unlocked ? palette.ink : palette.muted }}>{levelIndex + 1}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   grid: {
+    gap: GAP_PT,
+    paddingVertical: 4,
+  },
+  row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    padding: 4,
+    gap: GAP_PT,
   },
   cell: {
-    width: 52,
-    paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'transparent',
-  },
-  done: {
-    backgroundColor: 'rgba(120,220,140,0.22)',
-    borderColor: 'rgba(120,220,140,0.5)',
   },
   current: {
     borderWidth: 2,
     borderColor: 'rgba(255,214,90,0.9)',
-  },
-  // `button:disabled { opacity: .4; }` in style.css.
-  locked: {
-    opacity: 0.4,
   },
 });

@@ -506,6 +506,32 @@ and a clean `npx tsc --noEmit`.
 
 ---
 
+## Era 18 — Nov 2 (continued): the levels screen gets a responsive grid and a shared back arrow
+
+CANGUPA-46 polishes the levels screen two ways. The level grid
+(`LevelsScreen.tsx`) was a fixed 52 pt cell left to flexbox's own wrap
+behaviour; it is now laid out in explicit rows sized off the window width
+via a new `levelGrid.ts` helper (`levelsPerRow`/`squareSize`/`levelRows`),
+the same technique DigiSpin's own levels screen uses, so the grid adapts
+across phone and tablet widths instead of wrapping wherever flexbox
+happens to break the row. Within that grid, a cleared cell now uses the
+theme's solid `palette.control` colour (the same one the Play button uses)
+instead of a translucent green tint, and a locked cell is a plain
+`palette.panel` background with dimmed `palette.muted` text instead of a
+faded, partly see-through cell — no cell is ever see-through either way.
+
+The back-arrow icon drawn inline inside `BoardHud.tsx` is factored out into
+a shared `BackArrow.tsx`, and `App.tsx`'s generic back link (shown on the
+Levels, Stats and Help screens) now reuses it instead of its old `‹ Back`
+text link under a `Cangupa` title heading — it becomes an icon-only
+circular button matching the board screen's own back button, and the
+per-locale `appTitle` string is removed from the strings table since
+nothing reads it anymore.
+
+One commit. Verified with the full `apps/app` Jest suite green (272 tests).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

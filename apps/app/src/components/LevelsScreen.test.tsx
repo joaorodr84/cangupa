@@ -49,7 +49,19 @@ test('a cleared level is marked done', async () => {
 
   const done = screen.getByTestId('level-1');
   const flat = [done.props.style].flat();
-  expect(flat.some((s) => s?.backgroundColor === 'rgba(120,220,140,0.22)')).toBe(true);
+  expect(flat.some((s) => s?.backgroundColor === palette.control)).toBe(true);
+});
+
+test('a locked level has a solid background and dimmed text, not a faded cell', async () => {
+  await render(
+    <LevelsScreen totalLevels={2} progress={NO_PROGRESS} currentLevel={0} palette={palette} onSelectLevel={jest.fn()} />,
+  );
+
+  const locked = screen.getByTestId('level-2');
+  const flat = [locked.props.style].flat();
+  expect(flat.some((s) => s?.opacity !== undefined)).toBe(false);
+  expect(flat.some((s) => s?.backgroundColor === palette.panel)).toBe(true);
+  expect(screen.getByText('2').props.style.color).toBe(palette.muted);
 });
 
 test('the current level is outlined', async () => {

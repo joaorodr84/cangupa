@@ -46,9 +46,26 @@ Open work is listed in [TODO.md](TODO.md).
   that's neither. Every screen — home, settings, stats, rules, the board
   HUD, the win pop-up and the footer nav — follows the chosen language.
   The original web version is unaffected and stays Portuguese-only.
+- The board's back-to-board button and the generic back link shown on the
+  Levels, Stats and Help screens now share the same plain back-arrow icon.
+  The generic one used to be a "‹ Back" text link under a "Cangupa" title
+  heading; it's now an icon-only circular button matching the board
+  screen's own back button. The "Cangupa" title heading above it is gone
+  from every screen that still showed it (Levels, Stats, Help and
+  Settings) — nothing replaces it, since the footer nav already says
+  which screen you're on.
 
 ### Changed
 
+- On the levels screen, the grid of level cells is now laid out in
+  explicit rows sized off the window width, instead of a fixed-size cell
+  left to the layout's own wrap behaviour, so the grid adapts across
+  phone and tablet widths.
+- On the levels screen, a cleared level's cell now uses the theme's solid
+  accent colour (the same one the Play button uses) instead of a
+  translucent green tint, and a locked level's cell is now a plain panel
+  background with dimmed text instead of a faded, partly see-through
+  cell.
 - The board screen's Undo ("Desfazer"), Reiniciar and Dica buttons now sit
   in a row in the upper-right corner, with the status text on the left,
   instead of a centred toolbar below the board.

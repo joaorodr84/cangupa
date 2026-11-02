@@ -3,7 +3,6 @@
 // one, so each locale can order its words, and pluralise, however its own
 // grammar needs.
 export interface Strings {
-  readonly appTitle: string;
   readonly common: {
     readonly back: string;
   };

@@ -3,7 +3,6 @@ import { type Strings } from './types';
 // The app's original wording (CANGUPA-38), unchanged by the move to a
 // strings table.
 export const pt: Strings = {
-  appTitle: 'Cangupa',
   common: {
     back: '‹ Voltar',
   },

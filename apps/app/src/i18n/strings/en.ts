@@ -6,7 +6,6 @@ import { type Strings } from './types';
 // the Portuguese original, moves are pluralised properly, since English
 // grammar needs it where Portuguese's "jogadas" doesn't change by count.
 export const en: Strings = {
-  appTitle: 'Cangupa',
   common: {
     back: '‹ Back',
   },

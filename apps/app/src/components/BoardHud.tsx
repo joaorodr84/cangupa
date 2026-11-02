@@ -10,12 +10,12 @@
 // replacement: a plain arrow back to the home screen, upper-left, the same
 // corner DigiSpin's board header puts its own back arrow in.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 
 import { type Status } from '../game/boardView';
 import { useStrings } from '../i18n/useStrings';
 import { type Strings } from '../i18n/strings';
 import { type Palette } from '../theme/palette';
+import BackArrow from './BackArrow';
 
 interface BoardHudProps {
   readonly status: Status;
@@ -48,18 +48,6 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
         <HudButton label={t.boardHud.hint} palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
       </View>
     </View>
-  );
-}
-
-// A plain left arrow rather than a label, matching DigiSpin's board-screen
-// back button (its ControlIcon "back" glyph) — icon-only so it reads as
-// "leave the board" at a glance instead of competing with the text labels on
-// Desfazer/Reiniciar/Dica.
-function BackArrow({ color }: { readonly color: string }) {
-  return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M19 12 H6 M11 7 L6 12 L11 17" />
-    </Svg>
   );
 }
 

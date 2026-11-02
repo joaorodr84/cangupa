@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
+import BackArrow from './src/components/BackArrow';
 import BoardScreen from './src/components/BoardScreen';
 import FooterNav, { type FooterTab } from './src/components/FooterNav';
 import HelpScreen from './src/components/HelpScreen';
@@ -175,14 +176,16 @@ function Shell({
           { paddingTop: insets.top + 16, paddingBottom: showFooter ? 0 : insets.bottom + 16 },
         ]}
       >
-        {panel !== 'board' && panel !== 'home' && (
-          <Text style={[styles.title, { color: palette.ink }]}>{t.appTitle}</Text>
-        )}
         {/* Redundant on 'settings': it's a footer tab (CANGUPA-31), already one
             tap from Home, so the back link only duplicated that path. */}
         {panel !== 'board' && panel !== 'home' && panel !== 'settings' && (
-          <Pressable style={styles.back} onPress={() => setPanel('board')}>
-            <Text style={{ color: palette.ink }}>{t.common.back}</Text>
+          <Pressable
+            onPress={() => setPanel('board')}
+            accessibilityRole="button"
+            accessibilityLabel={t.common.back}
+            style={[styles.backButton, { backgroundColor: palette.panel }]}
+          >
+            <BackArrow color={palette.ink} />
           </Pressable>
         )}
         <View style={styles.body}>{content}</View>
@@ -209,15 +212,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 14,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '600',
-    textAlign: 'center',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  back: {
-    alignSelf: 'flex-start',
+  backButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   body: {
     flex: 1,

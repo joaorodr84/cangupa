@@ -63,7 +63,7 @@ test('the home screen\'s Rules button opens the rules screen, and Back returns t
   await fireEvent.press(await screen.findByText('Rules'));
   expect(screen.getByText('Rules')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('‹ Back'));
+  await fireEvent.press(screen.getByLabelText('‹ Back'));
   expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
 });
 
@@ -94,7 +94,7 @@ test('the settings screen has no back button of its own, unlike the rules screen
 
   await fireEvent.press(await screen.findByTestId('footer-settings'));
   expect(await screen.findByText('Settings')).toBeTruthy();
-  expect(screen.queryByText('‹ Back')).toBeNull();
+  expect(screen.queryByLabelText('‹ Back')).toBeNull();
 });
 
 test('the footer nav opens the stats screen, which reflects a cleared level', async () => {
