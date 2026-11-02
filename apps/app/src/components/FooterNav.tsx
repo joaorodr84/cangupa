@@ -72,9 +72,14 @@ interface FooterNavProps {
   readonly active: FooterTab;
   readonly palette: Palette;
   readonly onSelect: (tab: FooterTab) => void;
+  // The device's bottom safe-area inset (notch/home-indicator devices),
+  // passed down rather than read here with useSafeAreaInsets so the bar
+  // still renders flush and full-width without a SafeAreaProvider ancestor
+  // in FooterNav.test.tsx.
+  readonly insetBottom: number;
 }
 
-export default function FooterNav({ active, palette, onSelect }: FooterNavProps) {
+export default function FooterNav({ active, palette, onSelect, insetBottom }: FooterNavProps) {
   const t = useStrings();
   const tabs: readonly { readonly id: FooterTab; readonly label: string }[] = [
     { id: 'home', label: t.tabs.home },
@@ -83,7 +88,9 @@ export default function FooterNav({ active, palette, onSelect }: FooterNavProps)
     { id: 'settings', label: t.tabs.settings },
   ];
   return (
-    <View style={[styles.wrap, { backgroundColor: palette.panel, borderTopColor: palette.muted }]}>
+    <View
+      style={[styles.wrap, { backgroundColor: palette.panel, borderTopColor: palette.muted, paddingBottom: insetBottom }]}
+    >
       {tabs.map((tab) => {
         const selected = tab.id === active;
         return (

@@ -484,6 +484,28 @@ green, 258 tests.
 
 ---
 
+## Era 17 — Nov 2 (continued): the footer nav sits flush against the bottom edge
+
+CANGUPA-45 fixes `FooterNav` sitting inset from the screen's edges instead
+of flush against them. It was rendered inside `App.tsx`'s padded `content`
+View, which added `paddingHorizontal: 16` (so the bar didn't span the full
+screen width) and `paddingBottom: insets.bottom + 16` after it (so the bar
+floated above the bottom edge instead of sitting flush against it).
+`FooterNav` now takes an `insetBottom` prop and applies it as its own
+`paddingBottom`, so it still clears the home-indicator safe area without
+depending on the padded box's bottom padding. In `App.tsx`, `FooterNav` was
+moved out of the padded `content` View to be a direct sibling in the outer
+`app` View, so it spans the full screen width and sits flush at the bottom
+edge, and `content`'s own `paddingBottom` is set to 0 whenever a footer tab
+is showing, avoiding a doubled gap. `FooterNav.test.tsx`'s four render calls
+were updated to pass the new required `insetBottom` prop (0, since those
+tests don't exercise safe-area insets).
+
+One commit. Verified with the full `apps/app` Jest suite green (258 tests)
+and a clean `npx tsc --noEmit`.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

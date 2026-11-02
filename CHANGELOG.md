@@ -100,6 +100,13 @@ Open work is listed in [TODO.md](TODO.md).
   equivalent button in both Light and Dark. The Jogar and Regras buttons
   are also bigger, matching DigiSpin's sizing.
 
+### Fixed
+
+- The footer nav bar now spans the full screen width and sits flush
+  against the bottom edge; it previously inherited the padded content
+  area's horizontal margins and extra bottom spacing, which narrowed it
+  and left it floating above the bottom edge instead.
+
 ### Removed
 
 - The board toolbar's ‹ previous-level button is gone, with no

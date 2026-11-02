@@ -6,7 +6,7 @@ import { DARK } from '../theme/palette';
 const palette = DARK;
 
 test('renders all four tabs, labelled for accessibility rather than as visible text', async () => {
-  await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} />);
+  await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} insetBottom={0} />);
 
   expect(screen.getByLabelText('Home')).toBeTruthy();
   expect(screen.getByLabelText('Levels')).toBeTruthy();
@@ -15,7 +15,7 @@ test('renders all four tabs, labelled for accessibility rather than as visible t
 });
 
 test('only the active tab is marked selected', async () => {
-  await render(<FooterNav active="stats" palette={palette} onSelect={jest.fn()} />);
+  await render(<FooterNav active="stats" palette={palette} onSelect={jest.fn()} insetBottom={0} />);
 
   expect(screen.getByTestId('footer-stats').props.accessibilityState).toEqual({ selected: true });
   expect(screen.getByTestId('footer-home').props.accessibilityState).toEqual({ selected: false });
@@ -24,7 +24,7 @@ test('only the active tab is marked selected', async () => {
 });
 
 test('each tab renders its own icon', async () => {
-  await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} />);
+  await render(<FooterNav active="home" palette={palette} onSelect={jest.fn()} insetBottom={0} />);
 
   expect(screen.getByTestId('footer-icon-home')).toBeTruthy();
   expect(screen.getByTestId('footer-icon-levels')).toBeTruthy();
@@ -34,7 +34,7 @@ test('each tab renders its own icon', async () => {
 
 test('pressing a tab reports its id', async () => {
   const onSelect = jest.fn();
-  await render(<FooterNav active="home" palette={palette} onSelect={onSelect} />);
+  await render(<FooterNav active="home" palette={palette} onSelect={onSelect} insetBottom={0} />);
 
   await fireEvent.press(screen.getByTestId('footer-levels'));
 

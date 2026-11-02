@@ -98,6 +98,8 @@ function Shell({
     setPanel('board');
   };
 
+  const showFooter = isFooterTab(panel);
+
   let content;
   if (panel === 'home') {
     content = (
@@ -164,7 +166,15 @@ function Shell({
   return (
     <View style={[styles.app, { backgroundColor: palette.bg2 }]}>
       <Starfield stars={palette.stars} />
-      <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
+      <View
+        style={[
+          styles.content,
+          // Below a footer tab, the bar itself (not this padding) reaches the
+          // bottom edge and carries its own insets.bottom — see FooterNav's
+          // insetBottom prop — so this box owes no bottom padding of its own.
+          { paddingTop: insets.top + 16, paddingBottom: showFooter ? 0 : insets.bottom + 16 },
+        ]}
+      >
         {panel !== 'board' && panel !== 'home' && (
           <Text style={[styles.title, { color: palette.ink }]}>{t.appTitle}</Text>
         )}
@@ -176,8 +186,11 @@ function Shell({
           </Pressable>
         )}
         <View style={styles.body}>{content}</View>
-        {isFooterTab(panel) && <FooterNav active={panel} palette={palette} onSelect={setPanel} />}
       </View>
+      {/* Outside the padded content box (CANGUPA-45), so the bar spans the
+          screen's full width and sits flush against the bottom edge, instead
+          of inheriting content's horizontal padding and insets.bottom gap. */}
+      {showFooter && <FooterNav active={panel} palette={palette} onSelect={setPanel} insetBottom={insets.bottom} />}
       {/* Light status-bar content reads against the dark palette's near-black
           bg2; the light palette needs the inverse (DigiSpin's App.tsx does
           the same identity check rather than going through resolvedThemeOf,
