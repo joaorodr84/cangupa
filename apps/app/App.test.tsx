@@ -24,16 +24,30 @@ test('renders without crashing', async () => {
   expect(toJSON()).not.toBeNull();
 });
 
+test('starts on the home screen, with no way back to it once past it', async () => {
+  await render(<App />);
+
+  expect(await screen.findByText('Jogar')).toBeTruthy();
+  expect(screen.queryByText(/Nível \d+\/50/)).toBeNull();
+
+  await fireEvent.press(screen.getByText('Jogar'));
+  expect(await screen.findByText(/Nível 1\/50/)).toBeTruthy();
+  expect(screen.queryByText('Jogar')).toBeNull();
+  expect(screen.queryByText('‹ Voltar')).toBeNull();
+});
+
 test('resumes the last-played level', async () => {
   await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: [0], level: 2 }));
 
   await render(<App />);
+  await fireEvent.press(await screen.findByText('Jogar'));
 
   expect(await screen.findByText(/Nível 3\/50/)).toBeTruthy();
 });
 
 test('opens the levels screen and picking a level returns to the board', async () => {
   await render(<App />);
+  await fireEvent.press(await screen.findByText('Jogar'));
 
   await fireEvent.press(await screen.findByText('Níveis'));
   expect(screen.getByTestId('level-2')).toBeTruthy();
@@ -44,6 +58,7 @@ test('opens the levels screen and picking a level returns to the board', async (
 
 test('opens the rules screen and returns to the board', async () => {
   await render(<App />);
+  await fireEvent.press(await screen.findByText('Jogar'));
 
   await fireEvent.press(await screen.findByText('Regras'));
   expect(screen.getByText('Regras')).toBeTruthy();
@@ -54,6 +69,7 @@ test('opens the rules screen and returns to the board', async () => {
 
 test('opens the settings screen and changing the theme is reflected on return', async () => {
   await render(<App />);
+  await fireEvent.press(await screen.findByText('Jogar'));
 
   await fireEvent.press(await screen.findByText('Definições'));
   await fireEvent.press(screen.getByTestId('theme-ice'));

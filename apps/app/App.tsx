@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import BoardScreen from './src/components/BoardScreen';
 import HelpScreen from './src/components/HelpScreen';
+import HomeScreen from './src/components/HomeScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import Starfield from './src/components/Starfield';
@@ -15,7 +16,7 @@ import { useProgress } from './src/state/useProgress';
 import { useSettings } from './src/state/useSettings';
 import { paletteFor, type Palette } from './src/theme/palette';
 
-type Panel = 'board' | 'levels' | 'help' | 'settings';
+type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings';
 
 // The app root. Settings and progress are read before anything is shown, so
 // no panel flashes the wrong theme or the wrong level while they load —
@@ -70,7 +71,7 @@ function Shell({
   onClearProgress,
 }: ShellProps) {
   const insets = useSafeAreaInsets();
-  const [panel, setPanel] = useState<Panel>('board');
+  const [panel, setPanel] = useState<Panel>('home');
   const palette = paletteFor(settings.theme);
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
 
@@ -80,7 +81,9 @@ function Shell({
   };
 
   let content;
-  if (panel === 'levels') {
+  if (panel === 'home') {
+    content = <HomeScreen palette={palette} onPlay={() => setPanel('board')} />;
+  } else if (panel === 'levels') {
     content = (
       <LevelsScreen
         totalLevels={LEVELS.length}
@@ -136,7 +139,7 @@ function Shell({
       <Starfield stars={palette.stars} />
       <View style={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
         <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
-        {panel !== 'board' && (
+        {panel !== 'board' && panel !== 'home' && (
           <Pressable style={styles.back} onPress={() => setPanel('board')}>
             <Text style={{ color: palette.ink }}>‹ Voltar</Text>
           </Pressable>

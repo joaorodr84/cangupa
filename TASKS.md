@@ -28,7 +28,6 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | TILE-JUMPER-5 | P3 | Play a sound effect on falling. Depends on `TILE-JUMPER-3` — there's nothing to cue a sound off until falling itself exists | open | — |
 | TILE-JUMPER-6 | P3 | Redo the main character's art, and draw a small joey riding inside the pouch | open | — |
 | TILE-JUMPER-7 | P4 | Design a logo for Cangupa — unscoped: where it's used (title screen, favicon, README) and style aren't decided yet | open | — |
-| CANGUPA-28 | P1 | Add a home screen to `apps/app`, shown on launch instead of dropping straight into the board: the Cangupa logo plus a single button that jumps into the next level to play (first undone level, same resume logic `App.tsx` already tracks via `progress.level`) | open | — |
 
 ## Done
 
@@ -55,3 +54,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-24 | P2 | Full parity pass on iOS/Android/web before calling the port done | done | 2026-11-01 | — |
 | CANGUPA-25 | P4 | Configure EAS build profiles and store metadata for `apps/app` | done | 2026-11-02 | — |
 | CANGUPA-27 | P2 | Add `start-services`/`stop-services` agents for `apps/app`'s Expo dev server, on Sphinx's and DigiSpin's pattern | done | 2026-11-02 | — |
+| CANGUPA-28 | P1 | Add a home screen to `apps/app`, shown on launch instead of dropping straight into the board: the Cangupa logo plus a single button that jumps into the next level to play (first undone level, same resume logic `App.tsx` already tracks via `progress.level`) | done | 2026-11-02 | — |

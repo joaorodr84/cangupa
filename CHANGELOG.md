@@ -7,6 +7,17 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-02
+
+### Added
+
+- The app now opens on a home screen with the Cangupa title and a single
+  "Jogar" button, instead of dropping straight onto the board. Pressing
+  it goes straight to the board at the level you last left off on, same
+  as before. There's no way back to this screen once you've moved past
+  it, same as the board's own back button, which only ever returns as
+  far as the board.
+
 ## 2026-11-01
 
 ### Added

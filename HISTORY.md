@@ -137,6 +137,26 @@ rather than revisited. No native iOS or Android run happened in this
 session, for lack of a simulator or device — that still needs a session
 that has one.
 
+## Era 5 — Nov 2: a front door for the app
+
+CANGUPA-28 gives `apps/app` a screen of its own to open on. Launching it
+had always dropped straight into the board — `App.tsx`'s `panel` state
+started at `'board'` — with no entry point, unlike every other screen in
+the app, which is only ever reached by tapping something. A new `'home'`
+`Panel` variant now comes first: `HomeScreen.tsx` shows a single "Jogar"
+button that moves to `'board'`, landing on whichever level
+`progress.level` was already tracking for resume. It carries no logo
+asset of its own, reusing the "Cangupa" title `Shell` already renders on
+every panel. `'home'` joins `'board'` in the condition that hides the
+"‹ Voltar" button, since there is no way back to it once past it — the
+same rule the back button already followed for `'board'`.
+
+One commit. `App.test.tsx`'s existing tests now press "Jogar" first,
+since render no longer lands on the board directly; a new test asserts
+the app starts on the home screen and that pressing Jogar removes it
+with no way back. Verified with the full Jest suite (18 suites, 207
+tests across `apps/app`) and `tsc --noEmit`, both passing.
+
 ---
 
 ## Patterns, and what's still open

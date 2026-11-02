@@ -39,12 +39,3 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
-- [P1] `CANGUPA-28` — Add a home screen to `apps/app`. Launching the app
-  currently drops straight into the board (`App.tsx`'s `panel` state starts
-  at `'board'`); instead it should start on a new screen with the Cangupa
-  logo and one button that jumps straight into the next level to play,
-  reusing the resume level the app already tracks (`progress.level`, read
-  in [App.tsx](apps/app/App.tsx)). Only the launch screen changes — the
-  existing in-board nav (Níveis / Regras / Definições) and the board screen
-  itself are unaffected; there's no way back to this new screen once past
-  it, same as the existing "Voltar" only ever returning to the board.
