@@ -378,6 +378,27 @@ own icon.
 One commit. Verified with the full Jest suite (234 tests across 22
 suites) and `tsc --noEmit`, both passing.
 
+## Era 13 — Nov 2 (continued): the settings screen loses its redundant back button and borrows DigiSpin's row layout
+
+CANGUPA-37 is two related changes to the settings screen. Shell's
+`panel !== 'board' && panel !== 'home'` guard around the ‘‹ Voltar’ back
+button gains a third exclusion, `panel !== 'settings'`: the button was
+redundant there, since Settings is already a footer tab (CANGUPA-31's
+`FooterNav`) one tap from Home, and the button only duplicated that
+path. The ‘Cangupa’ title text stays. Separately, `SettingsScreen.tsx`
+is rearranged into labelled sections of full-width rows, styled after
+the sibling DigiSpin app's own `SettingsScreen.tsx`: an uppercase
+section heading (‘Tema’, ‘Jogabilidade’) above a group of rows, each
+theme choice now a row with a trailing selection mark instead of a
+small rounded chip, and the three toggles grouped visually under
+‘Jogabilidade’ instead of sitting as loose rows. Functionality, test
+IDs and text are unchanged. A new `App.test.tsx` test confirms the
+settings screen renders with no ‘‹ Voltar’ text, covering the Shell
+change from the outside.
+
+One commit. Verified with the full Jest suite (235 tests across 22
+suites) and `tsc --noEmit`, both passing.
+
 ---
 
 ## Patterns, and what's still open

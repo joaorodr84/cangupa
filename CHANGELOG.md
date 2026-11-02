@@ -68,6 +68,10 @@ Open work is listed in [TODO.md](TODO.md).
   changing color rather than a gold outline. The tray is now a flat
   strip with a hairline top border instead of floating pill buttons. The
   names are still there for screen readers, just not as visible text.
+- The settings screen is now laid out as full-width rows grouped under
+  "Tema" and "Jogabilidade" section headings, instead of a loose stack of
+  a theme chip row and separate toggle rows. Each theme choice is now its
+  own row with a trailing selection mark instead of a small rounded chip.
 
 ### Removed
 
@@ -80,6 +84,9 @@ Open work is listed in [TODO.md](TODO.md).
 - The board screen's old inline "Níveis" / "Regras" / "Definições" button
   row below the board is gone, replaced by the new footer nav. Regras is
   no longer reachable while playing — only from the home screen's button.
+- The settings screen's "‹ Voltar" back button is gone — Settings is
+  already one tap from Home via the footer nav, so the button only
+  duplicated that path. The rules screen still has its own back button.
 
 ## 2026-11-01
 

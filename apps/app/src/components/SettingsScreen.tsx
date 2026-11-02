@@ -2,7 +2,14 @@
 // settings wiring and clear-progress confirm(). Text stays the Portuguese
 // of the original — the web version has no i18n layer either, so this port
 // doesn't add one.
-import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+//
+// Laid out in labelled sections of rounded rows (CANGUPA-37), matching
+// DigiSpin's SettingsScreen.tsx: an uppercase section label above a group of
+// full-width rows, each with a trailing mark for the selected choice. Cangupa
+// has only one radio-style group (Tema) plus a toggle group, so it keeps
+// those two and drops DigiSpin's digit-colour and language sections, which
+// this game has nothing equivalent to.
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { type Settings, THEMES, type Theme } from '../state/settings';
 import { type Palette } from '../theme/palette';
@@ -35,6 +42,7 @@ export default function SettingsScreen({
   onClearProgress,
 }: SettingsScreenProps) {
   const ink = { color: palette.ink };
+  const muted = { color: palette.muted };
 
   const confirmClear = () => {
     Alert.alert('Apagar todo o progresso?', undefined, [
@@ -44,47 +52,54 @@ export default function SettingsScreen({
   };
 
   return (
-    <View style={styles.wrap}>
+    <ScrollView contentContainerStyle={styles.wrap}>
       <Text style={[styles.heading, ink]}>Definições</Text>
 
-      <Text style={ink}>Tema</Text>
-      <View style={styles.row}>
-        {THEMES.map((theme) => (
-          <Pressable
-            key={theme}
-            testID={`theme-${theme}`}
-            onPress={() => onChangeTheme(theme)}
-            style={[
-              styles.chip,
-              { backgroundColor: palette.panel },
-              theme === settings.theme && styles.chipSelected,
-            ]}
-          >
-            <Text style={ink}>{THEME_LABELS[theme]}</Text>
-          </Pressable>
-        ))}
+      <Text style={[styles.sectionLabel, muted]}>Tema</Text>
+      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel="Tema">
+        {THEMES.map((theme) => {
+          const selected = theme === settings.theme;
+          return (
+            <Pressable
+              key={theme}
+              testID={`theme-${theme}`}
+              onPress={() => onChangeTheme(theme)}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: selected }}
+              style={[styles.row, { backgroundColor: palette.panel }, selected && styles.rowSelected]}
+            >
+              <Text style={ink}>{THEME_LABELS[theme]}</Text>
+              <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
+            </Pressable>
+          );
+        })}
       </View>
 
-      <ToggleRow
-        testID="toggle-jumps"
-        label="Saltos de duas casas"
-        value={settings.jumps}
-        onChange={onChangeJumps}
-        ink={ink}
-      />
-      <ToggleRow
-        testID="toggle-hints"
-        label="Destacar jogadas possíveis"
-        value={settings.hints}
-        onChange={onChangeHints}
-        ink={ink}
-      />
-      <ToggleRow testID="toggle-anim" label="Animações" value={settings.anim} onChange={onChangeAnim} ink={ink} />
+      <Text style={[styles.sectionLabel, muted]}>Jogabilidade</Text>
+      <View style={styles.group}>
+        <ToggleRow
+          testID="toggle-jumps"
+          label="Saltos de duas casas"
+          value={settings.jumps}
+          onChange={onChangeJumps}
+          ink={ink}
+          palette={palette}
+        />
+        <ToggleRow
+          testID="toggle-hints"
+          label="Destacar jogadas possíveis"
+          value={settings.hints}
+          onChange={onChangeHints}
+          ink={ink}
+          palette={palette}
+        />
+        <ToggleRow testID="toggle-anim" label="Animações" value={settings.anim} onChange={onChangeAnim} ink={ink} palette={palette} />
+      </View>
 
-      <Pressable style={[styles.button, { backgroundColor: palette.panel }]} onPress={confirmClear}>
+      <Pressable style={[styles.row, { backgroundColor: palette.panel }]} onPress={confirmClear}>
         <Text style={ink}>Apagar progresso</Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -94,11 +109,12 @@ interface ToggleRowProps {
   readonly value: boolean;
   readonly onChange: (value: boolean) => void;
   readonly ink: { color: string };
+  readonly palette: Palette;
 }
 
-function ToggleRow({ testID, label, value, onChange, ink }: ToggleRowProps) {
+function ToggleRow({ testID, label, value, onChange, ink, palette }: ToggleRowProps) {
   return (
-    <View style={styles.toggleRow}>
+    <View style={[styles.row, { backgroundColor: palette.panel }]}>
       <Text style={ink}>{label}</Text>
       <Switch testID={testID} value={value} onValueChange={onChange} />
     </View>
@@ -108,36 +124,40 @@ function ToggleRow({ testID, label, value, onChange, ink }: ToggleRowProps) {
 const styles = StyleSheet.create({
   wrap: {
     gap: 12,
+    padding: 4,
   },
   heading: {
     fontSize: 18,
     fontWeight: '600',
   },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  group: {
     gap: 8,
   },
-  chip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 999,
+  row: {
+    minHeight: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: 'transparent',
   },
-  chipSelected: {
+  rowSelected: {
     borderColor: 'rgba(255,214,90,0.9)',
   },
-  toggleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 12,
-  },
-  button: {
-    alignSelf: 'flex-start',
-    paddingVertical: 9,
-    paddingHorizontal: 18,
-    borderRadius: 999,
+  mark: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
   },
 });

@@ -77,6 +77,14 @@ test('the footer nav opens the settings screen, and changing the theme is reflec
   expect(JSON.parse(saved ?? '{}').theme).toBe('ice');
 });
 
+test('the settings screen has no back button of its own, unlike the rules screen', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-settings'));
+  expect(await screen.findByText('Definições')).toBeTruthy();
+  expect(screen.queryByText('‹ Voltar')).toBeNull();
+});
+
 test('the footer nav opens the stats screen, which reflects a cleared level', async () => {
   await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: [0], level: 1, bestMoves: { 0: 3 } }));
 

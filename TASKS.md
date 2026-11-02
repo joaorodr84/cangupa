@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-37`**
+**Next ID to assign: `CANGUPA-38`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -63,3 +63,4 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-34 | P1 | Wire the actual Cangupa logo (TILE-JUMPER-7's `assets/png/cangupa-logo-*-vertical.png`, trimmed of its canvas margin) into the `apps/app` home screen (`HomeScreen.tsx`, CANGUPA-29), which until now stood in for it with Shell's plain "Cangupa" text title | done | 2026-11-02 | — |
 | CANGUPA-35 | P1 | Give the `apps/app` board screen (`BoardHud.tsx`) a plain arrow back button, upper-left, matching DigiSpin's board-header back icon, pointing to the home screen — CANGUPA-32 removed the previous-level `‹` toolbar button outright with no replacement, leaving the board screen with no way back to the home screen at all | done | 2026-11-02 | — |
 | CANGUPA-36 | P2 | Swap the home screen's `FooterNav` text labels for icons, styled after DigiSpin's bottom-nav buttons | done | 2026-11-02 | — |
+| CANGUPA-37 | P2 | On `apps/app`'s settings screen: drop the `‹ Voltar` back button, redundant now that Settings is a footer tab (CANGUPA-31) a Home tap away; and rearrange the Tema/toggle items into labelled sections of full-width rows, similarly to DigiSpin's `SettingsScreen.tsx` | done | 2026-11-02 | — |

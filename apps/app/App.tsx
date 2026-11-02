@@ -158,7 +158,9 @@ function Shell({
         {panel !== 'board' && panel !== 'home' && (
           <Text style={[styles.title, { color: palette.ink }]}>Cangupa</Text>
         )}
-        {panel !== 'board' && panel !== 'home' && (
+        {/* Redundant on 'settings': it's a footer tab (CANGUPA-31), already one
+            tap from Home, so "Voltar" only duplicated that path. */}
+        {panel !== 'board' && panel !== 'home' && panel !== 'settings' && (
           <Pressable style={styles.back} onPress={() => setPanel('board')}>
             <Text style={{ color: palette.ink }}>‹ Voltar</Text>
           </Pressable>
