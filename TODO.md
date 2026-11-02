@@ -54,11 +54,16 @@ The priority can change at any time; the ID never does.
   "Stats" tab.
 - [P1] `CANGUPA-31` — Add a reusable bottom-footer nav to `apps/app`: four
   tabs, in order — Home, Levels, Stats, Settings — shown on the home,
-  levels, stats and settings screens. It replaces the board screen's
-  current inline nav row (`Níveis` / `Regras` / `Definições`, built in
-  [App.tsx](apps/app/App.tsx)'s `Shell`) with the same four-tab footer.
-  Regras (the rules/help screen) drops out of the top-level nav as part of
-  this — `CANGUPA-29` gives it a new way in, a button on the home screen —
-  so the settings screen's own content is unaffected and stays exactly as
-  `CANGUPA-21` built it. Blocked on `CANGUPA-30`: the Stats tab has nowhere
-  to go until that screen exists.
+  levels, stats and settings screens. The Levels tab opens the existing
+  levels screen unchanged
+  ([LevelsScreen.tsx](apps/app/src/components/LevelsScreen.tsx),
+  CANGUPA-20) — everything already reachable from today's `Níveis` button.
+  The Settings tab opens the existing settings screen unchanged
+  (CANGUPA-21). Once Levels, Rules (`CANGUPA-29`'s home-screen button) and
+  Settings all work through these new entry points, remove the board
+  screen's now-redundant inline nav row (`Níveis` / `Regras` /
+  `Definições`, built in [App.tsx](apps/app/App.tsx)'s `Shell`) as this
+  task's finishing step — Regras has no footer tab of its own, so
+  `CANGUPA-29`'s home-screen button becomes its only entry point. Blocked
+  on `CANGUPA-30`: the Stats tab has nowhere to go until that screen
+  exists.
