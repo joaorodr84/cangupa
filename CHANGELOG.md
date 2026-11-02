@@ -91,6 +91,10 @@ Open work is listed in [TODO.md](TODO.md).
   and panel colours all match. Tile and edge colours are unchanged in
   value, but no longer differ between Light and Dark — they're now the
   same fixed colours in both, as in DigiSpin.
+- Internal: the app's Light and Dark backgrounds, frame, pit, text and
+  panel colours now read live from the shared theme package instead of a
+  copied-in snapshot of it, so a future update to that package's colours
+  reaches this app automatically. No visible change today.
 
 ### Removed
 

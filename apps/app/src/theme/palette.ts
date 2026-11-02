@@ -1,18 +1,14 @@
-// Ported from apps/web-classic/style.css's `[data-theme="..."]` custom
-// property blocks. Colour values are copied as-is; CSS custom properties
-// with no React Native equivalent (gradients, box-shadows) are approximated
-// in the board screen that consumes this palette, not here.
-//
-// ThemeMode/SystemScheme (CANGUPA-40) come from the shared @joaorodr84/themes
-// package, the same mode-resolution types DigiSpin uses (DIGISPIN-194), so
-// both apps agree on what 'system'/'light'/'dark' and a device's reported
-// scheme mean. The package's own DARK/LIGHT/paletteFor are DigiSpin's own
-// shape (surface/text tokens for a well-and-tray board) and do not fit this
-// game's gradient-background, tile-based board, so Palette, DARK, LIGHT and
-// paletteFor below stay local, built the same way DigiSpin's package builds
-// its own two sets.
+// Palette's shape is this game's own — a gradient-background, tile-based
+// board, not DigiSpin's well-and-tray one — so it stays local rather than
+// importing @joaorodr84/themes's own Palette/paletteFor outright. ThemeMode
+// and SystemScheme (CANGUPA-40) do come from that package, the same
+// mode-resolution types DigiSpin uses (DIGISPIN-194), so both apps agree on
+// what 'system'/'light'/'dark' and a device's reported scheme mean. DARK and
+// LIGHT below (CANGUPA-43) read their surface/text fields live from the
+// package's own DARK/LIGHT, so this app's two appearances track DigiSpin's
+// exactly as that package evolves, instead of holding a hex snapshot of it.
 import { type ImageSourcePropType } from 'react-native';
-import { type SystemScheme, type ThemeMode } from '@joaorodr84/themes';
+import { DARK as THEMES_DARK, LIGHT as THEMES_LIGHT, type SystemScheme, type ThemeMode } from '@joaorodr84/themes';
 
 export type { SystemScheme, ThemeMode };
 
@@ -72,44 +68,45 @@ const STARFIELD: readonly Star[] = [
   { xPct: 22, yPct: 44, size: 1.6, color: '#fff' },
 ];
 
-// DARK and LIGHT's surface/text fields (CANGUPA-42) are copied verbatim from
-// @joaorodr84/themes's own DARK/LIGHT (bg1/bg2 both set to its flat
-// `background` — this app paints bg2 only, nothing here renders an actual
-// gradient yet) — frame from `surface`, pit from `wellBody`, panel from
-// `panel`, ink from `text`, muted from `textMuted` — so this app's two
-// appearances are pixel-identical to DigiSpin's, not just colour-matched.
+// DARK and LIGHT's surface/text fields (CANGUPA-43) read live from
+// @joaorodr84/themes's own DARK/LIGHT — bg1/bg2 both take its flat
+// `background` (this app paints bg2 only, nothing here renders an actual
+// gradient yet), frame takes `surface`, pit takes `wellBody`, panel takes
+// `panel`, ink takes `text`, muted takes `textMuted` — so a version bump of
+// that package carries its colour changes straight into this app, rather
+// than this file holding a hex snapshot that drifts out of sync with it.
 // tile/tile2/edge/edge2 are this game's own accent colours and, per that
 // package's design comment, belong to the consuming app and stay fixed
 // across both modes rather than being themed; the starfield (dark only) is
 // the same kind of app-owned flourish the package has no concept of.
 export const DARK: Palette = {
-  bg1: '#0c0d10',
-  bg2: '#0c0d10',
-  frame: '#15171c',
-  pit: '#1c1f26',
+  bg1: THEMES_DARK.background,
+  bg2: THEMES_DARK.background,
+  frame: THEMES_DARK.surface,
+  pit: THEMES_DARK.wellBody,
   tile: '#4cc9f0',
   tile2: '#ffc857',
   edge: '#1f7a99',
   edge2: '#a8741a',
-  ink: '#e6e8ec',
-  muted: '#8a909c',
-  panel: '#181b21',
+  ink: THEMES_DARK.text,
+  muted: THEMES_DARK.textMuted,
+  panel: THEMES_DARK.panel,
   stars: STARFIELD,
   logo: LOGO_DARK,
 };
 
 export const LIGHT: Palette = {
-  bg1: '#eef0f4',
-  bg2: '#eef0f4',
-  frame: '#ffffff',
-  pit: '#d9dee6',
+  bg1: THEMES_LIGHT.background,
+  bg2: THEMES_LIGHT.background,
+  frame: THEMES_LIGHT.surface,
+  pit: THEMES_LIGHT.wellBody,
   tile: '#4cc9f0',
   tile2: '#ffc857',
   edge: '#1f7a99',
   edge2: '#a8741a',
-  ink: '#1d1d1f',
-  muted: '#62676f',
-  panel: '#f7f8fa',
+  ink: THEMES_LIGHT.text,
+  muted: THEMES_LIGHT.textMuted,
+  panel: THEMES_LIGHT.panel,
   stars: [],
   logo: LOGO_LIGHT,
 };

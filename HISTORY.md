@@ -471,7 +471,11 @@ upgrade, though other settings and progress are untouched.
 CANGUPA-42 later replaces DARK and LIGHT's carried-over cosmos/ice colours
 with values copied verbatim from @joaorodr84/themes's own DARK/LIGHT, so
 the two appearances are colour-identical to DigiSpin's, not just matching
-its light/dark/system model.
+its light/dark/system model. CANGUPA-43 then replaces that verbatim copy
+with a live read of @joaorodr84/themes's own DARK/LIGHT fields, so a
+future version bump of that package carries its colour changes into this
+app automatically instead of drifting out of sync with a frozen hex
+snapshot.
 
 One commit. Verified with `npx tsc --noEmit` clean and the full Jest suite
 green, 258 tests.
