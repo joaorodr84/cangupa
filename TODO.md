@@ -39,13 +39,15 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
-- [P1] `CANGUPA-29` — On the `apps/app` home screen, stack three things top
-  to bottom: the logo, the number of the level the Play button is about to
-  open, then the button itself. [HomeScreen.tsx](apps/app/src/components/HomeScreen.tsx)
-  (from CANGUPA-28) currently only renders the button — no level number is
-  shown anywhere on that screen, and the "logo" is the `Cangupa` wordmark
-  `App.tsx`'s `Shell` already renders above every panel, home included, so
-  it only needs the level number added in between.
+- [P1] `CANGUPA-29` — On the `apps/app` home screen, stack four things top
+  to bottom: the logo; the number of the level the Play button is about to
+  open; the Play button; and, underneath that, a Rules button that opens
+  the existing Regras/rules screen
+  ([HelpScreen.tsx](apps/app/src/components/HelpScreen.tsx), from
+  CANGUPA-26). [HomeScreen.tsx](apps/app/src/components/HomeScreen.tsx)
+  (from CANGUPA-28) currently only renders the Play button — no level
+  number or Rules button yet — and the "logo" is the `Cangupa` wordmark
+  `App.tsx`'s `Shell` already renders above every panel, home included.
 - [P2] `CANGUPA-30` — Build a stats screen for `apps/app`. Unscoped: which
   stats to show (levels cleared, moves taken, time, streak, something else)
   isn't decided yet. Exists as a destination for `CANGUPA-31`'s footer
@@ -54,7 +56,9 @@ The priority can change at any time; the ID never does.
   tabs, in order — Home, Levels, Stats, Settings — shown on the home,
   levels, stats and settings screens. It replaces the board screen's
   current inline nav row (`Níveis` / `Regras` / `Definições`, built in
-  [App.tsx](apps/app/App.tsx)'s `Shell`) with the same four-tab footer, so
-  Regras (the rules/help screen) drops out of the top-level nav and needs a
-  new way in — e.g. a link from the settings screen. Blocked on
-  `CANGUPA-30`: the Stats tab has nowhere to go until that screen exists.
+  [App.tsx](apps/app/App.tsx)'s `Shell`) with the same four-tab footer.
+  Regras (the rules/help screen) drops out of the top-level nav as part of
+  this — `CANGUPA-29` gives it a new way in, a button on the home screen —
+  so the settings screen's own content is unaffected and stays exactly as
+  `CANGUPA-21` built it. Blocked on `CANGUPA-30`: the Stats tab has nowhere
+  to go until that screen exists.
