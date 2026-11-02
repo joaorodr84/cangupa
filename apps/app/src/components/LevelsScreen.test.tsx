@@ -1,11 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import LevelsScreen from './LevelsScreen';
-import { type Progress } from '../state/progress';
+import { NO_PROGRESS, type Progress } from '../state/progress';
 import { paletteFor } from '../theme/palette';
 
 const palette = paletteFor('cosmos');
-const NO_PROGRESS: Progress = { done: [], level: 0 };
 
 test('renders one button per level', async () => {
   await render(
@@ -32,7 +31,7 @@ test('only the first level is unlocked with no progress', async () => {
 });
 
 test('a level unlocks once the one before it is cleared', async () => {
-  const progress: Progress = { done: [0], level: 0 };
+  const progress: Progress = { done: [0], level: 0, bestMoves: {} };
   const onSelectLevel = jest.fn();
   await render(
     <LevelsScreen totalLevels={3} progress={progress} currentLevel={0} palette={palette} onSelectLevel={onSelectLevel} />,
@@ -43,7 +42,7 @@ test('a level unlocks once the one before it is cleared', async () => {
 });
 
 test('a cleared level is marked done', async () => {
-  const progress: Progress = { done: [0], level: 1 };
+  const progress: Progress = { done: [0], level: 1, bestMoves: {} };
   await render(
     <LevelsScreen totalLevels={2} progress={progress} currentLevel={1} palette={palette} onSelectLevel={jest.fn()} />,
   );
@@ -54,7 +53,7 @@ test('a cleared level is marked done', async () => {
 });
 
 test('the current level is outlined', async () => {
-  const progress: Progress = { done: [0], level: 1 };
+  const progress: Progress = { done: [0], level: 1, bestMoves: {} };
   await render(
     <LevelsScreen totalLevels={2} progress={progress} currentLevel={1} palette={palette} onSelectLevel={jest.fn()} />,
   );

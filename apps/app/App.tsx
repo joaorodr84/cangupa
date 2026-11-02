@@ -54,7 +54,7 @@ interface ShellProps {
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
   readonly progress: Progress;
-  readonly onLevelDone: (levelIndex: number) => void;
+  readonly onLevelDone: (levelIndex: number, moves: number) => void;
   readonly onChangeLevel: (levelIndex: number) => void;
   readonly onClearProgress: () => void;
 }
@@ -134,7 +134,7 @@ function Shell({
         totalLevels={LEVELS.length}
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
         onNext={() => onChangeLevel(currentLevel + 1)}
-        onLevelComplete={() => onLevelDone(currentLevel)}
+        onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
       />
     );
   }

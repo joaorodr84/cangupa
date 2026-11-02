@@ -26,8 +26,9 @@ interface BoardScreenProps {
   readonly hasNext: boolean;
   readonly onNext: () => void;
   // Fired once per win (not again until a reset is followed by another win),
-  // the moment ui.js's move() would have added the level to progress.done.
-  readonly onLevelComplete?: () => void;
+  // the moment ui.js's move() would have added the level to progress.done —
+  // with the move count it was cleared in, for CANGUPA-30's per-level best.
+  readonly onLevelComplete?: (moves: number) => void;
 }
 
 export default function BoardScreen({
@@ -48,10 +49,10 @@ export default function BoardScreen({
   const wasWon = useRef(false);
   useEffect(() => {
     if (won && !wasWon.current) {
-      onLevelComplete?.();
+      onLevelComplete?.(moves);
     }
     wasWon.current = won;
-  }, [won, onLevelComplete]);
+  }, [won, moves, onLevelComplete]);
 
   const status = statusFor({ levelNumber, totalLevels, moves, remaining }, { won, stuck, hintFailed, hasNext });
 

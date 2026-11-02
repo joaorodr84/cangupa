@@ -30,7 +30,7 @@ test('shows the level number and move count while playing', async () => {
   expect(screen.getByText('Nível 5/50 · Jogadas 0 · Faltam 1')).toBeTruthy();
 });
 
-test('calls onLevelComplete exactly once when the level is won, and shows the win popup', async () => {
+test('calls onLevelComplete with the move count exactly once when the level is won, and shows the win popup', async () => {
   const onLevelComplete = jest.fn();
 
   await renderScreen({ level: ['S1'], rules: { jumps: true }, onLevelComplete });
@@ -38,6 +38,7 @@ test('calls onLevelComplete exactly once when the level is won, and shows the wi
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
   expect(onLevelComplete).toHaveBeenCalledTimes(1);
+  expect(onLevelComplete).toHaveBeenCalledWith(1);
   expect(screen.getByText('Nível completo!')).toBeTruthy();
 });
 

@@ -25,6 +25,13 @@ Open work is listed in [TODO.md](TODO.md).
   an "Acabaste o jogo!" message. Closing it with ✕ just hides it — the
   cleared board and the Undo/Reiniciar/Dica controls underneath stay
   usable, and it reopens on the next win.
+- The app has a new stats screen showing "Níveis limpos" (levels cleared
+  out of the total), "Jogadas totais" (total moves, summed from each
+  level's best move count), and every cleared level alongside the fewest
+  moves it's ever been cleared in; before anything's been cleared, it
+  shows an empty-state message instead. It isn't reachable from anywhere
+  in the app yet — there's no navigation entry point into it (coming
+  separately).
 
 ### Changed
 
@@ -38,6 +45,11 @@ Open work is listed in [TODO.md](TODO.md).
   tall (landscape), the board now shrinks to fit within the screen
   instead of overflowing past the bottom. Portrait is unchanged — the
   board still fills the width and sits at the top.
+- The app's saved progress now also remembers, per level, the fewest
+  moves that level has ever been cleared in — it previously only
+  remembered which levels were done. This feeds the new stats screen's
+  numbers. A save from before this change still loads fine; it just
+  starts out with no move history.
 
 ### Removed
 

@@ -1,4 +1,16 @@
-import { isDone, isUnlocked, markDone, NO_PROGRESS, parseProgress, loadProgress, type Progress, saveProgress, PROGRESS_KEY, withLevel } from './progress';
+import {
+  isDone,
+  isUnlocked,
+  markDone,
+  NO_PROGRESS,
+  parseProgress,
+  loadProgress,
+  type Progress,
+  saveProgress,
+  PROGRESS_KEY,
+  totalBestMoves,
+  withLevel,
+} from './progress';
 import { CORRUPT_RECORDS, memoryStorage } from './storage.testUtil';
 
 describe('isDone', () => {
@@ -7,12 +19,12 @@ describe('isDone', () => {
   });
 
   it('is true for a level in done', () => {
-    expect(isDone({ done: [2], level: 0 }, 2)).toBe(true);
+    expect(isDone({ done: [2], level: 0, bestMoves: {} }, 2)).toBe(true);
   });
 });
 
 describe('isUnlocked', () => {
-  const progress: Progress = { done: [0, 1], level: 2 };
+  const progress: Progress = { done: [0, 1], level: 2, bestMoves: {} };
 
   it('the first level is always unlocked', () => {
     expect(isUnlocked(NO_PROGRESS, 0)).toBe(true);
@@ -33,17 +45,29 @@ describe('isUnlocked', () => {
 
 describe('markDone', () => {
   it('adds a newly cleared level', () => {
-    expect(markDone(NO_PROGRESS, 3).done).toEqual([3]);
+    expect(markDone(NO_PROGRESS, 3, 5).done).toEqual([3]);
+  });
+
+  it('records the clear\'s move count as the level\'s best', () => {
+    expect(markDone(NO_PROGRESS, 3, 5).bestMoves).toEqual({ 3: 5 });
   });
 
   it('keeps done sorted regardless of clear order', () => {
-    const progress = markDone(markDone(NO_PROGRESS, 3), 1);
+    const progress = markDone(markDone(NO_PROGRESS, 3, 5), 1, 2);
     expect(progress.done).toEqual([1, 3]);
   });
 
-  it('returns the same record for a level already done', () => {
-    const progress: Progress = { done: [1], level: 0 };
-    expect(markDone(progress, 1)).toBe(progress);
+  it('returns the same record for a level already done with no better move count', () => {
+    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 } };
+    expect(markDone(progress, 1, 4)).toBe(progress);
+    expect(markDone(progress, 1, 6)).toBe(progress);
+  });
+
+  it('updates the best when a replay beats it, without duplicating done', () => {
+    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 } };
+    const next = markDone(progress, 1, 2);
+    expect(next.done).toEqual([1]);
+    expect(next.bestMoves).toEqual({ 1: 2 });
   });
 });
 
@@ -53,8 +77,19 @@ describe('withLevel', () => {
   });
 
   it('returns the same record when the level is unchanged', () => {
-    const progress: Progress = { done: [], level: 5 };
+    const progress: Progress = { done: [], level: 5, bestMoves: {} };
     expect(withLevel(progress, 5)).toBe(progress);
+  });
+});
+
+describe('totalBestMoves', () => {
+  it('is zero with no cleared levels', () => {
+    expect(totalBestMoves(NO_PROGRESS)).toBe(0);
+  });
+
+  it('sums every level\'s best move count', () => {
+    const progress: Progress = { done: [0, 1, 2], level: 2, bestMoves: { 0: 3, 1: 5, 2: 2 } };
+    expect(totalBestMoves(progress)).toBe(10);
   });
 });
 
@@ -63,8 +98,12 @@ describe('parseProgress', () => {
     expect(parseProgress(null)).toEqual(NO_PROGRESS);
   });
 
-  it('reads saved done levels and the resume level', () => {
-    expect(parseProgress('{"done":[0,2],"level":3}')).toEqual({ done: [0, 2], level: 3 });
+  it('reads saved done levels, the resume level and best moves', () => {
+    expect(parseProgress('{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1}}')).toEqual({
+      done: [0, 2],
+      level: 3,
+      bestMoves: { 0: 4, 2: 1 },
+    });
   });
 
   it('de-duplicates and sorts done levels', () => {
@@ -86,6 +125,15 @@ describe('parseProgress', () => {
     expect(parseProgress('{"done":"nope","level":2}').done).toEqual([]);
   });
 
+  it('falls back to no best moves when the field is missing or not an object', () => {
+    expect(parseProgress('{"done":[0],"level":0}').bestMoves).toEqual({});
+    expect(parseProgress('{"done":[0],"level":0,"bestMoves":"nope"}').bestMoves).toEqual({});
+  });
+
+  it('drops best-move entries with a non-integer level or a non-positive move count', () => {
+    expect(parseProgress('{"bestMoves":{"0":3,"-1":2,"1.5":2,"2":0,"3":-1,"4":"x"}}').bestMoves).toEqual({ 0: 3 });
+  });
+
   it.each(CORRUPT_RECORDS)('reads %s as no progress', (_name, raw) => {
     expect(parseProgress(raw)).toEqual(NO_PROGRESS);
   });
@@ -94,7 +142,7 @@ describe('parseProgress', () => {
 describe('saving and loading', () => {
   it('round-trips progress through the store', async () => {
     const storage = memoryStorage();
-    const progress: Progress = { done: [0, 1, 4], level: 4 };
+    const progress: Progress = { done: [0, 1, 4], level: 4, bestMoves: { 0: 3, 1: 6, 4: 2 } };
 
     await saveProgress(storage, progress);
 
@@ -104,9 +152,9 @@ describe('saving and loading', () => {
   it('writes under the expected key', async () => {
     const storage = memoryStorage();
 
-    await saveProgress(storage, { done: [0], level: 1 });
+    await saveProgress(storage, { done: [0], level: 1, bestMoves: { 0: 5 } });
 
-    expect(await storage.getItem(PROGRESS_KEY)).toBe('{"done":[0],"level":1}');
+    expect(await storage.getItem(PROGRESS_KEY)).toBe('{"done":[0],"level":1,"bestMoves":{"0":5}}');
   });
 
   it('starts from no progress when nothing was saved', async () => {

@@ -227,6 +227,44 @@ board capped and centered well within the viewport height, and a
 portrait viewport (390x844) screenshot is pixel-for-pixel unchanged from
 before this change.
 
+Era 7 closes here: Nov 2, 1 commit, CANGUPA-33 — the board now shrinks to
+fit landscape screens instead of overflowing past the bottom.
+
+## Era 8 — Nov 2 (continued): stats tracking, ahead of a screen to show it
+
+CANGUPA-30 adds a stats screen for `apps/app`, scoped with the project
+owner to: levels cleared (X/total), best moves per level, and a
+total-moves summary. `progress.ts`'s `Progress` gained a
+`bestMoves: Readonly<Record<number, number>>` field (level index to the
+fewest moves that level has ever been cleared in). `markDone(progress,
+levelIndex, moves)` now takes the move count and keeps the record only
+when it's new or an improvement, still returning the same object when
+nothing changed — including when a replay doesn't beat the existing
+best. A new `totalBestMoves(progress)` sums every level's best for the
+screen's "Jogadas totais" line. `parseProgress` defaults a missing or
+invalid `bestMoves` to `{}` and sanitizes entries (non-negative integer
+level index, positive integer move count), so a save written before this
+field existed loads fine with no best-move history — not a breaking
+change to the saved shape. `useProgress.ts`'s `recordDone` now takes
+`(levelIndex, moves)` and forwards to the updated `markDone`.
+`BoardScreen.tsx`'s `onLevelComplete` now passes the move count the level
+was just cleared in, and `App.tsx`'s `onLevelDone` type and call site
+were updated to carry it through. The new `StatsScreen.tsx` shows
+"Níveis limpos: X/Y", "Jogadas totais: N", and a list of cleared levels
+with their best move count each, with an empty state when nothing's
+cleared yet — it isn't wired into any navigation yet, since CANGUPA-31
+(blocked on this task) is what adds the footer nav tab that reaches it.
+
+One commit. `progress.test.ts` was extended for `bestMoves`, `markDone`'s
+new signature, `totalBestMoves` and `parseProgress`'s sanitizing;
+`LevelsScreen.test.tsx`'s `Progress` literals were updated for the new
+required field; a new `StatsScreen.test.tsx` covers the screen itself.
+Verified with the full Jest suite (225 tests across 21 suites) and
+`tsc --noEmit`, both passing. Because the screen isn't reachable from
+the running app yet, it was only checked via its own component tests,
+not in a browser — that manual look is expected to happen as part of
+CANGUPA-31 once the nav tab exists, not skipped here by oversight.
+
 ---
 
 ## Patterns, and what's still open
