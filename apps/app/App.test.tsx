@@ -83,7 +83,7 @@ test('changing the language is reflected at once and saved', async () => {
   await fireEvent.press(await screen.findByTestId('footer-settings'));
   await fireEvent.press(screen.getByTestId('language-pt'));
 
-  expect(await screen.findByText('Definições')).toBeTruthy();
+  expect(await screen.findByText('Aparência')).toBeTruthy();
 
   const saved = await AsyncStorage.getItem(SETTINGS_KEY);
   expect(JSON.parse(saved ?? '{}').language).toBe('pt');
@@ -93,7 +93,7 @@ test('the settings screen has no back button of its own, unlike the rules screen
   await render(<App />);
 
   await fireEvent.press(await screen.findByTestId('footer-settings'));
-  expect(await screen.findByText('Settings')).toBeTruthy();
+  expect(await screen.findByText('Appearance')).toBeTruthy();
   expect(screen.queryByLabelText('‹ Back')).toBeNull();
 });
 

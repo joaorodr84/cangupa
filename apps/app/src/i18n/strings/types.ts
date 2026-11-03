@@ -31,7 +31,6 @@ export interface Strings {
     readonly note: string;
   };
   readonly stats: {
-    readonly heading: string;
     readonly levelsCleared: string;
     readonly levelsClearedValue: (cleared: number, total: number) => string;
     readonly totalMoves: string;
@@ -55,7 +54,6 @@ export interface Strings {
     readonly undoOrRestart: string;
   };
   readonly settings: {
-    readonly heading: string;
     // The light/dark/system choice (CANGUPA-40), matching DigiSpin's own
     // naming for the same three-way appearance setting.
     readonly appearance: string;

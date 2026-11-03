@@ -3,7 +3,8 @@
 // StatsScreen.tsx. The per-level best-move list this screen used to show
 // (CANGUPA-30) was removed: the panel's own "Levels cleared" row already
 // said as much, and a flat row list leaves room to add further stats here
-// later without reshaping the screen.
+// later without reshaping the screen. No on-screen title (CANGUPA-49): the
+// footer tab already names this screen "Stats".
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useStrings } from '../i18n/useStrings';
@@ -22,8 +23,6 @@ export default function StatsScreen({ totalLevels, progress, palette }: StatsScr
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={[styles.heading, { color: palette.ink }]}>{t.stats.heading}</Text>
-
       <View style={[styles.panel, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}>
         <Row label={t.stats.levelsCleared} value={t.stats.levelsClearedValue(cleared, totalLevels)} palette={palette} />
         <Row label={t.stats.totalMoves} value={t.stats.totalMovesValue(totalBestMoves(progress))} palette={palette} />
@@ -45,10 +44,6 @@ const styles = StyleSheet.create({
   wrap: {
     gap: 14,
     padding: 4,
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   panel: {
     borderWidth: 1,

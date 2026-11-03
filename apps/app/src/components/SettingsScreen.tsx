@@ -9,7 +9,8 @@
 // 'system' listed first, each language shown in its own name (an endonym),
 // not translated — the same convention every mainstream OS language picker
 // follows, so "Português" still reads as "Português" while the app is
-// currently showing English.
+// currently showing English. No on-screen title (CANGUPA-49): the footer
+// tab already names this screen "Settings".
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { LOCALES, type LanguageSetting, type Locale } from '../i18n/locale';
@@ -69,8 +70,6 @@ export default function SettingsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={[styles.heading, ink]}>{t.settings.heading}</Text>
-
       <Text style={[styles.sectionLabel, muted]}>{t.settings.appearance}</Text>
       <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
         {themeChoices.map((choice) => {
@@ -161,10 +160,6 @@ const styles = StyleSheet.create({
   wrap: {
     gap: 12,
     padding: 4,
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   sectionLabel: {
     fontSize: 13,

@@ -34,7 +34,6 @@ export const en: Strings = {
     note: 'Tap a highlighted tile to play.',
   },
   stats: {
-    heading: 'Stats',
     levelsCleared: 'Levels cleared',
     levelsClearedValue: (cleared, total) => `${cleared}/${total}`,
     totalMoves: 'Total moves',
@@ -59,7 +58,6 @@ export const en: Strings = {
     undoOrRestart: 'Undo or restart.',
   },
   settings: {
-    heading: 'Settings',
     appearance: 'Appearance',
     light: 'Light',
     dark: 'Dark',

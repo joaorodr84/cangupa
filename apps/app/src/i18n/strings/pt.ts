@@ -31,7 +31,6 @@ export const pt: Strings = {
     note: 'Toca numa casa destacada para jogar.',
   },
   stats: {
-    heading: 'Estatísticas',
     levelsCleared: 'Níveis limpos',
     levelsClearedValue: (cleared, total) => `${cleared}/${total}`,
     totalMoves: 'Jogadas totais',
@@ -56,7 +55,6 @@ export const pt: Strings = {
     undoOrRestart: 'Desfaz ou reinicia.',
   },
   settings: {
-    heading: 'Definições',
     appearance: 'Aparência',
     light: 'Claro',
     dark: 'Escuro',
