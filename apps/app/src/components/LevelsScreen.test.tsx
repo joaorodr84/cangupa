@@ -64,7 +64,7 @@ test('a locked level has a solid background and dimmed text, not a faded cell', 
   expect(screen.getByText('2').props.style.color).toBe(palette.muted);
 });
 
-test('the current level is outlined', async () => {
+test('the current level is outlined in the theme ink colour', async () => {
   const progress: Progress = { done: [0], level: 1, bestMoves: {} };
   await render(
     <LevelsScreen totalLevels={2} progress={progress} currentLevel={1} palette={palette} onSelectLevel={jest.fn()} />,
@@ -72,5 +72,6 @@ test('the current level is outlined', async () => {
 
   const current = screen.getByTestId('level-2');
   const flat = [current.props.style].flat();
-  expect(flat.some((s) => s?.borderColor === 'rgba(255,214,90,0.9)')).toBe(true);
+  expect(flat.some((s) => s?.borderColor === palette.ink)).toBe(true);
+  expect(flat.some((s) => s?.borderWidth === 2)).toBe(true);
 });

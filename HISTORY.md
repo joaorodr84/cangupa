@@ -572,6 +572,24 @@ Jest suite green (266 tests).
 
 ---
 
+## Era 21 — Nov 3: the levels/settings highlight matches DigiSpin exactly
+
+CANGUPA-50 removes the gold `rgba(255,214,90,0.9)` border that marked the
+current level on the apps/app levels screen and the selected row on its
+settings screen, replacing both with DigiSpin's own styling instead. The
+settings screen's `rowSelected` style and its two usages are removed
+outright — DigiSpin's own `SettingsScreen.tsx` marks the selected row
+only with the filled mark/dot, not a border colour. The levels screen's
+current-level outline becomes a `palette.ink` 2px border, matching
+DigiSpin's own `LevelsScreen.tsx` (`borderColor: palette.text`), so it
+now tracks the live `@joaorodr84/themes` ink colour instead of a fixed
+hex value.
+
+One commit. Verified with `npx tsc --noEmit` clean and the full apps/app
+Jest suite green (266 tests).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

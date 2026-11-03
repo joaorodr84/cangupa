@@ -3,7 +3,11 @@
 // cleared, which is the current one, and which are still locked. Laid out
 // in explicit rows sized off the window width (levelGrid.ts, CANGUPA-46),
 // the same technique DigiSpin's own LevelsScreen uses for its level grid,
-// rather than a fixed-width cell left to flexbox's own wrap behaviour.
+// rather than a fixed-width cell left to flexbox's own wrap behaviour. The
+// current-level outline (CANGUPA-50) also follows DigiSpin's own: a plain
+// `palette.ink` border rather than an accent colour, since ink already
+// tracks the external @joaorodr84/themes package instead of holding its
+// own fixed hex value.
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { isDone, isUnlocked, type Progress } from '../state/progress';
@@ -56,7 +60,7 @@ export default function LevelsScreen({
                   // the opacity-0.4 fade for a plain panel background with
                   // dimmed text below, so no cell is ever see-through
                   // (CANGUPA-46).
-                  { backgroundColor: done ? palette.control : palette.panel },
+                  { backgroundColor: done ? palette.control : palette.panel, borderColor: palette.ink },
                   current && styles.current,
                 ]}
               >
@@ -83,11 +87,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'transparent',
+    borderWidth: 0,
   },
   current: {
     borderWidth: 2,
-    borderColor: 'rgba(255,214,90,0.9)',
   },
 });

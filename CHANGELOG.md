@@ -20,6 +20,16 @@ Open work is listed in [TODO.md](TODO.md).
   been cleared is gone too, since the panel's two rows now show
   regardless of progress.
 
+### Fixed
+
+- The levels screen now outlines the current/next level with the same
+  ink colour the rest of the theme uses, instead of a hardcoded gold
+  border, and the outline itself is thinner and less showy to match
+  DigiSpin's own styling.
+- The settings screen no longer draws a border around the selected
+  theme or language row; the filled mark next to it is enough to show
+  which one is selected, matching DigiSpin's own settings screen.
+
 ## 2026-11-02
 
 ### Added

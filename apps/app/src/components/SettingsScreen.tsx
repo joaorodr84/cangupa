@@ -81,7 +81,7 @@ export default function SettingsScreen({
               onPress={() => onChangeThemeMode(choice.mode)}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              style={[styles.row, { backgroundColor: palette.panel }, selected && styles.rowSelected]}
+              style={[styles.row, { backgroundColor: palette.panel }]}
             >
               <Text style={ink}>{choice.label}</Text>
               <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
@@ -122,7 +122,7 @@ export default function SettingsScreen({
               onPress={() => onChangeLanguage(choice.language)}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              style={[styles.row, { backgroundColor: palette.panel }, selected && styles.rowSelected]}
+              style={[styles.row, { backgroundColor: palette.panel }]}
             >
               <Text style={ink}>{choice.label}</Text>
               <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
@@ -179,11 +179,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  rowSelected: {
-    borderColor: 'rgba(255,214,90,0.9)',
   },
   mark: {
     width: 18,
