@@ -35,11 +35,10 @@ export const en: Strings = {
   },
   stats: {
     heading: 'Stats',
-    levelsCleared: (cleared, total) => `Levels cleared: ${cleared}/${total}`,
-    totalMoves: (moves) => `Total moves: ${moves}`,
-    empty: 'No stats yet. Play a level to get started.',
-    level: (number) => `Level ${number}`,
-    moves: (count) => `${count} ${count === 1 ? 'move' : 'moves'}`,
+    levelsCleared: 'Levels cleared',
+    levelsClearedValue: (cleared, total) => `${cleared}/${total}`,
+    totalMoves: 'Total moves',
+    totalMovesValue: (moves) => `${moves}`,
   },
   winPopup: {
     levelComplete: 'Level complete!',

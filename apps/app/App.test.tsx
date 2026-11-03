@@ -103,9 +103,10 @@ test('the footer nav opens the stats screen, which reflects a cleared level', as
   await render(<App />);
   await fireEvent.press(await screen.findByTestId('footer-stats'));
 
-  expect(screen.getByText(/Levels cleared: 1\/50/)).toBeTruthy();
-  expect(screen.getByText('Level 1')).toBeTruthy();
-  expect(screen.getByText('3 moves')).toBeTruthy();
+  expect(screen.getByText('Levels cleared')).toBeTruthy();
+  expect(screen.getByText('1/50')).toBeTruthy();
+  expect(screen.getByText('Total moves')).toBeTruthy();
+  expect(screen.getByText('3')).toBeTruthy();
 });
 
 test('the footer nav\'s Home tab returns to the home screen from levels, stats and settings', async () => {

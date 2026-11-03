@@ -39,6 +39,7 @@ export interface Palette {
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
+  readonly panelBorder: string;
   // The home screen's Play button background — DigiSpin's own control
   // colour for the same button (HomeScreen.tsx), read live from the package.
   readonly control: string;
@@ -50,7 +51,8 @@ export interface Palette {
 // @joaorodr84/themes's own DARK/LIGHT — bg1/bg2 both take its flat
 // `background` (this app paints bg2 only, nothing here renders an actual
 // gradient yet), frame takes `surface`, pit takes `wellBody`, panel takes
-// `panel`, ink takes `text`, muted takes `textMuted` — so a version bump of
+// `panel`, panelBorder takes `panelBorder`, ink takes `text`, muted takes
+// `textMuted` — so a version bump of
 // that package carries its colour changes straight into this app, rather
 // than this file holding a hex snapshot that drifts out of sync with it.
 // tile/tile2/edge/edge2 are this game's own accent colours and, per that
@@ -68,6 +70,7 @@ export const DARK: Palette = {
   ink: THEMES_DARK.text,
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
+  panelBorder: THEMES_DARK.panelBorder,
   control: THEMES_DARK.control,
   logo: LOGO_DARK,
 };
@@ -84,6 +87,7 @@ export const LIGHT: Palette = {
   ink: THEMES_LIGHT.text,
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,
+  panelBorder: THEMES_LIGHT.panelBorder,
   control: THEMES_LIGHT.control,
   logo: LOGO_LIGHT,
 };

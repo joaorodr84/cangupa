@@ -7,6 +7,19 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-03
+
+### Changed
+
+- The app's stats screen is now a single bordered panel of label/value
+  rows — "Níveis limpos" and "Jogadas totais" each get their own row —
+  matching the layout DigiSpin uses for its own stats screen. The list of
+  every cleared level alongside the fewest moves it's ever been cleared
+  in is gone, since the "Níveis limpos" row already says how many
+  levels are cleared; the empty-state message shown before anything's
+  been cleared is gone too, since the panel's two rows now show
+  regardless of progress.
+
 ## 2026-11-02
 
 ### Added

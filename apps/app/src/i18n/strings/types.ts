@@ -32,11 +32,10 @@ export interface Strings {
   };
   readonly stats: {
     readonly heading: string;
-    readonly levelsCleared: (cleared: number, total: number) => string;
-    readonly totalMoves: (moves: number) => string;
-    readonly empty: string;
-    readonly level: (number: number) => string;
-    readonly moves: (count: number) => string;
+    readonly levelsCleared: string;
+    readonly levelsClearedValue: (cleared: number, total: number) => string;
+    readonly totalMoves: string;
+    readonly totalMovesValue: (moves: number) => string;
   };
   readonly winPopup: {
     readonly levelComplete: string;

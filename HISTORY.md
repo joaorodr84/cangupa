@@ -554,6 +554,24 @@ isolation).
 
 ---
 
+## Era 20 — Nov 3: the stats screen becomes a DigiSpin-style panel
+
+CANGUPA-48 reworks the apps/app stats screen (`StatsScreen.tsx`) into a
+single bordered panel of label/value rows, matching DigiSpin's own
+`StatsScreen.tsx` layout, and drops the per-level best-moves list it used
+to show below the summary — the panel's own "levels cleared" row already
+said as much. The two existing stats (levels cleared, total moves) move
+from single-sentence i18n strings to separate label/value string pairs,
+so each becomes its own row, leaving room to add further stats the same
+way later. A new `Palette.panelBorder` field, read live from
+`@joaorodr84/themes` alongside the other live-read fields CANGUPA-43
+introduced, supplies the panel's border colour.
+
+One commit. Verified with `npx tsc --noEmit` clean and the full apps/app
+Jest suite green (266 tests).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

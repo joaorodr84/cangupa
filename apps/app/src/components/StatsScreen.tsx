@@ -1,7 +1,9 @@
-// A stats screen for apps/app (CANGUPA-30), scoped to what the saved
-// Progress record (progress.ts) already tracks: how many levels are
-// cleared, and the fewest moves each cleared level has ever taken. Needed as
-// a destination for CANGUPA-31's footer "Stats" tab.
+// A stats screen for apps/app (CANGUPA-30), laid out as a single bordered
+// panel of label/value rows (CANGUPA-48), matching DigiSpin's own
+// StatsScreen.tsx. The per-level best-move list this screen used to show
+// (CANGUPA-30) was removed: the panel's own "Levels cleared" row already
+// said as much, and a flat row list leaves room to add further stats here
+// later without reshaping the screen.
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useStrings } from '../i18n/useStrings';
@@ -16,32 +18,26 @@ interface StatsScreenProps {
 
 export default function StatsScreen({ totalLevels, progress, palette }: StatsScreenProps) {
   const t = useStrings();
-  const ink = { color: palette.ink };
-  const muted = { color: palette.muted };
   const cleared = progress.done.length;
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={[styles.heading, ink]}>{t.stats.heading}</Text>
+      <Text style={[styles.heading, { color: palette.ink }]}>{t.stats.heading}</Text>
 
-      <View style={styles.summary}>
-        <Text style={ink}>{t.stats.levelsCleared(cleared, totalLevels)}</Text>
-        <Text style={ink}>{t.stats.totalMoves(totalBestMoves(progress))}</Text>
+      <View style={[styles.panel, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}>
+        <Row label={t.stats.levelsCleared} value={t.stats.levelsClearedValue(cleared, totalLevels)} palette={palette} />
+        <Row label={t.stats.totalMoves} value={t.stats.totalMovesValue(totalBestMoves(progress))} palette={palette} />
       </View>
-
-      {cleared === 0 ? (
-        <Text style={[styles.empty, muted]}>{t.stats.empty}</Text>
-      ) : (
-        <View style={styles.list}>
-          {progress.done.map((levelIndex) => (
-            <View key={levelIndex} style={[styles.row, { backgroundColor: palette.panel }]}>
-              <Text style={ink}>{t.stats.level(levelIndex + 1)}</Text>
-              <Text style={muted}>{t.stats.moves(progress.bestMoves[levelIndex])}</Text>
-            </View>
-          ))}
-        </View>
-      )}
     </ScrollView>
+  );
+}
+
+function Row({ label, value, palette }: { readonly label: string; readonly value: string; readonly palette: Palette }) {
+  return (
+    <View style={styles.row}>
+      <Text style={{ color: palette.muted }}>{label}</Text>
+      <Text style={[styles.value, { color: palette.ink }]}>{value}</Text>
+    </View>
   );
 }
 
@@ -54,20 +50,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  summary: {
-    gap: 4,
-  },
-  empty: {
-    fontSize: 13,
-  },
-  list: {
-    gap: 8,
+  panel: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 10,
+    alignItems: 'center',
+    minHeight: 44,
+  },
+  value: {
+    fontWeight: '600',
   },
 });
