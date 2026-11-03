@@ -4,19 +4,27 @@
 //
 // Laid out in labelled sections of rounded rows (CANGUPA-37), matching
 // DigiSpin's SettingsScreen.tsx: an uppercase section label above a group of
-// full-width rows, each with a trailing mark for the selected choice. The
-// language section (CANGUPA-38) follows DigiSpin's own language picker:
-// 'system' listed first, each language shown in its own name (an endonym),
-// not translated — the same convention every mainstream OS language picker
-// follows, so "Português" still reads as "Português" while the app is
-// currently showing English. No on-screen title (CANGUPA-49): the footer
-// tab already names this screen "Settings".
+// full-width rows, each with a trailing mark for the selected choice. Rows
+// within a group sit flush against each other with only the group's first
+// and last corners rounded (CANGUPA-51), so the group reads as one block
+// rather than a stack of separate pills; a 1px border stands in for the gap
+// that used to separate the rows. The language section (CANGUPA-38) follows
+// DigiSpin's own language picker: 'system' listed first, each language shown
+// in its own name (an endonym), not translated — the same convention every
+// mainstream OS language picker follows, so "Português" still reads as
+// "Português" while the app is currently showing English. No on-screen title
+// (CANGUPA-49): the footer tab already names this screen "Settings".
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { LOCALES, type LanguageSetting, type Locale } from '../i18n/locale';
 import { useStrings } from '../i18n/useStrings';
 import { type Settings } from '../state/settings';
 import { type Palette, type ThemeMode } from '../theme/palette';
+import { groupedRowCorners } from './groupedRow';
+
+// The radius each row group rounds its first and last row to (CANGUPA-51);
+// matches the plain rounded corners the rows used before they were grouped.
+const ROW_RADIUS = 12;
 
 const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = {
   en: 'English',
@@ -71,8 +79,8 @@ export default function SettingsScreen({
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
       <Text style={[styles.sectionLabel, muted]}>{t.settings.appearance}</Text>
-      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
-        {themeChoices.map((choice) => {
+      <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
+        {themeChoices.map((choice, index) => {
           const selected = choice.mode === settings.themeMode;
           return (
             <Pressable
@@ -81,7 +89,11 @@ export default function SettingsScreen({
               onPress={() => onChangeThemeMode(choice.mode)}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              style={[styles.row, { backgroundColor: palette.panel }]}
+              style={[
+                styles.row,
+                { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+                groupedRowCorners(index, themeChoices.length, ROW_RADIUS),
+              ]}
             >
               <Text style={ink}>{choice.label}</Text>
               <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
@@ -91,7 +103,7 @@ export default function SettingsScreen({
       </View>
 
       <Text style={[styles.sectionLabel, muted]}>{t.settings.gameplay}</Text>
-      <View style={styles.group}>
+      <View>
         <ToggleRow
           testID="toggle-jumps"
           label={t.settings.jumps}
@@ -99,6 +111,8 @@ export default function SettingsScreen({
           onChange={onChangeJumps}
           ink={ink}
           palette={palette}
+          index={0}
+          length={3}
         />
         <ToggleRow
           testID="toggle-hints"
@@ -107,13 +121,24 @@ export default function SettingsScreen({
           onChange={onChangeHints}
           ink={ink}
           palette={palette}
+          index={1}
+          length={3}
         />
-        <ToggleRow testID="toggle-anim" label={t.settings.anim} value={settings.anim} onChange={onChangeAnim} ink={ink} palette={palette} />
+        <ToggleRow
+          testID="toggle-anim"
+          label={t.settings.anim}
+          value={settings.anim}
+          onChange={onChangeAnim}
+          ink={ink}
+          palette={palette}
+          index={2}
+          length={3}
+        />
       </View>
 
       <Text style={[styles.sectionLabel, muted]}>{t.settings.language}</Text>
-      <View style={styles.group} accessibilityRole="radiogroup" accessibilityLabel={t.settings.language}>
-        {languageChoices.map((choice) => {
+      <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.language}>
+        {languageChoices.map((choice, index) => {
           const selected = choice.language === settings.language;
           return (
             <Pressable
@@ -122,7 +147,11 @@ export default function SettingsScreen({
               onPress={() => onChangeLanguage(choice.language)}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              style={[styles.row, { backgroundColor: palette.panel }]}
+              style={[
+                styles.row,
+                { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+                groupedRowCorners(index, languageChoices.length, ROW_RADIUS),
+              ]}
             >
               <Text style={ink}>{choice.label}</Text>
               <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
@@ -131,7 +160,14 @@ export default function SettingsScreen({
         })}
       </View>
 
-      <Pressable style={[styles.row, { backgroundColor: palette.panel }]} onPress={confirmClear}>
+      <Pressable
+        style={[
+          styles.row,
+          { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+          groupedRowCorners(0, 1, ROW_RADIUS),
+        ]}
+        onPress={confirmClear}
+      >
         <Text style={ink}>{t.settings.clearProgress}</Text>
       </Pressable>
     </ScrollView>
@@ -145,11 +181,19 @@ interface ToggleRowProps {
   readonly onChange: (value: boolean) => void;
   readonly ink: { color: string };
   readonly palette: Palette;
+  readonly index: number;
+  readonly length: number;
 }
 
-function ToggleRow({ testID, label, value, onChange, ink, palette }: ToggleRowProps) {
+function ToggleRow({ testID, label, value, onChange, ink, palette, index, length }: ToggleRowProps) {
   return (
-    <View style={[styles.row, { backgroundColor: palette.panel }]}>
+    <View
+      style={[
+        styles.row,
+        { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+        groupedRowCorners(index, length, ROW_RADIUS),
+      ]}
+    >
       <Text style={ink}>{label}</Text>
       <Switch testID={testID} value={value} onValueChange={onChange} />
     </View>
@@ -168,9 +212,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 4,
   },
-  group: {
-    gap: 8,
-  },
+  // Corner radius comes from groupedRowCorners instead of a fixed value here
+  // (CANGUPA-51): only a group's first and last row round, so the group
+  // reads as one block rather than a stack of separate pills.
   row: {
     minHeight: 52,
     flexDirection: 'row',
@@ -178,7 +222,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderWidth: 1,
   },
   mark: {
     width: 18,

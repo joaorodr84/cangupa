@@ -19,6 +19,13 @@ Open work is listed in [TODO.md](TODO.md).
   levels are cleared; the empty-state message shown before anything's
   been cleared is gone too, since the panel's two rows now show
   regardless of progress.
+- Each group of settings rows — the theme picker, the gameplay toggles,
+  the language picker, and the clear-progress row — now reads as a
+  single rounded block instead of a stack of separate pills with gaps
+  between them, matching DigiSpin's own settings screen. Rows within a
+  group sit flush against each other, with only the first and last row
+  of each group rounded and a thin border between rows standing in for
+  the gap that used to separate them.
 
 ### Fixed
 

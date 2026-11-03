@@ -590,6 +590,26 @@ Jest suite green (266 tests).
 
 ---
 
+## Era 22 — Nov 3: settings rows group into flush, rounded blocks
+
+CANGUPA-51 makes each group of rows on the apps/app `SettingsScreen.tsx`
+(Appearance, Gameplay, Language, and the standalone Clear progress row)
+read as one rounded block, matching DigiSpin's own `SettingsScreen.tsx`,
+instead of a stack of separate pills. A new `groupedRow.ts` ports
+DigiSpin's `groupedRowCorners` helper, which rounds only a group's first
+and last row and leaves the middle rows square-cornered. The `8pt` gap
+`styles.group` used to put between rows of the same group is dropped so
+the rows sit flush, and a `1px` `palette.panelBorder` border is added to
+each row so adjacent flush rows still have a visible seam, the job the
+gap used to do. `ToggleRow` gained `index`/`length` props so the three
+gameplay toggles can compute their own corners.
+
+One commit. Verified with `npx tsc --noEmit` clean, the full apps/app
+Jest suite green (266 tests), and a Playwright screenshot of the Expo web
+build.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
