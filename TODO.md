@@ -81,6 +81,18 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
+
+  **Progress (branch `cangupa-56-level-packs`):** the owner set the pack
+  shape at 10 packs of 30 levels (not 50 in total), boards growing every
+  pack. Done: the plan ([pack-plan.js](tools/pack-plan.js)), the generator
+  ([pack-generator.js](tools/pack-generator.js), `gen-packs.js`), designed
+  layouts ([pack-designs.js](tools/pack-designs.js)), the generated data
+  ([packs.json](tools/packs.json), [packs.ts](apps/app/src/game/packs.ts))
+  and the pack checks in `tools/test.js`. Still to do: swap `LEVELS` for
+  `PACKS` in `apps/app`, a pack picker in `LevelsScreen.tsx`, the saved
+  `Progress` shape, and the portrait/landscape rotation. Those need the
+  app's jest suite, which cannot be installed in a cloud session (it
+  depends on a private `themes` repository).
 - [P2] `CANGUPA-58` — Port falling as an opt-in setting (`TILE-JUMPER-3`)
   to `apps/app`: add `Settings.fall: boolean` (default `false`, same
   parsing/default pattern as `CANGUPA-57`'s `sound`), a toggle row in
