@@ -42,3 +42,19 @@ test('the turned level has a solution whenever the original does', () => {
 test('pads a ragged row instead of dropping a cell', () => {
   expect(orientLevel(['S1.1', '1'], false)).toEqual(['S1', '1.', '..', '1.']);
 });
+
+test('an arrow tile turns with its level: swapping rows for columns swaps its axis', () => {
+  // right becomes down and down becomes right; left becomes up and up becomes left
+  expect(orientLevel(['S>1', '.v.'], false)).toEqual(['S.', 'v>', '1.']);
+  expect(orientLevel(['S<1', '.^.'], false)).toEqual(['S.', '^<', '1.']);
+});
+
+test('a turned level with arrows is the same puzzle', () => {
+  const original = ['S>.1', '.1v.', '.1.1']; // 4 wide, 3 tall
+  const turned = orientLevel(original, false);
+  expect(turned).toHaveLength(4);
+  const a = new Game(original);
+  const b = new Game(turned);
+  expect(Boolean(b.solve())).toBe(Boolean(a.solve()));
+  expect(b.legalMoves().length).toBe(a.legalMoves().length);
+});

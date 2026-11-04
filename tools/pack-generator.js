@@ -15,27 +15,37 @@ const { search, measure } = require('./difficulty.js');
 
 // The 8 ways to turn or mirror a board. Moves are symmetric in all four directions, so
 // two boards related by any of them are the same puzzle.
+// An arrow tile points a way, so it turns with the board: when a level is mirrored or rotated, the
+// arrow's direction goes through the same turn. `m` is the 2x2 matrix the 8 turns apply to a direction
+// (dx, dy) -> (m[0]*dx + m[1]*dy, m[2]*dx + m[3]*dy), in the order the variants below are built.
+const ARROW_VEC = { '>': [1, 0], '<': [-1, 0], 'v': [0, 1], '^': [0, -1] };
+const VEC_ARROW = { '1,0': '>', '-1,0': '<', '0,1': 'v', '0,-1': '^' };
+const turnArrow = (c, m) => {
+  const v = ARROW_VEC[c];
+  if (!v) return c;
+  return VEC_ARROW[`${m[0] * v[0] + m[1] * v[1] || 0},${m[2] * v[0] + m[3] * v[1] || 0}`];
+};
 function variants(rows) {
   const h = rows.length, w = rows[0].length;
   const at = (x, y) => rows[y][x];
-  const make = (nw, nh, f) => {
+  const make = (nw, nh, f, m) => {
     const out = [];
     for (let y = 0; y < nh; y++) {
       let r = '';
-      for (let x = 0; x < nw; x++) r += f(x, y);
+      for (let x = 0; x < nw; x++) r += turnArrow(f(x, y), m);
       out.push(r);
     }
     return out.join('/');
   };
   return [
-    make(w, h, (x, y) => at(x, y)),
-    make(w, h, (x, y) => at(w - 1 - x, y)),
-    make(w, h, (x, y) => at(x, h - 1 - y)),
-    make(w, h, (x, y) => at(w - 1 - x, h - 1 - y)),
-    make(h, w, (x, y) => at(y, x)),
-    make(h, w, (x, y) => at(y, h - 1 - x)),
-    make(h, w, (x, y) => at(w - 1 - y, x)),
-    make(h, w, (x, y) => at(w - 1 - y, h - 1 - x)),
+    make(w, h, (x, y) => at(x, y), [1, 0, 0, 1]),
+    make(w, h, (x, y) => at(w - 1 - x, y), [-1, 0, 0, 1]),
+    make(w, h, (x, y) => at(x, h - 1 - y), [1, 0, 0, -1]),
+    make(w, h, (x, y) => at(w - 1 - x, h - 1 - y), [-1, 0, 0, -1]),
+    make(h, w, (x, y) => at(y, x), [0, 1, 1, 0]),
+    make(h, w, (x, y) => at(y, h - 1 - x), [0, -1, 1, 0]),
+    make(h, w, (x, y) => at(w - 1 - y, x), [0, 1, -1, 0]),
+    make(h, w, (x, y) => at(w - 1 - y, h - 1 - x), [0, -1, -1, 0]),
   ];
 }
 const canonical = rows => variants(rows).sort()[0];
@@ -43,6 +53,12 @@ const canonical = rows => variants(rows).sort()[0];
 // Which tile kinds a level uses: 1 Normal, 2 Gold (two visits), 3 Steel (three visits).
 const hasGold = rows => /[2s]/.test(rows.join(''));
 const hasSteel = rows => /[3T]/.test(rows.join(''));
+const hasArrow = rows => /[><v^]/.test(rows.join(''));
+// Whether a level has every kind the plan entry lists (Common is always there).
+function hasKinds(spec, rows) {
+  const kinds = kindsOf(spec);
+  return (!kinds.includes(2) || hasGold(rows)) && (!kinds.includes(3) || hasSteel(rows)) && (!spec.arrows || hasArrow(rows));
+}
 // The kinds a pack's plan entry allows (default: Normal and Gold, as before CANGUPA-68).
 const kindsOf = spec => spec.tiles || [1, 2];
 
@@ -68,12 +84,10 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     const doubles = Math.floor(steps * lerp(spec.doubles || [0, 0], rand()));
     const jump = lerp(spec.jump, rand());
     const kinds = kindsOf(spec);
+    const arrows = Math.floor(steps * lerp(spec.arrows || [0, 0], rand()));
     const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
-      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2) }, rand);
+      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows }, rand);
     if (!rows || !fillsBox(rows)) continue;
-    // every kind the pack lists has to be in the level, or it would not be teaching it
-    if (kinds.includes(2) && !hasGold(rows)) continue;
-    if (kinds.includes(3) && !hasSteel(rows)) continue;
     const key = canonical(rows);
     if (seen.has(key)) continue;
     seen.add(key);
@@ -82,6 +96,8 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     const exact = measure(rows, { budget: exactBudget });
     pool.push({
       rows,
+      // the kinds a level has, so the pack can ask for them (and for none, in its first few levels)
+      full: hasKinds(spec, rows),
       pathBits: Number(s.pathBits.toFixed(2)),
       decisions: s.decisions,
       effort: s.effort,
@@ -133,4 +149,4 @@ function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
 
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, kindsOf };
+module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasKinds, kindsOf };
