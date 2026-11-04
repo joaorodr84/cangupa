@@ -103,6 +103,23 @@ function pick(pool, n, from, to) {
   return out.sort((a, b) => a.pathBits - b.pathBits || a.decisions - b.decisions || a.visits - b.visits);
 }
 
+// Metrics for one given level (designed levels come from outside the random pool).
+// Null if the solver cannot crack it.
+function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
+  const s = search(rows, { cap });
+  if (!s) return null;
+  const exact = measure(rows, { budget: exactBudget });
+  return {
+    rows,
+    pathBits: Number(s.pathBits.toFixed(2)),
+    decisions: s.decisions,
+    effort: s.effort,
+    bits: exact ? Number(exact.bits.toFixed(2)) : null,
+    solutions: exact ? exact.solutions : null,
+    visits: rows.join('').split('').reduce((a, c) => a + (c === '.' ? 0 : c === '2' || c === 's' ? 2 : 1), 0),
+  };
+}
+
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants };
+module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants, score };
