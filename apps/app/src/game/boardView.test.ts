@@ -109,9 +109,10 @@ describe('statusFor', () => {
     });
   });
 
-  it('reports a dead-end hint over everything else', () => {
+  it('reports a dead-end hint over everything else, still carrying the progress', () => {
     expect(statusFor(progress, { won: true, stuck: true, hintFailed: true, hasNext: true })).toEqual({
       kind: 'hintFailed',
+      ...progress,
     });
   });
 });

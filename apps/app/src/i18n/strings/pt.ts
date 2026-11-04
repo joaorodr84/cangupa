@@ -49,8 +49,8 @@ export const pt: Strings = {
     hint: 'Dica',
     deadEnd: 'Beco sem saída.',
     undoSomeMoves: 'Desfaz algumas jogadas.',
-    status: (levelNumber, totalLevels, moves, remaining) =>
-      `Nível ${levelNumber}/${totalLevels} · Jogadas ${moves} · Faltam ${remaining}`,
+    level: (levelNumber) => `Nível ${levelNumber}`,
+    moves: (moves) => `Jogadas ${moves}`,
     stuck: 'Sem jogadas.',
     undoOrRestart: 'Desfaz ou reinicia.',
   },

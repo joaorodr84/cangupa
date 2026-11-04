@@ -9,6 +9,13 @@
 // › became WinPopup's "Próximo nível", and CANGUPA-35 gives ‹ its own
 // replacement: a plain arrow back to the home screen, upper-left, the same
 // corner DigiSpin's board header puts its own back arrow in.
+//
+// CANGUPA-53 reworked the row again, closer still to DigiSpin's own layout:
+// the status text became a centred "Level N" / "Moves M" pair (DigiSpin's
+// `centre` column) instead of one left-aligned "Level N/Total · Moves M · R
+// left" line, and Undo/Restart/Hint became one joined icon-button group
+// (DigiSpin's `group`/`groupDivider`), kept at Cangupa's own fully-rounded
+// pill radius rather than DigiSpin's 8pt corners.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { type Status } from '../game/boardView';
@@ -16,6 +23,7 @@ import { useStrings } from '../i18n/useStrings';
 import { type Strings } from '../i18n/strings';
 import { type Palette } from '../theme/palette';
 import BackArrow from './BackArrow';
+import ControlIcon, { type ControlIconId } from './ControlIcon';
 
 interface BoardHudProps {
   readonly status: Status;
@@ -35,66 +43,99 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
         onPress={onBack}
         accessibilityRole="button"
         accessibilityLabel={t.boardHud.backToHome}
-        style={[styles.backButton, { backgroundColor: palette.panel }]}
+        style={[styles.sideButton, { backgroundColor: palette.panel }]}
       >
         <BackArrow color={palette.ink} />
       </Pressable>
-      <View style={styles.status}>
-        <StatusLine status={status} palette={palette} t={t} />
+      <View style={styles.centre}>
+        <CentreText status={status} palette={palette} t={t} />
       </View>
-      <View style={styles.buttons}>
-        <HudButton label={t.boardHud.undo} palette={palette} disabled={!canUndo} onPress={onUndo} />
-        <HudButton label={t.boardHud.restart} palette={palette} onPress={onReset} />
-        <HudButton label={t.boardHud.hint} palette={palette} disabled={status.kind === 'won'} onPress={onHint} />
+      <View style={[styles.group, { backgroundColor: palette.panel }]}>
+        <GroupButton
+          id="undo"
+          label={t.boardHud.undo}
+          palette={palette}
+          disabled={!canUndo}
+          onPress={onUndo}
+        />
+        <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
+        <GroupButton id="restart" label={t.boardHud.restart} palette={palette} onPress={onReset} />
+        <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
+        <GroupButton
+          id="hint"
+          label={t.boardHud.hint}
+          palette={palette}
+          disabled={status.kind === 'won'}
+          onPress={onHint}
+        />
       </View>
     </View>
   );
 }
 
-// The win state has its own presentation (WinPopup.tsx), so there is nothing
-// to show here once won — the status row just goes empty.
-function StatusLine({ status, palette, t }: { status: Status; palette: Palette; t: Strings }) {
+// The level number stays up on every line but "won" (WinPopup takes over
+// then, same as before CANGUPA-53) — including hintFailed, which now carries
+// StatusProgress for exactly this. The second line is "Moves N" normally,
+// and swaps to the stuck/dead-end message when one applies, rather than
+// appending it, so the centred pair never grows past two short lines.
+function CentreText({ status, palette, t }: { status: Status; palette: Palette; t: Strings }) {
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
-
-  if (status.kind === 'hintFailed') {
-    return (
-      <Text style={ink}>
-        <Text style={styles.bold}>{t.boardHud.deadEnd}</Text> <Text style={muted}>{t.boardHud.undoSomeMoves}</Text>
-      </Text>
-    );
-  }
 
   if (status.kind === 'won') {
     return null;
   }
 
-  const head = t.boardHud.status(status.levelNumber, status.totalLevels, status.moves, status.remaining);
-  if (status.kind === 'stuck') {
+  const level = <Text style={[styles.level, ink]}>{t.boardHud.level(status.levelNumber)}</Text>;
+
+  if (status.kind === 'hintFailed') {
     return (
-      <Text style={ink}>
-        {head} · <Text style={styles.bold}>{t.boardHud.stuck}</Text> <Text style={muted}>{t.boardHud.undoOrRestart}</Text>
-      </Text>
+      <>
+        {level}
+        <Text style={styles.moves}>
+          <Text style={[styles.bold, ink]}>{t.boardHud.deadEnd}</Text> <Text style={muted}>{t.boardHud.undoSomeMoves}</Text>
+        </Text>
+      </>
     );
   }
-  return <Text style={ink}>{head}</Text>;
+
+  if (status.kind === 'stuck') {
+    return (
+      <>
+        {level}
+        <Text style={styles.moves}>
+          <Text style={[styles.bold, ink]}>{t.boardHud.stuck}</Text> <Text style={muted}>{t.boardHud.undoOrRestart}</Text>
+        </Text>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {level}
+      <Text style={[styles.moves, muted]}>{t.boardHud.moves(status.moves)}</Text>
+    </>
+  );
 }
 
-interface HudButtonProps {
+interface GroupButtonProps {
+  readonly id: ControlIconId;
   readonly label: string;
   readonly palette: Palette;
   readonly onPress: () => void;
   readonly disabled?: boolean;
 }
 
-function HudButton({ label, palette, onPress, disabled = false }: HudButtonProps) {
+function GroupButton({ id, label, palette, onPress, disabled = false }: GroupButtonProps) {
   return (
     <Pressable
       disabled={disabled}
       onPress={onPress}
-      style={[styles.button, { backgroundColor: palette.panel }, disabled && styles.buttonDisabled]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={[styles.groupButton, disabled && styles.buttonDisabled]}
     >
-      <Text style={{ color: palette.ink }}>{label}</Text>
+      <ControlIcon id={id} color={palette.ink} />
     </Pressable>
   );
 }
@@ -102,34 +143,55 @@ function HudButton({ label, palette, onPress, disabled = false }: HudButtonProps
 const styles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
+    alignItems: 'center',
   },
-  backButton: {
+  // Back and the group are fixed-size flow children at the row's edges, and
+  // centre is `flex: 1` between them, so its text is centred against the
+  // space actually left over rather than the row's full width — DigiSpin's
+  // same three-column trick (its `header`/`centre` comment).
+  sideButton: {
     width: 38,
     height: 38,
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-  status: {
+  centre: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  // Right-aligned, so the row reads as the board's controls sitting in its
-  // upper-right corner rather than a full-width toolbar.
-  buttons: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
+  level: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  moves: {
+    fontSize: 13,
+    marginTop: 2,
   },
   bold: {
     fontWeight: '600',
   },
-  button: {
-    paddingVertical: 9,
-    paddingHorizontal: 18,
+  // Undo/Restart/Hint as one joined control, Cangupa's own fully-rounded
+  // pill radius standing in for DigiSpin's 8pt corners (CANGUPA-53) — the
+  // "rounder buttons" already used elsewhere in this app (e.g. sideButton
+  // above), kept consistent rather than copying DigiSpin's squarer shape.
+  group: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
     borderRadius: 999,
+    overflow: 'hidden',
+    flexShrink: 0,
+  },
+  groupDivider: {
+    width: StyleSheet.hairlineWidth,
+  },
+  groupButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonDisabled: {
     opacity: 0.4,

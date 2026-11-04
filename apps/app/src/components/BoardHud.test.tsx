@@ -23,18 +23,20 @@ function renderHud(overrides: Partial<Parameters<typeof BoardHud>[0]> & { status
   return render(<BoardHud {...props} />);
 }
 
-test('shows the playing status line', async () => {
+test('shows the level and move count while playing', async () => {
   const status: Status = { kind: 'playing', levelNumber: 3, totalLevels: 50, moves: 4, remaining: 2 };
   await renderHud({ status });
 
-  expect(screen.getByText('Level 3/50 · Moves 4 · 2 left')).toBeTruthy();
+  expect(screen.getByText('Level 3')).toBeTruthy();
+  expect(screen.getByText('Moves 4')).toBeTruthy();
 });
 
-test('shows nothing in the status line once won — WinPopup carries that message', async () => {
+test('shows nothing in the centre once won — WinPopup carries that message', async () => {
   const status: Status = { kind: 'won', moves: 7, hasNext: true };
   await renderHud({ status });
 
   expect(screen.queryByText(/Level complete/)).toBeNull();
+  expect(screen.queryByText(/Level /)).toBeNull();
 });
 
 test('disables undo when canUndo is false', async () => {
@@ -42,7 +44,7 @@ test('disables undo when canUndo is false', async () => {
   const onUndo = jest.fn();
   await renderHud({ status, canUndo: false, onUndo });
 
-  await fireEvent.press(screen.getByText('Undo'));
+  await fireEvent.press(screen.getByLabelText('Undo'));
   expect(onUndo).not.toHaveBeenCalled();
 });
 
@@ -51,7 +53,7 @@ test('disables hint once won', async () => {
   const onHint = jest.fn();
   await renderHud({ status, onHint });
 
-  await fireEvent.press(screen.getByText('Hint'));
+  await fireEvent.press(screen.getByLabelText('Hint'));
   expect(onHint).not.toHaveBeenCalled();
 });
 
@@ -69,20 +71,23 @@ test('reset is always enabled', async () => {
   const onReset = jest.fn();
   await renderHud({ status, canUndo: false, onReset });
 
-  await fireEvent.press(screen.getByText('Restart'));
+  await fireEvent.press(screen.getByLabelText('Restart'));
   expect(onReset).toHaveBeenCalledTimes(1);
 });
 
-test('shows the stuck message', async () => {
+test('shows the level and the stuck message in place of the move count', async () => {
   const status: Status = { kind: 'stuck', levelNumber: 2, totalLevels: 50, moves: 3, remaining: 1 };
   await renderHud({ status });
 
+  expect(screen.getByText('Level 2')).toBeTruthy();
   expect(screen.getByText('No moves left.')).toBeTruthy();
+  expect(screen.queryByText('Moves 3')).toBeNull();
 });
 
-test('shows the dead-end hint message', async () => {
-  const status: Status = { kind: 'hintFailed' };
+test('shows the level and the dead-end hint message in place of the move count', async () => {
+  const status: Status = { kind: 'hintFailed', levelNumber: 2, totalLevels: 50, moves: 3, remaining: 1 };
   await renderHud({ status });
 
+  expect(screen.getByText('Level 2')).toBeTruthy();
   expect(screen.getByText('Dead end.')).toBeTruthy();
 });

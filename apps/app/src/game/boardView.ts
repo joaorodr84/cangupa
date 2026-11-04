@@ -84,8 +84,10 @@ export interface StatusProgress {
 // message. `hintFailed` wins over everything else: it is the direct response
 // to the button just pressed, the same way the web version's hint() replaces
 // the status outright rather than folding into the usual won/stuck/playing text.
+// It still carries StatusProgress (CANGUPA-53) so BoardHud's "Level N" line
+// stays up even on a dead end — only the second line swaps to the message.
 export type Status =
-  | { readonly kind: 'hintFailed' }
+  | ({ readonly kind: 'hintFailed' } & StatusProgress)
   | { readonly kind: 'won'; readonly moves: number; readonly hasNext: boolean }
   | ({ readonly kind: 'stuck' } & StatusProgress)
   | ({ readonly kind: 'playing' } & StatusProgress);
@@ -95,7 +97,7 @@ export function statusFor(
   state: { readonly won: boolean; readonly stuck: boolean; readonly hintFailed: boolean; readonly hasNext: boolean },
 ): Status {
   if (state.hintFailed) {
-    return { kind: 'hintFailed' };
+    return { kind: 'hintFailed', ...progress };
   }
   if (state.won) {
     return { kind: 'won', moves: progress.moves, hasNext: state.hasNext };

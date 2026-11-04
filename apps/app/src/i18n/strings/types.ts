@@ -49,7 +49,8 @@ export interface Strings {
     readonly hint: string;
     readonly deadEnd: string;
     readonly undoSomeMoves: string;
-    readonly status: (levelNumber: number, totalLevels: number, moves: number, remaining: number) => string;
+    readonly level: (levelNumber: number) => string;
+    readonly moves: (moves: number) => string;
     readonly stuck: string;
     readonly undoOrRestart: string;
   };

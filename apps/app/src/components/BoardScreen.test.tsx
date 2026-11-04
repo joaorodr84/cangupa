@@ -28,7 +28,8 @@ function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { 
 test('shows the level number and move count while playing', async () => {
   await renderScreen({ level: ['S1.'], rules: { jumps: true }, levelNumber: 5 });
 
-  expect(screen.getByText('Level 5/50 · Moves 0 · 1 left')).toBeTruthy();
+  expect(screen.getByText('Level 5')).toBeTruthy();
+  expect(screen.getByText('Moves 0')).toBeTruthy();
 });
 
 test('calls onLevelComplete with the move count exactly once when the level is won, and shows the win popup', async () => {
@@ -56,16 +57,16 @@ test('undo, reset and hint operate on the same board the HUD reflects', async ()
   await renderScreen({ level: ['S11'], rules: { jumps: true } });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
-  expect(screen.getByText('Level 1/50 · Moves 1 · 1 left')).toBeTruthy();
+  expect(screen.getByText('Moves 1')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('Undo'));
-  expect(screen.getByText('Level 1/50 · Moves 0 · 2 left')).toBeTruthy();
+  await fireEvent.press(screen.getByLabelText('Undo'));
+  expect(screen.getByText('Moves 0')).toBeTruthy();
 
-  await fireEvent.press(screen.getByText('Hint'));
+  await fireEvent.press(screen.getByLabelText('Hint'));
   expect(screen.getByTestId('tile-1-0').props.style).toBeDefined();
 
-  await fireEvent.press(screen.getByText('Restart'));
-  expect(screen.getByText('Level 1/50 · Moves 0 · 2 left')).toBeTruthy();
+  await fireEvent.press(screen.getByLabelText('Restart'));
+  expect(screen.getByText('Moves 0')).toBeTruthy();
 });
 
 test('pressing the win popup\'s next-level button calls onNext', async () => {
@@ -97,6 +98,6 @@ test('closing the win popup leaves the board reachable through Reset', async () 
   await fireEvent.press(screen.getByText('✕'));
   expect(screen.queryByText('Level complete!')).toBeNull();
 
-  await fireEvent.press(screen.getByText('Restart'));
-  expect(screen.getByText('Level 1/50 · Moves 0 · 1 left')).toBeTruthy();
+  await fireEvent.press(screen.getByLabelText('Restart'));
+  expect(screen.getByText('Moves 0')).toBeTruthy();
 });

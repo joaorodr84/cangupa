@@ -52,8 +52,8 @@ export const en: Strings = {
     hint: 'Hint',
     deadEnd: 'Dead end.',
     undoSomeMoves: 'Undo a few moves.',
-    status: (levelNumber, totalLevels, moves, remaining) =>
-      `Level ${levelNumber}/${totalLevels} · Moves ${moves} · ${remaining} left`,
+    level: (levelNumber) => `Level ${levelNumber}`,
+    moves: (moves) => `Moves ${moves}`,
     stuck: 'No moves left.',
     undoOrRestart: 'Undo or restart.',
   },

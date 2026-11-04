@@ -28,10 +28,10 @@ test('starts on the home screen, and the board screen has its own way back to it
   await render(<App />);
 
   expect(await screen.findByText('Play')).toBeTruthy();
-  expect(screen.queryByText(/Level \d+\/50/)).toBeNull();
+  expect(screen.queryByText(/Moves \d+/)).toBeNull();
 
   await fireEvent.press(screen.getByText('Play'));
-  expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
+  expect(await screen.findByText('Moves 0')).toBeTruthy();
   expect(screen.queryByText('Play')).toBeNull();
 
   await fireEvent.press(screen.getByLabelText('Back to home'));
@@ -44,7 +44,7 @@ test('resumes the last-played level', async () => {
   await render(<App />);
   await fireEvent.press(await screen.findByText('Play'));
 
-  expect(await screen.findByText(/Level 3\/50/)).toBeTruthy();
+  expect(await screen.findByText('Level 3')).toBeTruthy();
 });
 
 test('the footer nav opens the levels screen, and picking a level opens the board', async () => {
@@ -54,7 +54,7 @@ test('the footer nav opens the levels screen, and picking a level opens the boar
   expect(screen.getByTestId('level-2')).toBeTruthy();
 
   await fireEvent.press(screen.getByTestId('level-1'));
-  expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
+  expect(await screen.findByText('Level 1')).toBeTruthy();
 });
 
 test('the home screen\'s Rules button opens the rules screen, and Back returns to the board', async () => {
@@ -64,7 +64,7 @@ test('the home screen\'s Rules button opens the rules screen, and Back returns t
   expect(screen.getByText('Rules')).toBeTruthy();
 
   await fireEvent.press(screen.getByLabelText('‹ Back'));
-  expect(await screen.findByText(/Level 1\/50/)).toBeTruthy();
+  expect(await screen.findByText('Level 1')).toBeTruthy();
 });
 
 test('the footer nav opens the settings screen, and changing the theme mode is reflected on return', async () => {
@@ -123,7 +123,7 @@ test('the board screen has no footer nav of its own', async () => {
   await render(<App />);
 
   await fireEvent.press(await screen.findByText('Play'));
-  await screen.findByText(/Level 1\/50/);
+  await screen.findByText('Level 1');
 
   expect(screen.queryByTestId('footer-home')).toBeNull();
   expect(screen.queryByTestId('footer-levels')).toBeNull();
