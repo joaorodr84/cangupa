@@ -39,3 +39,30 @@ The priority can change at any time; the ID never does.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.
+- [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: a spendable
+  hint count, shown as a badge on the hint control
+  ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
+  [BoardHud.tsx](apps/app/src/components/BoardHud.tsx), CANGUPA-53 —
+  DigiSpin already has this badge, Cangupa doesn't), earned once each time
+  a level is finished perfectly — defined as clearing it in the fewest
+  possible steps, one step being one tile-to-tile move (one tap) — and
+  spent each time the hint button is used. The hint itself doesn't
+  change — [useBoard.ts](apps/app/src/game/useBoard.ts)'s `hint()` /
+  `game.solve()` already reveals a next step via the tip highlight; this
+  only gates that behind a balance instead of it being free and
+  unlimited. Needs each level's optimal (fewest-step) solution length to
+  compare the player's own move count against. Blocked on `CANGUPA-55`,
+  which is what makes that number available.
+- [P2] `CANGUPA-55` — Guarantee every level has more than one solution,
+  and make each level's optimal (fewest-step) solution length available
+  at runtime — needed by `CANGUPA-54` to judge a "perfect" clear. Today
+  [board.ts](apps/app/src/game/board.ts)'s `Game.solve()` is a DFS that
+  returns the first solution it finds, not necessarily the shortest one,
+  and the level generator
+  ([level-generator.js](apps/web-classic/tools/level-generator.js)'s
+  `generateLevel`/`countSolutions`) only selects for the *fewest*
+  solutions among random walks (for difficulty), with no floor requiring
+  more than one — some of the 50 generated levels could already have
+  just one. Touches the generator (re-verifying/regenerating levels as
+  needed), the solver (a shortest-path method alongside `solve()`), and
+  the ported level data ([levels.ts](apps/app/src/game/levels.ts)).
