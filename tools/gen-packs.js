@@ -15,7 +15,7 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
-const { buildPool, pick, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow } = require('./pack-generator.js');
+const { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow } = require('./pack-generator.js');
 const { designs } = require('./pack-designs.js');
 
 // How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
@@ -96,9 +96,11 @@ function select(pools, frozen) {
       .filter(Boolean)
       .filter(d => d.pathBits >= lo - 1e-9 && d.pathBits <= hi + 1e-9)
       .sort((a, b) => a.pathBits - b.pathBits);
+    // (a pack with `designed: false` takes none: its levels must each have the tiles the pack lists)
+    const designedCount = spec.designed === false ? 0 : Math.min(DESIGNED_PER_PACK, made.length);
     const kept = [];
-    for (let k = 0; k < Math.min(DESIGNED_PER_PACK, made.length); k++) {
-      kept.push(made[Math.round(k * (made.length - 1) / Math.max(1, Math.min(DESIGNED_PER_PACK, made.length) - 1))]);
+    for (let k = 0; k < designedCount; k++) {
+      kept.push(made[Math.round(k * (made.length - 1) / Math.max(1, designedCount - 1))]);
     }
     const keptKeys = new Set(kept.map(d => canonical(d.rows)));
     const rest = pools[i].filter(p => !keptKeys.has(canonical(p.rows)));
@@ -116,6 +118,13 @@ function select(pools, frozen) {
     }
     const need = LEVELS_PER_PACK - kept.length - intro.length;
     const from = intro.length ? Math.max(lo, Math.max(...intro.map(p => p.pathBits))) : lo;
+    // a pack with `mixes` alternates its variants and keeps that order; otherwise levels are sorted easiest first
+    if (spec.mixes) {
+      const ordered = pickAlternating(spec.mixes.map((_, v) => pool.filter(p => p.mix === v)), need, from, hi);
+      if (!ordered) throw new Error(`pack ${i + 1} ${spec.name}: the variants ran out of candidates before ${need} levels`);
+      prevHi = hi;
+      return { name: spec.name, blurb: spec.blurb, width: spec.width, height: spec.height, levels: ordered };
+    }
     const generated = pick(pool, need, from, hi);
     if (!generated) throw new Error(`pack ${i + 1} ${spec.name}: only ${pool.length} candidates, need ${need}`);
     const levels = [...intro, ...generated, ...kept].sort((a, b) => a.pathBits - b.pathBits || (introKind ? hasNew(a) - hasNew(b) : 0) || a.decisions - b.decisions || a.visits - b.visits);

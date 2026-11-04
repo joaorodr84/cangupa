@@ -100,7 +100,7 @@ export const pt: Strings = {
     },
     {
       name: 'Crista',
-      blurb: 'Longos percursos que voltam atrás sobre si mesmos.',
+      blurb: 'Setas e metais: ouro num nível, aço no seguinte.',
     },
     {
       name: 'Mesa',

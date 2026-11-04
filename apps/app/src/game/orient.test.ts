@@ -1,4 +1,5 @@
 import { Game } from './board';
+import { LEVELS } from './levels';
 import { orientLevel } from './orient';
 
 const wide = ['S1.1', '.11.', '11..']; // 4 wide, 3 tall
@@ -58,3 +59,16 @@ test('a turned level with arrows is the same puzzle', () => {
   expect(Boolean(b.solve())).toBe(Boolean(a.solve()));
   expect(b.legalMoves().length).toBe(a.legalMoves().length);
 });
+
+test('every level with arrows is still solvable when turned for a portrait or a landscape screen', () => {
+  // arrows turn with the board, so a wrong turn would strand a level: this turns every arrow level (packs 5 and
+  // 6) both ways. Only those: the biggest frozen levels can take the solver very long in some orientations
+  // (CANGUPA-70), which is not what this test is about.
+  const withArrows = LEVELS.filter((level) => /[><v^]/.test(level.join('')));
+  expect(withArrows.length).toBeGreaterThan(80);
+  for (const level of withArrows) {
+    for (const landscape of [true, false]) {
+      expect(new Game(orientLevel(level, landscape)).solve()).not.toBeNull();
+    }
+  }
+}, 120000);

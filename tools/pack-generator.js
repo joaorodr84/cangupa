@@ -80,12 +80,16 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
   let tries = 0;
   while (pool.length < count && tries < count * 40) {
     tries++;
+    // A pack with `mixes` (pack 6) alternates between variants level by level: each candidate is made for one
+    // of them, in turn, and carries its number so the pack can ask for the variants alternately.
+    const mixIndex = spec.mixes ? tries % spec.mixes.length : 0;
+    const m = spec.mixes ? { ...spec, ...spec.mixes[mixIndex] } : spec;
     const steps = Math.max(4, Math.round(area * lerp(spec.steps, rand())));
-    const doubles = Math.floor(steps * lerp(spec.doubles || [0, 0], rand()));
+    const doubles = Math.floor(steps * lerp(m.doubles || [0, 0], rand()));
     const jump = lerp(spec.jump, rand());
-    const kinds = kindsOf(spec);
+    const kinds = kindsOf(m);
     // a share of candidates get no arrows at all, so a pack that introduces them can open with levels that lack them
-    const arrows = spec.arrows && rand() >= .12 ? Math.floor(steps * lerp(spec.arrows, rand())) : 0;
+    const arrows = m.arrows && (spec.mixes || rand() >= .12) ? Math.floor(steps * lerp(m.arrows, rand())) : 0;
     const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
       maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows }, rand);
     if (!rows || !fillsBox(rows)) continue;
@@ -98,7 +102,8 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     pool.push({
       rows,
       // the kinds a level has, so the pack can ask for them (and for none, in its first few levels)
-      full: hasKinds(spec, rows),
+      full: hasKinds(m, rows),
+      mix: mixIndex,
       pathBits: Number(s.pathBits.toFixed(2)),
       decisions: s.decisions,
       effort: s.effort,
@@ -108,6 +113,29 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     });
   }
   return pool;
+}
+
+// Pick `n` levels that alternate between the pools (pack 6: Gold, Steel, Gold, ...) and climb: slot k takes,
+// from pool k % pools.length, the candidate nearest its target score that is not easier than the one before.
+// Both the alternation and the never-dropping difficulty hold by construction. Null if a pool runs out.
+function pickAlternating(pools, n, from, to) {
+  const used = pools.map(() => new Set()), out = [];
+  let floor = -Infinity;
+  for (let k = 0; k < n; k++) {
+    const which = k % pools.length, pool = pools[which];
+    const target = from + (to - from) * (k / (n - 1));
+    let best = -1, gap = Infinity;
+    pool.forEach((p, i) => {
+      if (used[which].has(i) || p.pathBits < floor) return;
+      const g = Math.abs(p.pathBits - target);
+      if (g < gap) { gap = g; best = i; }
+    });
+    if (best < 0) return null;
+    used[which].add(best);
+    out.push(pool[best]);
+    floor = pool[best].pathBits;
+  }
+  return out;
 }
 
 // Pick `n` levels from the pool whose scores step evenly from `from` up to `to`.
@@ -150,4 +178,4 @@ function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
 
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasKinds, kindsOf };
+module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasKinds, kindsOf };
