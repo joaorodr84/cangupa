@@ -29,21 +29,22 @@ The priority can change at any time; the ID never does.
   first solves 95 of them, 5 still fail and the slowest takes 14 seconds.
   Needs a better search, solving off the UI thread, or storing each
   level's solution in packs.json.
-- [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: a spendable
-  hint count, shown as a badge on the hint control
-  ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
+- [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: the game
+  starts with a fixed balance of 3 hints, shown as a badge on the hint
+  control ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
   [BoardHud.tsx](apps/app/src/components/BoardHud.tsx), CANGUPA-53 —
-  DigiSpin already has this badge, Cangupa doesn't), earned once each time
-  a level is finished, and spent each time the hint button is used. No
-  "perfect clear" check is needed: every move always consumes exactly one
-  unit of `remaining()` regardless of which legal target is chosen
-  (`play()` in [board.ts](apps/app/src/game/board.ts)), so every winning
-  sequence has the same length — there's no fewer-steps clear to compare
-  against. The hint itself doesn't change —
+  DigiSpin already has this badge, Cangupa doesn't), spent each time the
+  hint button is used. Scoped to just that starting balance, its display
+  and its spend — replenishing it (earning by watching a reward video,
+  buying in a store) is split out as `CANGUPA-78`/`CANGUPA-79`. Every move
+  always consumes exactly one unit of `remaining()` regardless of which
+  legal target is chosen (`play()` in
+  [board.ts](apps/app/src/game/board.ts)), so every winning sequence has
+  the same move length — `CANGUPA-55`'s note on why that count can't vary
+  refers to this. The hint itself doesn't change —
   [useBoard.ts](apps/app/src/game/useBoard.ts)'s `hint()` / `game.solve()`
   already reveals a next step via the tip highlight; this only gates that
-  behind a balance instead of it being free and unlimited. No longer
-  blocked on `CANGUPA-55`.
+  behind a balance instead of it being free and unlimited.
 - [P2] `CANGUPA-55` — Guarantee every level has more than one solution
   (distinct paths through the same fixed move count — see `CANGUPA-54`'s
   note on why that count can't vary). Today the level generator
@@ -56,3 +57,11 @@ The priority can change at any time; the ID never does.
   ([levels.ts](apps/app/src/game/levels.ts)). Dropped: a shortest-path
   solver alongside `solve()` — moot, since `solve()`'s DFS result is
   already optimal-length by construction.
+- [P4] `CANGUPA-78` — Let players earn an extra hint by watching a reward
+  video, building on `CANGUPA-54`'s hint balance. Unscoped: which ad
+  network/SDK, platform availability (the web has no rewarded-video SDK),
+  and app-store review requirements aren't decided yet.
+- [P4] `CANGUPA-79` — Let players buy hints in an in-app store, building
+  on `CANGUPA-54`'s hint balance. Unscoped: store listing, pricing, and
+  which in-app-purchase SDK (App Store/Play Store) to use aren't decided
+  yet.
