@@ -1,7 +1,7 @@
 // Pure game state and rules, ported from apps/web-classic/js/game.js. No React/RN here.
 // A level is an array of strings:
-//   .  empty     1  tile needing one visit     2  tile needing two visits
-//   S  start on a 1-tile                        s  start on a 2-tile
+//   .  empty     1  tile needing one visit     2  tile needing two visits     3  tile needing three visits
+//   S  start on a 1-tile      s  start on a 2-tile      T  start on a 3-tile
 // Coordinates: x is the column, y the row, both counted from the top-left.
 //
 // cells[i] is how many visits a tile still needs. The start tile counts as
@@ -55,7 +55,8 @@ export class Game {
         const i = y * this.w + x;
         if (c === '1' || c === 'S') this.max[i] = 1;
         else if (c === '2' || c === 's') this.max[i] = 2;
-        if (c === 'S' || c === 's') start = i;
+        else if (c === '3' || c === 'T') this.max[i] = 3;
+        if (c === 'S' || c === 's' || c === 'T') start = i;
       }
     });
     if (start < 0) throw new Error('level has no start');

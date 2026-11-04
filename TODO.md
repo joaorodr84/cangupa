@@ -21,6 +21,15 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
+- [P2] `CANGUPA-68` — Add the Steel tile (three visits) and a per-pack tile
+  mix: pack 1 Normal only; pack 2 Normal and Gold (two visits); pack 3
+  Normal and Steel only; pack 4 Normal, Gold and Steel; packs 5 to 10 are
+  left exactly as they are. Level
+  characters: `3` is a Steel tile and `T` a start on one. The board shows
+  visits left on Gold and Steel as short diagonal strokes (top right to
+  bottom left), a Steel colour of `#587790` and a help-screen line for it.
+  Colour and mark choices come from the tile-metals review page
+  (`CANGUPA-56` follow-up). The `web-classic` game keeps its own levels.
 - [P2] `CANGUPA-62` — Define level evaluation and difficulty metrics in
   [difficulty.js](tools/difficulty.js): an exact
   random-play score (`bits`) where the state space fits, plus cheap

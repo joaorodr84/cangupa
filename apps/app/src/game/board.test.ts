@@ -56,3 +56,14 @@ test('inMoveShape rejects a jump-shaped distance when the jumps rule is off', ()
   const g = new Game(['S....', '.....'], { jumps: false });
   expect(g.inMoveShape(2, 0)).toBe(false);
 });
+
+test('a Steel tile needs three visits, and T starts on one', () => {
+  const g = new Game(['1T1']);
+  expect(g.max[1]).toBe(3);
+  expect(g.at(1, 0)).toBe(2); // the start tile counts as one visit already
+  expect(g.remaining()).toBe(4);
+  const path = g.solve()!;
+  expect(path).toHaveLength(4); // out, back, out the other way, back
+  path.forEach((m) => g.play(m));
+  expect(g.won).toBe(true);
+});
