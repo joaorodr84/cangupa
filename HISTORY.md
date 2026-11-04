@@ -652,9 +652,13 @@ adds a win sound: `js/sound.js` gained a `melody()` helper (schedules a
 run of `tone()` notes against `ctx.currentTime` instead of stacking
 `setTimeout`s) and a `win()` four-note ascending arpeggio built on it,
 which `js/ui.js`'s `move()` now plays every time a level is cleared,
-including on a replay of an already-cleared level.
+including on a replay of an already-cleared level. TILE-JUMPER-5 adds a
+fall sound: `js/sound.js` gained `fall()`, a descending sawtooth glide
+from 300Hz to 70Hz over 0.45s, timed to roughly match the `.falling`
+CSS animation's 0.5s duration, called from `js/ui.js`'s `fall()` right
+after it adds the `.falling` class.
 
-Three commits. Verified with `node apps/web-classic/tools/test.js` (50
+Four commits. Verified with `node apps/web-classic/tools/test.js` (50
 levels, existing rules assertions); not yet checked visually/audibly in
 a browser.
 

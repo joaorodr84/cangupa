@@ -150,6 +150,7 @@ function fall() {
   if (game.won || falling) return;
   falling = true;
   boardEl.classList.add('falling');
+  Sound.fall();
   render(false);
   setTimeout(() => {
     boardEl.classList.remove('falling');

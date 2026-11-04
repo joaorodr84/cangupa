@@ -26,6 +26,10 @@ Open work is listed in [TODO.md](TODO.md).
   a level is cleared, every time — not just on that level's first-ever
   clear — synthesized the same way as the move sound, and muted by the
   same "Som" setting.
+- The web game now also plays a descending glide when the kangaroo falls
+  through the board, timed to match the brief sink-and-fade animation —
+  synthesized the same way as the other sounds, and muted by the same
+  "Som" setting.
 
 ### Changed
 

@@ -45,4 +45,7 @@ const Sound = {
 
   // A cheerful ascending arpeggio (C5, E5, G5, C6) for clearing a level.
   win() { this.melody([523.25, 659.25, 783.99, 1046.5], { gain: 0.16 }); },
+
+  // A descending glide, timed to the `.falling` CSS animation (ui.js's fall()).
+  fall() { this.tone(300, 0.45, { type: 'sawtooth', gain: 0.14, glideTo: 70 }); },
 };
