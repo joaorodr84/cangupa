@@ -29,10 +29,17 @@ export function isDone(progress: Progress, levelIndex: number): boolean {
   return progress.done.includes(levelIndex);
 }
 
-// A level is open once the one before it is cleared (apps/web-classic/js/ui.js's
-// renderLevels), or it is the first level, or it is already done itself.
-export function isUnlocked(progress: Progress, levelIndex: number): boolean {
-  return levelIndex === 0 || isDone(progress, levelIndex - 1) || isDone(progress, levelIndex);
+// A level is open once the one before it, within the same pack, is cleared
+// (apps/web-classic/js/ui.js's renderLevels has no packs to keep this inside
+// of), it is the first level of its own pack, or it is already done itself.
+// packStart is where that pack begins in the play-order list (levels.ts) —
+// before CANGUPA-77, this checked levelIndex - 1 against the single index
+// running across every pack concatenated, so a pack's first level stayed
+// locked until the pack before it was entirely cleared; passing each pack's
+// own start drops that cross-pack dependency so any pack can be started at
+// any time, while a level's order within its own pack is still enforced.
+export function isUnlocked(progress: Progress, levelIndex: number, packStart: number): boolean {
+  return levelIndex === packStart || isDone(progress, levelIndex - 1) || isDone(progress, levelIndex);
 }
 
 // Marks a level cleared, with how many moves it took, and keeps the fewest
@@ -52,6 +59,22 @@ export function markDone(progress: Progress, levelIndex: number, moves: number):
     done: alreadyDone ? progress.done : [...progress.done, levelIndex].sort((a, b) => a - b),
     bestMoves: improves ? { ...progress.bestMoves, [levelIndex]: moves } : progress.bestMoves,
   };
+}
+
+// Where the home screen's Play button should go: the first level, in play
+// order across every pack, not yet in done — considering every pack rather
+// than just `progress.level` (the last level played), which CANGUPA-77 found
+// could point at an already-cleared level, or one in a pack the player
+// hasn't touched, if they'd jumped ahead to a later pack and back. Falls
+// back to the last level once every one of them is done, the same clamp
+// `progress.level` itself already gets against LEVELS.length elsewhere.
+export function firstUnsolvedLevel(progress: Progress, totalLevels: number): number {
+  for (let levelIndex = 0; levelIndex < totalLevels; levelIndex++) {
+    if (!isDone(progress, levelIndex)) {
+      return levelIndex;
+    }
+  }
+  return totalLevels - 1;
 }
 
 export function withLevel(progress: Progress, levelIndex: number): Progress {

@@ -4,8 +4,9 @@
 //
 // A level's index here is what saved progress, the unlock rule and the stats
 // screen all count by, so it runs straight on from one pack to the next:
-// pack 1 is indices 0-49, pack 2 is 50-99, and so on. Finishing a pack's last
-// level opens the next pack's first.
+// pack 1 is indices 0-49, pack 2 is 50-99, and so on. Each pack unlocks its
+// own levels independently (CANGUPA-77) — only order within a pack is
+// enforced, not finishing the pack before it.
 import { type Level } from './board';
 import { PACKS } from './packs';
 

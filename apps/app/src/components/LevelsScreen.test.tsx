@@ -149,6 +149,30 @@ test('level numbers reflect the pack offset, and only that pack shows', async ()
   }
 });
 
+test("a pack's first level is unlocked with no progress at all (CANGUPA-77)", async () => {
+  const onSelectLevel = jest.fn();
+  await render(
+    <LevelsScreen
+      packIndex={1}
+      packSizes={[2, 3]}
+      progress={NO_PROGRESS}
+      currentLevel={0}
+      palette={palette}
+      onSelectLevel={onSelectLevel}
+      onBack={jest.fn()}
+    />,
+  );
+
+  // Pack 2 (index 1) starts at level 3 — its own first level, unlocked
+  // without pack 1 being touched at all.
+  await fireEvent.press(screen.getByTestId('level-3'));
+  expect(onSelectLevel).toHaveBeenCalledWith(2);
+
+  onSelectLevel.mockClear();
+  await fireEvent.press(screen.getByTestId('level-4'));
+  expect(onSelectLevel).not.toHaveBeenCalled();
+});
+
 test("shows the pack's own name, in its own colour, and its blurb in its header", async () => {
   const progress: Progress = { done: [2], level: 0, bestMoves: {} };
   await render(

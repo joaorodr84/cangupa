@@ -17,7 +17,7 @@ import { LEVELS, PACK_SIZES } from './src/game/levels';
 import { LanguageContext } from './src/i18n/LanguageContext';
 import { type LanguageSetting } from './src/i18n/locale';
 import { useStrings } from './src/i18n/useStrings';
-import { isDone, type Progress } from './src/state/progress';
+import { firstUnsolvedLevel, isDone, type Progress } from './src/state/progress';
 import { type Settings } from './src/state/settings';
 import { useProgress } from './src/state/useProgress';
 import { useSettings } from './src/state/useSettings';
@@ -116,6 +116,11 @@ function Shell({
   const [openPack, setOpenPack] = useState<number | null>(null);
   const palette = paletteFor(settings.themeMode, useColorScheme());
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
+  // Where Play opens into, not just progress.level (the last level played):
+  // the first level, across every pack in pack order, not yet cleared — so
+  // Play still lands on the right level after CANGUPA-77 let a pack be
+  // played out of order.
+  const playLevel = firstUnsolvedLevel(progress, LEVELS.length);
 
   const goToLevel = (levelIndex: number) => {
     onChangeLevel(levelIndex);
@@ -136,8 +141,8 @@ function Shell({
     content = (
       <HomeScreen
         palette={palette}
-        levelNumber={currentLevel + 1}
-        onPlay={() => setPanel('board')}
+        levelNumber={playLevel + 1}
+        onPlay={() => goToLevel(playLevel)}
         onRules={() => setPanel('help')}
       />
     );

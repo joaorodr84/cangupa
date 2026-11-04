@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-77`**
+**Next ID to assign: `CANGUPA-78`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -29,6 +29,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Date | Commit |
 | --- | --- | --- | --- | --- | --- |
+| CANGUPA-77 | P2 | Made `apps/app`'s ten level packs independently playable. `progress.ts`'s `isUnlocked()` used to check `levelIndex - 1` against a single index running across every pack concatenated, so pack 2 stayed locked until pack 1's last level was cleared; it now takes each level's own pack-start index and unlocks a level when it is the first in its own pack, the one before it in that same pack is done, or it is already done itself — order within a pack is still enforced, just not across packs. `LevelsScreen.tsx` passes its pack's start index through. Also fixed the home screen's Play button, which used to just resume `progress.level` (the last level played, which could already be cleared, or sit in a pack the player hadn't touched, once a pack could be opened out of order): a new `firstUnsolvedLevel()` scans every level in play order for the first not in `progress.done`, and `App.tsx` uses it for both the home screen's level number and where Play goes. Verified: `npx tsc --noEmit` clean, full `apps/app` Jest suite green (796 tests, updated `isUnlocked`/Play-button tests to match), `node tools/test.js` green, and live against the Expo web build via Playwright — opening pack 2 directly unlocks level 51 but not 52, and seeding a skipped level 2 with `progress.level` pointing past it sends Play to level 2, not 3 | done | 2026-11-04 | — |
 | CANGUPA-76 | P3 | Gave `apps/app`'s open-pack `LevelsScreen` its own back button in its own header row, matching DigiSpin's own pack header (DIGISPIN-173/174), instead of reusing App.tsx's shared floating back arrow for the whole Levels tab. The pack name is now centred in that row — a flex:1 text balanced by a same-sized spacer on the other side — and set in the pack's own colour (`theme/packColors.ts`) instead of the theme's plain ink colour; the "N/M solved" count is dropped from this header since `LevelPacksScreen` already shows it per pack on the list before this. A done level cell is now coloured in the pack's own colour, matching the pack list's swatch, with a contrast-safe label colour computed for the number | done | 2026-11-04 | — |
 | CANGUPA-75 | P3 | Renamed the level pack collection from Australia / Austrália to Lay of the Land / O Relevo, so the name is not tied to a country | done 2026-11-04 | |
 | CANGUPA-74 | P3 | Gave each level pack its own monochrome line icon on the level packs screen (a landscape shape per pack, replacing the placeholder dot) and reworded every pack sentence in English and Portuguese so packs 7 to 10 no longer claim things they do not have | done 2026-11-04 | |

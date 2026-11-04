@@ -38,13 +38,16 @@ test('starts on the home screen, and the board screen has its own way back to it
   expect(await screen.findByText('Play')).toBeTruthy();
 });
 
-test('resumes the last-played level', async () => {
+test('Play opens the first unsolved level, not just the last one played (CANGUPA-77)', async () => {
+  // Level 2 (index 1) is skipped, not cleared — Play should go there, not
+  // to level 3 just because it's where progress.level last left off.
   await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: [0], level: 2 }));
 
   await render(<App />);
-  await fireEvent.press(await screen.findByText('Play'));
+  expect(await screen.findByText('Level 2')).toBeTruthy();
 
-  expect(await screen.findByText('Level 3')).toBeTruthy();
+  await fireEvent.press(screen.getByText('Play'));
+  expect(await screen.findByText('Level 2')).toBeTruthy();
 });
 
 test('the footer nav opens the pack list, opening a pack opens its levels, and picking one opens the board', async () => {

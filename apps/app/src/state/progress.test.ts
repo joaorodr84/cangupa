@@ -1,4 +1,5 @@
 import {
+  firstUnsolvedLevel,
   isDone,
   isUnlocked,
   markDone,
@@ -26,20 +27,50 @@ describe('isDone', () => {
 describe('isUnlocked', () => {
   const progress: Progress = { done: [0, 1], level: 2, bestMoves: {} };
 
-  it('the first level is always unlocked', () => {
-    expect(isUnlocked(NO_PROGRESS, 0)).toBe(true);
+  it('the first level of a pack is always unlocked', () => {
+    expect(isUnlocked(NO_PROGRESS, 0, 0)).toBe(true);
   });
 
-  it('a level is locked until the one before it is cleared', () => {
-    expect(isUnlocked(NO_PROGRESS, 1)).toBe(false);
+  it('a level is locked until the one before it, in the same pack, is cleared', () => {
+    expect(isUnlocked(NO_PROGRESS, 1, 0)).toBe(false);
   });
 
   it('a level unlocks once the one before it is cleared', () => {
-    expect(isUnlocked(progress, 2)).toBe(true);
+    expect(isUnlocked(progress, 2, 0)).toBe(true);
   });
 
   it('a level already cleared stays unlocked', () => {
-    expect(isUnlocked(progress, 0)).toBe(true);
+    expect(isUnlocked(progress, 0, 0)).toBe(true);
+  });
+
+  it("a pack's first level is unlocked regardless of any other pack's progress", () => {
+    expect(isUnlocked(NO_PROGRESS, 50, 50)).toBe(true);
+  });
+
+  it('a later level in a pack stays locked by that pack alone, not by an earlier pack', () => {
+    const otherPackDone: Progress = { done: [0, 1, 2], level: 2, bestMoves: {} };
+    expect(isUnlocked(otherPackDone, 51, 50)).toBe(false);
+  });
+});
+
+describe('firstUnsolvedLevel', () => {
+  it('is the first level when nothing is done', () => {
+    expect(firstUnsolvedLevel(NO_PROGRESS, 100)).toBe(0);
+  });
+
+  it('is the first level not in done, regardless of which pack it falls in', () => {
+    const progress: Progress = { done: [0, 1, 50, 51], level: 51, bestMoves: {} };
+    expect(firstUnsolvedLevel(progress, 100)).toBe(2);
+  });
+
+  it('skips past an already-done level even mid-sequence', () => {
+    const progress: Progress = { done: [0, 2], level: 2, bestMoves: {} };
+    expect(firstUnsolvedLevel(progress, 100)).toBe(1);
+  });
+
+  it('falls back to the last level once every level is done', () => {
+    const progress: Progress = { done: [0, 1, 2], level: 2, bestMoves: {} };
+    expect(firstUnsolvedLevel(progress, 3)).toBe(2);
   });
 });
 

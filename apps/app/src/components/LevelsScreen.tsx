@@ -93,7 +93,7 @@ export default function LevelsScreen({
           <View key={rowIndex} style={styles.row}>
             {row.map((levelIndex) => {
               const done = isDone(progress, levelIndex);
-              const unlocked = isUnlocked(progress, levelIndex);
+              const unlocked = isUnlocked(progress, levelIndex, start);
               const current = levelIndex === currentLevel;
               return (
                 <Pressable
