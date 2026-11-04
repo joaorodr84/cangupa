@@ -55,8 +55,27 @@ Open work is listed in [TODO.md](TODO.md).
   side-facing and front-facing sprites, matching the web version's own
   joey art. The back-facing sprite is unchanged, since a pouch isn't
   visible from that angle either.
+- The app now has ten level packs of 50 levels each, 500 levels in all:
+  Meadow, Creek, Gully, Outcrop, Billabong, Ridge, Mesa, Gorge, Plateau and
+  Outback (Prado, Ribeiro, Barranco, Afloramento, Lagoa, Crista, Mesa,
+  Desfiladeiro, Planalto and Ermo in Portuguese). Each pack has its own
+  theme, and boards get bigger from pack to pack, from 3×3 up to 8×7.
+  Levels get harder within each pack and from one pack to the next.
+  Two-visit tiles appear from the first pack on, except in the first four
+  levels of Meadow, and jumps are taught from the second pack.
+- The app's Levels screen now shows a collection label ("Base") and one
+  section per pack, with the pack's name, a one-line description and how
+  many of its levels are cleared. Clearing a pack's last level opens the
+  next pack. Pack names and descriptions are in English and European
+  Portuguese.
+- Rectangular boards in the app are turned to fit the phone: wide when the
+  phone is held sideways, tall when it is upright.
 
 ### Changed
+
+- The app's 50 original levels are replaced by the new level packs. Because
+  the levels are new, progress made on the old ones is not carried over and
+  the game starts fresh. The web game keeps its own 50 levels, unchanged.
 
 - The settings screen's "Clear progress" row now sits under its own "Data"
   section header, instead of under the Language section with no header of
