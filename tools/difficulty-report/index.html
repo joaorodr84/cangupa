@@ -78,7 +78,7 @@
   </header>
   <div class="tabs" role="tablist" aria-label="Level set">
     <button type="button" role="tab" id="tab-levels" aria-selected="true">Original levels (50)</button>
-    <button type="button" role="tab" id="tab-packs" aria-selected="false">Level packs (300)</button>
+    <button type="button" role="tab" id="tab-packs" aria-selected="false">Level packs</button>
   </div>
   <div class="legend" aria-label="Sketch key">
     <span><i style="background:var(--tile)"></i>Tile, one visit</span>
@@ -114,9 +114,11 @@
     packs: {
       note: 'packs.json', cols: ['level', 'sketch', 'pathBits', 'decisions', 'bits', 'effort', 'visits'],
       load: json => {
+        // running total of levels before each pack, so packs may differ in size
+        const offset = json.packs.map((_, pi) => json.packs.slice(0, pi).reduce((a, q) => a + q.levels.length, 0));
         const rows = json.packs.flatMap((p, pi) => p.levels.map((l, i) => ({
-          ...l, n: pi * 30 + i + 1, label: `${pi + 1}-${i + 1}`, sub: p.name,
-          width: p.width, height: p.height, level: pi * 30 + i + 1,
+          ...l, n: offset[pi] + i + 1, label: `${pi + 1}-${i + 1}`, sub: p.name,
+          width: p.width, height: p.height, level: offset[pi] + i + 1,
         })));
         return { info: `${json.packs.length} packs of ${json.packs[0].levels.length} levels, ${rows.length} in all. Boards grow from ${json.packs[0].width}×${json.packs[0].height} to ${json.packs[json.packs.length - 1].width}×${json.packs[json.packs.length - 1].height}. Designed layouts are tagged.`, rows };
       },

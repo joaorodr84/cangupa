@@ -1,4 +1,4 @@
-// The level packs: ten packs of 30 levels, each on a bigger board than the one before.
+// The level packs: ten packs of 50 levels, each on a bigger board than the one before.
 // Edit this to reshape the game; tools/gen-packs.js turns it into levels.
 //
 // Why these sizes: the area (width × height) grows at every step and squares
@@ -6,8 +6,9 @@
 // for. Each rectangle is generated landscape; the app rotates it to fit the device.
 //
 // Why these themes: a pack teaches one thing, so the curve is a sequence of ideas,
-// not just a bigger grid. Jumps arrive in pack 2 and two-visit tiles in pack 3;
-// after that the packs mix both and push the density of the board.
+// not just a bigger grid. Two-visit (cracked) tiles are there from pack 1, since a
+// 3x3 board of one-visit tiles has only 37 distinct levels, too few for a pack of 50.
+// Jumps arrive in pack 2; after that the packs mix both and push the density of the board.
 //
 //   name         shown on the pack screen
 //   blurb        the idea the pack teaches
@@ -18,13 +19,13 @@
 //   doubles      [lo, hi] share of landings that may be on a two-visit tile
 //   pool         random candidates measured for this pack; levels are picked from them
 const PACKS = [
-  { name: 'Meadow',    blurb: 'Hop from tile to tile. Every tile is visited once.',
-    width: 3, height: 3, steps: [.60, 1.0], jump: [0, 0],      doubles: [0, 0],      pool: 4000 },
+  { name: 'Meadow',    blurb: 'Hop from tile to tile. Some tiles crack: they need two visits.',
+    width: 3, height: 3, steps: [.60, 1.0], jump: [0, 0],      doubles: [0, .30],    pool: 4000 },
   { name: 'Creek',     blurb: 'Gaps appear. Jump over one missing tile.',
-    width: 4, height: 3, steps: [.55, .95], jump: [.15, .40],  doubles: [0, 0],      pool: 4000 },
-  { name: 'Gully',     blurb: 'Some tiles crack: they need two visits.',
+    width: 4, height: 3, steps: [.55, .95], jump: [.15, .40],  doubles: [0, .20],    pool: 4000 },
+  { name: 'Gully',     blurb: 'Jumps and cracked tiles on a square board.',
     width: 4, height: 4, steps: [.55, .90], jump: [0, .30],    doubles: [.10, .25],  pool: 4000 },
-  { name: 'Outcrop',   blurb: 'Jumps and cracked tiles together.',
+  { name: 'Outcrop',   blurb: 'More cracked tiles and longer routes.',
     width: 5, height: 4, steps: [.55, .85], jump: [.20, .40],  doubles: [.05, .25],  pool: 3000 },
   { name: 'Billabong', blurb: 'Open water in the middle. Plan the way round.',
     width: 5, height: 5, steps: [.55, .90], jump: [.20, .40],  doubles: [.10, .25],  pool: 2500 },
@@ -40,7 +41,7 @@ const PACKS = [
     width: 8, height: 7, steps: [.50, .90], jump: [.25, .45],  doubles: [.15, .35],  pool: 800 },
 ];
 
-const LEVELS_PER_PACK = 30;
+const LEVELS_PER_PACK = 50;
 
 // A pack's easiest level starts at about this share of the previous pack's hardest.
 // 1 would stack the packs end to end, but the small boards (3x3, 4x3) cannot get hard
