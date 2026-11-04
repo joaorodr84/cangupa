@@ -84,7 +84,8 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     const doubles = Math.floor(steps * lerp(spec.doubles || [0, 0], rand()));
     const jump = lerp(spec.jump, rand());
     const kinds = kindsOf(spec);
-    const arrows = Math.floor(steps * lerp(spec.arrows || [0, 0], rand()));
+    // a share of candidates get no arrows at all, so a pack that introduces them can open with levels that lack them
+    const arrows = spec.arrows && rand() >= .12 ? Math.floor(steps * lerp(spec.arrows, rand())) : 0;
     const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
       maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows }, rand);
     if (!rows || !fillsBox(rows)) continue;
