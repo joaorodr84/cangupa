@@ -114,24 +114,33 @@ if (fs.existsSync(packsFile)) {
     assert.ok(area > prevArea, `${label}: board area must grow (${area} after ${prevArea})`);
     prevArea = area;
     // the tile mix of each pack (CANGUPA-68, CANGUPA-69): Common only in pack 1, Gold added in pack 2, Steel
-    // without Gold in pack 3, both in pack 4, arrows in pack 5; packs 6 to 10 are frozen with Gold only
+    // without Gold in pack 3, both in pack 4, arrows in pack 5, arrows with Gold then Steel alternately in pack 6;
+    // packs 7 to 10 are frozen with Gold only. No level in packs 1 to 10 has more than three tile kinds, Common included
     const MIX = [
       { gold: false, steel: false, arrow: false }, { gold: true, steel: false, arrow: false },
       { gold: false, steel: true, arrow: false }, { gold: true, steel: true, arrow: false },
-      { gold: false, steel: false, arrow: true },
+      { gold: false, steel: false, arrow: true }, { gold: true, steel: true, arrow: true },
     ];
     const mix = MIX[i] || { gold: true, steel: false, arrow: false };
     const has = { gold: /[2s]/, steel: /[3T]/, arrow: /[><v^]/ };
     const count = { gold: 0, steel: 0, arrow: 0 };
     pack.levels.forEach((lv, j) => {
-      for (const kind of Object.keys(has)) if (has[kind].test(lv.rows.join(''))) {
+      const text = lv.rows.join('');
+      for (const kind of Object.keys(has)) if (has[kind].test(text)) {
         count[kind]++;
         assert.ok(mix[kind], `${label} level ${j + 1} has a ${kind} tile, which this pack does not allow`);
+      }
+      const special = Object.keys(has).filter(kind => has[kind].test(text)).length;
+      assert.ok(1 + special <= 3, `${label} level ${j + 1} has ${1 + special} tile kinds, more than three`);
+      if (i === 5) {  // pack 6: arrows and one metal, Gold on level 1, Steel on level 2, and so on
+        assert.ok(has.arrow.test(text), `${label} level ${j + 1} has no arrow tile`);
+        assert.ok(j % 2 === 0 ? has.gold.test(text) && !has.steel.test(text) : has.steel.test(text) && !has.gold.test(text),
+          `${label} level ${j + 1} should have ${j % 2 === 0 ? 'Gold' : 'Steel'} and not the other`);
       }
     });
     // a pack that teaches a tile has it in nearly every level (it opens with a few levels without it,
     // and designed layouts have none)
-    for (const kind of Object.keys(has)) if (i < MIX.length && mix[kind] && !(i === 3 && false)) {
+    for (const kind of Object.keys(has)) if (i < 5 && mix[kind]) {
       assert.ok(count[kind] >= LEVELS_PER_PACK - 11, `${label}: only ${count[kind]} levels have a ${kind} tile`);
     }
     const seen = new Set();

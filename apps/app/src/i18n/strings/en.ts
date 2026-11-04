@@ -103,7 +103,7 @@ export const en: Strings = {
     },
     {
       name: 'Ridge',
-      blurb: 'Long runs that fold back on themselves.',
+      blurb: 'Arrows and metals: gold on one level, steel on the next.',
     },
     {
       name: 'Mesa',
