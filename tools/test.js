@@ -56,6 +56,28 @@ g = new Game(['S3']);
 assert.strictEqual(g.max[1], 3);                   // `3` alone is a 3-visit tile that is not the start
 assert.throws(() => new Game(['13']), /no start/);
 
+// an arrow tile (`>` `<` `v` `^`): one visit, and it can only be left the way it points
+const to = g => g.legalMoves().map(m => [m.x, m.y]);
+g = new Game(['S>1', '.1.']);
+assert.strictEqual(g.max[1], 1);
+assert.strictEqual(g.dir[1], 0);                     // 0 is right
+g.play({ x: 1, y: 0 });                              // step onto the arrow
+assert.deepStrictEqual(to(g), [[2, 0]]);             // right only: the tile below it is out of reach
+const plain = new Game(['S11', '.1.']);              // the same level with a plain tile: both ways are open
+plain.play({ x: 1, y: 0 });
+assert.deepStrictEqual(to(plain), [[2, 0], [1, 1]]);
+g = new Game(['S>.1', '....', '.1..']);               // jumps follow the arrow too
+g.play({ x: 1, y: 0 });
+assert.deepStrictEqual(to(g), [[3, 0]]);             // the jump right, not the jump down
+g = new Game(['S.', '1v', '.1']);
+assert.strictEqual(g.dir[3], 2);                     // v points down
+g = new Game(['S<', '..']);
+assert.strictEqual(g.dir[1], 1);                     // < points left
+g = new Game(['^S']);
+assert.strictEqual(g.dir[0], 3);                     // ^ points up
+assert.ok(new Game(['S>1']).solve());                // a level with an arrow can still be cleared
+assert.strictEqual(new Game(['S>1']).start, 0);      // an arrow is never the start
+
 // levels
 LEVELS.forEach((rows, i) => {
   const g = new Game(rows);

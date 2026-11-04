@@ -2,6 +2,8 @@
 // A level is an array of strings:
 //   .  empty     1  tile needing one visit     2  tile needing two visits     3  tile needing three visits
 //   S  start on a 1-tile      s  start on a 2-tile      T  start on a 3-tile
+//   > < v ^   an arrow tile: needs one visit, and can only be left in the way it points
+//             (steps and jumps alike). Never the start tile.
 // Coordinates: x is the column, y the row, both counted from the top-left.
 //
 // cells[i] is how many visits a tile still needs. The start tile counts as
@@ -32,12 +34,16 @@ const DIRS: ReadonlyArray<readonly [number, number]> = [
   [0, 1],
   [0, -1],
 ];
+// the arrow characters, in the same order as DIRS: right, left, down, up
+const ARROWS = '><v^';
 
 export class Game {
   readonly rules: Rules;
   readonly w: number;
   readonly h: number;
   readonly max: Uint8Array;
+  // which way an arrow tile points, as an index into DIRS; -1 for any other tile
+  readonly dir: Int8Array;
   readonly start: number;
   cells!: Uint8Array;
   pos!: number;
@@ -48,6 +54,7 @@ export class Game {
     this.h = rows.length;
     this.w = Math.max(...rows.map((r) => r.length));
     this.max = new Uint8Array(this.w * this.h);
+    this.dir = new Int8Array(this.w * this.h).fill(-1);
     let start = -1;
     rows.forEach((row, y) => {
       for (let x = 0; x < this.w; x++) {
@@ -56,6 +63,10 @@ export class Game {
         if (c === '1' || c === 'S') this.max[i] = 1;
         else if (c === '2' || c === 's') this.max[i] = 2;
         else if (c === '3' || c === 'T') this.max[i] = 3;
+        else if (ARROWS.includes(c)) {
+          this.max[i] = 1;
+          this.dir[i] = ARROWS.indexOf(c);
+        }
         if (c === 'S' || c === 's' || c === 'T') start = i;
       }
     });
@@ -101,12 +112,15 @@ export class Game {
     return !this.won && this.legalMoves().length === 0;
   }
 
-  // Steps of one tile, plus jumps of two when the rule is on.
+  // Steps of one tile, plus jumps of two when the rule is on. Standing on an
+  // arrow tile, only the way it points.
   legalMoves(cells: Uint8Array = this.cells, pos: number = this.pos): Move[] {
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
     const out: Move[] = [];
-    for (const [dx, dy] of DIRS) {
+    for (let k = 0; k < DIRS.length; k++) {
+      if (this.dir[pos] >= 0 && k !== this.dir[pos]) continue;
+      const [dx, dy] = DIRS[k];
       for (let d = 1; d <= (this.rules.jumps ? 2 : 1); d++) {
         const x = px + dx * d;
         const y = py + dy * d;

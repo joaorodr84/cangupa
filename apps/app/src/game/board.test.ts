@@ -67,3 +67,42 @@ test('a Steel tile needs three visits, and T starts on one', () => {
   path.forEach((m) => g.play(m));
   expect(g.won).toBe(true);
 });
+
+describe('arrow tiles', () => {
+  const to = (g: Game) => g.legalMoves().map((m) => [m.x, m.y]);
+
+  test('an arrow tile can only be left the way it points', () => {
+    const g = new Game(['S>1', '.1.']);
+    expect(g.max[1]).toBe(1);
+    expect(g.dir[1]).toBe(0); // right
+    g.play({ x: 1, y: 0 });
+    expect(to(g)).toEqual([[2, 0]]); // the tile below is out of reach
+
+    const plain = new Game(['S11', '.1.']); // the same level with a plain tile
+    plain.play({ x: 1, y: 0 });
+    expect(to(plain)).toEqual([
+      [2, 0],
+      [1, 1],
+    ]);
+  });
+
+  test('an arrow limits jumps too', () => {
+    const g = new Game(['S>.1', '....', '.1..']);
+    g.play({ x: 1, y: 0 });
+    expect(to(g)).toEqual([[3, 0]]); // the jump right, not the jump down
+  });
+
+  test('every arrow character points its own way, and an arrow is never the start', () => {
+    expect(new Game(['S.', '1v']).dir[3]).toBe(2);
+    expect(new Game(['S<', '..']).dir[1]).toBe(1);
+    expect(new Game(['^S']).dir[0]).toBe(3);
+    expect(new Game(['S>1']).start).toBe(0);
+  });
+
+  test('a level with an arrow can still be cleared', () => {
+    const g = new Game(['S>1']);
+    const path = g.solve()!;
+    path.forEach((m) => g.play(m));
+    expect(g.won).toBe(true);
+  });
+});

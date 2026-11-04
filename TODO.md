@@ -21,10 +21,18 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
+- [P2] `CANGUPA-69` — Add the arrow tile and put it in pack 5. One visit;
+  it can only be left in the way it points, steps and jumps alike. Level
+  characters `> < v ^`, never the start tile. Pack 5 has only Common tiles
+  and arrow tiles. Drawn as a raspberry (`#9D1057`) tile with a white
+  triangle on the exit edge. A corner or three-way arrow, and a wall tile
+  that blocks an edge in both directions, were discussed and left for
+  later.
 - [P2] `CANGUPA-68` — Add the Steel tile (three visits) and a per-pack tile
-  mix: pack 1 Normal only; pack 2 Normal and Gold (two visits); pack 3
-  Normal and Steel only; pack 4 Normal, Gold and Steel; packs 5 to 10 are
-  left exactly as they are. Level
+  mix: pack 1 Common only (Common is the one-visit tile, formerly Normal);
+  pack 2 Common and Gold (two visits); pack 3 Common and Steel only; pack 4
+  Common, Gold and Steel; pack 5 is `CANGUPA-69`; packs 6 to 10 are left
+  exactly as they are. Level
   characters: `3` is a Steel tile and `T` a start on one. The board shows
   visits left on Gold and Steel as short diagonal strokes (top right to
   bottom left), a Steel colour of `#587790` and a help-screen line for it.
