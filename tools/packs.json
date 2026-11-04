@@ -3,41 +3,15 @@
  "packs": [
   {
    "name": "Meadow",
-   "blurb": "Hop from tile to tile. Every tile is visited once.",
+   "blurb": "Hop from tile to tile. Some tiles crack: they need two visits.",
    "width": 3,
    "height": 3,
    "levels": [
     {
      "rows": [
-      "S..",
-      "111",
+      "S11",
+      "..1",
       "..1"
-     ],
-     "pathBits": 1,
-     "decisions": 1,
-     "effort": 4,
-     "bits": 1,
-     "solutions": 1,
-     "visits": 5
-    },
-    {
-     "rows": [
-      ".S1",
-      ".11",
-      "11."
-     ],
-     "pathBits": 1.58,
-     "decisions": 1,
-     "effort": 5,
-     "bits": 1.58,
-     "solutions": 1,
-     "visits": 6
-    },
-    {
-     "rows": [
-      "111",
-      "1..",
-      "S.."
      ],
      "pathBits": 2,
      "decisions": 2,
@@ -61,35 +35,22 @@
     },
     {
      "rows": [
-      "11.",
-      "S1.",
-      ".11"
-     ],
-     "pathBits": 2,
-     "decisions": 2,
-     "effort": 14,
-     "bits": 2,
-     "solutions": 1,
-     "visits": 6
-    },
-    {
-     "rows": [
-      "11.",
-      "111",
-      "S.."
+      "S11",
+      ".11",
+      ".1."
      ],
      "pathBits": 2.58,
      "decisions": 2,
-     "effort": 9,
+     "effort": 5,
      "bits": 0.5,
      "solutions": 5,
      "visits": 6
     },
     {
      "rows": [
-      "S..",
-      "1.1",
-      "111"
+      "111",
+      ".11",
+      "..S"
      ],
      "pathBits": 3,
      "decisions": 3,
@@ -100,304 +61,601 @@
     },
     {
      "rows": [
-      ".S.",
-      "11.",
-      "111"
+      "12S",
+      ".12",
+      "..1"
      ],
      "pathBits": 3,
-     "decisions": 3,
-     "effort": 5,
-     "bits": 0.5,
-     "solutions": 5,
-     "visits": 6
+     "decisions": 2,
+     "effort": 7,
+     "bits": 2,
+     "solutions": 2,
+     "visits": 8
     },
     {
      "rows": [
-      "11.",
+      "12.",
       ".11",
       "S11"
      ],
      "pathBits": 3.17,
      "decisions": 2,
-     "effort": 6,
-     "bits": 0.92,
-     "solutions": 6,
-     "visits": 7
+     "effort": 7,
+     "bits": 0.74,
+     "solutions": 10,
+     "visits": 8
     },
     {
      "rows": [
       ".11",
-      "111",
-      "1S."
+      "211",
+      "s.."
+     ],
+     "pathBits": 3.17,
+     "decisions": 2,
+     "effort": 17,
+     "bits": 0.85,
+     "solutions": 6,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".22",
+      "11S",
+      "11."
+     ],
+     "pathBits": 3.17,
+     "decisions": 2,
+     "effort": 8,
+     "bits": 1.4,
+     "solutions": 8,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "..1",
+      "1s1",
+      ".11"
      ],
      "pathBits": 3.58,
-     "decisions": 3,
-     "effort": 6,
-     "bits": 0.92,
-     "solutions": 6,
+     "decisions": 2,
+     "effort": 11,
+     "bits": 0.81,
+     "solutions": 11,
      "visits": 7
     },
     {
      "rows": [
+      "..1",
+      ".12",
+      "1s1"
+     ],
+     "pathBits": 3.58,
+     "decisions": 2,
+     "effort": 13,
+     "bits": 1.13,
+     "solutions": 14,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".12",
+      "..1",
+      "1s1"
+     ],
+     "pathBits": 3.58,
+     "decisions": 2,
+     "effort": 13,
+     "bits": 1.13,
+     "solutions": 14,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".1.",
+      ".21",
+      "11s"
+     ],
+     "pathBits": 3.58,
+     "decisions": 2,
+     "effort": 13,
+     "bits": 1.13,
+     "solutions": 14,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "21.",
+      "2.S",
+      "111"
+     ],
+     "pathBits": 4,
+     "decisions": 3,
+     "effort": 14,
+     "bits": 0.95,
+     "solutions": 22,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "11S",
       ".11",
-      ".11",
+      ".22"
+     ],
+     "pathBits": 4,
+     "decisions": 3,
+     "effort": 41,
+     "bits": 1.62,
+     "solutions": 14,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "22.",
+      "11.",
       "1S1"
      ],
      "pathBits": 4,
      "decisions": 3,
-     "effort": 22,
-     "bits": 1.42,
-     "solutions": 6,
-     "visits": 7
+     "effort": 8,
+     "bits": 1.62,
+     "solutions": 14,
+     "visits": 9
     },
     {
      "rows": [
       "11.",
-      "11.",
-      "S11"
-     ],
-     "pathBits": 4,
-     "decisions": 3,
-     "effort": 22,
-     "bits": 1.42,
-     "solutions": 6,
-     "visits": 7
-    },
-    {
-     "rows": [
-      "1S.",
-      "111",
-      "11."
+      "S21",
+      ".1."
      ],
      "pathBits": 4.17,
      "decisions": 3,
-     "effort": 10,
-     "bits": 0.96,
-     "solutions": 11,
+     "effort": 6,
+     "bits": 1.08,
+     "solutions": 5,
      "visits": 7
     },
     {
      "rows": [
-      "111",
-      "11S",
-      "1.."
+      "12S",
+      ".1.",
+      ".11"
      ],
-     "pathBits": 4.58,
-     "decisions": 4,
+     "pathBits": 4.17,
+     "decisions": 3,
      "effort": 6,
-     "bits": 0.96,
-     "solutions": 11,
+     "bits": 1.08,
+     "solutions": 5,
      "visits": 7
     },
     {
      "rows": [
-      "11.",
-      "11.",
-      "11S"
+      ".1.",
+      ".11",
+      "12S"
      ],
-     "pathBits": 4.58,
-     "decisions": 4,
-     "effort": 6,
-     "bits": 0.26,
-     "solutions": 20,
-     "visits": 7
-    },
-    {
-     "rows": [
-      "111",
-      "111",
-      ".S."
-     ],
-     "pathBits": 4.58,
-     "decisions": 4,
-     "effort": 6,
-     "bits": 0.26,
-     "solutions": 20,
+     "pathBits": 4.17,
+     "decisions": 3,
+     "effort": 9,
+     "bits": 1.08,
+     "solutions": 5,
      "visits": 7
     },
     {
      "rows": [
       "1..",
-      "111",
-      "11S"
-     ],
-     "pathBits": 4.58,
-     "decisions": 4,
-     "effort": 12,
-     "bits": 0.96,
-     "solutions": 11,
-     "visits": 7
-    },
-    {
-     "rows": [
-      "1S1",
-      "111",
-      "1.."
-     ],
-     "pathBits": 4.58,
-     "decisions": 4,
-     "effort": 12,
-     "bits": 0.96,
-     "solutions": 11,
-     "visits": 7
-    },
-    {
-     "rows": [
-      "111",
-      "1.1",
-      "S.1"
-     ],
-     "pathBits": 4.58,
-     "decisions": 4,
-     "effort": 6,
-     "bits": 0.96,
-     "solutions": 11,
-     "visits": 7
-    },
-    {
-     "rows": [
-      ".11",
-      "1S1",
-      "111"
-     ],
-     "pathBits": 5.58,
-     "decisions": 4,
-     "effort": 7,
-     "bits": 0.69,
-     "solutions": 32,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "11.",
-      "111",
-      "S11"
-     ],
-     "pathBits": 5.58,
-     "decisions": 4,
-     "effort": 7,
-     "bits": 0.69,
-     "solutions": 32,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "11.",
-      "111",
-      "1S1"
-     ],
-     "pathBits": 5.58,
-     "decisions": 4,
-     "effort": 11,
-     "bits": 0.69,
-     "solutions": 32,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "11S",
-      "111",
+      "s11",
       "11."
      ],
-     "pathBits": 5.75,
-     "decisions": 4,
-     "effort": 11,
-     "bits": 0.69,
-     "solutions": 42,
-     "visits": 8
+     "pathBits": 4.58,
+     "decisions": 3,
+     "effort": 9,
+     "bits": 0.94,
+     "solutions": 14,
+     "visits": 7
     },
     {
      "rows": [
-      "111",
-      "1.1",
-      "11S"
+      ".12",
+      "11s",
+      "11."
      ],
-     "pathBits": 6,
-     "decisions": 5,
-     "effort": 7,
-     "bits": 0.69,
-     "solutions": 32,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "111",
-      "S11",
-      ".11"
-     ],
-     "pathBits": 6.17,
-     "decisions": 5,
-     "effort": 7,
-     "bits": 0.69,
-     "solutions": 42,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "1.S",
-      "111",
-      "111"
-     ],
-     "pathBits": 6.17,
-     "decisions": 5,
-     "effort": 7,
-     "bits": 0.69,
-     "solutions": 42,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "1S1",
-      "1.1",
-      "111"
-     ],
-     "pathBits": 6.17,
-     "decisions": 5,
-     "effort": 7,
-     "bits": 0.69,
-     "solutions": 42,
-     "visits": 8
-    },
-    {
-     "rows": [
-      "111",
-      "11S",
-      "111"
-     ],
-     "pathBits": 8.17,
-     "decisions": 6,
-     "effort": 8,
-     "bits": 0.69,
-     "solutions": 168,
+     "pathBits": 4.58,
+     "decisions": 3,
+     "effort": 26,
+     "bits": 1.67,
+     "solutions": 16,
      "visits": 9
     },
     {
      "rows": [
-      "S11",
+      ".11",
+      "s11",
+      "1.1"
+     ],
+     "pathBits": 4.75,
+     "decisions": 3,
+     "effort": 7,
+     "bits": 0.42,
+     "solutions": 24,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "11.",
+      "s21",
+      "..1"
+     ],
+     "pathBits": 4.75,
+     "decisions": 3,
+     "effort": 30,
+     "bits": 2.75,
+     "solutions": 4,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "1S1",
+      "121",
+      ".1."
+     ],
+     "pathBits": 5,
+     "decisions": 4,
+     "effort": 7,
+     "bits": 0.69,
+     "solutions": 18,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "2S1",
       "111",
+      ".1."
+     ],
+     "pathBits": 5,
+     "decisions": 4,
+     "effort": 29,
+     "bits": 2.34,
+     "solutions": 4,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "11.",
+      "1s1",
+      ".11"
+     ],
+     "pathBits": 5.17,
+     "decisions": 3,
+     "effort": 7,
+     "bits": 0.92,
+     "solutions": 24,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".1.",
+      "121",
+      "S11"
+     ],
+     "pathBits": 5.17,
+     "decisions": 4,
+     "effort": 7,
+     "bits": 0.66,
+     "solutions": 32,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".11",
+      "121",
+      "S1."
+     ],
+     "pathBits": 5.17,
+     "decisions": 4,
+     "effort": 11,
+     "bits": 0.76,
+     "solutions": 22,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "s11",
+      "111",
+      ".1."
+     ],
+     "pathBits": 5.58,
+     "decisions": 4,
+     "effort": 10,
+     "bits": 1.1,
+     "solutions": 28,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "11.",
+      "11.",
+      "S21"
+     ],
+     "pathBits": 5.58,
+     "decisions": 4,
+     "effort": 7,
+     "bits": 0.69,
+     "solutions": 18,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "1s1",
+      "..1",
       "111"
      ],
-     "pathBits": 8.17,
-     "decisions": 6,
+     "pathBits": 5.58,
+     "decisions": 4,
+     "effort": 7,
+     "bits": 1.1,
+     "solutions": 28,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "s11",
+      "111",
+      "..1"
+     ],
+     "pathBits": 5.75,
+     "decisions": 4,
+     "effort": 7,
+     "bits": 1.1,
+     "solutions": 28,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".1.",
+      "S12",
+      "112"
+     ],
+     "pathBits": 5.75,
+     "decisions": 4,
+     "effort": 26,
+     "bits": 1.29,
+     "solutions": 25,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "s11",
+      "11.",
+      "11."
+     ],
+     "pathBits": 6,
+     "decisions": 4,
+     "effort": 7,
+     "bits": 0.84,
+     "solutions": 48,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "1.1",
+      "21S",
+      "111"
+     ],
+     "pathBits": 6,
+     "decisions": 4,
      "effort": 8,
-     "bits": 0.69,
-     "solutions": 168,
-     "visits": 9,
-     "designed": "snake"
+     "bits": 1.14,
+     "solutions": 49,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "1s1",
+      "111",
+      ".1."
+     ],
+     "pathBits": 6.17,
+     "decisions": 4,
+     "effort": 10,
+     "bits": 0.84,
+     "solutions": 48,
+     "visits": 8
+    },
+    {
+     "rows": [
+      ".1.",
+      "1s1",
+      "111"
+     ],
+     "pathBits": 6.17,
+     "decisions": 4,
+     "effort": 10,
+     "bits": 0.84,
+     "solutions": 48,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "11.",
+      "11.",
+      "1s1"
+     ],
+     "pathBits": 6.58,
+     "decisions": 5,
+     "effort": 7,
+     "bits": 0.84,
+     "solutions": 48,
+     "visits": 8
     },
     {
      "rows": [
       "111",
-      "1S1",
+      "1.1",
+      "21S"
+     ],
+     "pathBits": 6.58,
+     "decisions": 5,
+     "effort": 8,
+     "bits": 1.14,
+     "solutions": 49,
+     "visits": 9
+    },
+    {
+     "rows": [
+      ".11",
+      "11S",
+      "121"
+     ],
+     "pathBits": 6.58,
+     "decisions": 5,
+     "effort": 8,
+     "bits": 1.28,
+     "solutions": 56,
+     "visits": 9
+    },
+    {
+     "rows": [
+      ".11",
+      "11.",
+      "s21"
+     ],
+     "pathBits": 6.75,
+     "decisions": 4,
+     "effort": 8,
+     "bits": 1.15,
+     "solutions": 52,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "11.",
+      ".11",
+      "s21"
+     ],
+     "pathBits": 6.75,
+     "decisions": 4,
+     "effort": 8,
+     "bits": 1.15,
+     "solutions": 52,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "1s1",
+      ".11",
+      ".21"
+     ],
+     "pathBits": 7,
+     "decisions": 5,
+     "effort": 39,
+     "bits": 1.58,
+     "solutions": 59,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "11.",
+      "11s",
       "111"
      ],
-     "pathBits": 8.17,
-     "decisions": 6,
+     "pathBits": 7.17,
+     "decisions": 5,
+     "effort": 12,
+     "bits": 0.69,
+     "solutions": 106,
+     "visits": 9
+    },
+    {
+     "rows": [
+      ".11",
+      "1S2",
+      "111"
+     ],
+     "pathBits": 7.17,
+     "decisions": 5,
+     "effort": 12,
+     "bits": 1.14,
+     "solutions": 49,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "s11",
+      "111",
+      ".11"
+     ],
+     "pathBits": 7.17,
+     "decisions": 5,
      "effort": 8,
      "bits": 0.69,
-     "solutions": 168,
-     "visits": 9,
-     "designed": "spiral reversed"
+     "solutions": 106,
+     "visits": 9
+    },
+    {
+     "rows": [
+      ".1s",
+      "112",
+      ".11"
+     ],
+     "pathBits": 7.34,
+     "decisions": 5,
+     "effort": 12,
+     "bits": 0.81,
+     "solutions": 103,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "1.1",
+      "1S2",
+      "111"
+     ],
+     "pathBits": 7.34,
+     "decisions": 5,
+     "effort": 8,
+     "bits": 1.37,
+     "solutions": 53,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "11.",
+      "s11",
+      "111"
+     ],
+     "pathBits": 7.58,
+     "decisions": 5,
+     "effort": 12,
+     "bits": 0.69,
+     "solutions": 148,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "11.",
+      "111",
+      "s11"
+     ],
+     "pathBits": 7.58,
+     "decisions": 5,
+     "effort": 12,
+     "bits": 0.69,
+     "solutions": 148,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "111",
+      "..1",
+      "1s2"
+     ],
+     "pathBits": 7.75,
+     "decisions": 5,
+     "effort": 8,
+     "bits": 0.81,
+     "solutions": 103,
+     "visits": 9
     }
    ]
   },
@@ -409,13 +667,52 @@
    "levels": [
     {
      "rows": [
-      "11..",
-      "11.1",
-      "1S11"
+      "1.11",
+      "111S",
+      "..12"
+     ],
+     "pathBits": 5,
+     "decisions": 3,
+     "effort": 9,
+     "bits": 2.15,
+     "solutions": 15,
+     "visits": 10
+    },
+    {
+     "rows": [
+      "s111",
+      "1.1.",
+      ".11."
+     ],
+     "pathBits": 5.17,
+     "decisions": 3,
+     "effort": 25,
+     "bits": 2.02,
+     "solutions": 11,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "..1.",
+      "1.1.",
+      "11s1"
+     ],
+     "pathBits": 5.32,
+     "decisions": 3,
+     "effort": 7,
+     "bits": 1.37,
+     "solutions": 22,
+     "visits": 8
+    },
+    {
+     "rows": [
+      "1.1.",
+      "1.11",
+      "11S1"
      ],
      "pathBits": 5.32,
      "decisions": 4,
-     "effort": 8,
+     "effort": 12,
      "bits": 1.02,
      "solutions": 18,
      "visits": 9
@@ -435,35 +732,22 @@
     },
     {
      "rows": [
-      "11..",
-      "11S1",
-      ".111"
+      ".11.",
+      "..11",
+      "1S21"
      ],
      "pathBits": 5.58,
-     "decisions": 4,
-     "effort": 8,
-     "bits": 1.34,
-     "solutions": 20,
-     "visits": 9
-    },
-    {
-     "rows": [
-      ".1.1",
-      "11.1",
-      "S111"
-     ],
-     "pathBits": 5.58,
-     "decisions": 4,
-     "effort": 12,
-     "bits": 2.01,
-     "solutions": 16,
+     "decisions": 3,
+     "effort": 29,
+     "bits": 1.85,
+     "solutions": 10,
      "visits": 9
     },
     {
      "rows": [
       "S111",
-      "..11",
-      "111."
+      "111.",
+      "..11"
      ],
      "pathBits": 5.75,
      "decisions": 4,
@@ -474,22 +758,35 @@
     },
     {
      "rows": [
-      "11..",
-      "111.",
-      "1S11"
+      "..11",
+      "1.1.",
+      "11s1"
      ],
      "pathBits": 5.91,
-     "decisions": 4,
-     "effort": 66,
-     "bits": 2.17,
-     "solutions": 15,
+     "decisions": 3,
+     "effort": 8,
+     "bits": 1.1,
+     "solutions": 46,
      "visits": 9
     },
     {
      "rows": [
       "..11",
+      ".11.",
+      "11s1"
+     ],
+     "pathBits": 5.91,
+     "decisions": 3,
+     "effort": 14,
+     "bits": 1.54,
+     "solutions": 31,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "111S",
       ".111",
-      "111S"
+      "..11"
      ],
      "pathBits": 6,
      "decisions": 4,
@@ -500,68 +797,68 @@
     },
     {
      "rows": [
-      "1111",
+      "..12",
       ".11S",
-      "..11"
-     ],
-     "pathBits": 6.17,
-     "decisions": 4,
-     "effort": 20,
-     "bits": 1.66,
-     "solutions": 26,
-     "visits": 9
-    },
-    {
-     "rows": [
-      ".11.",
-      ".S11",
       "1111"
      ],
      "pathBits": 6.17,
      "decisions": 4,
-     "effort": 12,
-     "bits": 1.79,
-     "solutions": 23,
-     "visits": 9
+     "effort": 28,
+     "bits": 2.92,
+     "solutions": 15,
+     "visits": 10
     },
     {
      "rows": [
-      ".1..",
-      "1111",
-      "1S11"
+      "11..",
+      "s111",
+      "11.."
      ],
      "pathBits": 6.32,
-     "decisions": 5,
-     "effort": 68,
-     "bits": 2.3,
-     "solutions": 12,
+     "decisions": 4,
+     "effort": 25,
+     "bits": 1.53,
+     "solutions": 46,
      "visits": 9
     },
     {
      "rows": [
-      "111S",
-      "111.",
-      "1.1."
+      "1211",
+      ".1S1",
+      "...1"
      ],
-     "pathBits": 6.58,
-     "decisions": 5,
-     "effort": 8,
-     "bits": 0.69,
-     "solutions": 74,
+     "pathBits": 6.34,
+     "decisions": 4,
+     "effort": 16,
+     "bits": 1.27,
+     "solutions": 33,
      "visits": 9
     },
     {
      "rows": [
-      "111.",
-      "111.",
-      ".1S1"
+      "11.1",
+      "1s11",
+      ".1.."
+     ],
+     "pathBits": 6.49,
+     "decisions": 4,
+     "effort": 24,
+     "bits": 2.17,
+     "solutions": 20,
+     "visits": 9
+    },
+    {
+     "rows": [
+      "1..1",
+      "11s1",
+      "1.11"
      ],
      "pathBits": 6.58,
-     "decisions": 5,
-     "effort": 8,
-     "bits": 1.71,
-     "solutions": 28,
-     "visits": 9
+     "decisions": 4,
+     "effort": 14,
+     "bits": 2.16,
+     "solutions": 32,
+     "visits": 10
     },
     {
      "rows": [
@@ -579,35 +876,22 @@
     },
     {
      "rows": [
-      "1111",
-      "1.11",
-      ".11S"
+      ".11S",
+      "1.1.",
+      "1211"
      ],
      "pathBits": 6.75,
      "decisions": 4,
      "effort": 9,
-     "bits": 1.38,
-     "solutions": 53,
+     "bits": 1.03,
+     "solutions": 71,
      "visits": 10
     },
     {
      "rows": [
-      "1.11",
-      ".1S1",
-      "1111"
-     ],
-     "pathBits": 6.75,
-     "decisions": 4,
-     "effort": 9,
-     "bits": 1.2,
-     "solutions": 64,
-     "visits": 10
-    },
-    {
-     "rows": [
-      "1S11",
       ".11.",
-      "1111"
+      "1111",
+      "1S11"
      ],
      "pathBits": 6.91,
      "decisions": 4,
@@ -631,73 +915,86 @@
     },
     {
      "rows": [
-      "1.S1",
-      "1111",
-      ".111"
+      ".112",
+      "..11",
+      "11S1"
      ],
-     "pathBits": 7.17,
-     "decisions": 5,
-     "effort": 25,
-     "bits": 2.19,
-     "solutions": 35,
+     "pathBits": 7.08,
+     "decisions": 4,
+     "effort": 75,
+     "bits": 2.41,
+     "solutions": 34,
      "visits": 10
     },
     {
      "rows": [
-      "111.",
-      "1S11",
-      ".111"
+      "1211",
+      ".1S1",
+      "..11"
      ],
-     "pathBits": 7.32,
-     "decisions": 5,
-     "effort": 9,
-     "bits": 1.45,
-     "solutions": 78,
+     "pathBits": 7.17,
+     "decisions": 4,
+     "effort": 19,
+     "bits": 1.13,
+     "solutions": 85,
      "visits": 10
     },
     {
      "rows": [
       "1.11",
-      "1111",
-      ".S11"
+      "11s1",
+      "..11"
      ],
-     "pathBits": 7.34,
-     "decisions": 5,
+     "pathBits": 7.32,
+     "decisions": 4,
      "effort": 9,
-     "bits": 1.15,
-     "solutions": 83,
+     "bits": 1.46,
+     "solutions": 106,
      "visits": 10
     },
     {
      "rows": [
-      ".1.1",
-      "1S11",
-      "1111"
+      "..11",
+      ".111",
+      "111s"
      ],
      "pathBits": 7.49,
-     "decisions": 5,
-     "effort": 27,
-     "bits": 1.31,
-     "solutions": 83,
+     "decisions": 4,
+     "effort": 38,
+     "bits": 1.96,
+     "solutions": 90,
      "visits": 10
     },
     {
      "rows": [
-      "1.1.",
+      "..11",
       "1S11",
       "1111"
      ],
      "pathBits": 7.58,
      "decisions": 5,
-     "effort": 9,
+     "effort": 27,
      "bits": 1.27,
      "solutions": 111,
      "visits": 10
     },
     {
      "rows": [
-      "11S1",
+      "11..",
+      ".s11",
+      "1111"
+     ],
+     "pathBits": 7.58,
+     "decisions": 5,
+     "effort": 14,
+     "bits": 1.02,
+     "solutions": 110,
+     "visits": 10
+    },
+    {
+     "rows": [
       "1111",
+      "11S1",
       ".1.1"
      ],
      "pathBits": 7.75,
@@ -737,34 +1034,34 @@
     },
     {
      "rows": [
-      "1111",
-      "1S11",
+      "1s11",
+      ".111",
       "11.."
      ],
      "pathBits": 7.91,
-     "decisions": 6,
+     "decisions": 5,
      "effort": 9,
-     "bits": 1.31,
-     "solutions": 83,
+     "bits": 1.22,
+     "solutions": 127,
      "visits": 10
     },
     {
      "rows": [
-      "111S",
       "1111",
+      "1S12",
       "..11"
      ],
      "pathBits": 8,
-     "decisions": 6,
-     "effort": 9,
-     "bits": 1.15,
-     "solutions": 115,
-     "visits": 10
+     "decisions": 5,
+     "effort": 80,
+     "bits": 2.37,
+     "solutions": 102,
+     "visits": 11
     },
     {
      "rows": [
-      ".111",
       "1S11",
+      ".111",
       ".111"
      ],
      "pathBits": 8.08,
@@ -776,15 +1073,15 @@
     },
     {
      "rows": [
-      "1111",
-      "1111",
-      "S1.."
+      "111.",
+      "1s11",
+      ".11."
      ],
-     "pathBits": 8.17,
-     "decisions": 6,
+     "pathBits": 8.23,
+     "decisions": 5,
      "effort": 9,
-     "bits": 1.3,
-     "solutions": 128,
+     "bits": 1.6,
+     "solutions": 159,
      "visits": 10
     },
     {
@@ -799,84 +1096,292 @@
      "bits": 1.23,
      "solutions": 140,
      "visits": 10
+    },
+    {
+     "rows": [
+      "1211",
+      "1S11",
+      ".11."
+     ],
+     "pathBits": 8.49,
+     "decisions": 5,
+     "effort": 39,
+     "bits": 1.83,
+     "solutions": 144,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "1S11",
+      "1112",
+      "..11"
+     ],
+     "pathBits": 8.58,
+     "decisions": 5,
+     "effort": 28,
+     "bits": 1.54,
+     "solutions": 198,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "1.11",
+      "1111",
+      ".11s"
+     ],
+     "pathBits": 8.75,
+     "decisions": 5,
+     "effort": 10,
+     "bits": 1.19,
+     "solutions": 294,
+     "visits": 11
+    },
+    {
+     "rows": [
+      ".S11",
+      "1111",
+      ".111"
+     ],
+     "pathBits": 8.75,
+     "decisions": 6,
+     "effort": 16,
+     "bits": 1.74,
+     "solutions": 127,
+     "visits": 10
+    },
+    {
+     "rows": [
+      "111.",
+      "s111",
+      ".111"
+     ],
+     "pathBits": 8.91,
+     "decisions": 6,
+     "effort": 10,
+     "bits": 1.42,
+     "solutions": 276,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "2S1.",
+      "2111",
+      "11.."
+     ],
+     "pathBits": 9,
+     "decisions": 6,
+     "effort": 22,
+     "bits": 2.31,
+     "solutions": 90,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "1.11",
+      "1111",
+      "1S11"
+     ],
+     "pathBits": 9.17,
+     "decisions": 6,
+     "effort": 10,
+     "bits": 1.28,
+     "solutions": 330,
+     "visits": 11
+    },
+    {
+     "rows": [
+      ".111",
+      "11s2",
+      "1.1."
+     ],
+     "pathBits": 9.23,
+     "decisions": 6,
+     "effort": 10,
+     "bits": 2.17,
+     "solutions": 129,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "11.1",
+      "111S",
+      "1111"
+     ],
+     "pathBits": 9.34,
+     "decisions": 6,
+     "effort": 10,
+     "bits": 1.28,
+     "solutions": 314,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "1111",
+      "1S11",
+      ".111"
+     ],
+     "pathBits": 9.49,
+     "decisions": 6,
+     "effort": 14,
+     "bits": 1.36,
+     "solutions": 369,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "11..",
+      "1111",
+      "S211"
+     ],
+     "pathBits": 9.58,
+     "decisions": 6,
+     "effort": 15,
+     "bits": 1.32,
+     "solutions": 281,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "111s",
+      "1111",
+      ".1.1"
+     ],
+     "pathBits": 9.75,
+     "decisions": 6,
+     "effort": 10,
+     "bits": 1.26,
+     "solutions": 437,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "1111",
+      "1s11",
+      ".11."
+     ],
+     "pathBits": 9.81,
+     "decisions": 6,
+     "effort": 14,
+     "bits": 1.36,
+     "solutions": 460,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "1S..",
+      "1211",
+      "1111"
+     ],
+     "pathBits": 9.92,
+     "decisions": 7,
+     "effort": 13,
+     "bits": 1.47,
+     "solutions": 330,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "S111",
+      "11.1",
+      "1111"
+     ],
+     "pathBits": 10,
+     "decisions": 8,
+     "effort": 10,
+     "bits": 1.28,
+     "solutions": 314,
+     "visits": 11,
+     "designed": "snake gapped/3"
+    },
+    {
+     "rows": [
+      "11s1",
+      "1111",
+      ".11."
+     ],
+     "pathBits": 10.08,
+     "decisions": 6,
+     "effort": 14,
+     "bits": 1.36,
+     "solutions": 460,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "..11",
+      "1111",
+      ".1s2"
+     ],
+     "pathBits": 10.17,
+     "decisions": 6,
+     "effort": 22,
+     "bits": 1.85,
+     "solutions": 314,
+     "visits": 11
     }
    ]
   },
   {
    "name": "Gully",
-   "blurb": "Some tiles crack: they need two visits.",
+   "blurb": "Jumps and cracked tiles on a square board.",
    "width": 4,
    "height": 4,
    "levels": [
     {
      "rows": [
-      ".S..",
-      "1111",
-      "11..",
-      "22.."
+      ".11.",
+      "111.",
+      ".S12",
+      "..12"
      ],
-     "pathBits": 5.32,
+     "pathBits": 6.58,
      "decisions": 4,
-     "effort": 44,
-     "bits": 1.87,
-     "solutions": 44,
+     "effort": 31,
+     "bits": 2.88,
+     "solutions": 26,
+     "visits": 12
+    },
+    {
+     "rows": [
+      "11..",
+      "111.",
+      ".11s",
+      "..12"
+     ],
+     "pathBits": 6.75,
+     "decisions": 4,
+     "effort": 110,
+     "bits": 2.77,
+     "solutions": 48,
+     "visits": 12
+    },
+    {
+     "rows": [
+      ".1..",
+      "11..",
+      "1.11",
+      "1s11"
+     ],
+     "pathBits": 7,
+     "decisions": 5,
+     "effort": 48,
+     "bits": 3.54,
+     "solutions": 10,
      "visits": 11
     },
     {
      "rows": [
-      "..11",
       "...1",
       "S111",
-      "121."
+      "121.",
+      ".11."
      ],
-     "pathBits": 5.75,
+     "pathBits": 7.17,
      "decisions": 4,
-     "effort": 39,
-     "bits": 2.66,
-     "solutions": 19,
+     "effort": 101,
+     "bits": 3.61,
+     "solutions": 21,
      "visits": 11
-    },
-    {
-     "rows": [
-      "1...",
-      "11..",
-      "11S2",
-      "1.12"
-     ],
-     "pathBits": 6.17,
-     "decisions": 4,
-     "effort": 67,
-     "bits": 2.46,
-     "solutions": 17,
-     "visits": 12
-    },
-    {
-     "rows": [
-      "...1",
-      ".11s",
-      "..11",
-      "11.1"
-     ],
-     "pathBits": 6.49,
-     "decisions": 4,
-     "effort": 112,
-     "bits": 4.03,
-     "solutions": 5,
-     "visits": 10
-    },
-    {
-     "rows": [
-      "11..",
-      "1111",
-      ".S11",
-      ".12."
-     ],
-     "pathBits": 6.91,
-     "decisions": 4,
-     "effort": 56,
-     "bits": 2.81,
-     "solutions": 36,
-     "visits": 12
     },
     {
      "rows": [
@@ -895,31 +1400,45 @@
     },
     {
      "rows": [
-      "11..",
-      "11..",
-      "s111",
-      "1..."
+      ".11.",
+      "..11",
+      "2211",
+      "1S.."
      ],
-     "pathBits": 7.23,
-     "decisions": 4,
-     "effort": 37,
-     "bits": 2.41,
-     "solutions": 56,
-     "visits": 10
+     "pathBits": 7.32,
+     "decisions": 5,
+     "effort": 17,
+     "bits": 1.21,
+     "solutions": 86,
+     "visits": 12
     },
     {
      "rows": [
-      "1.1.",
-      "S111",
-      "111.",
-      ".11."
+      "11.1",
+      "S211",
+      "11..",
+      "1..."
      ],
-     "pathBits": 7.58,
+     "pathBits": 7.49,
      "decisions": 4,
-     "effort": 106,
-     "bits": 2.5,
-     "solutions": 68,
+     "effort": 140,
+     "bits": 3.82,
+     "solutions": 9,
      "visits": 11
+    },
+    {
+     "rows": [
+      "111.",
+      "1S11",
+      ".12.",
+      "..11"
+     ],
+     "pathBits": 7.64,
+     "decisions": 5,
+     "effort": 11,
+     "bits": 2.17,
+     "solutions": 91,
+     "visits": 12
     },
     {
      "rows": [
@@ -934,6 +1453,35 @@
      "bits": 2.59,
      "solutions": 102,
      "visits": 11
+    },
+    {
+     "rows": [
+      "11..",
+      "12..",
+      ".s11",
+      ".11."
+     ],
+     "pathBits": 8.08,
+     "decisions": 5,
+     "effort": 30,
+     "bits": 2.29,
+     "solutions": 59,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "S1.1",
+      "1.11",
+      "11.1",
+      "1.11"
+     ],
+     "pathBits": 8.17,
+     "decisions": 7,
+     "effort": 11,
+     "bits": 1.56,
+     "solutions": 88,
+     "visits": 12,
+     "designed": "snake gapped/2"
     },
     {
      "rows": [
@@ -952,59 +1500,115 @@
     },
     {
      "rows": [
-      "...1",
-      "..11",
+      ".1..",
       "1s11",
-      ".111"
+      "111.",
+      "..11"
      ],
-     "pathBits": 8.32,
+     "pathBits": 8.23,
      "decisions": 5,
-     "effort": 73,
-     "bits": 2.4,
-     "solutions": 127,
+     "effort": 47,
+     "bits": 1.81,
+     "solutions": 142,
      "visits": 11
     },
     {
      "rows": [
-      "..1.",
-      ".121",
-      "1s11",
+      "11..",
+      "21..",
+      "1S..",
+      "1111"
+     ],
+     "pathBits": 8.34,
+     "decisions": 5,
+     "effort": 91,
+     "bits": 2.57,
+     "solutions": 74,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "11..",
+      "2s..",
+      "1111",
       ".1.."
      ],
-     "pathBits": 8.64,
-     "decisions": 6,
-     "effort": 50,
-     "bits": 2.74,
-     "solutions": 90,
+     "pathBits": 8.58,
+     "decisions": 5,
+     "effort": 107,
+     "bits": 3.59,
+     "solutions": 35,
      "visits": 11
     },
     {
      "rows": [
       "...1",
       "..11",
-      "1121",
-      "1S11"
+      "1111",
+      ".11s"
      ],
-     "pathBits": 9,
+     "pathBits": 8.75,
+     "decisions": 5,
+     "effort": 34,
+     "bits": 2.75,
+     "solutions": 88,
+     "visits": 11
+    },
+    {
+     "rows": [
+      "2S11",
+      "1.11",
+      "1.11",
+      "1..1"
+     ],
+     "pathBits": 8.92,
      "decisions": 6,
-     "effort": 72,
-     "bits": 2.77,
-     "solutions": 199,
+     "effort": 867,
+     "bits": 4.72,
+     "solutions": 42,
+     "visits": 13
+    },
+    {
+     "rows": [
+      "..11",
+      "1s11",
+      "..11",
+      ".111"
+     ],
+     "pathBits": 9.17,
+     "decisions": 5,
+     "effort": 77,
+     "bits": 1.94,
+     "solutions": 467,
      "visits": 12
     },
     {
      "rows": [
-      "1121",
-      "11S.",
-      "11..",
-      "11.."
+      "..11",
+      "...1",
+      "1s11",
+      "1111"
      ],
-     "pathBits": 9.34,
+     "pathBits": 9.32,
      "decisions": 6,
-     "effort": 29,
-     "bits": 2.06,
-     "solutions": 280,
+     "effort": 11,
+     "bits": 1.79,
+     "solutions": 289,
      "visits": 12
+    },
+    {
+     "rows": [
+      ".1.1",
+      ".11.",
+      "1s12",
+      "11.1"
+     ],
+     "pathBits": 9.49,
+     "decisions": 5,
+     "effort": 29,
+     "bits": 2.4,
+     "solutions": 246,
+     "visits": 13
     },
     {
      "rows": [
@@ -1022,16 +1626,44 @@
     },
     {
      "rows": [
-      ".1.1",
-      ".111",
-      "121.",
-      "1S11"
+      "..11",
+      "1111",
+      ".11s",
+      "..11"
      ],
-     "pathBits": 10.08,
+     "pathBits": 9.81,
+     "decisions": 5,
+     "effort": 52,
+     "bits": 2.48,
+     "solutions": 326,
+     "visits": 12
+    },
+    {
+     "rows": [
+      "1.1.",
+      "1...",
+      "111.",
+      "s211"
+     ],
+     "pathBits": 10,
      "decisions": 6,
-     "effort": 172,
-     "bits": 2.88,
-     "solutions": 210,
+     "effort": 11,
+     "bits": 1.48,
+     "solutions": 342,
+     "visits": 12
+    },
+    {
+     "rows": [
+      "..11",
+      "...1",
+      "111s",
+      "2111"
+     ],
+     "pathBits": 10.23,
+     "decisions": 6,
+     "effort": 24,
+     "bits": 2.63,
+     "solutions": 357,
      "visits": 13
     },
     {
@@ -1050,6 +1682,20 @@
     },
     {
      "rows": [
+      "..11",
+      "1111",
+      "1.1.",
+      "s111"
+     ],
+     "pathBits": 10.58,
+     "decisions": 6,
+     "effort": 17,
+     "bits": 1.86,
+     "solutions": 760,
+     "visits": 13
+    },
+    {
+     "rows": [
       "2111",
       "111.",
       "S111",
@@ -1064,17 +1710,45 @@
     },
     {
      "rows": [
-      "1...",
-      "211.",
       "1111",
-      "11s."
+      "11S2",
+      "..11",
+      "..11"
      ],
-     "pathBits": 11.17,
-     "decisions": 7,
-     "effort": 26,
-     "bits": 2.4,
-     "solutions": 1400,
+     "pathBits": 10.92,
+     "decisions": 6,
+     "effort": 28,
+     "bits": 2.11,
+     "solutions": 478,
      "visits": 13
+    },
+    {
+     "rows": [
+      "..11",
+      "1.s.",
+      "1111",
+      "1111"
+     ],
+     "pathBits": 11.08,
+     "decisions": 7,
+     "effort": 76,
+     "bits": 1.86,
+     "solutions": 732,
+     "visits": 13
+    },
+    {
+     "rows": [
+      "..1.",
+      "..S.",
+      "1221",
+      "1111"
+     ],
+     "pathBits": 11.25,
+     "decisions": 7,
+     "effort": 180,
+     "bits": 1.94,
+     "solutions": 460,
+     "visits": 12
     },
     {
      "rows": [
@@ -1092,6 +1766,20 @@
     },
     {
      "rows": [
+      "1.1.",
+      "1S11",
+      "1111",
+      "111."
+     ],
+     "pathBits": 11.64,
+     "decisions": 8,
+     "effort": 37,
+     "bits": 2.11,
+     "solutions": 906,
+     "visits": 13
+    },
+    {
+     "rows": [
       "111.",
       "11..",
       "S211",
@@ -1106,6 +1794,20 @@
     },
     {
      "rows": [
+      ".111",
+      "S111",
+      "212.",
+      "1.1."
+     ],
+     "pathBits": 12,
+     "decisions": 9,
+     "effort": 13,
+     "bits": 1.95,
+     "solutions": 2230,
+     "visits": 14
+    },
+    {
+     "rows": [
       "...1",
       "1111",
       "122S",
@@ -1116,6 +1818,20 @@
      "effort": 22,
      "bits": 2.67,
      "solutions": 434,
+     "visits": 13
+    },
+    {
+     "rows": [
+      ".11.",
+      "111.",
+      "1s11",
+      "111."
+     ],
+     "pathBits": 12.34,
+     "decisions": 7,
+     "effort": 16,
+     "bits": 2.6,
+     "solutions": 1738,
      "visits": 13
     },
     {
@@ -1134,6 +1850,20 @@
     },
     {
      "rows": [
+      "1111",
+      ".11.",
+      "111s",
+      ".111"
+     ],
+     "pathBits": 12.75,
+     "decisions": 8,
+     "effort": 29,
+     "bits": 1.91,
+     "solutions": 3112,
+     "visits": 14
+    },
+    {
+     "rows": [
       "11..",
       "11s1",
       "111.",
@@ -1145,6 +1875,20 @@
      "bits": 2.24,
      "solutions": 1884,
      "visits": 13
+    },
+    {
+     "rows": [
+      "1111",
+      "11S.",
+      "111.",
+      "121."
+     ],
+     "pathBits": 13.08,
+     "decisions": 8,
+     "effort": 46,
+     "bits": 2.8,
+     "solutions": 2165,
+     "visits": 14
     },
     {
      "rows": [
@@ -1178,6 +1922,21 @@
     {
      "rows": [
       "S111",
+      "11.1",
+      "1111",
+      "11.1"
+     ],
+     "pathBits": 13.34,
+     "decisions": 9,
+     "effort": 13,
+     "bits": 1.9,
+     "solutions": 2555,
+     "visits": 14,
+     "designed": "snake gapped/3"
+    },
+    {
+     "rows": [
+      "S111",
       "111.",
       ".111",
       "1111"
@@ -1189,6 +1948,20 @@
      "solutions": 2724,
      "visits": 14,
      "designed": "spiral gapped/3"
+    },
+    {
+     "rows": [
+      "..11",
+      "1111",
+      "1s12",
+      "11.."
+     ],
+     "pathBits": 13.4,
+     "decisions": 8,
+     "effort": 55,
+     "bits": 2.31,
+     "solutions": 3444,
+     "visits": 14
     },
     {
      "rows": [
@@ -1206,6 +1979,20 @@
     },
     {
      "rows": [
+      "111.",
+      "21s1",
+      "111.",
+      "11.."
+     ],
+     "pathBits": 13.81,
+     "decisions": 8,
+     "effort": 13,
+     "bits": 2.79,
+     "solutions": 4113,
+     "visits": 14
+    },
+    {
+     "rows": [
       "..11",
       ".111",
       "1122",
@@ -1216,6 +2003,20 @@
      "effort": 42,
      "bits": 2.01,
      "solutions": 3597,
+     "visits": 14
+    },
+    {
+     "rows": [
+      "s111",
+      "1121",
+      "1.11",
+      "..1."
+     ],
+     "pathBits": 14.17,
+     "decisions": 9,
+     "effort": 142,
+     "bits": 2.06,
+     "solutions": 4184,
      "visits": 14
     },
     {
@@ -1236,7 +2037,7 @@
   },
   {
    "name": "Outcrop",
-   "blurb": "Jumps and cracked tiles together.",
+   "blurb": "More cracked tiles and longer routes.",
    "width": 5,
    "height": 4,
    "levels": [
@@ -1256,30 +2057,58 @@
     },
     {
      "rows": [
-      "11.21",
-      "11.1.",
+      "...11",
+      "11s11",
       "111..",
-      "1S11."
+      "11..."
      ],
-     "pathBits": 9.66,
-     "decisions": 6,
-     "effort": 86,
-     "bits": 2.96,
-     "solutions": 211,
-     "visits": 15
+     "pathBits": 9.49,
+     "decisions": 5,
+     "effort": 403,
+     "bits": 2.43,
+     "solutions": 280,
+     "visits": 13
     },
     {
      "rows": [
-      "111..",
-      "1221S",
-      "...11",
-      "....1"
+      ".11..",
+      "1S111",
+      "111.1",
+      "111.."
      ],
-     "pathBits": 10,
+     "pathBits": 9.75,
+     "decisions": 5,
+     "effort": 66,
+     "bits": 3.54,
+     "solutions": 225,
+     "visits": 14
+    },
+    {
+     "rows": [
+      ".11..",
+      "1s111",
+      "11.1.",
+      "11..."
+     ],
+     "pathBits": 9.91,
      "decisions": 6,
-     "effort": 295,
-     "bits": 2.5,
-     "solutions": 122,
+     "effort": 254,
+     "bits": 4.12,
+     "solutions": 79,
+     "visits": 13
+    },
+    {
+     "rows": [
+      "11111",
+      "11S..",
+      "1.1..",
+      "111.."
+     ],
+     "pathBits": 10.08,
+     "decisions": 6,
+     "effort": 39,
+     "bits": 2.61,
+     "solutions": 279,
      "visits": 13
     },
     {
@@ -1298,6 +2127,20 @@
     },
     {
      "rows": [
+      ".1111",
+      ".11.1",
+      "11S..",
+      "1111."
+     ],
+     "pathBits": 10.49,
+     "decisions": 7,
+     "effort": 60,
+     "bits": 3.48,
+     "solutions": 152,
+     "visits": 14
+    },
+    {
+     "rows": [
       "1111.",
       "1S211",
       "....1",
@@ -1312,31 +2155,45 @@
     },
     {
      "rows": [
-      "S1111",
-      ".111.",
-      ".122.",
-      "...1."
+      "...1.",
+      "1112S",
+      "..11.",
+      ".1111"
      ],
-     "pathBits": 11,
-     "decisions": 8,
-     "effort": 371,
-     "bits": 2.94,
-     "solutions": 1086,
-     "visits": 14
+     "pathBits": 10.81,
+     "decisions": 6,
+     "effort": 117,
+     "bits": 3.74,
+     "solutions": 189,
+     "visits": 13
     },
     {
      "rows": [
-      "1111.",
-      ".1...",
-      "1s.11",
-      ".2111"
+      "111.1",
+      "S1111",
+      ".111.",
+      "11.1."
      ],
-     "pathBits": 11.32,
-     "decisions": 8,
-     "effort": 21,
-     "bits": 2.73,
-     "solutions": 617,
+     "pathBits": 11.08,
+     "decisions": 6,
+     "effort": 32,
+     "bits": 4.5,
+     "solutions": 241,
      "visits": 15
+    },
+    {
+     "rows": [
+      "1.11.",
+      "..1S1",
+      "11121",
+      "...11"
+     ],
+     "pathBits": 11.23,
+     "decisions": 7,
+     "effort": 26,
+     "bits": 2.09,
+     "solutions": 658,
+     "visits": 14
     },
     {
      "rows": [
@@ -1355,6 +2212,20 @@
     },
     {
      "rows": [
+      "..11.",
+      "1111.",
+      ".S211",
+      "..11."
+     ],
+     "pathBits": 11.4,
+     "decisions": 7,
+     "effort": 22,
+     "bits": 3.05,
+     "solutions": 270,
+     "visits": 13
+    },
+    {
+     "rows": [
       "....1",
       "12.12",
       ".11s1",
@@ -1369,45 +2240,102 @@
     },
     {
      "rows": [
-      "..11.",
-      ".111.",
-      "1111S",
-      ".1111"
+      "11.1.",
+      ".1s11",
+      "11111",
+      "11..."
      ],
-     "pathBits": 11.98,
+     "pathBits": 11.81,
      "decisions": 7,
-     "effort": 270,
-     "bits": 3.24,
-     "solutions": 921,
-     "visits": 14
-    },
-    {
-     "rows": [
-      "11.11",
-      "1.111",
-      ".112S",
-      "..11."
-     ],
-     "pathBits": 12.32,
-     "decisions": 8,
-     "effort": 19,
-     "bits": 2.41,
-     "solutions": 794,
+     "effort": 22,
+     "bits": 2.9,
+     "solutions": 840,
      "visits": 15
     },
     {
      "rows": [
-      "11S12",
-      ".1111",
-      "11.11",
-      "...11"
+      "...1.",
+      "...1.",
+      "11111",
+      "1S211"
      ],
-     "pathBits": 12.64,
-     "decisions": 8,
-     "effort": 35,
-     "bits": 4.05,
-     "solutions": 836,
+     "pathBits": 12,
+     "decisions": 9,
+     "effort": 18,
+     "bits": 3.15,
+     "solutions": 216,
+     "visits": 13
+    },
+    {
+     "rows": [
+      "11111",
+      "S1211",
+      "1..1.",
+      "11.1."
+     ],
+     "pathBits": 12.23,
+     "decisions": 7,
+     "effort": 31,
+     "bits": 3.05,
+     "solutions": 1342,
      "visits": 16
+    },
+    {
+     "rows": [
+      "...11",
+      ".1S21",
+      "..11.",
+      "11211"
+     ],
+     "pathBits": 12.4,
+     "decisions": 7,
+     "effort": 89,
+     "bits": 2.64,
+     "solutions": 1703,
+     "visits": 15
+    },
+    {
+     "rows": [
+      "1111S",
+      "1.211",
+      "..121",
+      "...1."
+     ],
+     "pathBits": 12.58,
+     "decisions": 8,
+     "effort": 14,
+     "bits": 2.12,
+     "solutions": 3306,
+     "visits": 15
+    },
+    {
+     "rows": [
+      "1111s",
+      "111.1",
+      "11.11",
+      "1...."
+     ],
+     "pathBits": 12.75,
+     "decisions": 8,
+     "effort": 14,
+     "bits": 2.86,
+     "solutions": 1461,
+     "visits": 15
+    },
+    {
+     "rows": [
+      "S1.11",
+      "1.111",
+      "1111.",
+      "11.11"
+     ],
+     "pathBits": 12.92,
+     "decisions": 10,
+     "effort": 59,
+     "bits": 3.72,
+     "solutions": 351,
+     "visits": 16,
+     "designed": "spiral gapped/2"
     },
     {
      "rows": [
@@ -1440,30 +2368,58 @@
     },
     {
      "rows": [
+      "11211",
+      "..S11",
       "..111",
-      ".S121",
-      "111.1",
-      "111.1"
+      "...11"
      ],
-     "pathBits": 13.32,
-     "decisions": 9,
-     "effort": 15,
-     "bits": 4.06,
-     "solutions": 1342,
-     "visits": 16
+     "pathBits": 13.17,
+     "decisions": 8,
+     "effort": 175,
+     "bits": 2.19,
+     "solutions": 2632,
+     "visits": 14
     },
     {
      "rows": [
-      ".1111",
-      ".1111",
-      "1111S",
-      "1..11"
+      "111..",
+      "111..",
+      "1s111",
+      "11..."
      ],
-     "pathBits": 13.64,
+     "pathBits": 13.34,
      "decisions": 8,
-     "effort": 1224,
-     "bits": 5.25,
-     "solutions": 693,
+     "effort": 623,
+     "bits": 3.02,
+     "solutions": 2179,
+     "visits": 14
+    },
+    {
+     "rows": [
+      ".11..",
+      "11S21",
+      "1111.",
+      "111.."
+     ],
+     "pathBits": 13.56,
+     "decisions": 9,
+     "effort": 89,
+     "bits": 3.6,
+     "solutions": 505,
+     "visits": 15
+    },
+    {
+     "rows": [
+      "11..S",
+      "221.1",
+      "211..",
+      "11.1."
+     ],
+     "pathBits": 13.75,
+     "decisions": 8,
+     "effort": 50,
+     "bits": 4.45,
+     "solutions": 463,
      "visits": 16
     },
     {
@@ -1482,30 +2438,58 @@
     },
     {
      "rows": [
-      "12211",
-      ".S11.",
-      ".1.1.",
-      ".111."
+      "...11",
+      "s1122",
+      "...11",
+      "..111"
      ],
-     "pathBits": 14.25,
-     "decisions": 9,
-     "effort": 105,
-     "bits": 2.6,
-     "solutions": 2673,
+     "pathBits": 14.14,
+     "decisions": 8,
+     "effort": 2163,
+     "bits": 3.11,
+     "solutions": 1864,
      "visits": 15
     },
     {
      "rows": [
-      "S2111",
-      "11111",
-      "11...",
-      "11..."
+      "1S11.",
+      "1111.",
+      ".1111",
+      "..112"
      ],
-     "pathBits": 14.58,
-     "decisions": 10,
-     "effort": 18,
-     "bits": 2.92,
-     "solutions": 2046,
+     "pathBits": 14.32,
+     "decisions": 9,
+     "effort": 255,
+     "bits": 3.39,
+     "solutions": 2767,
+     "visits": 16
+    },
+    {
+     "rows": [
+      ".1111",
+      "111S2",
+      "...22",
+      "...11"
+     ],
+     "pathBits": 14.51,
+     "decisions": 8,
+     "effort": 34,
+     "bits": 3.03,
+     "solutions": 2582,
+     "visits": 16
+    },
+    {
+     "rows": [
+      "....1",
+      "...1s",
+      ".1211",
+      "11211"
+     ],
+     "pathBits": 14.68,
+     "decisions": 9,
+     "effort": 961,
+     "bits": 2.6,
+     "solutions": 3896,
      "visits": 15
     },
     {
@@ -1525,98 +2509,169 @@
     },
     {
      "rows": [
-      "11111",
-      "1s1.1",
-      "111.1",
-      "1.1.."
+      "..111",
+      ".11.2",
+      "11112",
+      "1S1.1"
      ],
-     "pathBits": 14.92,
+     "pathBits": 14.91,
      "decisions": 9,
-     "effort": 128,
-     "bits": 3.25,
-     "solutions": 5115,
-     "visits": 16
-    },
-    {
-     "rows": [
-      "1..11",
-      ".1.1s",
-      "11111",
-      "11111"
-     ],
-     "pathBits": 15.25,
-     "decisions": 9,
-     "effort": 1393,
-     "bits": 6.12,
-     "solutions": 800,
+     "effort": 470,
+     "bits": 3.55,
+     "solutions": 6220,
      "visits": 17
     },
     {
      "rows": [
-      "...11",
-      "S1121",
-      "..121",
-      "..111"
+      "11111",
+      "1.111",
+      "S1111",
+      "11..1"
      ],
-     "pathBits": 15.58,
-     "decisions": 10,
-     "effort": 42,
-     "bits": 1.86,
-     "solutions": 13746,
-     "visits": 15
-    },
-    {
-     "rows": [
-      ".111.",
-      ".111.",
-      "111.1",
-      "11s11"
-     ],
-     "pathBits": 15.92,
-     "decisions": 10,
-     "effort": 91,
-     "bits": 3.19,
-     "solutions": 5237,
-     "visits": 16
-    },
-    {
-     "rows": [
-      "11...",
-      "s211.",
-      "11.11",
-      "1111."
-     ],
-     "pathBits": 16.25,
+     "pathBits": 15.08,
      "decisions": 9,
-     "effort": 108,
-     "bits": 4.88,
-     "solutions": 2585,
-     "visits": 16
+     "effort": 45,
+     "bits": null,
+     "solutions": null,
+     "visits": 17
     },
     {
      "rows": [
       "..111",
-      "..111",
-      "S1211",
-      "1111."
+      "11S11",
+      ".1111",
+      ".1111"
      ],
-     "pathBits": 16.57,
-     "decisions": 10,
-     "effort": 99,
+     "pathBits": 15.3,
+     "decisions": 9,
+     "effort": 249,
      "bits": null,
      "solutions": null,
      "visits": 16
     },
     {
      "rows": [
+      "111.1",
+      "1.111",
+      "1S111",
+      "11.11"
+     ],
+     "pathBits": 15.4,
+     "decisions": 11,
+     "effort": 16,
+     "bits": null,
+     "solutions": null,
+     "visits": 17,
+     "designed": "spiral gapped/3 reversed"
+    },
+    {
+     "rows": [
+      "..112",
+      "11S11",
+      ".1121",
+      ".111."
+     ],
+     "pathBits": 15.47,
+     "decisions": 10,
+     "effort": 829,
+     "bits": null,
+     "solutions": null,
+     "visits": 17
+    },
+    {
+     "rows": [
+      "11..1",
+      ".1111",
+      "1111s",
+      "1111."
+     ],
+     "pathBits": 15.66,
+     "decisions": 9,
+     "effort": 234,
+     "bits": null,
+     "solutions": null,
+     "visits": 17
+    },
+    {
+     "rows": [
+      "1S112",
+      "..121",
+      "...11",
+      ".1121"
+     ],
+     "pathBits": 15.83,
+     "decisions": 10,
+     "effort": 10819,
+     "bits": 4.26,
+     "solutions": 5231,
+     "visits": 17
+    },
+    {
+     "rows": [
       "..111",
-      ".1s11",
-      "..111",
+      ".1111",
+      "111s2",
+      "..11."
+     ],
+     "pathBits": 16.08,
+     "decisions": 9,
+     "effort": 166,
+     "bits": 4.81,
+     "solutions": 3168,
+     "visits": 16
+    },
+    {
+     "rows": [
+      ".111.",
+      "..1s1",
+      ".1111",
       "11111"
      ],
-     "pathBits": 16.92,
+     "pathBits": 16.23,
      "decisions": 10,
-     "effort": 274,
+     "effort": 23,
+     "bits": 2.99,
+     "solutions": 12089,
+     "visits": 16
+    },
+    {
+     "rows": [
+      "1.111",
+      "1.11.",
+      "211s1",
+      "111.."
+     ],
+     "pathBits": 16.4,
+     "decisions": 10,
+     "effort": 16,
+     "bits": null,
+     "solutions": null,
+     "visits": 17
+    },
+    {
+     "rows": [
+      "111..",
+      "11s11",
+      "2121.",
+      "...1."
+     ],
+     "pathBits": 16.66,
+     "decisions": 10,
+     "effort": 39,
+     "bits": 3.59,
+     "solutions": 11957,
+     "visits": 16
+    },
+    {
+     "rows": [
+      ".111.",
+      "11211",
+      ".S111",
+      "..111"
+     ],
+     "pathBits": 16.81,
+     "decisions": 10,
+     "effort": 22,
      "bits": null,
      "solutions": null,
      "visits": 16
@@ -1638,17 +2693,45 @@
     },
     {
      "rows": [
-      ".1.1.",
-      "11s21",
-      ".111.",
-      ".1111"
+      "..111",
+      ".1111",
+      "1.2s1",
+      "..111"
      ],
-     "pathBits": 17.25,
-     "decisions": 9,
-     "effort": 425,
+     "pathBits": 16.98,
+     "decisions": 10,
+     "effort": 22,
+     "bits": 4.12,
+     "solutions": 6254,
+     "visits": 16
+    },
+    {
+     "rows": [
+      ".1121",
+      "..111",
+      ".1111",
+      "1S111"
+     ],
+     "pathBits": 17.17,
+     "decisions": 11,
+     "effort": 23161,
      "bits": null,
      "solutions": null,
-     "visits": 16
+     "visits": 17
+    },
+    {
+     "rows": [
+      "1.211",
+      ".1111",
+      ".111s",
+      ".11.1"
+     ],
+     "pathBits": 17.4,
+     "decisions": 11,
+     "effort": 37,
+     "bits": null,
+     "solutions": null,
+     "visits": 17
     },
     {
      "rows": [
@@ -1689,48 +2772,93 @@
     },
     {
      "rows": [
-      ".1...",
-      "11..S",
-      "11111",
-      "11.12",
-      "...12"
+      "11...",
+      "211..",
+      "111.S",
+      "1111.",
+      "...1."
      ],
-     "pathBits": 12,
-     "decisions": 9,
-     "effort": 145,
-     "bits": 4.19,
-     "solutions": 929,
-     "visits": 17
+     "pathBits": 11.75,
+     "decisions": 7,
+     "effort": 181,
+     "bits": 4.29,
+     "solutions": 289,
+     "visits": 15
     },
     {
      "rows": [
-      ".1111",
-      "11112",
-      "..1S1",
-      "....2",
+      "1.1..",
+      "1....",
+      "121..",
+      "11..1",
+      "121S1"
+     ],
+     "pathBits": 12.08,
+     "decisions": 7,
+     "effort": 4463,
+     "bits": 6.88,
+     "solutions": 72,
+     "visits": 16
+    },
+    {
+     "rows": [
+      ".111.",
+      ".1S1.",
+      "1121.",
+      ".12..",
       "...11"
      ],
-     "pathBits": 12.55,
+     "pathBits": 12.4,
      "decisions": 8,
-     "effort": 603,
-     "bits": 5.82,
-     "solutions": 678,
-     "visits": 17
+     "effort": 229,
+     "bits": 7.23,
+     "solutions": 62,
+     "visits": 16
     },
     {
      "rows": [
-      "1.21.",
-      "S..11",
+      "..11.",
       "1111.",
-      "11111",
-      "1.1.1"
+      "...11",
+      "111..",
+      "2s111"
      ],
-     "pathBits": 13.08,
-     "decisions": 7,
-     "effort": 67,
-     "bits": null,
-     "solutions": null,
-     "visits": 19
+     "pathBits": 12.66,
+     "decisions": 8,
+     "effort": 235,
+     "bits": 5.63,
+     "solutions": 504,
+     "visits": 18
+    },
+    {
+     "rows": [
+      ".11..",
+      ".11.1",
+      "11.11",
+      "11.1.",
+      "21S11"
+     ],
+     "pathBits": 13,
+     "decisions": 10,
+     "effort": 239,
+     "bits": 4.35,
+     "solutions": 470,
+     "visits": 18
+    },
+    {
+     "rows": [
+      "..11S",
+      "11112",
+      "...12",
+      "...11",
+      "....1"
+     ],
+     "pathBits": 13.34,
+     "decisions": 8,
+     "effort": 279,
+     "bits": 4.52,
+     "solutions": 320,
+     "visits": 15
     },
     {
      "rows": [
@@ -1765,18 +2893,33 @@
     },
     {
      "rows": [
-      "..1..",
-      "1.1..",
-      "1.S..",
-      "21211",
-      "111.1"
+      "1121.",
+      "..121",
+      "S.112",
+      "....1",
+      "...11"
      ],
-     "pathBits": 14.23,
-     "decisions": 8,
-     "effort": 90,
-     "bits": 4.36,
-     "solutions": 1367,
-     "visits": 16
+     "pathBits": 14,
+     "decisions": 12,
+     "effort": 973,
+     "bits": 4.88,
+     "solutions": 1676,
+     "visits": 17
+    },
+    {
+     "rows": [
+      ".1111",
+      "..1.1",
+      ".1112",
+      "S1..1",
+      "1.111"
+     ],
+     "pathBits": 14.25,
+     "decisions": 9,
+     "effort": 147,
+     "bits": 5.84,
+     "solutions": 602,
+     "visits": 18
     },
     {
      "rows": [
@@ -1796,153 +2939,304 @@
     },
     {
      "rows": [
-      ".11.1",
-      ".s111",
-      "1111.",
+      "11...",
+      "2.111",
+      "11S..",
+      "11112",
+      "11..1"
+     ],
+     "pathBits": 14.58,
+     "decisions": 10,
+     "effort": 1094,
+     "bits": 5.13,
+     "solutions": 1179,
+     "visits": 19
+    },
+    {
+     "rows": [
+      ".s21.",
+      "1.111",
       ".111.",
+      "211..",
+      "1...."
+     ],
+     "pathBits": 14.92,
+     "decisions": 10,
+     "effort": 16,
+     "bits": 5.17,
+     "solutions": 437,
+     "visits": 17
+    },
+    {
+     "rows": [
+      "11..1",
+      "11.11",
+      "1s121",
+      "...1.",
+      "...11"
+     ],
+     "pathBits": 15.23,
+     "decisions": 10,
+     "effort": 239,
+     "bits": 4.78,
+     "solutions": 1289,
+     "visits": 17
+    },
+    {
+     "rows": [
+      "1....",
+      "1..11",
+      "2211S",
+      "111..",
+      "211.."
+     ],
+     "pathBits": 15.55,
+     "decisions": 9,
+     "effort": 12011,
+     "bits": 4.1,
+     "solutions": 7934,
+     "visits": 18
+    },
+    {
+     "rows": [
+      "111.1",
+      "121..",
+      "12111",
+      "S1...",
+      "1.1.."
+     ],
+     "pathBits": 15.88,
+     "decisions": 10,
+     "effort": 17,
+     "bits": null,
+     "solutions": null,
+     "visits": 18
+    },
+    {
+     "rows": [
+      ".11..",
+      "s2111",
+      "211..",
+      "11...",
+      "1.1.."
+     ],
+     "pathBits": 16.17,
+     "decisions": 9,
+     "effort": 1131,
+     "bits": 4.43,
+     "solutions": 4633,
+     "visits": 17
+    },
+    {
+     "rows": [
+      "1.1S.",
+      "11211",
+      "11111",
+      "1..1.",
       "11..."
      ],
-     "pathBits": 14.81,
-     "decisions": 9,
-     "effort": 16,
-     "bits": 3.22,
-     "solutions": 4862,
-     "visits": 17
-    },
-    {
-     "rows": [
-      "1.11.",
-      "1..11",
-      "1s1..",
-      "11.11",
-      "11121"
-     ],
-     "pathBits": 15.34,
-     "decisions": 9,
-     "effort": 108,
-     "bits": null,
-     "solutions": null,
-     "visits": 20
-    },
-    {
-     "rows": [
-      "221..",
-      "11S..",
-      ".1...",
-      "21111",
-      "2111."
-     ],
-     "pathBits": 15.91,
+     "pathBits": 16.51,
      "decisions": 11,
-     "effort": 146,
+     "effort": 237,
      "bits": null,
      "solutions": null,
-     "visits": 20
-    },
-    {
-     "rows": [
-      "...11",
-      "..111",
-      "11121",
-      "1S12.",
-      "...1."
-     ],
-     "pathBits": 16.49,
-     "decisions": 10,
-     "effort": 95,
-     "bits": null,
-     "solutions": null,
-     "visits": 17
+     "visits": 18
     },
     {
      "rows": [
       "11...",
-      "211..",
-      "1111.",
-      ".S111",
-      ".121."
+      "21S11",
+      "1112.",
+      "1.11.",
+      ".111."
      ],
-     "pathBits": 16.98,
-     "decisions": 11,
-     "effort": 4387,
-     "bits": null,
-     "solutions": null,
-     "visits": 18
-    },
-    {
-     "rows": [
-      "....1",
-      "....1",
-      "1...1",
-      "11211",
-      "2S221"
-     ],
-     "pathBits": 17.58,
-     "decisions": 14,
-     "effort": 246,
-     "bits": 5.04,
-     "solutions": 3865,
-     "visits": 18
-    },
-    {
-     "rows": [
-      "...21",
-      "...1.",
-      "1S121",
-      "1111.",
-      "11111"
-     ],
-     "pathBits": 18.14,
-     "decisions": 11,
-     "effort": 484,
+     "pathBits": 16.83,
+     "decisions": 10,
+     "effort": 28286,
      "bits": null,
      "solutions": null,
      "visits": 19
     },
     {
      "rows": [
-      "...11",
-      "..112",
-      "11111",
-      "..S.1",
-      "11111"
+      "..11.",
+      "1111.",
+      "11S11",
+      ".121.",
+      ".1111"
      ],
-     "pathBits": 18.68,
-     "decisions": 13,
-     "effort": 21,
+     "pathBits": 17.17,
+     "decisions": 11,
+     "effort": 44,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
+    },
+    {
+     "rows": [
+      ".1211",
+      "222.S",
+      "111..",
+      "11...",
+      ".1..."
+     ],
+     "pathBits": 17.49,
+     "decisions": 11,
+     "effort": 95,
      "bits": null,
      "solutions": null,
      "visits": 18
     },
     {
      "rows": [
-      "...11",
-      "..112",
-      "11111",
-      "1S111",
-      "..211"
+      "11...",
+      "111.1",
+      "1s.11",
+      "12.1.",
+      "1111."
      ],
-     "pathBits": 19.25,
-     "decisions": 11,
-     "effort": 1476,
+     "pathBits": 17.75,
+     "decisions": 12,
+     "effort": 206,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
+    },
+    {
+     "rows": [
+      "..111",
+      "...11",
+      "1..11",
+      "22111",
+      "2s1.."
+     ],
+     "pathBits": 18.09,
+     "decisions": 12,
+     "effort": 407,
      "bits": null,
      "solutions": null,
      "visits": 20
     },
     {
      "rows": [
-      "211.S",
+      ".1...",
       "111..",
-      "11211",
-      "111..",
-      ".11.."
+      "11S1.",
+      ".122.",
+      "11211"
      ],
-     "pathBits": 19.83,
+     "pathBits": 18.42,
      "decisions": 12,
-     "effort": 47,
+     "effort": 55,
      "bits": null,
      "solutions": null,
      "visits": 19
+    },
+    {
+     "rows": [
+      "111S.",
+      "112..",
+      "11121",
+      "..1.1",
+      "1111."
+     ],
+     "pathBits": 18.73,
+     "decisions": 13,
+     "effort": 187,
+     "bits": null,
+     "solutions": null,
+     "visits": 20
+    },
+    {
+     "rows": [
+      "1.111",
+      "11.11",
+      "11S1.",
+      "11111",
+      "1.111"
+     ],
+     "pathBits": 18.83,
+     "decisions": 11,
+     "effort": 186,
+     "bits": null,
+     "solutions": null,
+     "visits": 21,
+     "designed": "spiral gapped/3 reversed"
+    },
+    {
+     "rows": [
+      "..111",
+      "11S11",
+      "11121",
+      "..111",
+      "..11."
+     ],
+     "pathBits": 19.04,
+     "decisions": 11,
+     "effort": 955,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
+    },
+    {
+     "rows": [
+      "1111S",
+      "..111",
+      "1.111",
+      "...22",
+      "..121"
+     ],
+     "pathBits": 19.34,
+     "decisions": 12,
+     "effort": 35,
+     "bits": null,
+     "solutions": null,
+     "visits": 20
+    },
+    {
+     "rows": [
+      ".1...",
+      ".11.2",
+      ".1112",
+      "12S.1",
+      "12111"
+     ],
+     "pathBits": 19.68,
+     "decisions": 13,
+     "effort": 25,
+     "bits": null,
+     "solutions": null,
+     "visits": 21
+    },
+    {
+     "rows": [
+      ".1.1.",
+      "...1.",
+      "1212.",
+      "11121",
+      "11S1."
+     ],
+     "pathBits": 20,
+     "decisions": 13,
+     "effort": 18,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
+    },
+    {
+     "rows": [
+      "1111.",
+      ".111.",
+      "..111",
+      ".1.s2",
+      ".1121"
+     ],
+     "pathBits": 20.32,
+     "decisions": 13,
+     "effort": 19,
+     "bits": null,
+     "solutions": null,
+     "visits": 20
     },
     {
      "rows": [
@@ -1962,60 +3256,90 @@
     },
     {
      "rows": [
+      "1.111",
+      "212.1",
+      "21S11",
+      "11.1.",
+      "1.11."
+     ],
+     "pathBits": 20.62,
+     "decisions": 13,
+     "effort": 39,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
+    },
+    {
+     "rows": [
+      "1212.",
       ".111.",
-      "11211",
-      "11S.1",
-      "1.2.1",
+      "1111S",
+      "1111.",
       "111.."
      ],
-     "pathBits": 20.39,
-     "decisions": 15,
-     "effort": 51,
-     "bits": null,
-     "solutions": null,
-     "visits": 20
-    },
-    {
-     "rows": [
-      ".1.1.",
-      "1221.",
-      "1111S",
-      "11111",
-      "1..1."
-     ],
-     "pathBits": 20.92,
-     "decisions": 12,
-     "effort": 2527,
-     "bits": null,
-     "solutions": null,
-     "visits": 20
-    },
-    {
-     "rows": [
-      "11S..",
-      ".111.",
-      "1.111",
-      "1221.",
-      "1121."
-     ],
-     "pathBits": 21.49,
-     "decisions": 14,
-     "effort": 10800,
+     "pathBits": 20.98,
+     "decisions": 13,
+     "effort": 691,
      "bits": null,
      "solutions": null,
      "visits": 21
     },
     {
      "rows": [
-      "11121",
-      "11111",
-      "11s.1",
-      "..1.1",
-      "..111"
+      ".12S.",
+      ".11.1",
+      "11.11",
+      "1.122",
+      "11111"
      ],
-     "pathBits": 22.05,
+     "pathBits": 21.26,
+     "decisions": 16,
+     "effort": 1447,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
+    },
+    {
+     "rows": [
+      "S....",
+      "2111.",
+      "11...",
+      "1111.",
+      "12221"
+     ],
+     "pathBits": 21.59,
+     "decisions": 14,
+     "effort": 19,
+     "bits": null,
+     "solutions": null,
+     "visits": 20
+    },
+    {
+     "rows": [
+      "1....",
+      "1S...",
+      "1111.",
+      "2211.",
+      "11211"
+     ],
+     "pathBits": 21.91,
      "decisions": 13,
-     "effort": 149,
+     "effort": 28418,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
+    },
+    {
+     "rows": [
+      "1.11.",
+      "s1111",
+      "22111",
+      "12...",
+      "11..."
+     ],
+     "pathBits": 22.21,
+     "decisions": 13,
+     "effort": 73,
      "bits": null,
      "solutions": null,
      "visits": 21
@@ -2037,6 +3361,21 @@
     },
     {
      "rows": [
+      "211..",
+      "s11..",
+      "11111",
+      "1111.",
+      "1111."
+     ],
+     "pathBits": 22.87,
+     "decisions": 14,
+     "effort": 2065,
+     "bits": null,
+     "solutions": null,
+     "visits": 21
+    },
+    {
+     "rows": [
       ".1111",
       ".1111",
       "11121",
@@ -2049,6 +3388,21 @@
      "bits": null,
      "solutions": null,
      "visits": 21
+    },
+    {
+     "rows": [
+      ".111.",
+      "..1..",
+      "112.1",
+      "212S1",
+      "21111"
+     ],
+     "pathBits": 23.49,
+     "decisions": 14,
+     "effort": 73,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
     },
     {
      "rows": [
@@ -2068,45 +3422,75 @@
     },
     {
      "rows": [
-      "111s1",
-      "..121",
-      "12111",
-      ".1111",
-      "...11"
+      "..111",
+      "11211",
+      ".1221",
+      "..s1.",
+      "..11."
      ],
-     "pathBits": 23.72,
-     "decisions": 14,
-     "effort": 119,
+     "pathBits": 23.81,
+     "decisions": 15,
+     "effort": 29,
+     "bits": null,
+     "solutions": null,
+     "visits": 20
+    },
+    {
+     "rows": [
+      "..112",
+      "111.1",
+      "12211",
+      "1111S",
+      "..11."
+     ],
+     "pathBits": 24.15,
+     "decisions": 15,
+     "effort": 187,
      "bits": null,
      "solutions": null,
      "visits": 22
     },
     {
      "rows": [
-      "11211",
-      "12211",
-      ".1111",
-      ".1.1S",
-      ".1..."
+      "11111",
+      "..21.",
+      "..1s1",
+      ".1221",
+      ".1111"
      ],
-     "pathBits": 24.26,
-     "decisions": 17,
-     "effort": 20,
+     "pathBits": 24.46,
+     "decisions": 14,
+     "effort": 263,
      "bits": null,
      "solutions": null,
-     "visits": 21
+     "visits": 22
     },
     {
      "rows": [
-      "..111",
-      ".111.",
-      "1111.",
-      "1S21.",
-      "2121."
+      "11.1.",
+      "s2111",
+      ".1111",
+      ".1121",
+      ".111."
      ],
-     "pathBits": 24.83,
-     "decisions": 16,
-     "effort": 27,
+     "pathBits": 24.74,
+     "decisions": 15,
+     "effort": 141,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
+    },
+    {
+     "rows": [
+      "1211.",
+      "12111",
+      "121..",
+      "221..",
+      "S...."
+     ],
+     "pathBits": 25.08,
+     "decisions": 17,
+     "effort": 105,
      "bits": null,
      "solutions": null,
      "visits": 21
@@ -2151,48 +3535,78 @@
     },
     {
      "rows": [
-      "...11S",
-      "111211",
-      "1.11..",
-      "1.111.",
-      "...1.."
+      "...11.",
+      "...1..",
+      ".1211.",
+      "112111",
+      "11S1.."
      ],
-     "pathBits": 17.17,
-     "decisions": 12,
-     "effort": 25,
+     "pathBits": 16.89,
+     "decisions": 10,
+     "effort": 197,
      "bits": null,
      "solutions": null,
-     "visits": 18
+     "visits": 19
     },
     {
      "rows": [
-      "...111",
-      "1..1S1",
-      "1.1211",
-      "11.1.1",
-      ".1.1.1"
+      "111...",
+      "11....",
+      "111S21",
+      "111.1.",
+      "111..."
      ],
-     "pathBits": 17.75,
+     "pathBits": 17.23,
      "decisions": 11,
-     "effort": 477,
+     "effort": 215,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
+    },
+    {
+     "rows": [
+      "...11.",
+      "11111.",
+      ".1..1.",
+      ".11S11",
+      ".11121"
+     ],
+     "pathBits": 17.66,
+     "decisions": 12,
+     "effort": 287,
      "bits": null,
      "solutions": null,
      "visits": 20
     },
     {
      "rows": [
-      ".11211",
-      "....1.",
-      "..21s.",
-      "112.1.",
-      ".112.."
+      "...11.",
+      "111111",
+      "1s1...",
+      "112...",
+      "111..."
      ],
-     "pathBits": 18.4,
-     "decisions": 12,
-     "effort": 435,
+     "pathBits": 17.98,
+     "decisions": 10,
+     "effort": 594,
      "bits": null,
      "solutions": null,
-     "visits": 21
+     "visits": 19
+    },
+    {
+     "rows": [
+      "..1111",
+      "..1111",
+      "..11.S",
+      "11211.",
+      ".11..."
+     ],
+     "pathBits": 18.34,
+     "decisions": 11,
+     "effort": 240,
+     "bits": null,
+     "solutions": null,
+     "visits": 19
     },
     {
      "rows": [
@@ -2212,60 +3626,136 @@
     },
     {
      "rows": [
-      "....1.",
-      "..1.2.",
-      "1121.1",
-      "S11111",
-      "12111."
+      "1.....",
+      "1.1.11",
+      "1111.1",
+      "121..1",
+      ".121S1"
      ],
-     "pathBits": 18.98,
-     "decisions": 10,
-     "effort": 160,
-     "bits": null,
-     "solutions": null,
-     "visits": 22
-    },
-    {
-     "rows": [
-      "....11",
-      "..1111",
-      ".1S.1.",
-      "111122",
-      ".111.1"
-     ],
-     "pathBits": 19.66,
-     "decisions": 12,
-     "effort": 690,
+     "pathBits": 18.68,
+     "decisions": 13,
+     "effort": 20,
      "bits": null,
      "solutions": null,
      "visits": 21
     },
     {
      "rows": [
-      "....11",
-      "...121",
-      "11.112",
-      "1111s1",
-      "..1.2."
+      "S1.111",
+      "11.11.",
+      ".11111",
+      "111.11",
+      "1.11.1"
      ],
-     "pathBits": 20.25,
+     "pathBits": 18.92,
      "decisions": 12,
-     "effort": 242,
+     "effort": 22,
+     "bits": null,
+     "solutions": null,
+     "visits": 23,
+     "designed": "spiral gapped/2"
+    },
+    {
+     "rows": [
+      "1...1.",
+      "211111",
+      "s21..1",
+      "11....",
+      "111.11"
+     ],
+     "pathBits": 19.08,
+     "decisions": 12,
+     "effort": 155,
      "bits": null,
      "solutions": null,
      "visits": 22
     },
     {
      "rows": [
-      "..21..",
-      "112s11",
-      "11.112",
-      "...1.1",
-      "...111"
+      ".111..",
+      ".1....",
+      "1211S1",
+      "11.1.1",
+      "2111.1"
      ],
-     "pathBits": 20.88,
+     "pathBits": 19.4,
+     "decisions": 12,
+     "effort": 280,
+     "bits": null,
+     "solutions": null,
+     "visits": 21
+    },
+    {
+     "rows": [
+      "1111.1",
+      "1211S2",
+      "111...",
+      "21..11",
+      "1....."
+     ],
+     "pathBits": 19.75,
+     "decisions": 12,
+     "effort": 10243,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
+    },
+    {
+     "rows": [
+      "1111..",
+      "11111.",
+      "....12",
+      "..1S11",
+      "111211"
+     ],
+     "pathBits": 20.14,
+     "decisions": 15,
+     "effort": 9842,
+     "bits": null,
+     "solutions": null,
+     "visits": 23
+    },
+    {
+     "rows": [
+      "...111",
+      ".S1111",
+      ".111..",
+      "12121.",
+      "11.1.."
+     ],
+     "pathBits": 20.49,
+     "decisions": 13,
+     "effort": 20,
+     "bits": null,
+     "solutions": null,
+     "visits": 21
+    },
+    {
+     "rows": [
+      "..1111",
+      "....11",
+      "....1S",
+      ".1.112",
+      "122211"
+     ],
+     "pathBits": 20.83,
+     "decisions": 12,
+     "effort": 476,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
+    },
+    {
+     "rows": [
+      "..1112",
+      "1.2111",
+      "111...",
+      "s111.1",
+      "1.1..."
+     ],
+     "pathBits": 21.23,
      "decisions": 14,
-     "effort": 2587,
+     "effort": 4646,
      "bits": null,
      "solutions": null,
      "visits": 22
@@ -2288,105 +3778,165 @@
     },
     {
      "rows": [
-      "2.1...",
-      "111...",
-      "s1111.",
-      "1111..",
-      ".11111"
+      "....1.",
+      "..1122",
+      "..1112",
+      ".111.S",
+      "111111"
      ],
-     "pathBits": 21.47,
-     "decisions": 14,
-     "effort": 147,
+     "pathBits": 21.57,
+     "decisions": 12,
+     "effort": 13774,
+     "bits": null,
+     "solutions": null,
+     "visits": 22
+    },
+    {
+     "rows": [
+      "..1.22",
+      ".12121",
+      ".12.11",
+      "..1..S",
+      "1211.1"
+     ],
+     "pathBits": 21.92,
+     "decisions": 15,
+     "effort": 31,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "112212",
+      ".S.1.1",
+      "2111..",
+      "...111",
+      "111.11"
+     ],
+     "pathBits": 22.26,
+     "decisions": 15,
+     "effort": 1399,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "...111",
+      "112211",
+      ".1.111",
+      ".S211.",
+      "....1."
+     ],
+     "pathBits": 22.66,
+     "decisions": 13,
+     "effort": 94,
      "bits": null,
      "solutions": null,
      "visits": 21
     },
     {
      "rows": [
-      "111...",
-      "1.1111",
-      "11....",
-      "221S11",
-      "11111."
+      "11...1",
+      "11S112",
+      "11.111",
+      "...121",
+      "..1211"
      ],
-     "pathBits": 22.09,
-     "decisions": 14,
-     "effort": 515,
+     "pathBits": 23,
+     "decisions": 15,
+     "effort": 14594,
      "bits": null,
      "solutions": null,
-     "visits": 23
+     "visits": 24
     },
     {
      "rows": [
-      "1.2121",
-      "..s111",
-      "1.1111",
+      "1.....",
+      "1111..",
+      "12211.",
+      "S12121",
+      "....1."
+     ],
+     "pathBits": 23.4,
+     "decisions": 13,
+     "effort": 465,
+     "bits": null,
+     "solutions": null,
+     "visits": 21
+    },
+    {
+     "rows": [
+      "122s21",
+      "11..11",
+      "..1112",
+      ".11.11",
+      ".....1"
+     ],
+     "pathBits": 23.74,
+     "decisions": 14,
+     "effort": 33,
+     "bits": null,
+     "solutions": null,
+     "visits": 24
+    },
+    {
+     "rows": [
+      ".11.S.",
+      "121121",
+      ".11...",
+      ".21111",
+      "112.11"
+     ],
+     "pathBits": 24.08,
+     "decisions": 16,
+     "effort": 1447,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      ".11111",
+      "111112",
+      "1.S112",
       "1.11..",
       "111..."
      ],
-     "pathBits": 22.74,
-     "decisions": 14,
-     "effort": 1007,
-     "bits": null,
-     "solutions": null,
-     "visits": 23
-    },
-    {
-     "rows": [
-      "1.1111",
-      "11111.",
-      ".11111",
-      "121S..",
-      ".1...."
-     ],
-     "pathBits": 23.34,
+     "pathBits": 24.47,
      "decisions": 16,
-     "effort": 20,
+     "effort": 1542,
      "bits": null,
      "solutions": null,
-     "visits": 21
+     "visits": 24
     },
     {
      "rows": [
-      "...112",
-      "...S11",
-      ".11112",
-      "1111.1",
-      "1111.1"
+      "..11..",
+      "..11..",
+      "111111",
+      "..1111",
+      ".1221s"
      ],
-     "pathBits": 23.98,
+     "pathBits": 24.83,
      "decisions": 15,
-     "effort": 5594,
+     "effort": 2086,
      "bits": null,
      "solutions": null,
-     "visits": 23
+     "visits": 22
     },
     {
      "rows": [
-      "1.1.11",
-      "1....s",
-      "1..112",
+      "11.1.1",
+      "1111S.",
       "11.222",
-      "11.121"
+      "111111",
+      "...1.."
      ],
-     "pathBits": 24.57,
-     "decisions": 16,
-     "effort": 611,
-     "bits": null,
-     "solutions": null,
-     "visits": 26
-    },
-    {
-     "rows": [
-      "1111..",
-      "1S12..",
-      ".12211",
-      ".1121.",
-      "..12.."
-     ],
-     "pathBits": 25.25,
+     "pathBits": 25.15,
      "decisions": 14,
-     "effort": 5912,
+     "effort": 385,
      "bits": null,
      "solutions": null,
      "visits": 24
@@ -2409,48 +3959,94 @@
     },
     {
      "rows": [
-      "1112s2",
-      "111...",
-      "121111",
-      "11....",
-      "21.1.1"
+      ".11222",
+      ".111.1",
+      "1111S1",
+      "11.1.1",
+      "111..."
      ],
-     "pathBits": 25.83,
-     "decisions": 16,
-     "effort": 30,
+     "pathBits": 25.55,
+     "decisions": 19,
+     "effort": 7359,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "..111.",
+      "1.1.11",
+      "..s111",
+      "111.22",
+      "111111"
+     ],
+     "pathBits": 25.91,
+     "decisions": 15,
+     "effort": 565,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "S11.11",
+      "11.111",
+      "111.11",
+      "11.111",
+      "111.11"
+     ],
+     "pathBits": 26.09,
+     "decisions": 19,
+     "effort": 24,
+     "bits": null,
+     "solutions": null,
+     "visits": 25,
+     "designed": "snake gapped/3"
+    },
+    {
+     "rows": [
+      "...1.1",
+      "1111.1",
+      "1111.1",
+      "21....",
+      "12221S"
+     ],
+     "pathBits": 26.26,
+     "decisions": 19,
+     "effort": 38,
+     "bits": null,
+     "solutions": null,
+     "visits": 24
+    },
+    {
+     "rows": [
+      "..1221",
+      "..111.",
+      "s1111.",
+      "111111",
+      "221..."
+     ],
+     "pathBits": 26.64,
+     "decisions": 17,
+     "effort": 2471,
      "bits": null,
      "solutions": null,
      "visits": 26
     },
     {
      "rows": [
-      "1111..",
-      "1111..",
-      ".1s211",
-      "1.1111",
-      ".111.."
+      "111111",
+      "111111",
+      "...1s1",
+      "...112",
+      "...111"
      ],
-     "pathBits": 26.47,
-     "decisions": 16,
-     "effort": 368,
+     "pathBits": 27,
+     "decisions": 17,
+     "effort": 17388,
      "bits": null,
      "solutions": null,
      "visits": 23
-    },
-    {
-     "rows": [
-      "..1111",
-      "1.111.",
-      "111221",
-      "212...",
-      "..1S1."
-     ],
-     "pathBits": 27.09,
-     "decisions": 18,
-     "effort": 36,
-     "bits": null,
-     "solutions": null,
-     "visits": 24
     },
     {
      "rows": [
@@ -2470,103 +4066,193 @@
     },
     {
      "rows": [
-      "1..11.",
-      "11121.",
-      "11122.",
-      "111S11",
-      "...111"
+      "2.2111",
+      "111122",
+      "111112",
+      "...S..",
+      "...1.."
      ],
-     "pathBits": 27.7,
-     "decisions": 16,
-     "effort": 30,
+     "pathBits": 27.34,
+     "decisions": 18,
+     "effort": 245,
      "bits": null,
      "solutions": null,
-     "visits": 25
+     "visits": 24
     },
     {
      "rows": [
-      ".11...",
-      ".12211",
-      "S12111",
-      "111111",
-      "11...1"
+      "...1..",
+      "..1211",
+      "111s22",
+      "..1211",
+      ".111.."
      ],
-     "pathBits": 28.32,
+     "pathBits": 27.72,
      "decisions": 16,
-     "effort": 25545,
+     "effort": 3592,
      "bits": null,
      "solutions": null,
-     "visits": 25
-    },
-    {
-     "rows": [
-      "111...",
-      "s12..1",
-      "112111",
-      "1.1.11",
-      "1.1111"
-     ],
-     "pathBits": 28.96,
-     "decisions": 17,
-     "effort": 3500,
-     "bits": null,
-     "solutions": null,
-     "visits": 25
+     "visits": 23
     },
     {
      "rows": [
       "111111",
-      "S2.111",
-      "111221",
-      "11..11",
-      "111..."
+      "12.s11",
+      "11111.",
+      "2111.1",
+      ".11..."
      ],
-     "pathBits": 29.57,
+     "pathBits": 28.09,
      "decisions": 17,
-     "effort": 33233,
+     "effort": 3725,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
+    },
+    {
+     "rows": [
+      "11.1..",
+      "211111",
+      "21..11",
+      "21.111",
+      "s1.111"
+     ],
+     "pathBits": 28.43,
+     "decisions": 19,
+     "effort": 58,
      "bits": null,
      "solutions": null,
      "visits": 27
     },
     {
      "rows": [
-      "..1.1.",
-      "1s1...",
-      "121.1.",
-      "122111",
-      "121111"
-     ],
-     "pathBits": 30.21,
-     "decisions": 18,
-     "effort": 33809,
-     "bits": null,
-     "solutions": null,
-     "visits": 26
-    },
-    {
-     "rows": [
-      "111S11",
-      "111212",
-      "1211..",
+      "111.11",
       "111111",
-      ".1...."
+      "111112",
+      "11.1S2",
+      ".....2"
      ],
-     "pathBits": 30.83,
-     "decisions": 18,
-     "effort": 152,
+     "pathBits": 28.81,
+     "decisions": 17,
+     "effort": 110227,
      "bits": null,
      "solutions": null,
      "visits": 26
     },
     {
      "rows": [
-      "111121",
-      ".1s211",
-      "11111.",
-      "11.1..",
-      "1111.."
+      ".S11..",
+      ".1211.",
+      "22111.",
+      "12211.",
+      "..1111"
      ],
-     "pathBits": 31.43,
+     "pathBits": 29.17,
+     "decisions": 19,
+     "effort": 87,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
+    },
+    {
+     "rows": [
+      "..111S",
+      "..1111",
+      "111111",
+      "21111.",
+      "..1121"
+     ],
+     "pathBits": 29.51,
+     "decisions": 19,
+     "effort": 153,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      ".1....",
+      "111...",
+      "2211..",
+      "2111.S",
+      "122211"
+     ],
+     "pathBits": 29.89,
+     "decisions": 18,
+     "effort": 27,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "....1.",
+      ".12111",
+      ".11111",
+      "111221",
+      "1111.S"
+     ],
+     "pathBits": 30.25,
+     "decisions": 18,
+     "effort": 84,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "11.1..",
+      "11111s",
+      ".11212",
+      ".11112",
+      "...111"
+     ],
+     "pathBits": 30.63,
+     "decisions": 18,
+     "effort": 45,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
+    },
+    {
+     "rows": [
+      "11.112",
+      "111111",
+      "22111.",
+      "2111..",
+      "1..1S."
+     ],
+     "pathBits": 30.98,
+     "decisions": 21,
+     "effort": 56,
+     "bits": null,
+     "solutions": null,
+     "visits": 27
+    },
+    {
+     "rows": [
+      "11111.",
+      ".1111s",
+      ".11111",
+      "112.11",
+      ".11111"
+     ],
+     "pathBits": 31.32,
+     "decisions": 19,
+     "effort": 2444,
+     "bits": null,
+     "solutions": null,
+     "visits": 27
+    },
+    {
+     "rows": [
+      "121211",
+      ".11221",
+      "..1111",
+      "..11.S",
+      "..1111"
+     ],
+     "pathBits": 31.68,
      "decisions": 20,
      "effort": 25,
      "bits": null,
@@ -2614,16 +4300,32 @@
     },
     {
      "rows": [
-      "..11..",
-      ".2111.",
-      ".11111",
-      ".21.1.",
-      "21....",
-      "22S..."
+      "11....",
+      "11...1",
+      "21..11",
+      "212112",
+      "1.1S..",
+      "2....1"
      ],
-     "pathBits": 21.51,
+     "pathBits": 21.25,
+     "decisions": 13,
+     "effort": 11929,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      ".1.1..",
+      ".1....",
+      ".S1111",
+      "1111.1",
+      "2221..",
+      ".11.11"
+     ],
+     "pathBits": 21.66,
      "decisions": 14,
-     "effort": 53896,
+     "effort": 4716,
      "bits": null,
      "solutions": null,
      "visits": 24
@@ -2647,83 +4349,164 @@
     },
     {
      "rows": [
-      "222...",
-      "11....",
-      ".2211.",
+      "S11111",
+      "1111..",
+      ".1....",
+      "121111",
       "..1.21",
-      "...112",
-      "...S11"
+      "12.11."
      ],
-     "pathBits": 22.26,
-     "decisions": 16,
-     "effort": 333,
+     "pathBits": 22.09,
+     "decisions": 14,
+     "effort": 100975,
      "bits": null,
      "solutions": null,
-     "visits": 25
+     "visits": 27
     },
     {
      "rows": [
-      "....11",
-      "111.21",
-      "1.2.2.",
-      "1211..",
-      "1S11..",
-      "111..."
+      "11....",
+      "1.....",
+      "11....",
+      "122...",
+      "221.S.",
+      "111111"
      ],
-     "pathBits": 23.04,
-     "decisions": 16,
-     "effort": 32,
+     "pathBits": 22.51,
+     "decisions": 15,
+     "effort": 532,
      "bits": null,
      "solutions": null,
-     "visits": 25
+     "visits": 22
     },
     {
      "rows": [
-      "12111.",
-      "212...",
-      "21.11S",
-      "2.11..",
-      "21.1..",
-      "..11.."
+      "211.11",
+      "...111",
+      "2..1.1",
+      "1....1",
+      "1111.1",
+      "12s111"
+     ],
+     "pathBits": 22.98,
+     "decisions": 17,
+     "effort": 1878,
+     "bits": null,
+     "solutions": null,
+     "visits": 28
+    },
+    {
+     "rows": [
+      "21S111",
+      "22111.",
+      "21..11",
+      "1111..",
+      "....1.",
+      "...11."
+     ],
+     "pathBits": 23.42,
+     "decisions": 15,
+     "effort": 35,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
+    },
+    {
+     "rows": [
+      "S1.111",
+      "1.111.",
+      "11.1.1",
+      "111111",
+      ".1.11.",
+      "111.11"
      ],
      "pathBits": 23.75,
      "decisions": 16,
-     "effort": 13014,
+     "effort": 169,
      "bits": null,
      "solutions": null,
-     "visits": 27
+     "visits": 27,
+     "designed": "spiral gapped/2"
     },
     {
      "rows": [
-      "...11.",
-      "1.1111",
-      "111111",
-      ".2.121",
-      "..1.1.",
-      "121S1."
+      "...111",
+      "....21",
+      "..1122",
+      ".11S1.",
+      "1211.1",
+      ".11..."
      ],
-     "pathBits": 24.48,
+     "pathBits": 23.81,
+     "decisions": 14,
+     "effort": 16430,
+     "bits": null,
+     "solutions": null,
+     "visits": 24
+    },
+    {
+     "rows": [
+      "1111..",
+      "1211..",
+      "12S11.",
+      ".2.111",
+      "...1..",
+      ".111.."
+     ],
+     "pathBits": 24.25,
      "decisions": 15,
-     "effort": 42,
+     "effort": 4036,
      "bits": null,
      "solutions": null,
-     "visits": 27
+     "visits": 24
     },
     {
      "rows": [
-      "12.111",
-      "12..11",
-      "11111S",
-      "111.11",
-      "2.1.11",
-      "21...1"
+      ".11121",
+      ".1111.",
+      "S1....",
+      "1111..",
+      "2211..",
+      "112..."
      ],
-     "pathBits": 25.25,
+     "pathBits": 24.66,
      "decisions": 16,
-     "effort": 2755,
+     "effort": 3120,
      "bits": null,
      "solutions": null,
-     "visits": 31
+     "visits": 26
+    },
+    {
+     "rows": [
+      "111.S1",
+      "1....1",
+      "2111.1",
+      "2121..",
+      "111...",
+      "1.11.."
+     ],
+     "pathBits": 25.08,
+     "decisions": 16,
+     "effort": 556,
+     "bits": null,
+     "solutions": null,
+     "visits": 25
+    },
+    {
+     "rows": [
+      "S111..",
+      ".1...1",
+      ".11112",
+      ".22111",
+      "..111.",
+      ".1.111"
+     ],
+     "pathBits": 25.51,
+     "decisions": 16,
+     "effort": 31195,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
     },
     {
      "rows": [
@@ -2760,64 +4543,128 @@
     },
     {
      "rows": [
-      "...112",
-      "111..2",
-      "..2111",
-      "1.2.21",
-      "..1S21",
-      "1...11"
+      "....1.",
+      "...11.",
+      "..1.11",
+      ".11111",
+      "1211S1",
+      "121111"
      ],
-     "pathBits": 26.66,
+     "pathBits": 26.31,
      "decisions": 16,
-     "effort": 3876,
+     "effort": 7790,
      "bits": null,
      "solutions": null,
-     "visits": 28
+     "visits": 25
     },
     {
      "rows": [
-      ".s111.",
-      "12.11.",
-      "111...",
-      "111.1.",
-      ".121..",
-      "..2221"
+      "111111",
+      "..111s",
+      "1..11.",
+      "1.1221",
+      "1..11.",
+      "111..."
      ],
-     "pathBits": 27.42,
+     "pathBits": 26.75,
      "decisions": 18,
-     "effort": 39597,
+     "effort": 77,
+     "bits": null,
+     "solutions": null,
+     "visits": 27
+    },
+    {
+     "rows": [
+      "222121",
+      "111111",
+      "1.12.1",
+      "...1..",
+      "1.11.1",
+      "....S1"
+     ],
+     "pathBits": 27.17,
+     "decisions": 19,
+     "effort": 42,
      "bits": null,
      "solutions": null,
      "visits": 28
     },
     {
      "rows": [
-      "1.111.",
-      "11.121",
-      ".S.222",
-      "....12",
-      "..1211",
-      "...1.2"
+      "1....1",
+      "1.11.1",
+      "211..1",
+      "11s211",
+      "1..1.1",
+      "11.111"
      ],
-     "pathBits": 28.15,
-     "decisions": 16,
-     "effort": 1315,
+     "pathBits": 27.62,
+     "decisions": 18,
+     "effort": 5820,
      "bits": null,
      "solutions": null,
-     "visits": 28
+     "visits": 27
     },
     {
      "rows": [
-      ".1.1.1",
-      "11.1..",
-      "1.1111",
-      "1122s2",
-      "1.1.1.",
-      ".11.11"
+      "111.11",
+      "11..11",
+      "111111",
+      "1.2212",
+      "11...1",
+      "1S..22"
      ],
-     "pathBits": 28.83,
-     "decisions": 17,
-     "effort": 6951,
+     "pathBits": 28.04,
+     "decisions": 19,
+     "effort": 2838,
+     "bits": null,
+     "solutions": null,
+     "visits": 32
+    },
+    {
+     "rows": [
+      "..111.",
+      "..2111",
+      "11211.",
+      ".12..1",
+      ".1s1..",
+      "..1111"
+     ],
+     "pathBits": 28.47,
+     "decisions": 19,
+     "effort": 57,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
+    },
+    {
+     "rows": [
+      "121...",
+      "111...",
+      "2211.1",
+      "1121..",
+      ".1S1.1",
+      "...111"
+     ],
+     "pathBits": 28.89,
+     "decisions": 18,
+     "effort": 3316,
+     "bits": null,
+     "solutions": null,
+     "visits": 26
+    },
+    {
+     "rows": [
+      "....1.",
+      "112111",
+      "s...11",
+      "111112",
+      "1.1.11",
+      ".11111"
+     ],
+     "pathBits": 29.31,
+     "decisions": 19,
+     "effort": 342,
      "bits": null,
      "solutions": null,
      "visits": 28
@@ -2841,96 +4688,161 @@
     },
     {
      "rows": [
-      "111111",
-      "111..1",
-      "111111",
-      "1.1111",
-      "S.11..",
-      "..111."
+      ".111..",
+      "12....",
+      "S1111.",
+      "112111",
+      "1111..",
+      "221.11"
      ],
-     "pathBits": 29.59,
+     "pathBits": 29.74,
      "decisions": 19,
-     "effort": 53,
+     "effort": 23972,
      "bits": null,
      "solutions": null,
-     "visits": 27
+     "visits": 29
     },
     {
      "rows": [
-      "1.1...",
-      "11211.",
-      "s1.11.",
-      "1111.1",
-      "11.112",
-      ".1.111"
+      "1...11",
+      "11111.",
+      "1111..",
+      "21111S",
+      "1111..",
+      "2111.."
      ],
-     "pathBits": 30.31,
-     "decisions": 20,
-     "effort": 339,
+     "pathBits": 30.15,
+     "decisions": 19,
+     "effort": 1316,
      "bits": null,
      "solutions": null,
      "visits": 28
     },
     {
      "rows": [
-      "111111",
-      "111111",
-      "s221.1",
-      "1....1",
+      "1.2121",
+      "11111.",
+      "12111.",
+      "1.111.",
+      "1S11..",
+      "1..1.."
+     ],
+     "pathBits": 30.59,
+     "decisions": 18,
+     "effort": 79791,
+     "bits": null,
+     "solutions": null,
+     "visits": 28
+    },
+    {
+     "rows": [
+      "111212",
       "...111",
+      "2111.1",
+      "11.112",
+      "111...",
+      "11S..."
+     ],
+     "pathBits": 31,
+     "decisions": 23,
+     "effort": 28,
+     "bits": null,
+     "solutions": null,
+     "visits": 29
+    },
+    {
+     "rows": [
+      ".11211",
+      "1112S1",
+      "..1122",
+      "11111.",
+      "11...1",
+      "11...."
+     ],
+     "pathBits": 31.42,
+     "decisions": 19,
+     "effort": 23405,
+     "bits": null,
+     "solutions": null,
+     "visits": 29
+    },
+    {
+     "rows": [
+      ".12111",
+      "111121",
+      "1.111.",
+      "11.111",
+      ".1111.",
+      "S1...."
+     ],
+     "pathBits": 31.85,
+     "decisions": 23,
+     "effort": 58,
+     "bits": null,
+     "solutions": null,
+     "visits": 28
+    },
+    {
+     "rows": [
+      ".11122",
+      ".11111",
+      "111.11",
+      "111111",
+      "..111.",
+      "..S.1."
+     ],
+     "pathBits": 32.26,
+     "decisions": 22,
+     "effort": 27,
+     "bits": null,
+     "solutions": null,
+     "visits": 28
+    },
+    {
+     "rows": [
+      "S11.11",
+      "111.11",
+      ".11111",
+      "11111.",
+      "111.11",
+      "11.111"
+     ],
+     "pathBits": 32.59,
+     "decisions": 22,
+     "effort": 35,
+     "bits": null,
+     "solutions": null,
+     "visits": 30,
+     "designed": "spiral gapped/3"
+    },
+    {
+     "rows": [
+      "221...",
+      "11....",
+      "211s1.",
+      "211121",
+      "..1111",
       "...111"
      ],
-     "pathBits": 31.06,
-     "decisions": 18,
-     "effort": 32220,
-     "bits": null,
-     "solutions": null,
-     "visits": 28
-    },
-    {
-     "rows": [
-      "1211.1",
-      ".112.1",
-      "1S1112",
-      "...112",
-      "1.1211",
-      "1.1.1."
-     ],
-     "pathBits": 31.74,
-     "decisions": 19,
-     "effort": 7392,
-     "bits": null,
-     "solutions": null,
-     "visits": 31
-    },
-    {
-     "rows": [
-      "....1.",
-      "...11.",
-      "...121",
-      "1.s22.",
-      "1.1211",
-      "111211"
-     ],
-     "pathBits": 32.49,
-     "decisions": 19,
-     "effort": 276,
-     "bits": null,
-     "solutions": null,
-     "visits": 27
-    },
-    {
-     "rows": [
-      "..11.1",
-      "..1..1",
-      "112...",
-      "112S..",
-      "122111",
-      "221211"
-     ],
-     "pathBits": 33.21,
+     "pathBits": 32.72,
      "decisions": 20,
-     "effort": 3320,
+     "effort": 3258,
+     "bits": null,
+     "solutions": null,
+     "visits": 29
+    },
+    {
+     "rows": [
+      "111221",
+      "22.11.",
+      "S2.22.",
+      "11111.",
+      ".11.2.",
+      "....1."
+     ],
+     "pathBits": 33.12,
+     "decisions": 19,
+     "effort": 30,
      "bits": null,
      "solutions": null,
      "visits": 31
@@ -2954,6 +4866,22 @@
     },
     {
      "rows": [
+      "S21111",
+      "121111",
+      ".221..",
+      "1.11..",
+      "1121..",
+      "11...."
+     ],
+     "pathBits": 33.57,
+     "decisions": 21,
+     "effort": 667,
+     "bits": null,
+     "solutions": null,
+     "visits": 29
+    },
+    {
+     "rows": [
       ".....S",
       "11...1",
       "111111",
@@ -2970,79 +4898,79 @@
     },
     {
      "rows": [
-      ".S.1..",
-      "121111",
-      ".1.11.",
-      "..1112",
-      ".11122",
-      ".12112"
+      "1s1111",
+      "122.11",
+      ".2.112",
+      ".111.1",
+      "..1111",
+      ".111.."
      ],
-     "pathBits": 34.68,
-     "decisions": 22,
-     "effort": 6071,
+     "pathBits": 34.38,
+     "decisions": 23,
+     "effort": 1062,
      "bits": null,
      "solutions": null,
      "visits": 31
     },
     {
      "rows": [
-      ".....1",
-      "1.1112",
-      ".11111",
-      "111S11",
-      "122.11",
-      ".11111"
+      "...1.1",
+      ".11211",
+      "...1.2",
+      ".12112",
+      "1.111s",
+      "212.11"
      ],
-     "pathBits": 35.45,
+     "pathBits": 34.82,
      "decisions": 21,
-     "effort": 4348,
+     "effort": 1019,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "...1.1",
+      "...111",
+      "...111",
+      "1.1211",
+      "1111.1",
+      "2221s2"
+     ],
+     "pathBits": 35.25,
+     "decisions": 22,
+     "effort": 358,
      "bits": null,
      "solutions": null,
      "visits": 30
     },
     {
      "rows": [
-      "121121",
+      ".11111",
       ".111..",
-      "S12221",
-      ".11.11",
-      ".21211",
-      ".1...."
-     ],
-     "pathBits": 36.15,
-     "decisions": 22,
-     "effort": 31,
-     "bits": null,
-     "solutions": null,
-     "visits": 32
-    },
-    {
-     "rows": [
-      "11.11.",
-      "11211.",
       "221111",
-      "11.111",
-      "1..s11",
-      "...111"
+      "11.11.",
+      "12111.",
+      "S2.11."
      ],
-     "pathBits": 36.87,
+     "pathBits": 35.68,
      "decisions": 22,
-     "effort": 1843,
+     "effort": 231,
      "bits": null,
      "solutions": null,
      "visits": 31
     },
     {
      "rows": [
-      "112222",
-      "111.11",
-      "22111.",
-      "111.2.",
-      "S1....",
-      ".11.1."
+      "1.2222",
+      "1.1111",
+      "1.111.",
+      "1.11.1",
+      "111S..",
+      "111111"
      ],
-     "pathBits": 37.59,
-     "decisions": 26,
+     "pathBits": 36.08,
+     "decisions": 25,
      "effort": 31,
      "bits": null,
      "solutions": null,
@@ -3050,16 +4978,96 @@
     },
     {
      "rows": [
-      "11.1..",
-      "1111..",
-      "11.111",
-      "111111",
-      "S21122",
-      ".1.111"
+      "111.11",
+      "211.11",
+      "212221",
+      "s11111",
+      "...1..",
+      "...1.."
      ],
-     "pathBits": 38.32,
-     "decisions": 23,
+     "pathBits": 36.53,
+     "decisions": 21,
+     "effort": 26111,
+     "bits": null,
+     "solutions": null,
+     "visits": 30
+    },
+    {
+     "rows": [
+      "...211",
+      "11.1S1",
+      ".11211",
+      "111111",
+      "1121..",
+      "12111."
+     ],
+     "pathBits": 36.97,
+     "decisions": 22,
+     "effort": 2745,
+     "bits": null,
+     "solutions": null,
+     "visits": 32
+    },
+    {
+     "rows": [
+      "1111..",
+      ".12s1.",
+      ".11111",
+      ".11121",
+      "..1112",
+      "..1111"
+     ],
+     "pathBits": 37.32,
+     "decisions": 21,
+     "effort": 412,
+     "bits": null,
+     "solutions": null,
+     "visits": 30
+    },
+    {
+     "rows": [
+      "11.1.1",
+      "111212",
+      "111111",
+      ".11.11",
+      "..s11.",
+      ".1211."
+     ],
+     "pathBits": 37.76,
+     "decisions": 25,
      "effort": 30,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "112212",
+      ".11111",
+      "1111.1",
+      ".1s1..",
+      "1111..",
+      "11111."
+     ],
+     "pathBits": 38.25,
+     "decisions": 23,
+     "effort": 45,
+     "bits": null,
+     "solutions": null,
+     "visits": 32
+    },
+    {
+     "rows": [
+      "..111s",
+      "...111",
+      "..1111",
+      ".11111",
+      "212111",
+      "111111"
+     ],
+     "pathBits": 38.63,
+     "decisions": 23,
+     "effort": 49398,
      "bits": null,
      "solutions": null,
      "visits": 31
@@ -3106,19 +5114,35 @@
     },
     {
      "rows": [
-      "...S...",
-      "...2111",
-      "11.1121",
-      "1.11121",
-      "....112",
-      "......1"
+      "11.....",
+      "11.1211",
+      "111.1..",
+      "11..1.1",
+      "1211.1.",
+      "s11..11"
      ],
-     "pathBits": 26.25,
-     "decisions": 16,
-     "effort": 388,
+     "pathBits": 25.91,
+     "decisions": 20,
+     "effort": 354,
      "bits": null,
      "solutions": null,
-     "visits": 25
+     "visits": 29
+    },
+    {
+     "rows": [
+      "12.1...",
+      "11111S1",
+      ".1.1...",
+      "212221.",
+      "1....1.",
+      "11.11.."
+     ],
+     "pathBits": 26.4,
+     "decisions": 16,
+     "effort": 9941,
+     "bits": null,
+     "solutions": null,
+     "visits": 29
     },
     {
      "rows": [
@@ -3139,277 +5163,487 @@
     },
     {
      "rows": [
-      ".11..12",
-      "..11.11",
-      "11.1S12",
-      "1112.22",
-      "1.....1",
-      "11...12"
+      "11.1.11",
+      ".1.111S",
+      "11122.1",
+      "1.1111.",
+      "....1..",
+      ".1212.."
      ],
-     "pathBits": 27.14,
+     "pathBits": 26.92,
      "decisions": 17,
-     "effort": 3426,
+     "effort": 434,
      "bits": null,
      "solutions": null,
-     "visits": 32
+     "visits": 30
     },
     {
      "rows": [
-      ".11.111",
-      "1222111",
-      "..1..S.",
-      ".121.11",
-      ".....11",
-      "..1.111"
+      "....111",
+      "..212.2",
+      "..1S111",
+      ".221...",
+      ".111.1.",
+      "112...."
      ],
-     "pathBits": 27.98,
-     "decisions": 17,
-     "effort": 567,
-     "bits": null,
-     "solutions": null,
-     "visits": 29
-    },
-    {
-     "rows": [
-      ".11.11.",
-      ".1...11",
-      "S1..111",
-      "...2121",
-      "...2112",
-      "...1112"
-     ],
-     "pathBits": 28.83,
-     "decisions": 20,
-     "effort": 64,
-     "bits": null,
-     "solutions": null,
-     "visits": 29
-    },
-    {
-     "rows": [
-      ".s12111",
-      "1.112..",
-      "1121111",
-      "..1111.",
-      ".11....",
-      "..1...."
-     ],
-     "pathBits": 29.7,
-     "decisions": 17,
-     "effort": 25697,
+     "pathBits": 27.4,
+     "decisions": 19,
+     "effort": 26111,
      "bits": null,
      "solutions": null,
      "visits": 28
     },
     {
      "rows": [
+      "11.11.1",
+      "111.111",
+      ".11.111",
+      "11S11..",
       "11.1111",
-      "1111...",
-      ".111111",
-      "1s1..11",
-      ".121111",
-      "..11..."
+      "1.11.11"
      ],
-     "pathBits": 30.57,
+     "pathBits": 27.73,
      "decisions": 19,
-     "effort": 10547,
+     "effort": 34306,
      "bits": null,
      "solutions": null,
-     "visits": 31
+     "visits": 32,
+     "designed": "spiral gapped/2 reversed"
     },
     {
      "rows": [
-      "2.1....",
-      "..112..",
-      "211.1..",
-      "..111..",
-      "11s12..",
-      ".111211"
+      "....121",
+      "S111211",
+      "..1..1.",
+      "..22111",
+      "..11.1.",
+      "..11111"
      ],
-     "pathBits": 31.45,
+     "pathBits": 27.89,
      "decisions": 19,
-     "effort": 124,
+     "effort": 96,
      "bits": null,
      "solutions": null,
      "visits": 29
     },
     {
      "rows": [
-      "S111111",
-      "1.1.1.1",
-      ".1.1.1.",
-      "1111111",
-      "1.1.1.1",
-      "1111111"
+      ".....1S",
+      "..11.11",
+      "..21121",
+      "11121.1",
+      ".111...",
+      "1112..."
      ],
-     "pathBits": 31.51,
-     "decisions": 23,
-     "effort": 1516,
+     "pathBits": 28.42,
+     "decisions": 18,
+     "effort": 1736,
      "bits": null,
      "solutions": null,
-     "visits": 32,
-     "designed": "snake-columns gapped/2"
+     "visits": 28
     },
     {
      "rows": [
-      "..1.1..",
-      "....22.",
-      "..1.11.",
-      "...S111",
-      "..21122",
-      "1222111"
+      ".S11112",
+      "...1212",
+      "....111",
+      "111111.",
+      "111....",
+      "111...."
      ],
-     "pathBits": 32.31,
-     "decisions": 20,
-     "effort": 476,
+     "pathBits": 28.91,
+     "decisions": 19,
+     "effort": 6119,
+     "bits": null,
+     "solutions": null,
+     "visits": 28
+    },
+    {
+     "rows": [
+      "2212...",
+      "111S...",
+      "...1...",
+      "112111.",
+      "...1111",
+      ".122111"
+     ],
+     "pathBits": 29.42,
+     "decisions": 19,
+     "effort": 787,
      "bits": null,
      "solutions": null,
      "visits": 31
     },
     {
      "rows": [
-      ".11....",
-      ".1...11",
-      ".111111",
-      ".1.1111",
-      "122.211",
-      ".1.1S11"
+      "11..122",
+      "111111.",
+      "11..11.",
+      ".1.111.",
+      "11S1121",
+      ".1...1."
      ],
-     "pathBits": 33.17,
-     "decisions": 21,
-     "effort": 237,
+     "pathBits": 29.92,
+     "decisions": 20,
+     "effort": 18137,
      "bits": null,
      "solutions": null,
-     "visits": 30
+     "visits": 31
     },
     {
      "rows": [
-      "11.....",
-      "2211111",
-      "22111.1",
-      ".1111s1",
-      ".1.11..",
-      "...1..."
+      ".111...",
+      ".11111.",
+      "1211.1.",
+      "12s1121",
+      "..1.1..",
+      "..1...."
      ],
-     "pathBits": 34.06,
+     "pathBits": 30.42,
      "decisions": 19,
-     "effort": 143711,
+     "effort": 568,
      "bits": null,
      "solutions": null,
-     "visits": 30
+     "visits": 27
     },
     {
      "rows": [
-      "...1.11",
-      "1.11.11",
-      "...2121",
-      "1.1221.",
-      "1.111..",
-      ".12s12."
+      ".S1.1.1",
+      ".1.1...",
+      "1111111",
+      "221..11",
+      "12...22",
+      "121.11."
      ],
-     "pathBits": 34.89,
-     "decisions": 21,
-     "effort": 28801,
+     "pathBits": 30.92,
+     "decisions": 23,
+     "effort": 124959,
      "bits": null,
      "solutions": null,
      "visits": 33
     },
     {
      "rows": [
-      "111..1.",
-      "111..1.",
-      "1122121",
-      "S1.1111",
-      "1...1.1",
-      "11.1212"
-     ],
-     "pathBits": 35.74,
-     "decisions": 22,
-     "effort": 121855,
-     "bits": null,
-     "solutions": null,
-     "visits": 35
-    },
-    {
-     "rows": [
-      "S11.111",
-      "1111.11",
-      "1.111.1",
-      "111.111",
-      "11.1111",
-      "1.111.1"
-     ],
-     "pathBits": 36.43,
-     "decisions": 27,
-     "effort": 33,
-     "bits": null,
-     "solutions": null,
-     "visits": 34,
-     "designed": "snake gapped/3"
-    },
-    {
-     "rows": [
+      "11s2.1.",
+      "111112.",
+      "2.1..21",
+      "1..1111",
       "...111.",
-      "121121.",
-      ".1.11S.",
-      "111111.",
-      ".112221",
-      "..1.1.."
+      "...11.1"
      ],
-     "pathBits": 36.65,
+     "pathBits": 31.42,
+     "decisions": 21,
+     "effort": 45949,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "S1.11.1",
+      "11.1111",
+      "11.11..",
+      ".111111",
+      "111.111",
+      "11.11.1"
+     ],
+     "pathBits": 31.77,
      "decisions": 22,
-     "effort": 98540,
+     "effort": 39,
+     "bits": null,
+     "solutions": null,
+     "visits": 32,
+     "designed": "spiral gapped/2"
+    },
+    {
+     "rows": [
+      "....11.",
+      "..11...",
+      "..1.1..",
+      ".1111.1",
+      "222111s",
+      "1221111"
+     ],
+     "pathBits": 31.95,
+     "decisions": 17,
+     "effort": 54828,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "211....",
+      "11.1121",
+      "21111.1",
+      "11.1.11",
+      "11111S.",
+      "....111"
+     ],
+     "pathBits": 32.43,
+     "decisions": 23,
+     "effort": 78514,
      "bits": null,
      "solutions": null,
      "visits": 32
     },
     {
      "rows": [
-      "1111...",
-      "..1.111",
-      "1.22111",
-      "11111.1",
-      "1122...",
-      "111S111"
+      "111....",
+      "11111..",
+      "111....",
+      ".11....",
+      "1111.11",
+      "222212S"
      ],
-     "pathBits": 37.49,
-     "decisions": 22,
-     "effort": 24166,
+     "pathBits": 32.93,
+     "decisions": 21,
+     "effort": 13620,
      "bits": null,
      "solutions": null,
-     "visits": 35
+     "visits": 31
     },
     {
      "rows": [
-      "2211121",
-      "11.1.21",
-      "...1112",
-      ".1.1.22",
+      ".1.111.",
+      "111111.",
+      "...1.11",
+      ".1111S.",
+      "..22122",
+      "1121.1."
+     ],
+     "pathBits": 33.43,
+     "decisions": 21,
+     "effort": 9034,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      "22S1.1.",
+      "2.11221",
+      "221..11",
+      "..11112",
       ".....11",
-      ".S.1121"
+      "...11.1"
      ],
-     "pathBits": 38.36,
-     "decisions": 27,
-     "effort": 2688,
-     "bits": null,
-     "solutions": null,
-     "visits": 35
-    },
-    {
-     "rows": [
-      "1121...",
-      "2111...",
-      "21.2.1.",
-      "11.1121",
-      "S..1222",
-      "....111"
-     ],
-     "pathBits": 39.23,
-     "decisions": 25,
-     "effort": 65802,
+     "pathBits": 33.91,
+     "decisions": 21,
+     "effort": 5264,
      "bits": null,
      "solutions": null,
      "visits": 34
+    },
+    {
+     "rows": [
+      "...s111",
+      ".112...",
+      ".1.11.1",
+      ".11.1.1",
+      "211.1.1",
+      "1122211"
+     ],
+     "pathBits": 34.43,
+     "decisions": 23,
+     "effort": 108783,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      "11..1.1",
+      "1121111",
+      "..1.11.",
+      "..2111.",
+      "..2111.",
+      "..1121S"
+     ],
+     "pathBits": 34.92,
+     "decisions": 24,
+     "effort": 111,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "..1.111",
+      "1.1.111",
+      "1.1.1s1",
+      "1121211",
+      ".11111.",
+      ".1.1..."
+     ],
+     "pathBits": 35.44,
+     "decisions": 20,
+     "effort": 6365,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "1.111.1",
+      "1111.11",
+      ".1.1111",
+      "11S1111",
+      "111.11.",
+      "11.1111"
+     ],
+     "pathBits": 35.49,
+     "decisions": 24,
+     "effort": 33,
+     "bits": null,
+     "solutions": null,
+     "visits": 34,
+     "designed": "spiral gapped/3 reversed"
+    },
+    {
+     "rows": [
+      "......1",
+      "1.21211",
+      "....1.S",
+      "1.11211",
+      "121111.",
+      "221111."
+     ],
+     "pathBits": 35.96,
+     "decisions": 23,
+     "effort": 16041,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      "1.11111",
+      "1.111..",
+      "11.22s1",
+      "1.1111.",
+      ".111111",
+      "..11..."
+     ],
+     "pathBits": 36.44,
+     "decisions": 22,
+     "effort": 6143,
+     "bits": null,
+     "solutions": null,
+     "visits": 32
+    },
+    {
+     "rows": [
+      "111..11",
+      "1222111",
+      "1212121",
+      "1..11..",
+      "1...11.",
+      "1.S...."
+     ],
+     "pathBits": 36.95,
+     "decisions": 21,
+     "effort": 1031,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      "S11.111",
+      "11.1111",
+      "111.11.",
+      "11111.1",
+      ".1.1111",
+      "1111.11"
+     ],
+     "pathBits": 37.02,
+     "decisions": 26,
+     "effort": 33,
+     "bits": null,
+     "solutions": null,
+     "visits": 34,
+     "designed": "spiral gapped/3"
+    },
+    {
+     "rows": [
+      "1111S1.",
+      "2222.11",
+      ".111.11",
+      ".12111.",
+      "...121.",
+      "....11."
+     ],
+     "pathBits": 37.46,
+     "decisions": 22,
+     "effort": 295,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      "...1...",
+      "121211.",
+      "1.S11..",
+      "222111.",
+      "2111.11",
+      "1111..."
+     ],
+     "pathBits": 37.95,
+     "decisions": 23,
+     "effort": 96449,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      ".12.11.",
+      ".111121",
+      "1111..1",
+      ".1S1112",
+      "..11.12",
+      "..11112"
+     ],
+     "pathBits": 38.46,
+     "decisions": 24,
+     "effort": 2776,
+     "bits": null,
+     "solutions": null,
+     "visits": 35
+    },
+    {
+     "rows": [
+      "....1S1",
+      ".112211",
+      ".1..111",
+      "211.211",
+      "21111.1",
+      "211...."
+     ],
+     "pathBits": 39,
+     "decisions": 26,
+     "effort": 951,
+     "bits": null,
+     "solutions": null,
+     "visits": 34
+    },
+    {
+     "rows": [
+      ".1111.2",
+      "...1112",
+      "...1222",
+      "111S111",
+      "1.11111",
+      "..11111"
+     ],
+     "pathBits": 39.47,
+     "decisions": 23,
+     "effort": 129393,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
     },
     {
      "rows": [
@@ -3430,128 +5664,224 @@
     },
     {
      "rows": [
-      "2211...",
-      "2111112",
-      "S.11.1.",
-      "12.1.11",
-      ".111111",
-      "..11212"
+      "111.1..",
+      "1.1.1..",
+      "11111.1",
+      "11111.1",
+      "s211111",
+      ".11.111"
      ],
-     "pathBits": 40.08,
+     "pathBits": 39.96,
      "decisions": 26,
-     "effort": 117870,
+     "effort": 32,
      "bits": null,
      "solutions": null,
-     "visits": 38
+     "visits": 33
     },
     {
      "rows": [
-      "..11111",
-      "1.11211",
-      "11s1211",
-      "....112",
-      "...1112",
-      "....112"
+      "12.....",
+      "112....",
+      "11211..",
+      "122....",
+      "1.211..",
+      "112s211"
      ],
-     "pathBits": 40.94,
-     "decisions": 21,
-     "effort": 3559,
+     "pathBits": 40.49,
+     "decisions": 25,
+     "effort": 50,
      "bits": null,
      "solutions": null,
-     "visits": 34
+     "visits": 33
     },
     {
      "rows": [
-      ".11...1",
-      ".1111.2",
-      ".111.11",
-      "111111.",
-      ".112S..",
-      "122211."
+      "..111.1",
+      "1.2.1.1",
+      "..1121s",
+      "1...111",
+      "11221.1",
+      "1111121"
      ],
-     "pathBits": 41.8,
-     "decisions": 26,
-     "effort": 323,
-     "bits": null,
-     "solutions": null,
-     "visits": 34
-    },
-    {
-     "rows": [
-      "1111121",
-      "1111111",
-      "1.1.111",
-      "211..11",
-      ".1.1111",
-      "1211..S"
-     ],
-     "pathBits": 42.68,
-     "decisions": 30,
-     "effort": 36,
-     "bits": null,
-     "solutions": null,
-     "visits": 37
-    },
-    {
-     "rows": [
-      ".121211",
-      ".1111s1",
-      ".112.1.",
-      "121211.",
-      "1.1211.",
-      ".111..."
-     ],
-     "pathBits": 43.55,
+     "pathBits": 40.97,
      "decisions": 24,
-     "effort": 66795,
-     "bits": null,
-     "solutions": null,
-     "visits": 37
-    },
-    {
-     "rows": [
-      "...S222",
-      "...1112",
-      "...1112",
-      "1..1222",
-      "11.1111",
-      "11111.."
-     ],
-     "pathBits": 44.38,
-     "decisions": 27,
-     "effort": 63520,
+     "effort": 747,
      "bits": null,
      "solutions": null,
      "visits": 36
     },
     {
      "rows": [
-      "....111",
-      "....111",
-      "11..111",
-      "2111111",
-      "1211221",
-      "1s11.1."
+      "1.11112",
+      "1..112.",
+      "1..2211",
+      ".1111.1",
+      "1111111",
+      "112S1.."
      ],
-     "pathBits": 45.23,
+     "pathBits": 41.48,
      "decisions": 26,
-     "effort": 16145,
+     "effort": 54101,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "..1.1..",
+      "..1.11.",
+      ".1111.2",
+      ".212.12",
+      "1111111",
+      ".1222s1"
+     ],
+     "pathBits": 41.97,
+     "decisions": 28,
+     "effort": 17223,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
+    },
+    {
+     "rows": [
+      "...11..",
+      "...1121",
+      "1211111",
+      "1212.11",
+      "12111s.",
+      "121...."
+     ],
+     "pathBits": 42.49,
+     "decisions": 26,
+     "effort": 42,
      "bits": null,
      "solutions": null,
      "visits": 35
     },
     {
      "rows": [
-      "1.111..",
-      "2.111..",
-      "12211..",
-      "221111.",
-      "11S1122",
-      ".1111.1"
+      "11.....",
+      "121...1",
+      "111S.12",
+      "2211.11",
+      "1121.11",
+      "112211."
      ],
-     "pathBits": 46.13,
-     "decisions": 28,
-     "effort": 90386,
+     "pathBits": 42.97,
+     "decisions": 24,
+     "effort": 72755,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "...1221",
+      ".212211",
+      ".1.1111",
+      "2.211..",
+      "2111.1.",
+      "221S..."
+     ],
+     "pathBits": 43.48,
+     "decisions": 29,
+     "effort": 644,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "....111",
+      "......1",
+      "1111112",
+      "2211111",
+      "222..11",
+      "1.111s."
+     ],
+     "pathBits": 44,
+     "decisions": 29,
+     "effort": 156,
+     "bits": null,
+     "solutions": null,
+     "visits": 35
+    },
+    {
+     "rows": [
+      "...11..",
+      "...12.1",
+      "...1122",
+      "1121112",
+      "1.11112",
+      "11s11.1"
+     ],
+     "pathBits": 44.49,
+     "decisions": 27,
+     "effort": 12242,
+     "bits": null,
+     "solutions": null,
+     "visits": 35
+    },
+    {
+     "rows": [
+      "...1111",
+      "...1211",
+      "...1112",
+      ".112212",
+      "11211..",
+      "S11111."
+     ],
+     "pathBits": 44.99,
+     "decisions": 25,
+     "effort": 20504,
+     "bits": null,
+     "solutions": null,
+     "visits": 35
+    },
+    {
+     "rows": [
+      "1111111",
+      "211111.",
+      "21.s211",
+      "2.112..",
+      "111111.",
+      ".1.1..."
+     ],
+     "pathBits": 45.51,
+     "decisions": 27,
+     "effort": 91977,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "11111.1",
+      "11111.1",
+      "12111S2",
+      ".111121",
+      "...1122",
+      "...1.11"
+     ],
+     "pathBits": 46,
+     "decisions": 27,
+     "effort": 9887,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "...121.",
+      "..11122",
+      "1.21s11",
+      "1111112",
+      "111111.",
+      "..11111"
+     ],
+     "pathBits": 46.52,
+     "decisions": 26,
+     "effort": 27841,
      "bits": null,
      "solutions": null,
      "visits": 38
@@ -3599,37 +5929,71 @@
     },
     {
      "rows": [
-      "1211111",
-      "....22.",
-      ".1.2221",
-      "...1122",
-      ".1.1...",
-      "11...21",
-      "s1...1."
+      "1111111",
+      "......S",
+      "221211.",
+      "11221..",
+      "1.1....",
+      "1.1....",
+      "..1...."
      ],
-     "pathBits": 31.51,
+     "pathBits": 31.09,
      "decisions": 21,
-     "effort": 143219,
+     "effort": 28,
      "bits": null,
      "solutions": null,
-     "visits": 37
+     "visits": 29
     },
     {
      "rows": [
-      "....211",
-      ".1112..",
-      "....1..",
-      ".11121.",
-      "..111S.",
-      "1211...",
-      "112111."
+      "211....",
+      "11.1...",
+      "2111...",
+      "121211.",
+      "11...11",
+      "11....1",
+      "1S111.1"
      ],
-     "pathBits": 32.49,
-     "decisions": 21,
-     "effort": 30011,
+     "pathBits": 31.63,
+     "decisions": 20,
+     "effort": 1820,
+     "bits": null,
+     "solutions": null,
+     "visits": 33
+    },
+    {
+     "rows": [
+      "1s1.1.1",
+      "11211.1",
+      "1.11111",
+      "1......",
+      "1.1....",
+      "122....",
+      "221...."
+     ],
+     "pathBits": 32.17,
+     "decisions": 23,
+     "effort": 91868,
      "bits": null,
      "solutions": null,
      "visits": 32
+    },
+    {
+     "rows": [
+      "1111...",
+      "...1...",
+      "1.121..",
+      "1.111..",
+      "12211..",
+      ".11....",
+      "..212s1"
+     ],
+     "pathBits": 32.72,
+     "decisions": 22,
+     "effort": 19820,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
     },
     {
      "rows": [
@@ -3651,173 +6015,309 @@
     },
     {
      "rows": [
-      "1111...",
-      "..2.111",
-      "1121111",
-      "1111S1.",
-      ".....11",
-      "...1121",
-      "....111"
+      "......1",
+      "....111",
+      "..111..",
+      "..1.1..",
+      "1111111",
+      "1111.11",
+      "12s122."
      ],
-     "pathBits": 33.42,
-     "decisions": 20,
-     "effort": 1123,
+     "pathBits": 33.26,
+     "decisions": 23,
+     "effort": 496,
      "bits": null,
      "solutions": null,
-     "visits": 33
+     "visits": 32
+    },
+    {
+     "rows": [
+      "111....",
+      ".1122..",
+      "211....",
+      "1.11S..",
+      "111211.",
+      ".1212.1",
+      ".11.1.1"
+     ],
+     "pathBits": 33.8,
+     "decisions": 22,
+     "effort": 18692,
+     "bits": null,
+     "solutions": null,
+     "visits": 35
+    },
+    {
+     "rows": [
+      ".1.11.2",
+      "1211111",
+      "1.....1",
+      "1....11",
+      "2...112",
+      "1.1.112",
+      "111.11s"
+     ],
+     "pathBits": 34.34,
+     "decisions": 23,
+     "effort": 24097,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "1.1....",
+      "21111S.",
+      "21211..",
+      "221..1.",
+      "111.1..",
+      "1...111",
+      "....1.."
+     ],
+     "pathBits": 34.91,
+     "decisions": 23,
+     "effort": 5836,
+     "bits": null,
+     "solutions": null,
+     "visits": 31
+    },
+    {
+     "rows": [
+      "S1.11..",
+      "1111...",
+      "....1..",
+      "11111.1",
+      ".111.1.",
+      ".111121",
+      ".122111"
+     ],
+     "pathBits": 35.42,
+     "decisions": 23,
+     "effort": 3594,
+     "bits": null,
+     "solutions": null,
+     "visits": 34
+    },
+    {
+     "rows": [
+      ".2211..",
+      "S11.111",
+      "12122..",
+      "....2.1",
+      "...11.1",
+      "..21222",
+      "..1...."
+     ],
+     "pathBits": 35.99,
+     "decisions": 24,
+     "effort": 11208,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
+    },
+    {
+     "rows": [
+      "..11.11",
+      "..111..",
+      "..1.1.1",
+      "..11..1",
+      ".221111",
+      "12121..",
+      ".11s22."
+     ],
+     "pathBits": 36.48,
+     "decisions": 22,
+     "effort": 68773,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
+    },
+    {
+     "rows": [
+      "S211211",
+      ".2121.1",
+      ".122111",
+      "..1..11",
+      "..1.11.",
+      ".....1.",
+      "....12."
+     ],
+     "pathBits": 37.06,
+     "decisions": 24,
+     "effort": 416,
+     "bits": null,
+     "solutions": null,
+     "visits": 34
+    },
+    {
+     "rows": [
+      "111S2..",
+      "1...212",
+      ".1..222",
+      "21.1112",
+      "1..1111",
+      "..112.1",
+      "....1.."
+     ],
+     "pathBits": 37.59,
+     "decisions": 25,
+     "effort": 29490,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "11.211.",
+      "1..121.",
+      "...121.",
+      "1.211s.",
+      "..1.121",
+      ".121111",
+      "....11."
+     ],
+     "pathBits": 38.13,
+     "decisions": 24,
+     "effort": 12222,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
+    },
+    {
+     "rows": [
+      "11111..",
+      "11211..",
+      "..1....",
+      "..2.1..",
+      "2.11.1.",
+      "212.111",
+      "2S2.211"
+     ],
+     "pathBits": 38.66,
+     "decisions": 27,
+     "effort": 117567,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
     },
     {
      "rows": [
       "...111.",
-      "....12.",
-      "...1.1.",
-      "...112.",
-      "..1111s",
-      "11.1122",
-      "1111111"
+      "...1...",
+      "...1.11",
+      "...1.S1",
+      "1.11.22",
+      "2122122",
+      "1..1112"
      ],
-     "pathBits": 34.38,
-     "decisions": 22,
-     "effort": 1489,
-     "bits": null,
-     "solutions": null,
-     "visits": 33
-    },
-    {
-     "rows": [
-      ".1S11..",
-      "1112111",
-      "1.11122",
-      ".....11",
-      "....111",
-      "...1112",
-      ".....12"
-     ],
-     "pathBits": 35.31,
-     "decisions": 23,
-     "effort": 27657,
-     "bits": null,
-     "solutions": null,
-     "visits": 33
-    },
-    {
-     "rows": [
-      "1.11111",
-      "2.1...1",
-      "1112S21",
-      "21..111",
-      "11.1111",
-      "....11.",
-      "1.11.1."
-     ],
-     "pathBits": 36.28,
-     "decisions": 23,
-     "effort": 12287,
-     "bits": null,
-     "solutions": null,
-     "visits": 37
-    },
-    {
-     "rows": [
-      "11.....",
-      "1......",
-      "21.1...",
-      "221111.",
-      "1221...",
-      "1111121",
-      "111.S.."
-     ],
-     "pathBits": 37.26,
-     "decisions": 25,
-     "effort": 105,
-     "bits": null,
-     "solutions": null,
-     "visits": 33
-    },
-    {
-     "rows": [
-      "..1....",
-      "112.111",
-      "112.211",
-      "11S1112",
-      "..21111",
-      "..2..11",
-      "..1...."
-     ],
-     "pathBits": 38.21,
-     "decisions": 23,
-     "effort": 90,
+     "pathBits": 39.21,
+     "decisions": 26,
+     "effort": 93500,
      "bits": null,
      "solutions": null,
      "visits": 35
     },
     {
      "rows": [
-      "1.111..",
-      "1......",
+      "......S",
+      "......1",
+      "11.1...",
+      "11.1.11",
+      "2222111",
       "211.1.1",
-      "1221.21",
-      "1111222",
-      ".S11.1.",
-      "...111."
+      "21211.."
      ],
-     "pathBits": 39.17,
-     "decisions": 25,
-     "effort": 1379,
+     "pathBits": 39.76,
+     "decisions": 23,
+     "effort": 33,
+     "bits": null,
+     "solutions": null,
+     "visits": 34
+    },
+    {
+     "rows": [
+      "....12.",
+      ".111.1.",
+      "1111.2.",
+      "1..111.",
+      "1..112.",
+      "..11s21",
+      "..11222"
+     ],
+     "pathBits": 40.3,
+     "decisions": 26,
+     "effort": 161,
      "bits": null,
      "solutions": null,
      "visits": 37
     },
     {
      "rows": [
-      "....S.1",
-      ".1111.1",
-      "1..2111",
-      "1122122",
-      "1.12.11",
-      "11.....",
-      "1111..."
+      "...1111",
+      "...11.2",
+      "1112.11",
+      "S111..1",
+      ".111..1",
+      "1211111",
+      "11111.1"
      ],
-     "pathBits": 40.15,
-     "decisions": 26,
-     "effort": 177,
+     "pathBits": 40.82,
+     "decisions": 25,
+     "effort": 26073,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "....1..",
+      "..212..",
+      "1.112..",
+      "1.1.111",
+      "2.1S212",
+      "1...121",
+      "11111.1"
+     ],
+     "pathBits": 41.39,
+     "decisions": 28,
+     "effort": 28505,
      "bits": null,
      "solutions": null,
      "visits": 36
     },
     {
      "rows": [
-      "....11.",
-      ".....11",
-      "....212",
-      "..1s2.1",
-      "1222111",
-      ".1222..",
-      "121...."
+      "2111211",
+      "21.1212",
+      "11..211",
+      "....1.1",
+      "211.1..",
+      "1S1.1.1",
+      "221...."
      ],
-     "pathBits": 41.08,
-     "decisions": 26,
-     "effort": 100001,
+     "pathBits": 41.93,
+     "decisions": 28,
+     "effort": 368,
      "bits": null,
      "solutions": null,
-     "visits": 36
+     "visits": 41
     },
     {
      "rows": [
-      "2111...",
-      "2211...",
-      ".11111.",
-      ".212111",
-      ".2111.1",
-      ".1..11S",
-      ".1....."
+      "11211..",
+      "1.211.1",
+      "22111.1",
+      "121.2.1",
+      "11..2.1",
+      "..2211.",
+      "....1S1"
      ],
-     "pathBits": 42.06,
-     "decisions": 27,
-     "effort": 22512,
+     "pathBits": 42.48,
+     "decisions": 28,
+     "effort": 92,
      "bits": null,
      "solutions": null,
-     "visits": 35
+     "visits": 41
     },
     {
      "rows": [
@@ -3838,6 +6338,23 @@
     },
     {
      "rows": [
+      "...1.1.",
+      "...211S",
+      "...2112",
+      "..12121",
+      "..22122",
+      "1.1..11",
+      "111...."
+     ],
+     "pathBits": 43.55,
+     "decisions": 25,
+     "effort": 2575,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
+    },
+    {
+     "rows": [
       "1112211",
       "211.11.",
       "122.11.",
@@ -3855,17 +6372,17 @@
     },
     {
      "rows": [
-      "..1.11s",
-      "1122211",
-      "1.111..",
       "1211...",
-      "2211...",
-      "11.2...",
-      "1..21.."
+      "11122..",
+      "...121.",
+      "..1212.",
+      "..112.1",
+      "...S212",
+      "...1211"
      ],
-     "pathBits": 44.93,
-     "decisions": 29,
-     "effort": 69231,
+     "pathBits": 44.65,
+     "decisions": 30,
+     "effort": 37,
      "bits": null,
      "solutions": null,
      "visits": 38
@@ -3890,20 +6407,54 @@
     },
     {
      "rows": [
-      "...1111",
-      ".1121.1",
-      "...111s",
-      "..11211",
-      "1112221",
-      "1.1..1.",
-      "111..21"
+      "11.111.",
+      "1111111",
+      "1...121",
+      "1.11111",
+      "211.11.",
+      "221....",
+      "11s...."
      ],
-     "pathBits": 45.87,
-     "decisions": 28,
-     "effort": 124468,
+     "pathBits": 45.17,
+     "decisions": 31,
+     "effort": 37,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "..111..",
+      "1111.1.",
+      "1121221",
+      "11..111",
+      "1111.S2",
+      "222...1",
+      "1.1...1"
+     ],
+     "pathBits": 45.72,
+     "decisions": 27,
+     "effort": 4810,
      "bits": null,
      "solutions": null,
      "visits": 40
+    },
+    {
+     "rows": [
+      "11S1..1",
+      "1.12.12",
+      "121.112",
+      "1212112",
+      "1.21..1",
+      "2121...",
+      "11....."
+     ],
+     "pathBits": 46.25,
+     "decisions": 30,
+     "effort": 143182,
+     "bits": null,
+     "solutions": null,
+     "visits": 43
     },
     {
      "rows": [
@@ -3925,156 +6476,275 @@
     },
     {
      "rows": [
-      "1.1...1",
-      "111.112",
-      ".1111..",
-      "1..12.1",
-      "s212211",
-      "11.121.",
-      "11112.."
+      ".111111",
+      "21221.1",
+      "11..211",
+      ".1.1212",
+      "112.11.",
+      "112.111",
+      "S.1...."
      ],
-     "pathBits": 46.85,
-     "decisions": 27,
-     "effort": 129638,
-     "bits": null,
-     "solutions": null,
-     "visits": 42
-    },
-    {
-     "rows": [
-      "1121S1.",
-      "...211.",
-      "121222.",
-      "1221211",
-      ".11..11",
-      ".....11",
-      ".....11"
-     ],
-     "pathBits": 47.78,
-     "decisions": 27,
-     "effort": 13155,
-     "bits": null,
-     "solutions": null,
-     "visits": 39
-    },
-    {
-     "rows": [
-      "121111.",
-      ".1.1...",
-      "11.21..",
-      "1..11..",
-      "1111s21",
-      "..112.1",
-      ".122222"
-     ],
-     "pathBits": 48.76,
+     "pathBits": 46.82,
      "decisions": 30,
-     "effort": 120405,
+     "effort": 88631,
      "bits": null,
      "solutions": null,
-     "visits": 42
+     "visits": 43
     },
     {
      "rows": [
-      "..11...",
-      "..11111",
-      "...2221",
-      "11111..",
-      "122211.",
-      "112S2..",
-      "1.111.."
+      "s1.....",
+      "222....",
+      "211111.",
+      "21211..",
+      "1...111",
+      "1.1111.",
+      "11212.1"
      ],
-     "pathBits": 49.66,
-     "decisions": 29,
-     "effort": 31870,
-     "bits": null,
-     "solutions": null,
-     "visits": 39
-    },
-    {
-     "rows": [
-      "111....",
-      "11S....",
-      "2.1.1.1",
-      "111.121",
-      "11...22",
-      "1111121",
-      "1112221"
-     ],
-     "pathBits": 50.68,
-     "decisions": 34,
-     "effort": 301,
-     "bits": null,
-     "solutions": null,
-     "visits": 42
-    },
-    {
-     "rows": [
-      "1121s12",
-      ".111112",
-      "..11111",
-      ".1221.1",
-      "..11.11",
-      "111111.",
-      "11...1."
-     ],
-     "pathBits": 51.61,
-     "decisions": 32,
-     "effort": 51459,
-     "bits": null,
-     "solutions": null,
-     "visits": 42
-    },
-    {
-     "rows": [
-      "112121.",
-      ".111.1.",
-      "2111.1.",
-      "11S..1.",
-      "2111122",
-      "1..1.21",
-      "1111111"
-     ],
-     "pathBits": 52.59,
-     "decisions": 33,
-     "effort": 43,
-     "bits": null,
-     "solutions": null,
-     "visits": 44
-    },
-    {
-     "rows": [
-      "...1221",
-      "....211",
-      "...1122",
-      "1.1...1",
-      "1111121",
-      "11111s1",
-      "1111111"
-     ],
-     "pathBits": 53.54,
-     "decisions": 32,
-     "effort": 35994,
-     "bits": null,
-     "solutions": null,
-     "visits": 42
-    },
-    {
-     "rows": [
-      "11.1.11",
-      "1.1..11",
-      "1111121",
-      "1..1211",
-      "1121211",
-      "21112s.",
-      "111...."
-     ],
-     "pathBits": 54.57,
+     "pathBits": 47.34,
      "decisions": 31,
-     "effort": 194,
+     "effort": 622,
      "bits": null,
      "solutions": null,
-     "visits": 44
+     "visits": 40
+    },
+    {
+     "rows": [
+      "11.....",
+      "11.1111",
+      "111111S",
+      "2121112",
+      "1111.12",
+      "212...1",
+      "11....."
+     ],
+     "pathBits": 47.93,
+     "decisions": 28,
+     "effort": 2954,
+     "bits": null,
+     "solutions": null,
+     "visits": 40
+    },
+    {
+     "rows": [
+      "112111.",
+      "221111.",
+      "1212121",
+      "1.12121",
+      "...1.1.",
+      "s......",
+      "21....."
+     ],
+     "pathBits": 48.44,
+     "decisions": 30,
+     "effort": 39,
+     "bits": null,
+     "solutions": null,
+     "visits": 40
+    },
+    {
+     "rows": [
+      "1.1111.",
+      "2112211",
+      "111212S",
+      "2.11111",
+      ".1111.1",
+      "11.1...",
+      ".1.1..."
+     ],
+     "pathBits": 48.9,
+     "decisions": 27,
+     "effort": 8832,
+     "bits": null,
+     "solutions": null,
+     "visits": 41
+    },
+    {
+     "rows": [
+      ".111122",
+      ".1.2111",
+      "..1...1",
+      "..21211",
+      "1.1121.",
+      "21222..",
+      "1111.S."
+     ],
+     "pathBits": 49.49,
+     "decisions": 33,
+     "effort": 14140,
+     "bits": null,
+     "solutions": null,
+     "visits": 43
+    },
+    {
+     "rows": [
+      "111.112",
+      "....111",
+      "1...212",
+      "1...111",
+      "1.12121",
+      "11.1121",
+      "S1.1121"
+     ],
+     "pathBits": 50.08,
+     "decisions": 33,
+     "effort": 107508,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      ".112...",
+      "1111...",
+      "2.211.S",
+      ".1111..",
+      "222122.",
+      "1211...",
+      ".21111."
+     ],
+     "pathBits": 50.58,
+     "decisions": 30,
+     "effort": 2292,
+     "bits": null,
+     "solutions": null,
+     "visits": 41
+    },
+    {
+     "rows": [
+      ".2.1...",
+      "12.....",
+      "12.11..",
+      "1.2111.",
+      "1211221",
+      ".121221",
+      "S11111."
+     ],
+     "pathBits": 51.14,
+     "decisions": 33,
+     "effort": 16605,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      "...1211",
+      "1s12211",
+      "21.21.1",
+      "1112111",
+      "11.21.1",
+      "..111.1",
+      "..1.1.."
+     ],
+     "pathBits": 51.7,
+     "decisions": 29,
+     "effort": 533,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      "1s2121.",
+      "1.1111.",
+      "111121.",
+      "...1121",
+      ".11121.",
+      "1111111",
+      "1...1.."
+     ],
+     "pathBits": 52.25,
+     "decisions": 32,
+     "effort": 137432,
+     "bits": null,
+     "solutions": null,
+     "visits": 41
+    },
+    {
+     "rows": [
+      ".11.111",
+      "121..11",
+      ".11.122",
+      "1221121",
+      ".2212..",
+      "..S121.",
+      "....1.."
+     ],
+     "pathBits": 52.76,
+     "decisions": 33,
+     "effort": 40,
+     "bits": null,
+     "solutions": null,
+     "visits": 41
+    },
+    {
+     "rows": [
+      "1.1.11.",
+      "1.1.1..",
+      "..2.211",
+      "1.1111.",
+      "1112111",
+      "s12111.",
+      "1121111"
+     ],
+     "pathBits": 53.31,
+     "decisions": 30,
+     "effort": 169,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      "121.1.1",
+      "22s1111",
+      "1112112",
+      "2111111",
+      "....1.1",
+      "...1111",
+      "....111"
+     ],
+     "pathBits": 53.81,
+     "decisions": 32,
+     "effort": 12931,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      "221111.",
+      "121111.",
+      "21.1111",
+      "2211.11",
+      "22111..",
+      "21.1...",
+      "S......"
+     ],
+     "pathBits": 54.4,
+     "decisions": 35,
+     "effort": 44,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      ".s21222",
+      "1221121",
+      ".111111",
+      ".1.1111",
+      "..1.11.",
+      "....111",
+      "....111"
+     ],
+     "pathBits": 54.95,
+     "decisions": 31,
+     "effort": 5168,
+     "bits": null,
+     "solutions": null,
+     "visits": 41
     },
     {
      "rows": [
@@ -4120,6 +6790,23 @@
     },
     {
      "rows": [
+      "1.11111.",
+      "....1.S.",
+      "1...1111",
+      "1....221",
+      "21111221",
+      "....11..",
+      "....111."
+     ],
+     "pathBits": 36.66,
+     "decisions": 27,
+     "effort": 1770,
+     "bits": null,
+     "solutions": null,
+     "visits": 35
+    },
+    {
+     "rows": [
       "11......",
       "1111....",
       ".11S1...",
@@ -4137,54 +6824,105 @@
     },
     {
      "rows": [
-      "1.1.11..",
-      "..1112..",
-      "1S.112..",
-      "211212.1",
-      "1....111",
-      "...111..",
-      "...11111"
-     ],
-     "pathBits": 38.32,
-     "decisions": 25,
-     "effort": 1522,
-     "bits": null,
-     "solutions": null,
-     "visits": 37
-    },
-    {
-     "rows": [
-      "....1111",
-      "111.2111",
-      "111.1...",
-      "12.1s21.",
+      "11..1...",
+      "....1S22",
+      "11.12.12",
+      "121.1.11",
+      ".2111.11",
       "111.....",
-      "121.....",
-      "212....."
+      "111....."
      ],
-     "pathBits": 39.38,
+     "pathBits": 38,
      "decisions": 25,
-     "effort": 9516,
+     "effort": 80984,
      "bits": null,
      "solutions": null,
      "visits": 37
     },
     {
      "rows": [
-      "......11",
-      ".....111",
-      ".1.1.1.1",
-      "11.11211",
-      "11111111",
-      "11111111",
-      "1.....S."
+      "..111...",
+      "..1121.1",
+      "1.1.1...",
+      "1S222111",
+      "1.2.....",
+      "1.2..121",
+      "1.1.1.1."
      ],
-     "pathBits": 40.59,
-     "decisions": 26,
-     "effort": 389,
+     "pathBits": 38.56,
+     "decisions": 24,
+     "effort": 3942,
      "bits": null,
      "solutions": null,
-     "visits": 35
+     "visits": 37
+    },
+    {
+     "rows": [
+      "11112.1.",
+      "......11",
+      ".22...11",
+      "112.1.11",
+      "....S11.",
+      "112.1211",
+      "1121.211"
+     ],
+     "pathBits": 39.17,
+     "decisions": 29,
+     "effort": 69779,
+     "bits": null,
+     "solutions": null,
+     "visits": 43
+    },
+    {
+     "rows": [
+      "21......",
+      "11211...",
+      "2.1.....",
+      "21111...",
+      "2121..1S",
+      "1121111.",
+      "..11...."
+     ],
+     "pathBits": 39.8,
+     "decisions": 25,
+     "effort": 147452,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
+    },
+    {
+     "rows": [
+      "1.11.S..",
+      "211.11.1",
+      "211111.1",
+      "222..111",
+      "1....1..",
+      "111.....",
+      "1111.1.."
+     ],
+     "pathBits": 40.43,
+     "decisions": 28,
+     "effort": 789,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "11122222",
+      "11111.1.",
+      "11S21221",
+      "1.1.....",
+      "1.......",
+      "1.1.....",
+      "1......."
+     ],
+     "pathBits": 41.04,
+     "decisions": 26,
+     "effort": 122206,
+     "bits": null,
+     "solutions": null,
+     "visits": 36
     },
     {
      "rows": [
@@ -4205,71 +6943,139 @@
     },
     {
      "rows": [
-      "..111.11",
-      ".....S11",
-      ".1121.21",
-      ".1111...",
-      "12121.11",
-      "11.111.1",
-      "...11111"
+      "11111.1.",
+      ".111111.",
+      "1S1121..",
+      ".11.1...",
+      "..11221.",
+      "..1.1211",
+      "..1.1.1."
      ],
-     "pathBits": 42.83,
+     "pathBits": 42.3,
+     "decisions": 25,
+     "effort": 34784,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "1121.1..",
+      "1111.1..",
+      "2.1..11.",
+      "1122S221",
+      "2..1.111",
+      "1.....11",
+      "1......."
+     ],
+     "pathBits": 42.91,
+     "decisions": 26,
+     "effort": 849,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "..2s1111",
+      ".1121111",
+      ".22111..",
+      ".111....",
+      ".11.....",
+      "1.21....",
+      "1121...."
+     ],
+     "pathBits": 43.55,
+     "decisions": 26,
+     "effort": 92033,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "1.....1.",
+      "2.....11",
+      "11.1.111",
+      "2111..1.",
+      "1212111.",
+      "1111.21.",
+      "11s1...."
+     ],
+     "pathBits": 44.17,
+     "decisions": 29,
+     "effort": 719,
+     "bits": null,
+     "solutions": null,
+     "visits": 39
+    },
+    {
+     "rows": [
+      ".....1..",
+      "..1..1..",
+      "..1.11..",
+      "..1.....",
+      "1111121.",
+      "12111s22",
+      "11221111"
+     ],
+     "pathBits": 44.8,
+     "decisions": 27,
+     "effort": 3166,
+     "bits": null,
+     "solutions": null,
+     "visits": 37
+    },
+    {
+     "rows": [
+      "....1.s1",
+      "....111.",
+      "11....1.",
+      "11...212",
+      "111..112",
+      "11211111",
+      "..112122"
+     ],
+     "pathBits": 45.43,
+     "decisions": 32,
+     "effort": 885,
+     "bits": null,
+     "solutions": null,
+     "visits": 42
+    },
+    {
+     "rows": [
+      ".121.111",
+      "..1..111",
+      "..11111s",
+      "..111211",
+      "11.112.1",
+      "111111..",
+      "....11.."
+     ],
+     "pathBits": 46.06,
      "decisions": 28,
-     "effort": 4138,
+     "effort": 9558,
      "bits": null,
      "solutions": null,
      "visits": 40
     },
     {
      "rows": [
-      "...11.11",
-      "..112122",
-      ".11.1.11",
-      "121111.1",
-      "11.1...1",
-      "1122.121",
-      "......1S"
+      "..111111",
+      "12221111",
+      "...111.2",
+      "S...1111",
+      "....1211",
+      ".....211",
+      ".....21."
      ],
-     "pathBits": 43.93,
+     "pathBits": 46.72,
      "decisions": 30,
-     "effort": 1438,
+     "effort": 4379,
      "bits": null,
      "solutions": null,
-     "visits": 42
-    },
-    {
-     "rows": [
-      "1S.....1",
-      "11..11.1",
-      ".1..1222",
-      "...21212",
-      ".1...122",
-      "..1.1212",
-      ".11..111"
-     ],
-     "pathBits": 45.08,
-     "decisions": 27,
-     "effort": 3349,
-     "bits": null,
-     "solutions": null,
-     "visits": 42
-    },
-    {
-     "rows": [
-      "1.1.1111",
-      ".11.1112",
-      "1S1.1212",
-      ".1111111",
-      "....1122",
-      ".....1.1",
-      ".....111"
-     ],
-     "pathBits": 46.2,
-     "decisions": 27,
-     "effort": 97255,
-     "bits": null,
-     "solutions": null,
-     "visits": 40
+     "visits": 39
     },
     {
      "rows": [
@@ -4290,20 +7096,37 @@
     },
     {
      "rows": [
-      ".....11.",
-      ".....1..",
-      "1.2222.S",
-      ".1.211..",
-      "112111..",
-      "221.211.",
-      "122221.."
+      "..1111.1",
+      "1.1.2.11",
+      "1.1.1.11",
+      "1...1121",
+      "1.11.11S",
+      "2121.111",
+      "21221..."
      ],
-     "pathBits": 48.46,
-     "decisions": 29,
-     "effort": 1555,
+     "pathBits": 48,
+     "decisions": 33,
+     "effort": 15339,
      "bits": null,
      "solutions": null,
-     "visits": 44
+     "visits": 45
+    },
+    {
+     "rows": [
+      "12211.1.",
+      "211.1.s1",
+      "21..111.",
+      "2111111.",
+      ".2111...",
+      "12112...",
+      ".1......"
+     ],
+     "pathBits": 48.55,
+     "decisions": 29,
+     "effort": 10087,
+     "bits": null,
+     "solutions": null,
+     "visits": 43
     },
     {
      "rows": [
@@ -4325,20 +7148,54 @@
     },
     {
      "rows": [
-      ".11.....",
-      "111...S.",
-      "11111111",
-      "21111...",
-      "21121...",
-      "11121...",
-      "2.11221."
+      "11.1.1..",
+      ".1.1.1..",
+      "1111.21S",
+      ".112.111",
+      ".111..12",
+      "..121.12",
+      "...12222"
      ],
-     "pathBits": 49.57,
-     "decisions": 30,
-     "effort": 7981,
+     "pathBits": 49.24,
+     "decisions": 35,
+     "effort": 294,
      "bits": null,
      "solutions": null,
-     "visits": 42
+     "visits": 44
+    },
+    {
+     "rows": [
+      "1122211S",
+      "12221...",
+      "121.....",
+      ".111....",
+      "12......",
+      ".221....",
+      "121....."
+     ],
+     "pathBits": 49.83,
+     "decisions": 32,
+     "effort": 45,
+     "bits": null,
+     "solutions": null,
+     "visits": 38
+    },
+    {
+     "rows": [
+      "......22",
+      "......11",
+      ".....121",
+      ".1..1112",
+      "12S.1121",
+      "22112112",
+      "1211.111"
+     ],
+     "pathBits": 50.43,
+     "decisions": 31,
+     "effort": 99559,
+     "bits": null,
+     "solutions": null,
+     "visits": 45
     },
     {
      "rows": [
@@ -4360,37 +7217,37 @@
     },
     {
      "rows": [
-      "S1.1....",
-      ".1221...",
-      ".1211...",
-      ".1211...",
-      "1112....",
-      "112.1111",
-      "11221111"
+      "12212121",
+      "s1..21..",
+      "12112...",
+      "2221....",
+      "1111....",
+      "111.....",
+      "111....."
      ],
-     "pathBits": 50.7,
-     "decisions": 33,
-     "effort": 57,
+     "pathBits": 51.03,
+     "decisions": 32,
+     "effort": 98742,
      "bits": null,
      "solutions": null,
      "visits": 42
     },
     {
      "rows": [
-      ".1.11122",
-      "1111S11.",
-      "1.211112",
-      ".1211122",
-      ".1111.1.",
-      "..111...",
-      "....1111"
+      ".11.1111",
+      "....1.11",
+      ".11.1.11",
+      ".211.111",
+      "11212.1.",
+      "1221211.",
+      "1.111.S."
      ],
-     "pathBits": 51.85,
+     "pathBits": 51.74,
      "decisions": 33,
-     "effort": 117920,
+     "effort": 134207,
      "bits": null,
      "solutions": null,
-     "visits": 46
+     "visits": 44
     },
     {
      "rows": [
@@ -4412,6 +7269,23 @@
     },
     {
      "rows": [
+      "1S2.....",
+      "112.....",
+      "1.2.....",
+      "2.2.111.",
+      "11111111",
+      "11111112",
+      "1111.211"
+     ],
+     "pathBits": 52.31,
+     "decisions": 35,
+     "effort": 87399,
+     "bits": null,
+     "solutions": null,
+     "visits": 43
+    },
+    {
+     "rows": [
       "...S1111",
       ".1121111",
       ".111.1..",
@@ -4429,54 +7303,105 @@
     },
     {
      "rows": [
-      "1.......",
-      "1.1..11.",
-      "1..1....",
-      "1.222211",
-      "11.11111",
-      "111212S1",
-      "12211111"
+      ".12111s1",
+      ".222.1.1",
+      "122211.1",
+      "11.1..11",
+      "11.1..12",
+      "..11.1.2",
+      "..11.1.1"
      ],
-     "pathBits": 54.06,
-     "decisions": 31,
-     "effort": 29761,
-     "bits": null,
-     "solutions": null,
-     "visits": 45
-    },
-    {
-     "rows": [
-      "21211.11",
-      "21211.11",
-      "11112221",
-      "111.1s11",
-      "1....12.",
-      "1.11....",
-      "...1.11."
-     ],
-     "pathBits": 55.14,
-     "decisions": 35,
-     "effort": 54,
+     "pathBits": 53.57,
+     "decisions": 36,
+     "effort": 19360,
      "bits": null,
      "solutions": null,
      "visits": 47
     },
     {
      "rows": [
-      "1S11...1",
-      "111.1112",
-      "12112112",
-      "11.1.11.",
-      "...11211",
-      "1.112111",
-      "...11212"
+      "11112222",
+      "11112112",
+      "12111212",
+      ".1...1..",
+      ".1...111",
+      ".1......",
+      ".11....S"
      ],
-     "pathBits": 56.33,
-     "decisions": 32,
-     "effort": 43372,
+     "pathBits": 54.14,
+     "decisions": 35,
+     "effort": 68,
+     "bits": null,
+     "solutions": null,
+     "visits": 43
+    },
+    {
+     "rows": [
+      ".1121221",
+      "...11S11",
+      "......12",
+      "2211...1",
+      "12..1211",
+      "1112211.",
+      "1111121."
+     ],
+     "pathBits": 54.83,
+     "decisions": 36,
+     "effort": 38851,
      "bits": null,
      "solutions": null,
      "visits": 50
+    },
+    {
+     "rows": [
+      "11.11.1.",
+      "11....1.",
+      ".111..1.",
+      "11.11111",
+      "1S111221",
+      "11121211",
+      "..1.2222"
+     ],
+     "pathBits": 55.37,
+     "decisions": 33,
+     "effort": 98439,
+     "bits": null,
+     "solutions": null,
+     "visits": 48
+    },
+    {
+     "rows": [
+      "11211.1.",
+      "112.1.11",
+      "12S1211.",
+      "....1.12",
+      "11111111",
+      ".1.12111",
+      "222.1..."
+     ],
+     "pathBits": 56.06,
+     "decisions": 35,
+     "effort": 55789,
+     "bits": null,
+     "solutions": null,
+     "visits": 49
+    },
+    {
+     "rows": [
+      "111212..",
+      "11111s11",
+      "12111.11",
+      "11...111",
+      "11121211",
+      "211...11",
+      ".......1"
+     ],
+     "pathBits": 56.72,
+     "decisions": 33,
+     "effort": 62956,
+     "bits": null,
+     "solutions": null,
+     "visits": 47
     },
     {
      "rows": [
@@ -4498,17 +7423,34 @@
     },
     {
      "rows": [
-      "..12S...",
-      "..1111..",
-      "11211...",
-      ".1112111",
-      "2.11111.",
-      "1.111212",
-      "...22222"
+      "111.121.",
+      "1111.211",
+      "222..1..",
+      "1111.2.S",
+      "112.11.1",
+      "21111..1",
+      "1.112.11"
      ],
-     "pathBits": 57.48,
-     "decisions": 36,
-     "effort": 15942,
+     "pathBits": 57.4,
+     "decisions": 35,
+     "effort": 49,
+     "bits": null,
+     "solutions": null,
+     "visits": 50
+    },
+    {
+     "rows": [
+      "11..11.1",
+      "11.1....",
+      "1..11111",
+      "12..1.11",
+      ".1122112",
+      ".1112122",
+      "...s2121"
+     ],
+     "pathBits": 57.95,
+     "decisions": 35,
+     "effort": 4851,
      "bits": null,
      "solutions": null,
      "visits": 48
@@ -4532,71 +7474,139 @@
     },
     {
      "rows": [
-      "12211...",
-      "112111..",
-      "12211...",
-      ".11221..",
-      "111211..",
-      "11.....S",
-      "11.1.112"
-     ],
-     "pathBits": 59.7,
-     "decisions": 38,
-     "effort": 8715,
-     "bits": null,
-     "solutions": null,
-     "visits": 45
-    },
-    {
-     "rows": [
-      ".11.11.1",
-      "11212112",
-      "11122111",
-      "22121111",
-      ".....111",
-      ".....1s.",
-      ".....11."
-     ],
-     "pathBits": 60.83,
-     "decisions": 37,
-     "effort": 472,
-     "bits": null,
-     "solutions": null,
-     "visits": 45
-    },
-    {
-     "rows": [
-      ".11.211.",
-      ".122211.",
-      "..s2211.",
-      "...11...",
-      "1122....",
+      "11.1....",
+      "...111..",
       "11111111",
-      "11211111"
+      "1111111.",
+      "1111111.",
+      "122121..",
+      "111.111S"
      ],
-     "pathBits": 62.08,
-     "decisions": 37,
-     "effort": 84727,
+     "pathBits": 59.16,
+     "decisions": 36,
+     "effort": 59,
+     "bits": null,
+     "solutions": null,
+     "visits": 44
+    },
+    {
+     "rows": [
+      "111.....",
+      "12221S..",
+      "11111...",
+      "1222211.",
+      ".121....",
+      ".112.11.",
+      "1221.111"
+     ],
+     "pathBits": 59.82,
+     "decisions": 34,
+     "effort": 47145,
+     "bits": null,
+     "solutions": null,
+     "visits": 47
+    },
+    {
+     "rows": [
+      "11111...",
+      "...11...",
+      "1.1.1...",
+      "11121...",
+      "22.21121",
+      "1111s121",
+      "21111221"
+     ],
+     "pathBits": 60.4,
+     "decisions": 40,
+     "effort": 47,
      "bits": null,
      "solutions": null,
      "visits": 48
     },
     {
      "rows": [
-      ".1.11s1.",
-      ".1111111",
-      "1..11121",
-      "21.11121",
-      "11.12111",
-      "11111212",
-      "......12"
+      "..11..11",
+      "..111111",
+      "121S1112",
+      "....2121",
+      ".1.12121",
+      ".1112111",
+      "..112111"
      ],
-     "pathBits": 63.06,
-     "decisions": 39,
-     "effort": 396,
+     "pathBits": 61.11,
+     "decisions": 35,
+     "effort": 624,
+     "bits": null,
+     "solutions": null,
+     "visits": 49
+    },
+    {
+     "rows": [
+      "1.s12211",
+      ".....122",
+      "111.1111",
+      "11...11.",
+      "12212.1.",
+      "1211.11.",
+      ".212111."
+     ],
+     "pathBits": 61.72,
+     "decisions": 41,
+     "effort": 55,
      "bits": null,
      "solutions": null,
      "visits": 50
+    },
+    {
+     "rows": [
+      "...112.1",
+      "..122111",
+      "1.112111",
+      "11121..1",
+      "211111.1",
+      "112111.S",
+      "1111...."
+     ],
+     "pathBits": 62.27,
+     "decisions": 37,
+     "effort": 17001,
+     "bits": null,
+     "solutions": null,
+     "visits": 48
+    },
+    {
+     "rows": [
+      "11s21222",
+      ".112.212",
+      "11121212",
+      "1111121.",
+      "1.111...",
+      "1.......",
+      "11......"
+     ],
+     "pathBits": 62.93,
+     "decisions": 35,
+     "effort": 308,
+     "bits": null,
+     "solutions": null,
+     "visits": 48
+    },
+    {
+     "rows": [
+      "...1211.",
+      "..1111..",
+      "...121..",
+      ".1111111",
+      "121222..",
+      "121s211.",
+      ".1212.1."
+     ],
+     "pathBits": 63.57,
+     "decisions": 37,
+     "effort": 5330,
+     "bits": null,
+     "solutions": null,
+     "visits": 47
     },
     {
      "rows": [

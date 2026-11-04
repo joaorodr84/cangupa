@@ -20,6 +20,8 @@ const { designs } = require('./pack-designs.js');
 
 // How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
 const DESIGNED_PER_PACK = 6;
+// Pack 1 opens with this many levels that have no two-visit tile, to teach steps first.
+const INTRO_PLAIN = 4;
 const CACHE = path.join(__dirname, '.cache');
 const OUT_JSON = path.join(__dirname, 'packs.json');
 const OUT_TS = path.join(__dirname, '../apps/app/src/game/packs.ts');
@@ -89,9 +91,21 @@ function select(pools) {
     const keptKeys = new Set(kept.map(d => canonical(d.rows)));
     const rest = pools[i].filter(p => !keptKeys.has(canonical(p.rows)));
 
-    const generated = pick(rest, LEVELS_PER_PACK - kept.length, lo, hi);
-    if (!generated) throw new Error(`pack ${i + 1} ${spec.name}: only ${rest.length} candidates, need ${LEVELS_PER_PACK - kept.length}`);
-    const levels = [...generated, ...kept].sort((a, b) => a.pathBits - b.pathBits || a.decisions - b.decisions || a.visits - b.visits);
+    // Pack 1 introduces the cracked tile, so it opens with INTRO_PLAIN levels that have only
+    // one-visit tiles. Every cracked-tile level after them is at least as hard as the last of
+    // those, which keeps the ramp (and the test that pathBits never drops) intact.
+    const cracked = p => /[2s]/.test(p.rows.join(''));
+    let intro = [], pool = rest;
+    if (i === 0) {
+      intro = pick(rest.filter(p => !cracked(p)), INTRO_PLAIN, lo, lo + (hi - lo) * .15) || [];
+      const introMax = Math.max(...intro.map(p => p.pathBits));
+      const introKeys = new Set(intro.map(p => canonical(p.rows)));
+      pool = rest.filter(p => !introKeys.has(canonical(p.rows)) && cracked(p) && p.pathBits >= introMax);
+    }
+    const need = LEVELS_PER_PACK - kept.length - intro.length;
+    const generated = pick(pool, need, i === 0 ? Math.max(lo, Math.max(...intro.map(p => p.pathBits))) : lo, hi);
+    if (!generated) throw new Error(`pack ${i + 1} ${spec.name}: only ${pool.length} candidates, need ${need}`);
+    const levels = [...intro, ...generated, ...kept].sort((a, b) => a.pathBits - b.pathBits || (i === 0 ? cracked(a) - cracked(b) : 0) || a.decisions - b.decisions || a.visits - b.visits);
     prevHi = hi;
     return { name: spec.name, blurb: spec.blurb, width: spec.width, height: spec.height, levels };
   });
