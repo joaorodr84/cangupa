@@ -91,7 +91,7 @@ export const pt: Strings = {
       blurb: 'Mais casas duplas e percursos mais longos.',
     },
     {
-      name: 'Billabong',
+      name: 'Lagoa',
       blurb: 'Água aberta no meio. Planeia o caminho à volta.',
     },
     {
@@ -111,7 +111,7 @@ export const pt: Strings = {
       blurb: 'Tudo ao mesmo tempo, num tabuleiro grande.',
     },
     {
-      name: 'Outback',
+      name: 'Ermo',
       blurb: 'Os percursos mais longos do jogo.',
     },
   ],
