@@ -71,6 +71,7 @@ export const pt: Strings = {
     language: 'Idioma',
     followDevice: 'Seguir o dispositivo',
   },
+  collection: 'Base',
   packs: [
     {
       name: 'Prado',

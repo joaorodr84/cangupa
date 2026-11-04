@@ -76,6 +76,12 @@ export interface Strings {
   // The level packs (CANGUPA-56), in play order: entry n is pack n + 1 in
   // src/game/packs.ts, whose own English name and blurb are the same text as
   // en.ts. A test keeps the two lists the same length.
+  //
+  // `collection` is the label shown above the pack grid. A collection is only a
+  // name for the packs under it: no list of packs, no stored state, and packs
+  // carry no field pointing at it. It exists so a second collection (a paid
+  // expansion, say) has a name to show without restructuring how packs work.
+  readonly collection: string;
   readonly packs: readonly {
     readonly name: string;
     readonly blurb: string;

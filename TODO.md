@@ -93,6 +93,13 @@ The priority can change at any time; the ID never does.
   `Progress` shape, and the portrait/landscape rotation. Those need the
   app's jest suite, which cannot be installed in a cloud session (it
   depends on a private `themes` repository).
+
+  **Collections.** A collection is only a named umbrella over the packs: a
+  label ("Base") shown above the pack grid, with no data structure of its
+  own and no stored state. Packs do not belong to it through any field. It
+  exists so a future second collection (for example a paid expansion) has a
+  name to show without restructuring how packs work. The label is
+  `collection` in the strings tables; the pack picker will read it.
 - [P2] `CANGUPA-58` — Port falling as an opt-in setting (`TILE-JUMPER-3`)
   to `apps/app`: add `Settings.fall: boolean` (default `false`, same
   parsing/default pattern as `CANGUPA-57`'s `sound`), a toggle row in
