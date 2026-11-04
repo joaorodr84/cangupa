@@ -40,6 +40,12 @@ function variants(rows) {
 }
 const canonical = rows => variants(rows).sort()[0];
 
+// Which tile kinds a level uses: 1 Normal, 2 Gold (two visits), 3 Steel (three visits).
+const hasGold = rows => /[2s]/.test(rows.join(''));
+const hasSteel = rows => /[3T]/.test(rows.join(''));
+// The kinds a pack's plan entry allows (default: Normal and Gold, as before CANGUPA-68).
+const kindsOf = spec => spec.tiles || [1, 2];
+
 function fillsBox(rows) {
   const w = rows[0].length;
   if (rows.some(r => !/[^.]/.test(r))) return false;
@@ -59,10 +65,15 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
   while (pool.length < count && tries < count * 40) {
     tries++;
     const steps = Math.max(4, Math.round(area * lerp(spec.steps, rand())));
-    const doubles = Math.floor(steps * lerp(spec.doubles, rand()));
+    const doubles = Math.floor(steps * lerp(spec.doubles || [0, 0], rand()));
     const jump = lerp(spec.jump, rand());
-    const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump }, rand);
+    const kinds = kindsOf(spec);
+    const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
+      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2) }, rand);
     if (!rows || !fillsBox(rows)) continue;
+    // every kind the pack lists has to be in the level, or it would not be teaching it
+    if (kinds.includes(2) && !hasGold(rows)) continue;
+    if (kinds.includes(3) && !hasSteel(rows)) continue;
     const key = canonical(rows);
     if (seen.has(key)) continue;
     seen.add(key);
@@ -122,4 +133,4 @@ function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
 
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants, score };
+module.exports = { buildPool, pick, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, kindsOf };

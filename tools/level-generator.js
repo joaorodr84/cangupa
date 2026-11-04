@@ -20,7 +20,10 @@ function makeRng(seed) {
 const MOVES = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
 // One random walk. Returns the level as rows of text, or null if it got boxed in.
-function randomWalk({ width, height, steps, doubles, jump }, rand) {
+//   maxVisits  most visits any tile may need: 1, 2 or 3 (default 2, as the web game's levels have)
+//   noTwo      no tile may end on exactly two visits (a pack with Steel tiles but no Gold ones);
+//              a tile that has been visited twice is nudged towards its third
+function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false }, rand) {
   const visits = new Map(); // cell index -> times landed on
   let x = (rand() * width) | 0, y = (rand() * height) | 0;
   const start = y * width + x;
@@ -34,10 +37,11 @@ function randomWalk({ width, height, steps, doubles, jump }, rand) {
         const nx = x + dx * dist, ny = y + dy * dist, i = ny * width + nx;
         if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
         const seen = visits.get(i) || 0;
-        // a tile needs at most two visits, and only `doubles` tiles may need two
-        if (seen >= 2 || (seen === 1 && doubleCount >= doubles)) continue;
-        // jumps are rarer than steps; revisiting a tile is rarer than a fresh one
-        const weight = (dist === 2 ? jump : 1 - jump) * (seen ? .35 : 1);
+        // a tile needs at most `maxVisits` visits, and only `doubles` tiles may need more than one
+        if (seen >= maxVisits || (seen === 1 && doubleCount >= doubles)) continue;
+        // jumps are rarer than steps; revisiting a tile is rarer than a fresh one, except a
+        // tile stuck on two visits when two is not allowed: that one is wanted again
+        const weight = (dist === 2 ? jump : 1 - jump) * (seen ? .35 : 1) * (noTwo && seen === 2 ? 3 : 1);
         options.push({ nx, ny, i, weight });
       }
     }
@@ -51,12 +55,14 @@ function randomWalk({ width, height, steps, doubles, jump }, rand) {
     x = pick.nx; y = pick.ny;
   }
 
+  if (noTwo && [...visits.values()].includes(2)) return null; // a tile left on two visits would be a Gold tile
+
   const rows = [];
   for (let r = 0; r < height; r++) {
     let row = '';
     for (let c = 0; c < width; c++) {
       const i = r * width + c, count = visits.get(i) || 0;
-      row += !count ? '.' : i === start ? (count === 2 ? 's' : 'S') : String(count);
+      row += !count ? '.' : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
     }
     rows.push(row);
   }

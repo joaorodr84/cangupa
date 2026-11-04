@@ -43,6 +43,19 @@ assert.ok(!g.inMoveShape(0, 0));                     // standing still
 g = new Game(['S....', '.....'], { jumps: false });
 assert.ok(!g.inMoveShape(2, 0));                     // jump-shaped distance, but jumps are off
 
+// a tile needing three visits (a Steel tile): `T` starts on one, `3` is one in the level
+g = new Game(['1T1']);
+assert.strictEqual(g.max[1], 3);
+assert.strictEqual(g.at(1, 0), 2);                 // the start tile counts as one visit already
+assert.strictEqual(g.remaining(), 4);
+const steelPath = g.solve();                       // step out, back, out the other way, back: 4 landings
+assert.strictEqual(steelPath.length, 4);
+steelPath.forEach(m => g.play(m));
+assert.ok(g.won);
+g = new Game(['S3']);
+assert.strictEqual(g.max[1], 3);                   // `3` alone is a 3-visit tile that is not the start
+assert.throws(() => new Game(['13']), /no start/);
+
 // levels
 LEVELS.forEach((rows, i) => {
   const g = new Game(rows);

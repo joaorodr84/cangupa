@@ -22,6 +22,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Commit |
 | --- | --- | --- | --- | --- |
+| CANGUPA-68 | P2 | Add the Steel tile, a third tile kind that needs three visits (level characters `3`, and `T` for a start on one), and give the level packs a tile mix: pack 1 has only Normal tiles, pack 2 adds Gold (two visits), pack 3 has Normal and Steel only, and pack 4 has all three. Packs 5 to 10 are not touched and keep their levels as they are. Touches the rules in `game.js` and `board.ts`, the generator and pack plan, the regenerated pack data, the Steel colour and visit marks (diagonal strokes) on the board, the help text, and the pack checks in `tools/test.js` | open | — |
 | CANGUPA-62 | P2 | Define level evaluation and difficulty metrics (`tools/difficulty.js`) that scale to every level, validate them against the existing 50-level curve, and use them to make generated levels get gradually harder | open | — |
 
 ## Done
