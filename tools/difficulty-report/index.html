@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Cangupa Level Difficulty</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -61,6 +62,13 @@
   .note { font-size: .8rem; color: var(--muted); max-width: 75ch; line-height: 1.55; }
   .note code { font-family: var(--font-data); font-size: .78rem; }
   .err { padding: 24px; color: var(--muted); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tabs button { font: inherit; font-size: .85rem; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer;
+    background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+  .tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); }
+  .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .sub { display: block; font-family: var(--font-display); font-weight: 400; font-size: .7rem; color: var(--muted); }
+  .tag { color: var(--accent); font-size: .7rem; }
 </style>
 
 <main>
@@ -68,6 +76,10 @@
     <h1>Cangupa level difficulty</h1>
     <p class="lede" id="lede">Loading levels…</p>
   </header>
+  <div class="tabs" role="tablist" aria-label="Level set">
+    <button type="button" role="tab" id="tab-levels" aria-selected="true">Original levels (50)</button>
+    <button type="button" role="tab" id="tab-packs" aria-selected="false">Level packs (300)</button>
+  </div>
   <div class="legend" aria-label="Sketch key">
     <span><i style="background:var(--tile)"></i>Tile, one visit</span>
     <span><i style="background:var(--tile-2)"></i>Tile, two visits</span>
@@ -91,18 +103,37 @@
 </main>
 
 <script>
-  const COLS = [
-    { key: 'level', label: 'Level', cls: 'num' },
-    { key: null, label: 'Sketch', cls: 'sketch left' },
-    { key: 'pathBits', label: 'Difficulty (pathBits)', cls: 'left' },
-    { key: 'decisions', label: 'Decisions' },
-    { key: 'bits', label: 'Exact bits' },
-    { key: 'effort', label: 'Effort' },
-    { key: 'survival', label: 'Random play' },
-    { key: 'visits', label: 'Visits' },
-  ];
+  // Two data sets, one table. "levels" is the shipped list (levels.json, tools/export-difficulty.js);
+  // "packs" is the ten packs of 30 (packs.json, tools/gen-packs.js). Both are turned into the same row shape.
+  const SETS = {
+    levels: {
+      note: 'levels.json', cols: ['level', 'sketch', 'pathBits', 'decisions', 'bits', 'effort', 'survival', 'visits'],
+      load: json => ({ info: `${json.levels.length} levels, generated ${json.generated}.`,
+        rows: json.levels.map(l => ({ ...l, n: l.level, label: String(l.level) })) }),
+    },
+    packs: {
+      note: 'packs.json', cols: ['level', 'sketch', 'pathBits', 'decisions', 'bits', 'effort', 'visits'],
+      load: json => {
+        const rows = json.packs.flatMap((p, pi) => p.levels.map((l, i) => ({
+          ...l, n: pi * 30 + i + 1, label: `${pi + 1}-${i + 1}`, sub: p.name,
+          width: p.width, height: p.height, level: pi * 30 + i + 1,
+        })));
+        return { info: `${json.packs.length} packs of ${json.packs[0].levels.length} levels, ${rows.length} in all. Boards grow from ${json.packs[0].width}×${json.packs[0].height} to ${json.packs[json.packs.length - 1].width}×${json.packs[json.packs.length - 1].height}. Designed layouts are tagged.`, rows };
+      },
+    },
+  };
+  const COLS = {
+    level: { label: 'Level', cls: 'num' },
+    sketch: { label: 'Sketch', cls: 'sketch left', nosort: true },
+    pathBits: { label: 'Difficulty (pathBits)', cls: 'left' },
+    decisions: { label: 'Decisions' },
+    bits: { label: 'Exact bits' },
+    effort: { label: 'Effort' },
+    survival: { label: 'Random play' },
+    visits: { label: 'Visits' },
+  };
   const SVG = 'http://www.w3.org/2000/svg';
-  let data = [], sortKey = 'level', sortDir = 1;
+  const state = { set: 'levels', data: {}, sortKey: 'level', sortDir: 1 };
 
   function sketch(l) {
     const box = 120, cell = Math.floor(box / Math.max(l.width, l.height)), gap = Math.max(1, Math.round(cell / 8));
@@ -112,24 +143,20 @@
     svg.setAttribute('class', 'sketch');
     svg.setAttribute('width', w);
     svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', `Level ${l.level} layout, ${l.width} by ${l.height}`);
+    svg.setAttribute('aria-label', `Level ${l.label} layout, ${l.width} by ${l.height}`);
+    const rect = (x, y, s, cls) => {
+      const r = document.createElementNS(SVG, 'rect');
+      r.setAttribute('x', x * cell + gap / 2 + s); r.setAttribute('y', y * cell + gap / 2 + s);
+      r.setAttribute('width', cell - gap - 2 * s); r.setAttribute('height', cell - gap - 2 * s);
+      r.setAttribute('rx', Math.max(1, cell / 8)); r.setAttribute('class', cls);
+      svg.appendChild(r);
+    };
     l.rows.forEach((row, y) => {
       for (let x = 0; x < l.width; x++) {
         const c = row[x] || '.';
         if (c === '.') continue;
-        const r = document.createElementNS(SVG, 'rect');
-        r.setAttribute('x', x * cell + gap / 2); r.setAttribute('y', y * cell + gap / 2);
-        r.setAttribute('width', cell - gap); r.setAttribute('height', cell - gap);
-        r.setAttribute('rx', Math.max(1, cell / 8));
-        r.setAttribute('class', c === '2' || c === 's' ? 't2' : 't1');
-        svg.appendChild(r);
-        if (c === 'S' || c === 's') {
-          const s = document.createElementNS(SVG, 'rect');
-          s.setAttribute('x', x * cell + gap / 2 + 1); s.setAttribute('y', y * cell + gap / 2 + 1);
-          s.setAttribute('width', cell - gap - 2); s.setAttribute('height', cell - gap - 2);
-          s.setAttribute('rx', Math.max(1, cell / 8)); s.setAttribute('class', 'st');
-          svg.appendChild(s);
-        }
+        rect(x, y, 0, c === '2' || c === 's' ? 't2' : 't1');
+        if (c === 'S' || c === 's') rect(x, y, 1, 'st');
       }
     });
     return svg;
@@ -138,54 +165,59 @@
   const fmt = (v, d = 0) => v == null ? '–' : (d ? v.toFixed(d) : Math.round(v).toLocaleString('en'));
 
   function renderHead() {
-    const head = document.getElementById('head');
-    head.replaceChildren(...COLS.map(c => {
-      const th = document.createElement('th');
+    const set = SETS[state.set];
+    document.getElementById('head').replaceChildren(...set.cols.map(key => {
+      const c = COLS[key], th = document.createElement('th');
       if (c.cls && c.cls.includes('left')) th.className = 'left';
-      if (c.key) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = c.label + (c.key === sortKey ? (sortDir > 0 ? ' ↑' : ' ↓') : '');
-        b.addEventListener('click', () => {
-          if (sortKey === c.key) sortDir = -sortDir; else { sortKey = c.key; sortDir = c.key === 'level' ? 1 : -1; }
-          render();
-        });
-        th.appendChild(b);
-        if (c.key === sortKey) th.setAttribute('aria-sort', sortDir > 0 ? 'ascending' : 'descending');
-      } else th.textContent = c.label;
+      if (c.nosort) { th.textContent = c.label; return th; }
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = c.label + (key === state.sortKey ? (state.sortDir > 0 ? ' ↑' : ' ↓') : '');
+      b.addEventListener('click', () => {
+        if (state.sortKey === key) state.sortDir = -state.sortDir; else { state.sortKey = key; state.sortDir = key === 'level' ? 1 : -1; }
+        render();
+      });
+      th.appendChild(b);
+      if (key === state.sortKey) th.setAttribute('aria-sort', state.sortDir > 0 ? 'ascending' : 'descending');
       return th;
     }));
   }
 
   function render() {
+    const set = SETS[state.set], entry = state.data[state.set];
     renderHead();
+    document.getElementById('lede').textContent = entry
+      ? entry.info + ' Sort any column to compare how difficulty climbs with the level number.' : 'Loading levels…';
+    if (!entry) return;
+    const data = entry.rows, key = state.sortKey === 'level' ? 'n' : state.sortKey, dir = state.sortDir;
     const max = Math.max(...data.map(l => l.pathBits || 0)) || 1;
     // missing values sort last whichever way the column is sorted
     const sorted = [...data].sort((a, b) => {
-      const x = a[sortKey], y = b[sortKey];
-      if (x == null && y == null) return a.level - b.level;
+      const x = a[key], y = b[key];
+      if (x == null && y == null) return a.n - b.n;
       if (x == null) return 1; if (y == null) return -1;
-      return (x - y) * sortDir || a.level - b.level;
+      return (x - y) * dir || a.n - b.n;
     });
+    const cell = {
+      level: l => { const t = document.createElement('span'); t.textContent = l.label;
+        if (l.sub) { const s = document.createElement('span'); s.className = 'sub'; s.textContent = l.sub; t.appendChild(s); } return t; },
+      sketch: l => { const d = document.createElement('div'); d.appendChild(sketch(l));
+        if (l.designed) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = l.designed; d.appendChild(t); } return d; },
+      pathBits: l => { const d = document.createElement('div'); d.className = 'score';
+        d.innerHTML = `<div class="bar" role="presentation"><b style="width:${(100 * (l.pathBits || 0) / max).toFixed(1)}%"></b></div><span>${fmt(l.pathBits, 1)}</span>`; return d; },
+      decisions: l => fmt(l.decisions),
+      bits: l => fmt(l.bits, 1),
+      effort: l => fmt(l.effort),
+      survival: l => l.survival == null ? '–' : Math.round(l.survival * 100) + '%',
+      visits: l => `${l.visits} · ${l.width}×${l.height}`,
+    };
+    const dim = { visits: 'dim' };
     document.getElementById('rows').replaceChildren(...sorted.map(l => {
       const tr = document.createElement('tr');
-      const cells = [
-        ['num', l.level],
-        ['sketch left', sketch(l)],
-        ['left', (() => {
-          const d = document.createElement('div'); d.className = 'score';
-          d.innerHTML = `<div class="bar" role="presentation"><b style="width:${(100 * (l.pathBits || 0) / max).toFixed(1)}%"></b></div><span>${fmt(l.pathBits, 1)}</span>`;
-          return d;
-        })()],
-        ['', fmt(l.decisions)],
-        ['', fmt(l.bits, 1)],
-        ['', fmt(l.effort)],
-        ['', l.survival == null ? '–' : Math.round(l.survival * 100) + '%'],
-        ['dim', `${l.visits} · ${l.width}×${l.height}`],
-      ];
-      cells.forEach(([cls, v]) => {
+      set.cols.forEach(k => {
         const td = document.createElement('td');
-        if (cls) td.className = cls;
+        td.className = [COLS[k].cls, dim[k]].filter(Boolean).join(' ');
+        const v = cell[k](l);
         if (v instanceof Node) td.appendChild(v); else td.textContent = v;
         tr.appendChild(td);
       });
@@ -193,13 +225,22 @@
     }));
   }
 
-  fetch('levels.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
-    data = json.levels;
-    document.getElementById('lede').textContent =
-      `${data.length} levels, generated ${json.generated}. Sort any column to compare how difficulty climbs with the level number.`;
+  // Beside the page when published; one folder up (tools/packs.json) when served from the repo.
+  const load = (name, fallback) => fetch(name).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .catch(() => fallback ? load(fallback) : Promise.reject());
+
+  function show(name) {
+    state.set = name; state.sortKey = 'level'; state.sortDir = 1;
+    for (const k of Object.keys(SETS)) document.getElementById('tab-' + k).setAttribute('aria-selected', String(k === name));
+    if (state.data[name]) return render();
     render();
-  }).catch(() => {
-    document.getElementById('lede').textContent = 'Could not load levels.json.';
-    document.getElementById('rows').innerHTML = '<tr><td colspan="8" class="err">levels.json was not found next to this page. When opening the file from disk, serve the folder (for example <code>python3 -m http.server</code>) because browsers block fetch() on file:// pages.</td></tr>';
-  });
+    load(SETS[name].note, name === 'packs' ? '../packs.json' : null)
+      .then(json => { state.data[name] = SETS[name].load(json); if (state.set === name) render(); })
+      .catch(() => {
+        document.getElementById('lede').textContent = `Could not load ${SETS[name].note}.`;
+        document.getElementById('rows').innerHTML = `<tr><td colspan="8" class="err">${SETS[name].note} was not found. When opening the file from disk, serve the tools/ folder over HTTP (for example <code>python3 -m http.server</code>) because browsers block fetch() on file:// pages.</td></tr>`;
+      });
+  }
+  for (const k of Object.keys(SETS)) document.getElementById('tab-' + k).addEventListener('click', () => show(k));
+  show(location.hash === '#packs' ? 'packs' : 'levels');
 </script>
