@@ -14,8 +14,11 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
-const { buildPool, pick, quantile } = require('./pack-generator.js');
+const { buildPool, pick, quantile, canonical, fillsBox, score } = require('./pack-generator.js');
+const { designs } = require('./pack-designs.js');
 
+// How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
+const DESIGNED_PER_PACK = 4;
 const CACHE = path.join(__dirname, '.cache');
 const OUT_JSON = path.join(__dirname, 'packs.json');
 const OUT_TS = path.join(__dirname, '../apps/app/src/game/packs.ts');
@@ -65,8 +68,26 @@ function select(pools) {
     const scores = pools[i].map(p => p.pathBits).sort((a, b) => a - b);
     const hi = quantile(scores, .97);
     const lo = Math.min(Math.max(quantile(scores, .03), prevHi * OVERLAP), hi * .9);
-    const levels = pick(pools[i], LEVELS_PER_PACK, lo, hi);
-    if (!levels) throw new Error(`pack ${i + 1} ${spec.name}: only ${pools[i].length} candidates, need ${LEVELS_PER_PACK}`);
+
+    // Designed layouts first: they are kept as long as the solver and the pack rules
+    // accept them, spread across the pack's range, and the generated levels fill the rest.
+    const seen = new Set();
+    const made = designs(spec.width, spec.height, { jumps: spec.jump[1] > 0 })
+      .filter(d => fillsBox(d.rows) && !seen.has(canonical(d.rows)) && seen.add(canonical(d.rows)))
+      .map(d => { const m = score(d.rows); return m && { ...m, designed: d.label }; })
+      .filter(Boolean)
+      .filter(d => d.pathBits >= lo - 1e-9 && d.pathBits <= hi + 1e-9)
+      .sort((a, b) => a.pathBits - b.pathBits);
+    const kept = [];
+    for (let k = 0; k < Math.min(DESIGNED_PER_PACK, made.length); k++) {
+      kept.push(made[Math.round(k * (made.length - 1) / Math.max(1, Math.min(DESIGNED_PER_PACK, made.length) - 1))]);
+    }
+    const keptKeys = new Set(kept.map(d => canonical(d.rows)));
+    const rest = pools[i].filter(p => !keptKeys.has(canonical(p.rows)));
+
+    const generated = pick(rest, LEVELS_PER_PACK - kept.length, lo, hi);
+    if (!generated) throw new Error(`pack ${i + 1} ${spec.name}: only ${rest.length} candidates, need ${LEVELS_PER_PACK - kept.length}`);
+    const levels = [...generated, ...kept].sort((a, b) => a.pathBits - b.pathBits || a.decisions - b.decisions || a.visits - b.visits);
     prevHi = hi;
     return { name: spec.name, blurb: spec.blurb, width: spec.width, height: spec.height, levels };
   });
