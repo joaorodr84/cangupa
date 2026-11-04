@@ -253,3 +253,41 @@ test('caps the board width by the height available when that is the tighter fit'
   // (40 - 24) of height available * 3 (w/h) = 48px wide.
   expect(flat.some((s) => s?.width === 48)).toBe(true);
 });
+
+// Visit marks and tile kinds (CANGUPA-68, CANGUPA-69)
+
+test('a Gold tile shows one stroke per visit left, and a Steel tile one per visit left too', async () => {
+  await render(<Harness level={['S23']} rules={{ jumps: true }} />);
+
+  expect(screen.getByTestId('tile-strokes-1-0').children).toHaveLength(2);
+  expect(screen.getByTestId('tile-strokes-2-0').children).toHaveLength(3);
+});
+
+test('the strokes count down as a tile is visited, and the last visit keeps one', async () => {
+  await render(<Harness level={['S2']} rules={{ jumps: true }} />);
+  expect(screen.getByTestId('tile-strokes-1-0').children).toHaveLength(2);
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  expect(screen.getByTestId('tile-strokes-1-0').children).toHaveLength(1);
+});
+
+test('a Common tile has no strokes', async () => {
+  await render(<Harness level={['S1']} rules={{ jumps: true }} />);
+  expect(screen.queryByTestId('tile-strokes-1-0')).toBeNull();
+});
+
+test('an arrow tile shows a triangle on the edge it can be left by, and no strokes', async () => {
+  await render(<Harness level={['S>1']} rules={{ jumps: true }} />);
+
+  expect(screen.getByTestId('tile-arrow-1-0-right')).toBeTruthy();
+  expect(screen.queryByTestId('tile-strokes-1-0')).toBeNull();
+});
+
+test('an arrow tile only lets the kangaroo leave the way it points', async () => {
+  // S steps onto the arrow at (1,0), which points right: the tile below it is out of reach
+  await render(<Harness level={['S>1', '.1.']} rules={{ jumps: true }} />);
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+
+  expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();
+  expect(screen.queryByTestId('tile-press-1-1')).toBeNull();
+});

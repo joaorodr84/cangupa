@@ -27,6 +27,10 @@ export interface Strings {
     readonly onlyUnused: string;
     readonly doubleBold: string;
     readonly doubleRest: string;
+    readonly steelBold: string;
+    readonly steelRest: string;
+    readonly arrowBold: string;
+    readonly arrowRest: string;
     readonly outOfMoves: string;
     readonly note: string;
   };

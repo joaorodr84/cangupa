@@ -28,8 +28,12 @@ export const en: Strings = {
     jumpBold: 'Jump:',
     jumpRest: ' two tiles in a straight line, over a gap or over another tile.',
     onlyUnused: 'You can only land on a tile that still has visits left. A tile disappears as soon as you leave it.',
-    doubleBold: 'Double tiles',
-    doubleRest: ' (gold) need two visits: they crack on the first and vanish on the second.',
+    doubleBold: 'Gold tiles',
+    doubleRest: ' (yellow) need two visits. The strokes on a tile show how many visits it has left.',
+    steelBold: 'Steel tiles',
+    steelRest: ' (grey-blue) need three visits.',
+    arrowBold: 'Arrow tiles',
+    arrowRest: ' (raspberry) can only be left through the edge where the triangle is.',
     outOfMoves: 'If you run out of moves, undo or restart.',
     note: 'Tap a highlighted tile to play.',
   },
@@ -79,23 +83,23 @@ export const en: Strings = {
   packs: [
     {
       name: 'Meadow',
-      blurb: 'Hop from tile to tile. Some tiles crack: they need two visits.',
+      blurb: 'Hop from tile to tile. Every tile is visited once.',
     },
     {
       name: 'Creek',
-      blurb: 'Gaps appear. Jump over one missing tile.',
+      blurb: 'Gaps appear: jump over one missing tile. Gold tiles need two visits.',
     },
     {
       name: 'Gully',
-      blurb: 'Jumps and cracked tiles on a square board.',
+      blurb: 'Steel tiles need three visits.',
     },
     {
       name: 'Outcrop',
-      blurb: 'More cracked tiles and longer routes.',
+      blurb: 'Gold and steel tiles together.',
     },
     {
       name: 'Billabong',
-      blurb: 'Open water in the middle. Plan the way round.',
+      blurb: 'Arrow tiles: leave them only the way the triangle points.',
     },
     {
       name: 'Ridge',

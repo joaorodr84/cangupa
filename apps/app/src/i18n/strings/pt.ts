@@ -25,8 +25,12 @@ export const pt: Strings = {
     jumpBold: 'Salto:',
     jumpRest: ' duas casas em linha reta, por cima de um buraco ou de outra casa.',
     onlyUnused: 'Só podes cair numa casa que ainda não foi usada. Ao saíres de uma casa, ela desaparece.',
-    doubleBold: 'Casas duplas',
-    doubleRest: ' (douradas) têm de ser pisadas duas vezes: racham à primeira e desaparecem à segunda.',
+    doubleBold: 'Casas de ouro',
+    doubleRest: ' (amarelas) precisam de duas visitas. Os riscos numa casa mostram quantas visitas ainda lhe restam.',
+    steelBold: 'Casas de aço',
+    steelRest: ' (azul-acinzentadas) precisam de três visitas.',
+    arrowBold: 'Casas com seta',
+    arrowRest: ' (cor de framboesa) só se podem deixar pelo lado onde está o triângulo.',
     outOfMoves: 'Se ficares sem jogadas, desfaz ou reinicia.',
     note: 'Toca numa casa destacada para jogar.',
   },
@@ -76,23 +80,23 @@ export const pt: Strings = {
   packs: [
     {
       name: 'Prado',
-      blurb: 'Passa de casa em casa. Algumas racham: têm de ser pisadas duas vezes.',
+      blurb: 'Passa de casa em casa. Cada casa é pisada uma vez.',
     },
     {
       name: 'Ribeiro',
-      blurb: 'Aparecem buracos. Salta por cima de uma casa em falta.',
+      blurb: 'Aparecem buracos: salta por cima de uma casa em falta. As casas de ouro precisam de duas visitas.',
     },
     {
       name: 'Barranco',
-      blurb: 'Saltos e casas duplas num tabuleiro quadrado.',
+      blurb: 'As casas de aço precisam de três visitas.',
     },
     {
       name: 'Afloramento',
-      blurb: 'Mais casas duplas e percursos mais longos.',
+      blurb: 'Casas de ouro e de aço juntas.',
     },
     {
       name: 'Lagoa',
-      blurb: 'Água aberta no meio. Planeia o caminho à volta.',
+      blurb: 'Casas com seta: só podes sair no sentido do triângulo.',
     },
     {
       name: 'Crista',

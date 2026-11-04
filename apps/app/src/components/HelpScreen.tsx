@@ -20,6 +20,8 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
     { bold: t.help.jumpBold, rest: t.help.jumpRest },
     { rest: t.help.onlyUnused },
     { bold: t.help.doubleBold, rest: t.help.doubleRest },
+    { bold: t.help.steelBold, rest: t.help.steelRest },
+    { bold: t.help.arrowBold, rest: t.help.arrowRest },
     { rest: t.help.outOfMoves },
   ];
 
