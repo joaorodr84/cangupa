@@ -21,8 +21,6 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P3] `TILE-JUMPER-6` — Redo the main character's art, and draw a small
-  joey riding inside the pouch.
 - [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
   would be used (title screen, favicon, README) and the style aren't
   decided yet.

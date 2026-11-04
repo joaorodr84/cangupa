@@ -664,6 +664,29 @@ a browser.
 
 ---
 
+## Era 25 — Nov 4: a joey rides in the kangaroo's pouch
+
+TILE-JUMPER-6 redraws part of the kangaroo's inline-SVG art in
+`apps/web-classic/js/sprites.js`: a small joey (two ears, a round head,
+two eyes, a nose, in matching but slightly lighter tones) now peeks out
+of the pouch in the `side` and `front` poses. `back` is left untouched on
+purpose, since a kangaroo's pouch isn't visible from behind — noted in
+a new comment at the top of the file. The rest of the existing kangaroo
+art was kept as-is; this is an addition to the established style rather
+than a redesign.
+
+One commit. `js/game.js` wasn't touched, so no new rules assertion
+applies, but `node apps/web-classic/tools/test.js` was re-run (50 levels,
+existing rules assertions) to confirm nothing else broke. Checked
+visually in headless Chrome — standalone renders of all four sprite
+variants (side, front, back, and the CSS-mirrored side) and the real
+`apps/web-classic/index.html` game page at in-tile scale, in both the
+front-facing idle pose and the side-facing hop pose — confirming the
+joey reads clearly with no overlap or clipping against the mother's arm,
+jaw, or belly patch.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

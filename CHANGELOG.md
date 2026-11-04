@@ -30,6 +30,10 @@ Open work is listed in [TODO.md](TODO.md).
   through the board, timed to match the brief sink-and-fade animation —
   synthesized the same way as the other sounds, and muted by the same
   "Som" setting.
+- The kangaroo now has a joey peeking out of its pouch, visible whenever
+  the kangaroo is shown hopping or standing idle. It isn't drawn from
+  behind, since a pouch isn't visible from that angle on a real kangaroo
+  either.
 
 ### Changed
 
