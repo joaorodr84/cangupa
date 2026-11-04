@@ -21,7 +21,7 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P2] `CANGUPA-70` — The hint solver (`Game.solve`) can run out of memory or
+- [P2] `CANGUPA-72` — The hint solver (`Game.solve`) can run out of memory or
   take many seconds on some big levels turned for a portrait screen, so
   pressing Hint could hang the app. Packs 8 to 10 (frozen) are the problem:
   50 of their 100 turned levels pass 400,000 positions, one run ended in

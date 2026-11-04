@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-72`**
+**Next ID to assign: `CANGUPA-73`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -22,7 +22,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Commit |
 | --- | --- | --- | --- | --- |
-| CANGUPA-70 | P2 | The hint solver (`Game.solve`) can run out of memory or take many seconds on some big levels turned the other way for a portrait screen, so pressing Hint could hang the app. Found while testing CANGUPA-69: of the 100 turned levels in packs 8 to 10 (frozen, from CANGUPA-56), the plain depth-first search blows past 400,000 positions on 50 and one run ended in `Set maximum size exceeded`. Trying the move with the fewest onward options first (tested, not applied) solves 95 of them but 5 still fail and the slowest takes 14 seconds. Packs 1 to 5 solve in at most 37 ms in either orientation, pack 6 in about 1.2 s. Options: a better search (pruning, not just ordering), solving off the UI thread, or storing each level's solution in packs.json | open | — |
+| CANGUPA-72 | P2 | The hint solver (`Game.solve`) can run out of memory or take many seconds on some big levels turned the other way for a portrait screen, so pressing Hint could hang the app. Found while testing CANGUPA-69: of the 100 turned levels in packs 8 to 10 (frozen, from CANGUPA-56), the plain depth-first search blows past 400,000 positions on 50 and one run ended in `Set maximum size exceeded`. Trying the move with the fewest onward options first (tested, not applied) solves 95 of them but 5 still fail and the slowest takes 14 seconds. Packs 1 to 5 solve in at most 37 ms in either orientation, pack 6 in about 1.2 s. Options: a better search (pruning, not just ordering), solving off the UI thread, or storing each level's solution in packs.json | open | — |
 | CANGUPA-62 | P2 | Define level evaluation and difficulty metrics (`tools/difficulty.js`) that scale to every level, validate them against the existing 50-level curve, and use them to make generated levels get gradually harder | open | — |
 
 ## Done
