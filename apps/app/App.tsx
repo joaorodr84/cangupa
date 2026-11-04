@@ -36,7 +36,7 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
-  const { settings, setThemeMode, setJumps, setHints, setAnim, setSound, setLanguage } = useSettings();
+  const { settings, setThemeMode, setJumps, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
   const { progress, recordDone, recordLevel, clearProgress } = useProgress();
 
   // Kept in sync here rather than read fresh on every Sound.jump() call,
@@ -62,6 +62,7 @@ export default function App() {
           onChangeHints={setHints}
           onChangeAnim={setAnim}
           onChangeSound={setSound}
+          onChangeFall={setFall}
           onChangeLanguage={setLanguage}
           progress={progress}
           onLevelDone={recordDone}
@@ -80,6 +81,7 @@ interface ShellProps {
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
   readonly onChangeSound: (sound: boolean) => void;
+  readonly onChangeFall: (fall: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly progress: Progress;
   readonly onLevelDone: (levelIndex: number, moves: number) => void;
@@ -94,6 +96,7 @@ function Shell({
   onChangeHints,
   onChangeAnim,
   onChangeSound,
+  onChangeFall,
   onChangeLanguage,
   progress,
   onLevelDone,
@@ -147,6 +150,7 @@ function Shell({
         onChangeHints={onChangeHints}
         onChangeAnim={onChangeAnim}
         onChangeSound={onChangeSound}
+        onChangeFall={onChangeFall}
         onChangeLanguage={onChangeLanguage}
         onClearProgress={() => {
           onClearProgress();
@@ -166,6 +170,7 @@ function Shell({
         rules={{ jumps: settings.jumps }}
         hints={settings.hints}
         anim={settings.anim}
+        fall={settings.fall}
         palette={palette}
         levelNumber={currentLevel + 1}
         totalLevels={LEVELS.length}

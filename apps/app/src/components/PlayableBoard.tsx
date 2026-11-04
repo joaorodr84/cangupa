@@ -5,7 +5,7 @@
 // belongs to the screen that owns useBoard and also renders this
 // (BoardScreen.tsx), so that screen and this component share one Game
 // rather than each calling useBoard and getting their own.
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
@@ -22,6 +22,9 @@ const FRAME_PADDING = 12;
 interface PlayableBoardProps {
   readonly board: UseBoardResult;
   readonly anim: boolean;
+  // Rule option (CANGUPA-58, off by default): tapping the board where there
+  // is no legal move falls instead of doing nothing.
+  readonly fall: boolean;
   readonly palette: Palette;
   // The space on screen available for this component, in px (CANGUPA-33) —
   // BoardScreen measures it via onLayout, since there's no CSS-only way to
@@ -36,16 +39,32 @@ interface PlayableBoardProps {
   readonly onMoved?: () => void;
 }
 
-export default function PlayableBoard({ board, anim, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps) {
-  const { game, tiles, facing, move } = board;
+export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps) {
+  const { game, tiles, facing, move, won, reset } = board;
   const boardRef = useRef<BoardHandle>(null);
+  // Mid fall-and-restart animation (CANGUPA-58): input is ignored until it
+  // settles, the same guard ui.js's `falling` module-level flag gives the
+  // web version.
+  const [falling, setFalling] = useState(false);
 
   const handlePressTile = (x: number, y: number) => {
+    if (falling) return;
     if (move(x, y)) {
       boardRef.current?.hop();
       Sound.jump();
       onMoved?.();
     }
+  };
+
+  // A tap on empty board space or a tile with no legal move — ui.js's click
+  // handler falls through to the same thing when settings.fall is on.
+  const handlePressEmpty = () => {
+    if (falling || won) return;
+    setFalling(true);
+    boardRef.current?.fall(() => {
+      setFalling(false);
+      reset();
+    });
   };
 
   const boardWidth =
@@ -76,6 +95,7 @@ export default function PlayableBoard({ board, anim, palette, maxWidth, maxHeigh
         anim={anim}
         width={boardWidth}
         onPressTile={handlePressTile}
+        onPressEmpty={fall ? handlePressEmpty : undefined}
       />
     </View>
   );

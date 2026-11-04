@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import Board, { type BoardHandle } from './Board';
 import { Game } from '../game/board';
@@ -140,4 +140,88 @@ test('a tile that is not a legal destination is not pressable', async () => {
   );
 
   expect(screen.queryByTestId('tile-press-2-0')).toBeNull();
+});
+
+test('fall() does not throw and calls onComplete (CANGUPA-58)', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+  const ref = createRef<BoardHandle>();
+  const onComplete = jest.fn();
+
+  await render(
+    <Board
+      ref={ref}
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+    />,
+  );
+
+  await act(async () => {
+    expect(() => ref.current?.fall(onComplete)).not.toThrow();
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  });
+  expect(onComplete).toHaveBeenCalledTimes(1);
+});
+
+test('tapping empty board space reports it, when a handler is given (CANGUPA-58)', async () => {
+  // A 1x3 row with a gap in the middle and jumps off: x=2 has no element at
+  // all (tilesOf skips an always-empty cell), so a tap there only reaches
+  // the board's own Pressable, not a tile's.
+  const g = new Game(['S.1'], { jumps: false });
+  const tiles = tilesOf(g, { hints: true });
+  const onPressEmpty = jest.fn();
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      onPressEmpty={onPressEmpty}
+    />,
+  );
+
+  await fireEvent.press(screen.getByTestId('board'));
+
+  expect(onPressEmpty).toHaveBeenCalledTimes(1);
+});
+
+test('tapping a hinted tile does not also report an empty-space press', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+  const onPressTile = jest.fn();
+  const onPressEmpty = jest.fn();
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      onPressTile={onPressTile}
+      onPressEmpty={onPressEmpty}
+    />,
+  );
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+
+  expect(onPressTile).toHaveBeenCalledWith(1, 0);
+  expect(onPressEmpty).not.toHaveBeenCalled();
 });

@@ -81,21 +81,6 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
-- [P2] `CANGUPA-58` — Port falling as an opt-in setting (`TILE-JUMPER-3`)
-  to `apps/app`: add `Settings.fall: boolean` (default `false`, same
-  parsing/default pattern as `CANGUPA-57`'s `sound`), a toggle row in
-  `SettingsScreen.tsx`, and a `fall()` action in
-  [useBoard.ts](apps/app/src/game/useBoard.ts) (mirroring `ui.js`'s
-  `fall()`: sink-and-fade the kangaroo, then `game.reset()`). Touch-only,
-  so only the "tap empty space" half of the web version's behaviour
-  applies here — there's no keyboard.
-  [Board.tsx](apps/app/src/components/Board.tsx)'s outer board container
-  needs to catch taps that land on no tile's own `Pressable` (today only
-  a tile with a legal move — `tile.hint` — is wrapped in one; see its
-  `Tile` component), the same empty-space hit-testing problem
-  `TILE-JUMPER-3` called out for the web version, solved there by
-  falling through `ui.js`'s click handler when no `.cell`/legal move
-  matches.
 - [P2] `CANGUPA-59` — Port the finish-level sound effect
   (`TILE-JUMPER-4`) to `apps/app`: a `win()` tone/melody added to
   `src/audio/sound.ts` (`CANGUPA-57`) and its matching WAV asset
@@ -106,10 +91,14 @@ The priority can change at any time; the ID never does.
   `CANGUPA-57` for the `Sound` module and asset pipeline.
 - [P2] `CANGUPA-60` — Port the falling sound effect (`TILE-JUMPER-5`) to
   `apps/app`: a `fall()` tone added to `src/audio/sound.ts`
-  (`CANGUPA-57`) and its WAV asset, played from `useBoard.ts`'s `fall()`
-  action (`CANGUPA-58`) alongside the sink-and-fade animation. Blocked on
-  both `CANGUPA-57` (the `Sound` module) and `CANGUPA-58` (the `fall()`
-  action it hooks into).
+  (`CANGUPA-57`) and its WAV asset, played from
+  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx)'s
+  `handlePressEmpty` (`CANGUPA-58` — not `useBoard.ts`, which stayed a
+  pure state hook; the fall animation/timing and now its sound live
+  beside the hop animation/`Sound.jump()` call, both already there)
+  alongside the sink-and-fade animation. Blocked on both `CANGUPA-57`
+  (the `Sound` module) and `CANGUPA-58` (the fall handler it hooks
+  into).
 - [P2] `CANGUPA-61` — Port the joey-in-pouch art (`TILE-JUMPER-6`) to
   `apps/app`: add the same joey (two ears, a round head, two eyes, a
   nose) to [Kangaroo.tsx](apps/app/src/components/Kangaroo.tsx)'s

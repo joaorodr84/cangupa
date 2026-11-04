@@ -48,6 +48,7 @@ interface SettingsScreenProps {
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
   readonly onChangeSound: (sound: boolean) => void;
+  readonly onChangeFall: (fall: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly onClearProgress: () => void;
 }
@@ -60,6 +61,7 @@ export default function SettingsScreen({
   onChangeHints,
   onChangeAnim,
   onChangeSound,
+  onChangeFall,
   onChangeLanguage,
   onClearProgress,
 }: SettingsScreenProps) {
@@ -130,7 +132,7 @@ export default function SettingsScreen({
             ink={ink}
             palette={palette}
             index={0}
-            length={4}
+            length={5}
           />
           <ToggleRow
             testID="toggle-hints"
@@ -140,7 +142,7 @@ export default function SettingsScreen({
             ink={ink}
             palette={palette}
             index={1}
-            length={4}
+            length={5}
           />
           <ToggleRow
             testID="toggle-anim"
@@ -150,7 +152,17 @@ export default function SettingsScreen({
             ink={ink}
             palette={palette}
             index={2}
-            length={4}
+            length={5}
+          />
+          <ToggleRow
+            testID="toggle-fall"
+            label={t.settings.fall}
+            value={settings.fall}
+            onChange={onChangeFall}
+            ink={ink}
+            palette={palette}
+            index={3}
+            length={5}
           />
           <ToggleRow
             testID="toggle-sound"
@@ -159,8 +171,8 @@ export default function SettingsScreen({
             onChange={onChangeSound}
             ink={ink}
             palette={palette}
-            index={3}
-            length={4}
+            index={4}
+            length={5}
           />
         </View>
 

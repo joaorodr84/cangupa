@@ -718,6 +718,14 @@ against the live Expo web build confirming the new Sound row renders
 correctly in Settings and that a tap-to-move still plays with no console
 errors from the new audio code path.
 
+CANGUPA-58 continues the same series, porting falling as an opt-in setting
+(`TILE-JUMPER-3`) to apps/app: `Settings.fall` (default off) gates a new
+`onPressEmpty` prop on `Board.tsx`'s outer container, now a `Pressable` instead
+of a plain `View`, which drives a sink/shrink/fade animation on the kangaroo
+and then resets the board, with a live-caught bug fixed along the way where the
+animation's driving value was never reset back to 0, leaving the kangaroo
+permanently invisible after the first fall.
+
 ---
 
 ## Patterns, and what's still open

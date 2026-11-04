@@ -28,7 +28,14 @@ describe('parseSettings', () => {
     expect(parseSettings(`{"${key}":false}`)[key]).toBe(false);
   });
 
-  it.each(['jumps', 'hints', 'anim', 'sound'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
+  // `fall` defaults to false (unlike the other toggles, which default true),
+  // so reading it back has to check `true` to actually prove a saved value
+  // was read rather than just the default coming through unchanged.
+  it('reads a saved fall toggle', () => {
+    expect(parseSettings('{"fall":true}').fall).toBe(true);
+  });
+
+  it.each(['jumps', 'hints', 'anim', 'sound', 'fall'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
     expect(parseSettings(`{"${key}":"false"}`)[key]).toBe(DEFAULT_SETTINGS[key]);
   });
 
@@ -58,6 +65,7 @@ describe('saving and loading', () => {
       hints: false,
       anim: false,
       sound: false,
+      fall: true,
       language: 'pt' as const,
     };
 
@@ -72,7 +80,7 @@ describe('saving and loading', () => {
     await saveSettings(storage, DEFAULT_SETTINGS);
 
     expect(await storage.getItem(SETTINGS_KEY)).toBe(
-      '{"themeMode":"system","jumps":true,"hints":true,"anim":true,"sound":true,"language":"system"}',
+      '{"themeMode":"system","jumps":true,"hints":true,"anim":true,"sound":true,"fall":false,"language":"system"}',
     );
   });
 

@@ -16,6 +16,11 @@ import Kangaroo, { type Face } from './Kangaroo';
 const HOP_HEIGHT = 16;
 const HOP_LEG_MS = 120;
 
+// style.css's `.falling #roo` keyframe (sink, shrink, fade) over the same
+// 0.5s — ui.js's fall() waits exactly this long before resetting the level.
+const FALL_DROP = 30;
+const FALL_MS = 500;
+
 interface BoardProps {
   readonly w: number;
   readonly h: number;
@@ -35,6 +40,11 @@ interface BoardProps {
   // a legal destination (tile.hint false) are not pressable at all, the same
   // way ui.js's click handler only ever resolves a move among legalMoves().
   readonly onPressTile?: (x: number, y: number) => void;
+  // A tap anywhere else on the board — truly empty space between tiles, or a
+  // tile with no legal move — only when the falling setting is on
+  // (CANGUPA-58). Undefined (the setting is off): the board stays a plain,
+  // non-interactive background there, as it always was.
+  readonly onPressEmpty?: () => void;
 }
 
 export interface BoardHandle {
@@ -42,13 +52,20 @@ export interface BoardHandle {
   // move, not after undo/reset/hint — the same asymmetry ui.js's
   // render(hop) argument encodes.
   hop(): void;
+  // Sinks, shrinks and fades the kangaroo, then calls `onComplete` — the
+  // caller's job from there is ui.js's fall()'s own next step, resetting the
+  // level. Unlike hop(), this always animates regardless of the `anim`
+  // setting, matching the web version's `.falling` keyframe, which isn't
+  // gated by `.no-anim` either.
+  fall(onComplete: () => void): void;
 }
 
 const Board = forwardRef<BoardHandle, BoardProps>(function Board(
-  { w, h, tiles, rooX, rooY, face, flip, palette, anim, width, onPressTile }: BoardProps,
+  { w, h, tiles, rooX, rooY, face, flip, palette, anim, width, onPressTile, onPressEmpty }: BoardProps,
   ref,
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
+  const fallAnim = useRef(new Animated.Value(0)).current;
 
   useImperativeHandle(
     ref,
@@ -71,14 +88,36 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           }),
         ]).start();
       },
+      fall(onComplete) {
+        fallAnim.setValue(0);
+        Animated.timing(fallAnim, {
+          toValue: 1,
+          duration: FALL_MS,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }).start(() => {
+          // Otherwise the kangaroo would stay sunk, shrunk and invisible
+          // forever — `fallAnim` only ever drives *this* fall, there's no
+          // later reset back to 0 once it reaches 1. Confirmed live against
+          // the running app (Jest's `useNativeDriver: true` support is a
+          // no-op, so this path isn't exercised by a unit test here).
+          fallAnim.setValue(0);
+          onComplete();
+        });
+      },
     }),
-    [anim, hopAnim],
+    [anim, hopAnim, fallAnim],
   );
 
+  const fallTranslateY = fallAnim.interpolate({ inputRange: [0, 1], outputRange: [0, FALL_DROP] });
+  const fallScale = fallAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0.5] });
+  const fallOpacity = fallAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+
   return (
-    <View
+    <Pressable
       style={[styles.board, { aspectRatio: w / h, backgroundColor: palette.pit }, width !== undefined && { width }]}
       testID="board"
+      onPress={onPressEmpty}
     >
       {tiles.map((tile) => (
         <Tile key={`${tile.x}-${tile.y}`} tile={tile} w={w} h={h} palette={palette} anim={anim} onPress={onPressTile} />
@@ -90,11 +129,17 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           { width: `${100 / w}%`, height: `${100 / h}%`, left: `${(100 * rooX) / w}%`, top: `${(100 * rooY) / h}%` },
         ]}
       >
-        <Animated.View style={{ flex: 1, transform: [{ translateY: hopAnim }] }}>
+        <Animated.View
+          style={{
+            flex: 1,
+            opacity: fallOpacity,
+            transform: [{ translateY: Animated.add(hopAnim, fallTranslateY) }, { scale: fallScale }],
+          }}
+        >
           <Kangaroo face={face} flip={flip} />
         </Animated.View>
       </View>
-    </View>
+    </Pressable>
   );
 });
 

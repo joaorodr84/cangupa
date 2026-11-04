@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import PlayableBoard from './PlayableBoard';
 import { type Level, type Rules } from '../game/board';
@@ -13,12 +13,14 @@ const palette = DARK;
 function Harness({
   level,
   rules,
+  fall = false,
   onMoved,
   maxWidth,
   maxHeight,
 }: {
   level: Level;
   rules: Rules;
+  fall?: boolean;
   onMoved?: () => void;
   maxWidth?: number;
   maxHeight?: number;
@@ -28,6 +30,7 @@ function Harness({
     <PlayableBoard
       board={board}
       anim={false}
+      fall={fall}
       palette={palette}
       onMoved={onMoved}
       maxWidth={maxWidth}
@@ -57,6 +60,37 @@ test('does not call onMoved for a tap with no legal destination', async () => {
   // With jumps off there is nothing pressable at all — the far tile never renders a Pressable.
   expect(screen.queryByTestId('tile-press-2-0')).toBeNull();
   expect(onMoved).not.toHaveBeenCalled();
+});
+
+test('falling resets the board, when the fall setting is on (CANGUPA-58)', async () => {
+  // 'S1.1', jumps off: the only move from the start is to x=1 (x=3 needs a
+  // jump). From x=1, with jumps off, there is no legal move at all — x=0 is
+  // used up, x=2 is always empty — and the level is not yet won (x=3 still
+  // needs a visit), leaving a stuck board with empty space to tap.
+  await render(<Harness level={['S1.1']} rules={{ jumps: false }} fall />);
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
+
+  await act(async () => {
+    fireEvent.press(screen.getByTestId('board'));
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  });
+
+  // Back at the start: the move to x=1 is legal again.
+  expect(screen.getByTestId('tile-press-1-0')).toBeTruthy();
+});
+
+test('tapping empty space does nothing when the fall setting is off', async () => {
+  await render(<Harness level={['S1.1']} rules={{ jumps: false }} fall={false} />);
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
+
+  await fireEvent.press(screen.getByTestId('board'));
+
+  // Still stuck at x=1 — no handler was wired up to react to the tap.
+  expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
 });
 
 test('without maxWidth/maxHeight the board falls back to 100% (CANGUPA-33)', async () => {

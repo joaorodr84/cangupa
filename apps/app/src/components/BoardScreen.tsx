@@ -20,6 +20,9 @@ interface BoardScreenProps {
   readonly rules: Rules;
   readonly hints: boolean;
   readonly anim: boolean;
+  // Rule option (CANGUPA-58, off by default): tapping the board where there
+  // is no legal move falls instead of doing nothing.
+  readonly fall: boolean;
   readonly palette: Palette;
   readonly levelNumber: number;
   readonly totalLevels: number;
@@ -37,6 +40,7 @@ export default function BoardScreen({
   rules,
   hints,
   anim,
+  fall,
   palette,
   levelNumber,
   totalLevels,
@@ -98,6 +102,7 @@ export default function BoardScreen({
         <PlayableBoard
           board={board}
           anim={anim}
+          fall={fall}
           palette={palette}
           maxWidth={boardArea.width}
           maxHeight={boardArea.height}

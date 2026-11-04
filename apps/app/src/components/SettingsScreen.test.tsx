@@ -15,6 +15,7 @@ function renderScreen(overrides: Partial<Parameters<typeof SettingsScreen>[0]> =
     onChangeHints: jest.fn(),
     onChangeAnim: jest.fn(),
     onChangeSound: jest.fn(),
+    onChangeFall: jest.fn(),
     onChangeLanguage: jest.fn(),
     onClearProgress: jest.fn(),
     ...overrides,
@@ -52,6 +53,7 @@ test.each([
   ['toggle-hints', 'hints'] as const,
   ['toggle-anim', 'anim'] as const,
   ['toggle-sound', 'sound'] as const,
+  ['toggle-fall', 'fall'] as const,
 ])('each switch reflects its own setting (%s)', async (testID, key) => {
   await renderScreen({ settings: { ...DEFAULT_SETTINGS, [key]: false } }).result;
   expect(screen.getByTestId(testID).props.value).toBe(false);

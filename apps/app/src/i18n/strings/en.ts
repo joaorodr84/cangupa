@@ -66,6 +66,7 @@ export const en: Strings = {
     hints: 'Highlight possible moves',
     anim: 'Animations',
     sound: 'Sound',
+    fall: 'Fall when there is no move',
     data: 'Data',
     clearProgress: 'Clear progress',
     clearProgressTitle: 'Are you sure you want to clear your progress?',

@@ -63,6 +63,7 @@ export const pt: Strings = {
     hints: 'Destacar jogadas possíveis',
     anim: 'Animações',
     sound: 'Som',
+    fall: 'Cair ao não haver jogada',
     data: 'Dados',
     clearProgress: 'Apagar progresso',
     clearProgressTitle: 'Tens a certeza de que queres apagar o teu progresso?',

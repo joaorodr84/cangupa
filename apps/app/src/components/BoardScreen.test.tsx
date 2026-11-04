@@ -14,6 +14,7 @@ function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { 
   const props = {
     hints: true,
     anim: false,
+    fall: false,
     palette,
     levelNumber: 1,
     totalLevels: 50,
