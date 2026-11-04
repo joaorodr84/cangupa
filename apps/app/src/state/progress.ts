@@ -17,7 +17,13 @@ export interface Progress {
 
 export const NO_PROGRESS: Progress = { done: [], level: 0, bestMoves: {} };
 
-export const PROGRESS_KEY = 'cangupa.progress';
+// A level's index is its place in the packs' play order (CANGUPA-56), which is
+// not where it was in the old flat list of 50 levels: a record saved under the
+// old key would mark the wrong levels cleared and open the wrong ones. So the
+// key changed, and an old record is simply not read; the player starts the new
+// levels fresh. The old entry stays in storage, unused. The owner confirmed
+// replacing the levels outright, without carrying progress across.
+export const PROGRESS_KEY = 'cangupa.progress.packs';
 
 export function isDone(progress: Progress, levelIndex: number): boolean {
   return progress.done.includes(levelIndex);

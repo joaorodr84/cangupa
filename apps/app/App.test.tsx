@@ -104,7 +104,7 @@ test('the footer nav opens the stats screen, which reflects a cleared level', as
   await fireEvent.press(await screen.findByTestId('footer-stats'));
 
   expect(screen.getByText('Levels cleared')).toBeTruthy();
-  expect(screen.getByText('1/50')).toBeTruthy();
+  expect(screen.getByText('1/500')).toBeTruthy();
   expect(screen.getByText('Total moves')).toBeTruthy();
   expect(screen.getByText('3')).toBeTruthy();
 });
