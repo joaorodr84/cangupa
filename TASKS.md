@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-76`**
+**Next ID to assign: `CANGUPA-77`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -29,6 +29,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Date | Commit |
 | --- | --- | --- | --- | --- | --- |
+| CANGUPA-76 | P3 | Gave `apps/app`'s open-pack `LevelsScreen` its own back button in its own header row, matching DigiSpin's own pack header (DIGISPIN-173/174), instead of reusing App.tsx's shared floating back arrow for the whole Levels tab. The pack name is now centred in that row — a flex:1 text balanced by a same-sized spacer on the other side — and set in the pack's own colour (`theme/packColors.ts`) instead of the theme's plain ink colour; the "N/M solved" count is dropped from this header since `LevelPacksScreen` already shows it per pack on the list before this. A done level cell is now coloured in the pack's own colour, matching the pack list's swatch, with a contrast-safe label colour computed for the number | done | 2026-11-04 | — |
 | CANGUPA-75 | P3 | Renamed the level pack collection from Australia / Austrália to Lay of the Land / O Relevo, so the name is not tied to a country | done 2026-11-04 | |
 | CANGUPA-74 | P3 | Gave each level pack its own monochrome line icon on the level packs screen (a landscape shape per pack, replacing the placeholder dot) and reworded every pack sentence in English and Portuguese so packs 7 to 10 no longer claim things they do not have | done 2026-11-04 | |
 | CANGUPA-73 | P2 | Split apps/app's Levels tab into a DigiSpin-style two-screen flow: a new `LevelPacksScreen` (one row per pack — a colour swatch with a placeholder icon, its name, and a "Levels X–Y · N/M solved" line, under the "Australia"/"Austrália" collection name in a pill badge) and `LevelsScreen` now scoped to a single pack's own grid, replacing CANGUPA-56's one long scroll of every pack stacked in a row. The existing Shell header back arrow does double duty as the pack grid's own "back to the list" control instead of a second arrow of its own, and is hidden on the pack list itself (a footer tab's own top-level view, like Settings), reappearing once a pack is open. Ten fixed colours, one per pack (`theme/packColors.ts`, mirroring DigiSpin's digit colours) with a computed contrast-safe label colour (`packLabelColorFor`). Re-tapping the Levels tab while a pack is open also closes back to the list, matching DigiSpin's own pack-list behaviour | done | 2026-11-04 | — |

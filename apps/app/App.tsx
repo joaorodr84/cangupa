@@ -130,14 +130,6 @@ function Shell({
   };
 
   const showFooter = isFooterTab(panel);
-  // The one header back arrow does double duty inside the Levels tab
-  // (CANGUPA-73): with a pack open it steps back to the pack list instead
-  // of out to the board, rather than a second arrow of its own stacked
-  // alongside it.
-  const inOpenPack = panel === 'levels' && openPack !== null;
-  const headerBack = inOpenPack
-    ? { label: t.common.backToList, onPress: () => setOpenPack(null) }
-    : { label: t.common.back, onPress: () => setPanel('board') };
 
   let content;
   if (panel === 'home') {
@@ -161,6 +153,7 @@ function Shell({
           currentLevel={currentLevel}
           palette={palette}
           onSelectLevel={goToLevel}
+          onBack={() => setOpenPack(null)}
         />
       );
   } else if (panel === 'stats') {
@@ -220,15 +213,16 @@ function Shell({
           { paddingTop: insets.top + 16, paddingBottom: showFooter ? 0 : insets.bottom + 16 },
         ]}
       >
-        {/* Redundant on 'settings' and on the pack list (CANGUPA-73): both are
-            a footer tab's own top-level view, already one tap from Home, so
-            the back link would only duplicate that path. Once a pack is open
-            the arrow reappears, now stepping back to the pack list. */}
-        {panel !== 'board' && panel !== 'home' && panel !== 'settings' && (panel !== 'levels' || inOpenPack) && (
+        {/* Redundant on 'settings' and on the whole Levels tab (CANGUPA-73):
+            the pack list is a footer tab's own top-level view, already one
+            tap from Home, and an open pack now carries its own back button
+            in LevelsScreen's own header row (CANGUPA-76) instead of this
+            floating one. */}
+        {panel !== 'board' && panel !== 'home' && panel !== 'settings' && panel !== 'levels' && (
           <Pressable
-            onPress={headerBack.onPress}
+            onPress={() => setPanel('board')}
             accessibilityRole="button"
-            accessibilityLabel={headerBack.label}
+            accessibilityLabel={t.common.back}
             style={[styles.backButton, { backgroundColor: palette.panel }]}
           >
             <BackArrow color={palette.ink} />

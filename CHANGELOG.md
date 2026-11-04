@@ -132,6 +132,16 @@ Open work is listed in [TODO.md](TODO.md).
   itself is showing, the same way it's hidden on other footer tabs'
   top-level screens. Re-tapping the Levels tab while a pack is open also
   closes back to the list.
+- A level pack's own grid now has its own header with its own back
+  button, instead of sharing the app's floating back arrow. The pack's
+  name sits centred in that header, shown in the pack's own colour — the
+  same one as its swatch on the pack list — instead of the plain text
+  colour, and the solved count that used to sit next to the name there is
+  gone, since the pack list already shows each pack's own solved count.
+- A level that's already been solved now shows in its own pack's colour,
+  matching that pack's swatch on the list screen, instead of one generic
+  highlight colour for every pack. The number inside is drawn in whichever
+  of black or white stays readable against that colour.
 
 ### Fixed
 

@@ -862,6 +862,14 @@ was on Settings, since both are a footer tab's own top-level view.
 Re-tapping the Levels tab while a pack is open also closes back to the
 list, matching DigiSpin's own pack-list behaviour.
 
+CANGUPA-76 then gave the open pack's own `LevelsScreen` its own back
+button in its own header row, matching DigiSpin's own pack header more
+closely (DIGISPIN-173/174) and replacing that shared floating arrow for
+the whole Levels tab, centring the pack name in the row and colouring it
+and each done cell in the pack's own colour instead of the plain theme
+ink/accent, and dropping the now-redundant "N/M solved" count the pack
+list already shows.
+
 One commit. Verified with `tsc --noEmit` (clean) and the full Jest suite
 (771 tests passing).
 

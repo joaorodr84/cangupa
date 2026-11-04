@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import LevelsScreen from './LevelsScreen';
 import { NO_PROGRESS, type Progress } from '../state/progress';
 import { DARK } from '../theme/palette';
+import { PACK_COLORS, packLabelColorFor } from '../theme/packColors';
 
 const palette = DARK;
 
@@ -15,6 +16,7 @@ test('renders one button per level in the given pack', async () => {
       currentLevel={0}
       palette={palette}
       onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
     />,
   );
 
@@ -33,6 +35,7 @@ test('only the first level is unlocked with no progress', async () => {
       currentLevel={0}
       palette={palette}
       onSelectLevel={onSelectLevel}
+      onBack={jest.fn()}
     />,
   );
 
@@ -55,6 +58,7 @@ test('a level unlocks once the one before it is cleared', async () => {
       currentLevel={0}
       palette={palette}
       onSelectLevel={onSelectLevel}
+      onBack={jest.fn()}
     />,
   );
 
@@ -62,7 +66,7 @@ test('a level unlocks once the one before it is cleared', async () => {
   expect(onSelectLevel).toHaveBeenCalledWith(1);
 });
 
-test('a cleared level is marked done', async () => {
+test('a cleared level is marked done in the pack colour, with a contrast-safe number', async () => {
   const progress: Progress = { done: [0], level: 1, bestMoves: {} };
   await render(
     <LevelsScreen
@@ -72,12 +76,14 @@ test('a cleared level is marked done', async () => {
       currentLevel={1}
       palette={palette}
       onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
     />,
   );
 
   const done = screen.getByTestId('level-1');
   const flat = [done.props.style].flat();
-  expect(flat.some((s) => s?.backgroundColor === palette.control)).toBe(true);
+  expect(flat.some((s) => s?.backgroundColor === PACK_COLORS[0])).toBe(true);
+  expect(screen.getByText('1').props.style[1].color).toBe(packLabelColorFor(0));
 });
 
 test('a locked level has a solid background and dimmed text, not a faded cell', async () => {
@@ -89,6 +95,7 @@ test('a locked level has a solid background and dimmed text, not a faded cell', 
       currentLevel={0}
       palette={palette}
       onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
     />,
   );
 
@@ -96,7 +103,7 @@ test('a locked level has a solid background and dimmed text, not a faded cell', 
   const flat = [locked.props.style].flat();
   expect(flat.some((s) => s?.opacity !== undefined)).toBe(false);
   expect(flat.some((s) => s?.backgroundColor === palette.panel)).toBe(true);
-  expect(screen.getByText('2').props.style.color).toBe(palette.muted);
+  expect(screen.getByText('2').props.style[1].color).toBe(palette.muted);
 });
 
 test('the current level is outlined in the theme ink colour', async () => {
@@ -109,6 +116,7 @@ test('the current level is outlined in the theme ink colour', async () => {
       currentLevel={1}
       palette={palette}
       onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
     />,
   );
 
@@ -129,6 +137,7 @@ test('level numbers reflect the pack offset, and only that pack shows', async ()
       currentLevel={0}
       palette={palette}
       onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
     />,
   );
 
@@ -140,7 +149,7 @@ test('level numbers reflect the pack offset, and only that pack shows', async ()
   }
 });
 
-test("shows the pack's own name, blurb and cleared count in its header", async () => {
+test("shows the pack's own name, in its own colour, and its blurb in its header", async () => {
   const progress: Progress = { done: [2], level: 0, bestMoves: {} };
   await render(
     <LevelsScreen
@@ -150,11 +159,31 @@ test("shows the pack's own name, blurb and cleared count in its header", async (
       currentLevel={0}
       palette={palette}
       onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
     />,
   );
 
   expect(screen.getByTestId('pack-header')).toBeTruthy();
-  expect(screen.getByText('Creek')).toBeTruthy();
-  expect(screen.getByText('1/3')).toBeTruthy();
+  const name = screen.getByText('Creek');
+  expect(name).toBeTruthy();
+  expect([name.props.style].flat().some((s) => s?.color === PACK_COLORS[1])).toBe(true);
   expect(screen.getByText('Jump over a missing tile. Gold tiles need two visits.')).toBeTruthy();
+});
+
+test('the back button in the header calls onBack', async () => {
+  const onBack = jest.fn();
+  await render(
+    <LevelsScreen
+      packIndex={0}
+      packSizes={[2]}
+      progress={NO_PROGRESS}
+      currentLevel={0}
+      palette={palette}
+      onSelectLevel={jest.fn()}
+      onBack={onBack}
+    />,
+  );
+
+  await fireEvent.press(screen.getByRole('button', { name: /back/i }));
+  expect(onBack).toHaveBeenCalled();
 });

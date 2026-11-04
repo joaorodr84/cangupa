@@ -13,17 +13,27 @@
 // LevelsScreen once it gained the same split, DIGISPIN-163): the Levels tab
 // shows the pack list (LevelPacksScreen) first, and opening a pack brings up
 // just its own grid here — replacing CANGUPA-56's one long scroll of every
-// pack's grid stacked in a row. Getting back to the list reuses App.tsx's
-// existing header back arrow (it steps to the pack list instead of the
-// board while a pack is open) rather than a second arrow of this screen's
-// own. Cells keep the level's play-order number, the one the board's HUD
-// and the home screen show, so a number means the same level on every
-// screen.
+// pack's grid stacked in a row. Cells keep the level's play-order number,
+// the one the board's HUD and the home screen show, so a number means the
+// same level on every screen.
+//
+// The header (CANGUPA-76, matching DigiSpin's own pack header,
+// DIGISPIN-173/174) carries its own back button rather than reusing
+// App.tsx's floating one: the button and the pack's name share one row,
+// the name centred across the whole row — via a same-sized spacer balancing
+// the button on the other side — and set in the pack's own colour
+// (packColors.ts) instead of the theme's ink. A done level is coloured the
+// same way, no separate "N/M solved" count repeated here (LevelPacksScreen
+// already shows it per pack on the list before this). Cangupa has no
+// DigiSpin-style "mastered" state (every solution found), so a done cell
+// gets no star overlay — just its pack colour.
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import BackArrow from './BackArrow';
 import { useStrings } from '../i18n/useStrings';
 import { isDone, isUnlocked, type Progress } from '../state/progress';
 import { type Palette } from '../theme/palette';
+import { PACK_COLORS, packLabelColorFor } from '../theme/packColors';
 import { GAP_PT, levelRows, levelsPerRow, squareSize } from './levelGrid';
 
 interface LevelsScreenProps {
@@ -35,6 +45,7 @@ interface LevelsScreenProps {
   readonly currentLevel: number;
   readonly palette: Palette;
   readonly onSelectLevel: (levelIndex: number) => void;
+  readonly onBack: () => void;
 }
 
 export default function LevelsScreen({
@@ -44,11 +55,14 @@ export default function LevelsScreen({
   currentLevel,
   palette,
   onSelectLevel,
+  onBack,
 }: LevelsScreenProps) {
   const t = useStrings();
   const { width } = useWindowDimensions();
   const perRow = levelsPerRow(width);
   const size = squareSize(width, perRow);
+  const color = PACK_COLORS[packIndex % PACK_COLORS.length];
+  const labelColor = packLabelColorFor(packIndex);
 
   let start = 0;
   for (let i = 0; i < packIndex; i++) {
@@ -56,17 +70,24 @@ export default function LevelsScreen({
   }
   const levels = Array.from({ length: packSizes[packIndex] }, (_, i) => start + i);
   const text = t.packs[packIndex];
-  const cleared = levels.filter((levelIndex) => isDone(progress, levelIndex)).length;
 
   return (
     <ScrollView contentContainerStyle={styles.grid}>
       <View style={styles.header} testID="pack-header">
-        <Text accessibilityRole="header" style={[styles.packName, { color: palette.ink }]}>
+        <Pressable
+          onPress={onBack}
+          accessibilityRole="button"
+          accessibilityLabel={t.common.backToList}
+          style={[styles.back, { backgroundColor: palette.panel }]}
+        >
+          <BackArrow color={palette.ink} />
+        </Pressable>
+        <Text accessibilityRole="header" style={[styles.packName, { color }]}>
           {text?.name ?? ''}
         </Text>
-        <Text style={{ color: palette.muted }}>{`${cleared}/${levels.length}`}</Text>
+        <View style={styles.back} />
       </View>
-      {text ? <Text style={{ color: palette.muted }}>{text.blurb}</Text> : null}
+      {text ? <Text style={[styles.fact, { color: palette.muted }]}>{text.blurb}</Text> : null}
       <View style={styles.rows}>
         {levelRows(levels, perRow).map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
@@ -83,17 +104,19 @@ export default function LevelsScreen({
                   style={[
                     styles.cell,
                     { width: size, height: size },
-                    // Solid either way — done takes the theme's one accent
-                    // colour (the same one the Play button uses) instead of
-                    // the previous translucent green tint, and locked drops
-                    // the opacity-0.4 fade for a plain panel background with
+                    // Solid either way — done takes the pack's own colour
+                    // (CANGUPA-76, matching LevelPacksScreen's swatch)
+                    // instead of a plain theme accent, and locked drops the
+                    // opacity-0.4 fade for a plain panel background with
                     // dimmed text below, so no cell is ever see-through
                     // (CANGUPA-46).
-                    { backgroundColor: done ? palette.control : palette.panel, borderColor: palette.ink },
+                    { backgroundColor: done ? color : palette.panel, borderColor: palette.ink },
                     current && styles.current,
                   ]}
                 >
-                  <Text style={{ color: unlocked ? palette.ink : palette.muted }}>{levelIndex + 1}</Text>
+                  <Text style={[styles.number, { color: done ? labelColor : unlocked ? palette.ink : palette.muted }]}>
+                    {levelIndex + 1}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -110,11 +133,29 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   header: {
-    gap: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
+  // Centred in the row via flex:1 on both sides of it — the back button and
+  // its same-sized spacer (styles.back) — not just the room beside the
+  // button (DigiSpin's own DIGISPIN-174).
   packName: {
-    fontSize: 20,
+    flex: 1,
+    fontSize: 24,
     fontWeight: '700',
+    textAlign: 'center',
+  },
+  back: {
+    width: 38,
+    height: 38,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fact: {
+    fontSize: 16,
+    lineHeight: 22,
   },
   rows: {
     gap: GAP_PT,
@@ -131,5 +172,9 @@ const styles = StyleSheet.create({
   },
   current: {
     borderWidth: 2,
+  },
+  number: {
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
