@@ -9,6 +9,7 @@ import BoardScreen from './src/components/BoardScreen';
 import FooterNav, { type FooterTab } from './src/components/FooterNav';
 import HelpScreen from './src/components/HelpScreen';
 import HomeScreen from './src/components/HomeScreen';
+import LevelPacksScreen from './src/components/LevelPacksScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import StatsScreen from './src/components/StatsScreen';
@@ -106,6 +107,13 @@ function Shell({
   const insets = useSafeAreaInsets();
   const t = useStrings();
   const [panel, setPanel] = useState<Panel>('home');
+  // The open pack's index within the Levels tab, or null to show the pack
+  // list (CANGUPA-73, mirroring DigiSpin's own DIGISPIN-163/166). Persists
+  // across a switch to another tab and back — leaving and returning to a
+  // pack's own grid finds it exactly as it was — the one way back to the
+  // list without using its own back arrow is tapping the Levels tab again
+  // while already on it.
+  const [openPack, setOpenPack] = useState<number | null>(null);
   const palette = paletteFor(settings.themeMode, useColorScheme());
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
 
@@ -114,7 +122,22 @@ function Shell({
     setPanel('board');
   };
 
+  const selectFooterTab = (tab: FooterTab) => {
+    if (tab === 'levels' && panel === 'levels') {
+      setOpenPack(null);
+    }
+    setPanel(tab);
+  };
+
   const showFooter = isFooterTab(panel);
+  // The one header back arrow does double duty inside the Levels tab
+  // (CANGUPA-73): with a pack open it steps back to the pack list instead
+  // of out to the board, rather than a second arrow of its own stacked
+  // alongside it.
+  const inOpenPack = panel === 'levels' && openPack !== null;
+  const headerBack = inOpenPack
+    ? { label: t.common.backToList, onPress: () => setOpenPack(null) }
+    : { label: t.common.back, onPress: () => setPanel('board') };
 
   let content;
   if (panel === 'home') {
@@ -127,15 +150,19 @@ function Shell({
       />
     );
   } else if (panel === 'levels') {
-    content = (
-      <LevelsScreen
-        packSizes={PACK_SIZES}
-        progress={progress}
-        currentLevel={currentLevel}
-        palette={palette}
-        onSelectLevel={goToLevel}
-      />
-    );
+    content =
+      openPack === null ? (
+        <LevelPacksScreen packSizes={PACK_SIZES} progress={progress} palette={palette} onOpenPack={setOpenPack} />
+      ) : (
+        <LevelsScreen
+          packIndex={openPack}
+          packSizes={PACK_SIZES}
+          progress={progress}
+          currentLevel={currentLevel}
+          palette={palette}
+          onSelectLevel={goToLevel}
+        />
+      );
   } else if (panel === 'stats') {
     content = <StatsScreen totalLevels={LEVELS.length} progress={progress} palette={palette} />;
   } else if (panel === 'help') {
@@ -193,13 +220,15 @@ function Shell({
           { paddingTop: insets.top + 16, paddingBottom: showFooter ? 0 : insets.bottom + 16 },
         ]}
       >
-        {/* Redundant on 'settings': it's a footer tab (CANGUPA-31), already one
-            tap from Home, so the back link only duplicated that path. */}
-        {panel !== 'board' && panel !== 'home' && panel !== 'settings' && (
+        {/* Redundant on 'settings' and on the pack list (CANGUPA-73): both are
+            a footer tab's own top-level view, already one tap from Home, so
+            the back link would only duplicate that path. Once a pack is open
+            the arrow reappears, now stepping back to the pack list. */}
+        {panel !== 'board' && panel !== 'home' && panel !== 'settings' && (panel !== 'levels' || inOpenPack) && (
           <Pressable
-            onPress={() => setPanel('board')}
+            onPress={headerBack.onPress}
             accessibilityRole="button"
-            accessibilityLabel={t.common.back}
+            accessibilityLabel={headerBack.label}
             style={[styles.backButton, { backgroundColor: palette.panel }]}
           >
             <BackArrow color={palette.ink} />
@@ -210,7 +239,7 @@ function Shell({
       {/* Outside the padded content box (CANGUPA-45), so the bar spans the
           screen's full width and sits flush against the bottom edge, instead
           of inheriting content's horizontal padding and insets.bottom gap. */}
-      {showFooter && <FooterNav active={panel} palette={palette} onSelect={setPanel} insetBottom={insets.bottom} />}
+      {showFooter && <FooterNav active={panel} palette={palette} onSelect={selectFooterTab} insetBottom={insets.bottom} />}
       {/* Light status-bar content reads against the dark palette's near-black
           bg2; the light palette needs the inverse (DigiSpin's App.tsx does
           the same identity check rather than going through resolvedThemeOf,

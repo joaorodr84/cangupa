@@ -843,6 +843,30 @@ on press-and-hold, restoring on release, with no console errors.
 
 ---
 
+## Era 29 — Nov 4 (continued): the Levels tab splits into a pack list and a pack's own grid
+
+CANGUPA-73 replaces CANGUPA-56's one long scroll of all ten level packs'
+grids stacked in a row with a DigiSpin-style two-screen flow: a new
+`LevelPacksScreen` lists the ten packs one row per pack — a colour
+swatch with a placeholder icon (`theme/packColors.ts`, `PackIcon.tsx`),
+the pack's name, and a "Levels X–Y · N/M solved" line — under the
+collection name, now "Australia"/"Austrália" (previously "Base"), shown
+in a pill badge. Tapping a pack opens `LevelsScreen` now scoped to just
+that pack's own grid via a new `packIndex` prop, instead of rendering
+every pack's grid on one screen. `App.tsx` gained an `openPack` state
+tracking which pack, if any, is open; the Shell header's existing back
+arrow does double duty instead of a second arrow being added — with a
+pack open it steps back to the pack list, otherwise it steps out to the
+board — and is hidden on the pack list itself, the same way it already
+was on Settings, since both are a footer tab's own top-level view.
+Re-tapping the Levels tab while a pack is open also closes back to the
+list, matching DigiSpin's own pack-list behaviour.
+
+One commit. Verified with `tsc --noEmit` (clean) and the full Jest suite
+(771 tests passing).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

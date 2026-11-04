@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-73`**
+**Next ID to assign: `CANGUPA-74`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -29,6 +29,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Date | Commit |
 | --- | --- | --- | --- | --- | --- |
+| CANGUPA-73 | P2 | Split apps/app's Levels tab into a DigiSpin-style two-screen flow: a new `LevelPacksScreen` (one row per pack — a colour swatch with a placeholder icon, its name, and a "Levels X–Y · N/M solved" line, under the "Australia"/"Austrália" collection name in a pill badge) and `LevelsScreen` now scoped to a single pack's own grid, replacing CANGUPA-56's one long scroll of every pack stacked in a row. The existing Shell header back arrow does double duty as the pack grid's own "back to the list" control instead of a second arrow of its own, and is hidden on the pack list itself (a footer tab's own top-level view, like Settings), reappearing once a pack is open. Ten fixed colours, one per pack (`theme/packColors.ts`, mirroring DigiSpin's digit colours) with a computed contrast-safe label colour (`packLabelColorFor`). Re-tapping the Levels tab while a pack is open also closes back to the list, matching DigiSpin's own pack-list behaviour | done | 2026-11-04 | — |
 | CANGUPA-71 | P3 | Port the hold-to-peek fade (CANGUPA-70) to apps/app: holding on the kangaroo's own tile fades it to 20% opacity so a special tile underneath is visible, releasing restores it | done | 2026-11-04 | — |
 | CANGUPA-70 | P3 | Peek: holding on the kangaroo's own tile in apps/web-classic fades it to 20% opacity so a special tile (cracked/double) underneath is visible, releasing restores it | done | 2026-11-04 | — |
 | CANGUPA-65 | P1 | Fix falling (CANGUPA-64) wrongly treating a tap on any tile with no legal move as a fall target: restrict it to a tap that is a step or jump away in one of the four cardinal directions (the same geometric shape `legalMoves()` uses), in both apps/web-classic and apps/app | done | 2026-11-04 | — |

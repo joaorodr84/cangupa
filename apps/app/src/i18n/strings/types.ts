@@ -5,6 +5,10 @@
 export interface Strings {
   readonly common: {
     readonly back: string;
+    // The level packs screen's own back arrow (CANGUPA-73), returning from
+    // one pack's level grid to the pack list — distinct from `back` above,
+    // which always exits to the board.
+    readonly backToList: string;
   };
   readonly tabs: {
     readonly home: string;
@@ -91,4 +95,7 @@ export interface Strings {
     readonly name: string;
     readonly blurb: string;
   }[];
+  // The pack row's own range/progress line on LevelPacksScreen (CANGUPA-73),
+  // matching DigiSpin's own packs.range wording: "Levels 1–25 · 5/25 solved".
+  readonly packRange: (first: number, last: number, solved: number, total: number) => string;
 }

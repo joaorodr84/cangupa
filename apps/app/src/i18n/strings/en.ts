@@ -8,6 +8,7 @@ import { type Strings } from './types';
 export const en: Strings = {
   common: {
     back: '‹ Back',
+    backToList: 'Back to the list',
   },
   tabs: {
     home: 'Home',
@@ -79,7 +80,7 @@ export const en: Strings = {
     language: 'Language',
     followDevice: 'Follow the device',
   },
-  collection: 'Base',
+  collection: 'Australia',
   packs: [
     {
       name: 'Meadow',
@@ -122,4 +123,5 @@ export const en: Strings = {
       blurb: 'The longest walks in the game.',
     },
   ],
+  packRange: (first, last, solved, total) => `Levels ${first}–${last} · ${solved}/${total} solved`,
 };

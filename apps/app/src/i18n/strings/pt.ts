@@ -5,6 +5,7 @@ import { type Strings } from './types';
 export const pt: Strings = {
   common: {
     back: '‹ Voltar',
+    backToList: 'Voltar à lista',
   },
   tabs: {
     home: 'Início',
@@ -76,7 +77,7 @@ export const pt: Strings = {
     language: 'Idioma',
     followDevice: 'Seguir o dispositivo',
   },
-  collection: 'Base',
+  collection: 'Austrália',
   packs: [
     {
       name: 'Prado',
@@ -119,4 +120,5 @@ export const pt: Strings = {
       blurb: 'Os percursos mais longos do jogo.',
     },
   ],
+  packRange: (first, last, solved, total) => `Níveis ${first}–${last} · ${solved}/${total} resolvidos`,
 };

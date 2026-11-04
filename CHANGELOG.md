@@ -113,6 +113,17 @@ Open work is listed in [TODO.md](TODO.md).
 - The levels in packs 1 to 6 of the app are different from earlier builds, so
   progress made on those levels in earlier builds no longer lines up with
   them. The web game is unchanged.
+- The app's Levels tab now shows the ten level packs as a list first,
+  instead of one long scroll of every pack's levels. Each row has a
+  colour swatch with a placeholder icon, the pack's name, and a "Levels
+  X–Y · N/M solved" line, under a collection name shown in a pill badge
+  that is now "Australia" ("Austrália" in Portuguese) instead of "Base".
+  Tapping a pack opens just that pack's own level grid; the existing
+  header back arrow steps from the grid back to the list instead of a
+  second back arrow being added, and it stays hidden while the pack list
+  itself is showing, the same way it's hidden on other footer tabs'
+  top-level screens. Re-tapping the Levels tab while a pack is open also
+  closes back to the list.
 
 ### Fixed
 

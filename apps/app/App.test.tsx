@@ -47,14 +47,49 @@ test('resumes the last-played level', async () => {
   expect(await screen.findByText('Level 3')).toBeTruthy();
 });
 
-test('the footer nav opens the levels screen, and picking a level opens the board', async () => {
+test('the footer nav opens the pack list, opening a pack opens its levels, and picking one opens the board', async () => {
   await render(<App />);
 
   await fireEvent.press(await screen.findByTestId('footer-levels'));
+  expect(screen.getByTestId('pack-1')).toBeTruthy();
+  expect(screen.queryByTestId('level-1')).toBeNull();
+
+  await fireEvent.press(screen.getByTestId('pack-1'));
   expect(screen.getByTestId('level-2')).toBeTruthy();
 
   await fireEvent.press(screen.getByTestId('level-1'));
   expect(await screen.findByText('Level 1')).toBeTruthy();
+});
+
+test('the pack list has no back button of its own, unlike a pack\'s own level grid', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-levels'));
+  expect(screen.getByTestId('pack-1')).toBeTruthy();
+  expect(screen.queryByLabelText('‹ Back')).toBeNull();
+  expect(screen.queryByLabelText('Back to the list')).toBeNull();
+
+  await fireEvent.press(screen.getByTestId('pack-1'));
+  expect(screen.getByLabelText('Back to the list')).toBeTruthy();
+});
+
+test("a pack's own back arrow returns to the pack list, and reopening the Levels tab closes it the same way", async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-levels'));
+  await fireEvent.press(screen.getByTestId('pack-1'));
+  expect(screen.getByTestId('level-1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByLabelText('Back to the list'));
+  expect(screen.getByTestId('pack-1')).toBeTruthy();
+  expect(screen.queryByTestId('level-1')).toBeNull();
+
+  await fireEvent.press(screen.getByTestId('pack-1'));
+  expect(screen.getByTestId('level-1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByTestId('footer-levels'));
+  expect(screen.getByTestId('pack-1')).toBeTruthy();
+  expect(screen.queryByTestId('level-1')).toBeNull();
 });
 
 test('the home screen\'s Rules button opens the rules screen, and Back returns to the board', async () => {
@@ -113,6 +148,7 @@ test('the footer nav\'s Home tab returns to the home screen from levels, stats a
   await render(<App />);
 
   await fireEvent.press(await screen.findByTestId('footer-levels'));
+  await fireEvent.press(screen.getByTestId('pack-1'));
   expect(screen.getByTestId('level-1')).toBeTruthy();
 
   await fireEvent.press(screen.getByTestId('footer-home'));
