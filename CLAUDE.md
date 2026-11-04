@@ -19,7 +19,7 @@ while `HEAD` is on `develop` or `main`.
 - Already on a feature branch (anything other than `develop` or `main`): stay
   on it, don't branch off a branch.
 - Skip branching for read-only work: answering questions, reading code,
-  running `node apps/web-classic/tools/test.js`, investigating a bug without
+  running `node tools/test.js`, investigating a bug without
   fixing it. Branch the moment an investigation becomes a fix.
 - Don't ask permission — this rule *is* the standing authorization.
 
@@ -134,7 +134,7 @@ release.
 
 | Suite | Command | What it is |
 | --- | --- | --- |
-| Rules + levels | `node apps/web-classic/tools/test.js` | Plain Node, no dependencies — checks the move rules behave and that every level in `js/levels.js` is solvable |
+| Rules + levels | `node tools/test.js` | Plain Node, no dependencies — checks the move rules behave and that every level in `js/levels.js` is solvable |
 
 What a change owes it:
 
@@ -147,7 +147,7 @@ What a change owes it:
 - **A bug fix gets the test that would have caught it**, failing against the
   unfixed code and passing after.
 - **A UI or rendering change is also looked at in a browser** before it
-  lands — `apps/web-classic/tools/test.js` never touches `js/ui.js`.
+  lands — `tools/test.js` never touches `js/ui.js`.
 
 ## Comments
 

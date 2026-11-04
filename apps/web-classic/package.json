@@ -4,7 +4,7 @@
   "private": true,
   "description": "A puzzle game in plain HTML, CSS and JavaScript, inspired by the DOS game WESP.",
   "scripts": {
-    "test": "node tools/test.js",
-    "gen-levels": "node tools/gen-levels.js"
+    "test": "node ../../tools/test.js",
+    "gen-levels": "node ../../tools/gen-levels.js"
   }
 }

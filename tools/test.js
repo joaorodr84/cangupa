@@ -1,7 +1,7 @@
 // node tools/test.js: every level must be solvable, and the rules must behave.
 const assert = require('assert');
-const { Game } = require('../js/game.js');
-const { LEVELS } = require('../js/levels.js');
+const { Game } = require('../apps/web-classic/js/game.js');
+const { LEVELS } = require('../apps/web-classic/js/levels.js');
 const { measure, search, randomPlay } = require('./difficulty.js');
 
 // rules

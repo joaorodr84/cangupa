@@ -22,7 +22,7 @@ The priority can change at any time; the ID never does.
 ## Backlog
 
 - [P2] `CANGUPA-62` — Define level evaluation and difficulty metrics in
-  [difficulty.js](apps/web-classic/tools/difficulty.js): an exact
+  [difficulty.js](tools/difficulty.js): an exact
   random-play score (`bits`) where the state space fits, plus cheap
   estimators that scale to all levels (search effort, random-play survival,
   branching along the solution). Validate against the existing 50-level
@@ -48,7 +48,7 @@ The priority can change at any time; the ID never does.
   [board.ts](apps/app/src/game/board.ts)'s `Game.solve()` is a DFS that
   returns the first solution it finds, not necessarily the shortest one,
   and the level generator
-  ([level-generator.js](apps/web-classic/tools/level-generator.js)'s
+  ([level-generator.js](tools/level-generator.js)'s
   `generateLevel`/`countSolutions`) only selects for the *fewest*
   solutions among random walks (for difficulty), with no floor requiring
   more than one — some of the 50 generated levels could already have
@@ -72,7 +72,7 @@ The priority can change at any time; the ID never does.
   breaking change to the saved `Progress` shape, since it's keyed by
   level index into the old list — rather than adding a second set
   alongside it. Touches the generator
-  ([level-generator.js](apps/web-classic/tools/level-generator.js)'s
+  ([level-generator.js](tools/level-generator.js)'s
   `randomWalk`/`generateLevel`, which currently allows empty
   rows/columns and has no notion of packs), the ported level data
   (reshaped from one flat list into pack-grouped data), the levels

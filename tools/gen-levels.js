@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Builds js/levels.js from the plan in tools/level-plan.js. Plain Node, no dependencies.
+// Builds apps/web-classic/js/levels.js from the plan in tools/level-plan.js. Plain Node, no dependencies.
 //
-//   node tools/gen-levels.js                add any levels missing from js/levels.js
+//   node tools/gen-levels.js                add any levels missing from apps/web-classic/js/levels.js
 //   node tools/gen-levels.js --regenerate   rebuild every level from scratch
 //   node tools/gen-levels.js --level 12     print level 12 (1-based) and write nothing
 //
@@ -12,7 +12,7 @@
 //   --attempts N      candidates per level, overrides the plan  (default: per level, see the plan)
 //   --solution-cap N  count solutions up to this many           (default: 30)
 //   --budget N        positions to analyse per candidate        (default: 300000)
-//   --out FILE        where to write                            (default: js/levels.js)
+//   --out FILE        where to write                            (default: apps/web-classic/js/levels.js)
 //   --help
 //
 // Each level is generated from its own seed, so levels never depend on each other
@@ -27,7 +27,7 @@ const { generateLevel, verifyLevel } = require('./level-generator.js');
 
 const DEFAULTS = {
   levels: PLAN.length, jobs: os.cpus().length, seed: 1000, attempts: 0,
-  solutionCap: 30, budget: 300000, out: path.join(__dirname, '../js/levels.js'),
+  solutionCap: 30, budget: 300000, out: path.join(__dirname, '../apps/web-classic/js/levels.js'),
 };
 
 function parseArgs(argv) {

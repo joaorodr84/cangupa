@@ -1,6 +1,6 @@
 // Level difficulty, measured from the level's full state space. Plain Node.
 //
-//   node tools/difficulty.js            table for every level in js/levels.js
+//   node tools/difficulty.js            table for every level in apps/web-classic/js/levels.js
 //   node tools/difficulty.js 12         one level (1-based) in detail
 //
 // A position is (tile counts, player cell). The search below visits every
@@ -24,7 +24,7 @@
 // Why exact DP and not Monte Carlo sampling: the state space of every shipped
 // level fits in memory, and exact numbers make the score reproducible and
 // testable. Levels too big for `budget` positions return null rather than a guess.
-const { Game } = require('../js/game.js');
+const { Game } = require('../apps/web-classic/js/game.js');
 const { makeRng } = require('./level-generator.js');
 
 function measure(rows, { budget = 2000000, rules } = {}) {
@@ -131,7 +131,7 @@ function randomPlay(rows, { runs = 2000, seed = 1, rules } = {}) {
 module.exports = { measure, search, randomPlay };
 
 if (require.main === module) {
-  const { LEVELS } = require('../js/levels.js');
+  const { LEVELS } = require('../apps/web-classic/js/levels.js');
   const only = Number(process.argv[2]);
   const f = (v, d = 1) => Number.isFinite(v) ? v.toFixed(d) : String(v);
   const pad = (v, n) => String(v).padStart(n);

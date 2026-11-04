@@ -5,7 +5,7 @@
 // needing as many visits as the walk made. So the walk itself is a solution and
 // every level is solvable by construction. Many walks are tried, and the one with
 // the fewest solutions is kept: fewer solutions means a narrower, harder puzzle.
-const { Game } = require('../js/game.js');
+const { Game } = require('../apps/web-classic/js/game.js');
 
 // Small seedable random number generator (mulberry32), so levels are reproducible.
 function makeRng(seed) {

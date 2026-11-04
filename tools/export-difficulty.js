@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Writes tools/difficulty-report/levels.json: every level in js/levels.js with its
+// Writes tools/difficulty-report/levels.json: every level in apps/web-classic/js/levels.js with its
 // difficulty metrics (see difficulty.js). tools/difficulty-report/index.html reads it.
 //
 //   node tools/export-difficulty.js [--out FILE]
@@ -8,8 +8,8 @@
 // metrics are filled in for every level.
 const fs = require('fs');
 const path = require('path');
-const { Game } = require('../js/game.js');
-const { LEVELS } = require('../js/levels.js');
+const { Game } = require('../apps/web-classic/js/game.js');
+const { LEVELS } = require('../apps/web-classic/js/levels.js');
 const { measure, search, randomPlay } = require('./difficulty.js');
 
 const outFlag = process.argv.indexOf('--out');
