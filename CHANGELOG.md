@@ -69,8 +69,6 @@ Open work is listed in [TODO.md](TODO.md).
   Desfiladeiro, Planalto and Ermo in Portuguese). Each pack has its own
   theme, and boards get bigger from pack to pack, from 3×3 up to 8×7.
   Levels get harder within each pack and from one pack to the next.
-  Two-visit tiles appear from the first pack on, except in the first four
-  levels of Meadow, and jumps are taught from the second pack.
 - The app's Levels screen now shows a collection label ("Base") and one
   section per pack, with the pack's name, a one-line description and how
   many of its levels are cleared. Clearing a pack's last level opens the
@@ -78,6 +76,14 @@ Open work is listed in [TODO.md](TODO.md).
   Portuguese.
 - Rectangular boards in the app are turned to fit the phone: wide when the
   phone is held sideways, tall when it is upright.
+- The app has a new Steel tile, grey-blue, that needs three visits.
+- The app has a new arrow tile: a raspberry tile with a white triangle on
+  one edge. It needs one visit and can only be left through the edge where
+  the triangle is, whether by a step or a jump.
+- The app's help screen now explains the Gold, Steel and arrow tiles, in
+  English and Portuguese.
+- The first six level packs in the app now have new descriptions, in English
+  and Portuguese.
 
 ### Changed
 
@@ -93,6 +99,20 @@ Open work is listed in [TODO.md](TODO.md).
   device's native confirmation dialog. It asks "Are you sure you want to
   clear your progress?" with Yes/No buttons, and No — the safe choice — is
   focused as soon as the pop-up opens.
+- The app's plain tile is now called the Common tile.
+- In the app, a Gold or Steel tile shows how many visits it has left as short
+  diagonal strokes, one per visit left, side by side like tally marks (dark
+  on gold, white on steel). A tile on its last visit shows one stroke. This
+  replaces the two bars and the single crack the gold tile used to show.
+- The app's level packs now introduce tiles one at a time. Pack 1 has only
+  Common tiles (and some jumps), pack 2 adds Gold, pack 3 has Steel, pack 4
+  has Gold and Steel together, and pack 5 has arrow tiles. In pack 6 each
+  level has arrow tiles plus one metal, gold on one level and steel on the
+  next. No level in the first ten packs mixes more than three kinds of tile,
+  counting the Common tile. Packs 7 to 10 are unchanged.
+- The levels in packs 1 to 6 of the app are different from earlier builds, so
+  progress made on those levels in earlier builds no longer lines up with
+  them. The web game is unchanged.
 
 ### Fixed
 

@@ -21,23 +21,14 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P2] `CANGUPA-69` — Add the arrow tile and put it in pack 5. One visit;
-  it can only be left in the way it points, steps and jumps alike. Level
-  characters `> < v ^`, never the start tile. Pack 5 has only Common tiles
-  and arrow tiles. Drawn as a raspberry (`#9D1057`) tile with a white
-  triangle on the exit edge. A corner or three-way arrow, and a wall tile
-  that blocks an edge in both directions, were discussed and left for
-  later.
-- [P2] `CANGUPA-68` — Add the Steel tile (three visits) and a per-pack tile
-  mix: pack 1 Common only (Common is the one-visit tile, formerly Normal);
-  pack 2 Common and Gold (two visits); pack 3 Common and Steel only; pack 4
-  Common, Gold and Steel; pack 5 is `CANGUPA-69`; packs 6 to 10 are left
-  exactly as they are. Level
-  characters: `3` is a Steel tile and `T` a start on one. The board shows
-  visits left on Gold and Steel as short diagonal strokes (top right to
-  bottom left), a Steel colour of `#587790` and a help-screen line for it.
-  Colour and mark choices come from the tile-metals review page
-  (`CANGUPA-56` follow-up). The `web-classic` game keeps its own levels.
+- [P2] `CANGUPA-70` — The hint solver (`Game.solve`) can run out of memory or
+  take many seconds on some big levels turned for a portrait screen, so
+  pressing Hint could hang the app. Packs 8 to 10 (frozen) are the problem:
+  50 of their 100 turned levels pass 400,000 positions, one run ended in
+  `Set maximum size exceeded`. Trying the move with the fewest onward options
+  first solves 95 of them, 5 still fail and the slowest takes 14 seconds.
+  Needs a better search, solving off the UI thread, or storing each
+  level's solution in packs.json.
 - [P2] `CANGUPA-62` — Define level evaluation and difficulty metrics in
   [difficulty.js](tools/difficulty.js): an exact
   random-play score (`bits`) where the state space fits, plus cheap
