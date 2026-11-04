@@ -12,7 +12,7 @@ test('shows the collection label and one row per pack, with its name', async () 
     <LevelPacksScreen packSizes={[2, 3]} progress={NO_PROGRESS} palette={palette} onOpenPack={jest.fn()} />,
   );
 
-  expect(screen.getByText('Australia')).toBeTruthy();
+  expect(screen.getByText('Wide Country')).toBeTruthy();
   expect(screen.getByTestId('pack-1')).toBeTruthy();
   expect(screen.getByTestId('pack-2')).toBeTruthy();
   expect(screen.getByText('Meadow')).toBeTruthy();

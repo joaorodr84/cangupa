@@ -77,7 +77,7 @@ export const pt: Strings = {
     language: 'Idioma',
     followDevice: 'Seguir o dispositivo',
   },
-  collection: 'Austrália',
+  collection: 'Terras Largas',
   packs: [
     {
       name: 'Prado',
