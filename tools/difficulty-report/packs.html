@@ -35,6 +35,8 @@
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
   main { max-width: 1040px; margin: 0 auto; display: grid; gap: 28px; }
+  /* grid children default to min-width:auto, so the chart's 640px minimum stretched the whole page on a phone */
+  main > * { min-width: 0; }
   h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
   h2 { font-size: 1.15rem; margin: 0; }
   .lede { margin: 6px 0 0; color: var(--muted); max-width: 65ch; line-height: 1.5; font-size: .95rem; }
