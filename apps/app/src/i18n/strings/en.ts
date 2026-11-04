@@ -75,4 +75,46 @@ export const en: Strings = {
     language: 'Language',
     followDevice: 'Follow the device',
   },
+  packs: [
+    {
+      name: 'Meadow',
+      blurb: 'Hop from tile to tile. Some tiles crack: they need two visits.',
+    },
+    {
+      name: 'Creek',
+      blurb: 'Gaps appear. Jump over one missing tile.',
+    },
+    {
+      name: 'Gully',
+      blurb: 'Jumps and cracked tiles on a square board.',
+    },
+    {
+      name: 'Outcrop',
+      blurb: 'More cracked tiles and longer routes.',
+    },
+    {
+      name: 'Billabong',
+      blurb: 'Open water in the middle. Plan the way round.',
+    },
+    {
+      name: 'Ridge',
+      blurb: 'Long runs that fold back on themselves.',
+    },
+    {
+      name: 'Mesa',
+      blurb: 'Wide boards where one wrong jump strands you.',
+    },
+    {
+      name: 'Gorge',
+      blurb: 'Narrow routes, many cracked tiles.',
+    },
+    {
+      name: 'Plateau',
+      blurb: 'Everything at once, on a big board.',
+    },
+    {
+      name: 'Outback',
+      blurb: 'The longest walks in the game.',
+    },
+  ],
 };
