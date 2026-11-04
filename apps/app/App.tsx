@@ -12,7 +12,7 @@ import HomeScreen from './src/components/HomeScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import StatsScreen from './src/components/StatsScreen';
-import { LEVELS } from './src/game/levels';
+import { LEVELS, PACK_SIZES } from './src/game/levels';
 import { LanguageContext } from './src/i18n/LanguageContext';
 import { type LanguageSetting } from './src/i18n/locale';
 import { useStrings } from './src/i18n/useStrings';
@@ -126,7 +126,7 @@ function Shell({
   } else if (panel === 'levels') {
     content = (
       <LevelsScreen
-        totalLevels={LEVELS.length}
+        packSizes={PACK_SIZES}
         progress={progress}
         currentLevel={currentLevel}
         palette={palette}

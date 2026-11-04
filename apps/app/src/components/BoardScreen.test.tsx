@@ -1,10 +1,25 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { useWindowDimensions } from 'react-native';
 
 import BoardScreen from './BoardScreen';
 import { type Level, type Rules } from '../game/board';
 import { DARK } from '../theme/palette';
 
 const palette = DARK;
+
+// A rectangular level is turned to suit the screen (CANGUPA-56, game/orient.ts).
+// These tests' levels are wide, written before that existed, so they run on a
+// landscape screen where a wide level is drawn as written; the portrait case
+// has its own tests below. jest-expo's own default window is portrait.
+jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+const LANDSCAPE = { width: 800, height: 400, scale: 1, fontScale: 1 };
+const PORTRAIT = { width: 400, height: 800, scale: 1, fontScale: 1 };
+beforeEach(() => {
+  jest.mocked(useWindowDimensions).mockReturnValue(LANDSCAPE);
+});
 
 function noop() {
   /* not under test */
@@ -100,4 +115,38 @@ test('closing the win popup leaves the board reachable through Reset', async () 
 
   await fireEvent.press(screen.getByLabelText('Restart'));
   expect(screen.getByText('Moves 0')).toBeTruthy();
+});
+
+test('turns a wide level tall when the screen is portrait', async () => {
+  jest.mocked(useWindowDimensions).mockReturnValue(PORTRAIT);
+
+  await renderScreen({ level: ['S1'], rules: { jumps: true } });
+
+  // ['S1'] is two across and one down; turned, the second tile is below the first.
+  expect(screen.getByTestId('tile-press-0-1')).toBeTruthy();
+  expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
+});
+
+test('a turned level is still playable and clears', async () => {
+  jest.mocked(useWindowDimensions).mockReturnValue(PORTRAIT);
+  const onLevelComplete = jest.fn();
+
+  await renderScreen({ level: ['S1'], rules: { jumps: true }, onLevelComplete });
+  await fireEvent.press(screen.getByTestId('tile-press-0-1'));
+
+  expect(onLevelComplete).toHaveBeenCalledWith(1);
+});
+
+test('does not turn the board again when the screen rotates mid-level', async () => {
+  jest.mocked(useWindowDimensions).mockReturnValue(PORTRAIT);
+  const view = await renderScreen({ level: ['S1'], rules: { jumps: true } });
+  expect(screen.getByTestId('tile-press-0-1')).toBeTruthy();
+
+  jest.mocked(useWindowDimensions).mockReturnValue(LANDSCAPE);
+  await view.rerender(
+    <BoardScreen level={['S1']} rules={{ jumps: true }} hints anim={false} palette={palette} levelNumber={1}
+      totalLevels={50} hasNext onBack={noop} onNext={noop} />,
+  );
+
+  expect(screen.getByTestId('tile-press-0-1')).toBeTruthy(); // still as it started
 });

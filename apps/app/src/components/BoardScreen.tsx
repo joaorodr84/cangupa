@@ -4,11 +4,12 @@
 // "Nível X/Y" text) and what happens next are the caller's job — see
 // CANGUPA-22 for the app shell that supplies those from the level list and
 // progress.
-import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { type Level, type Rules } from '../game/board';
 import { statusFor } from '../game/boardView';
+import { orientLevel } from '../game/orient';
 import { useBoard } from '../game/useBoard';
 import { type Palette } from '../theme/palette';
 import BoardHud from './BoardHud';
@@ -45,7 +46,14 @@ export default function BoardScreen({
   onNext,
   onLevelComplete,
 }: BoardScreenProps) {
-  const board = useBoard(level, rules, hints);
+  // A rectangular level is turned once, to the orientation the device is in when
+  // the level opens (CANGUPA-56). Not tracked after that: turning the board while
+  // it is being played would mean rebuilding it, and fitBoardWidth already
+  // keeps whichever shape it has inside the screen.
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const startedLandscape = useRef(windowWidth > windowHeight);
+  const oriented = useMemo(() => orientLevel(level, startedLandscape.current), [level]);
+  const board = useBoard(oriented, rules, hints);
   const { won, stuck, hintFailed, moves, remaining, canUndo, undo, reset, hint } = board;
 
   const wasWon = useRef(false);
