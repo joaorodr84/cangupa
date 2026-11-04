@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-80`**
+**Next ID to assign: `CANGUPA-81`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -22,6 +22,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Commit |
 | --- | --- | --- | --- | --- |
+| CANGUPA-80 | P2 | Review `apps/app`'s level packs: remove duplicate or near-identical levels, remove levels that are too easy, and check every Gold/Steel tile starts with its full visit count — `board.ts`'s `reset()` always does `cells[start] -= 1`, so a level that starts the kangaroo on a Gold (`s`) or Steel (`T`) tile loses one of that tile's visits before the player has moved | open | — |
 | CANGUPA-72 | P2 | The hint solver (`Game.solve`) can run out of memory or take many seconds on some big levels turned the other way for a portrait screen, so pressing Hint could hang the app. Found while testing CANGUPA-69: of the 100 turned levels in packs 8 to 10 (frozen, from CANGUPA-56), the plain depth-first search blows past 400,000 positions on 50 and one run ended in `Set maximum size exceeded`. Trying the move with the fewest onward options first (tested, not applied) solves 95 of them but 5 still fail and the slowest takes 14 seconds. Packs 1 to 5 solve in at most 37 ms in either orientation, pack 6 in about 1.2 s. Options: a better search (pruning, not just ordering), solving off the UI thread, or storing each level's solution in packs.json | open | — |
 | CANGUPA-78 | P4 | Let players earn an extra hint by watching a reward video, building on CANGUPA-54's hint balance. Unscoped: which ad network/SDK, platform availability (the web has no rewarded-video SDK), and app-store review requirements aren't decided yet | open | — |
 | CANGUPA-79 | P4 | Let players buy hints in an in-app store, building on CANGUPA-54's hint balance. Unscoped: store listing, pricing, and which in-app-purchase SDK (App Store/Play Store) to use aren't decided yet | open | — |
