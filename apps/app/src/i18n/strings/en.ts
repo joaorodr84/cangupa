@@ -80,7 +80,7 @@ export const en: Strings = {
     language: 'Language',
     followDevice: 'Follow the device',
   },
-  collection: 'Wide Country',
+  collection: 'Lay of the Land',
   packs: [
     {
       name: 'Meadow',

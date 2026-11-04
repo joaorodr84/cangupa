@@ -87,7 +87,7 @@ Open work is listed in [TODO.md](TODO.md).
 
 ### Changed
 
-- The level packs collection is named Wide Country (Terras Largas in
+- The level packs collection is named Lay of the Land (O Relevo in
   Portuguese) instead of Australia (Austrália).
 - Each level pack has its own icon on the level packs screen, a simple
   one-colour landscape shape (grass, waves, a V-shaped dip, rocks, a
