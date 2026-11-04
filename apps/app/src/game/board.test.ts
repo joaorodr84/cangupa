@@ -38,3 +38,21 @@ test('jumping is unavailable when the jumps rule is off', () => {
   const g = new Game(['S.1'], { jumps: false });
   expect(g.legalMoves()).toHaveLength(0);
 });
+
+// fall()'s shape check (CANGUPA-65): only a step or jump in one of the four
+// cardinal directions counts, tile or no tile there.
+test('inMoveShape accepts only a straight step or jump within range', () => {
+  const g = new Game(['S....', '.....', '.....', '.....', '.....']);
+  expect(g.inMoveShape(1, 0)).toBe(true); // step right
+  expect(g.inMoveShape(0, 1)).toBe(true); // step down
+  expect(g.inMoveShape(2, 0)).toBe(true); // jump right
+  expect(g.inMoveShape(0, 2)).toBe(true); // jump down
+  expect(g.inMoveShape(2, 2)).toBe(false); // diagonal: not a straight line
+  expect(g.inMoveShape(3, 0)).toBe(false); // in line, but past jump range
+  expect(g.inMoveShape(0, 0)).toBe(false); // standing still
+});
+
+test('inMoveShape rejects a jump-shaped distance when the jumps rule is off', () => {
+  const g = new Game(['S....', '.....'], { jumps: false });
+  expect(g.inMoveShape(2, 0)).toBe(false);
+});

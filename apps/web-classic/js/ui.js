@@ -137,11 +137,16 @@ boardEl.addEventListener('click', e => {
   const cell = e.target.closest('.cell');
   const dest = cell && game.legalMoves().find(mv => mv.x === +cell.dataset.x && mv.y === +cell.dataset.y);
   if (dest) { move(dest); return; }
-  // No `.cell` at all (board background between tiles) or a cell with no
-  // legal move both count as "empty space" here — tapping either one only
-  // does something once falling is turned on. A cell gives fall() a target
-  // to jump toward (CANGUPA-64); true background has none.
-  if (settings.fall) fall(cell && { x: +cell.dataset.x, y: +cell.dataset.y });
+  if (!settings.fall) return;
+  // No `.cell` at all (board background between tiles) counts as "empty
+  // space" with no specific target — falls in place (CANGUPA-64). A tapped
+  // cell only becomes a fall target when it's a step or jump away in one
+  // of the four directions (CANGUPA-65: a tile sitting off that line, or
+  // too far, or a jump-distance cell with jumps off, is not a move attempt
+  // at all and does nothing); otherwise it's the same "no specific cell" case.
+  if (!cell) { fall(); return; }
+  const x = +cell.dataset.x, y = +cell.dataset.y;
+  if (game.inMoveShape(x, y)) fall({ x, y });
 });
 
 // Arrow / WASD: a step if one is possible that way, else a jump. Shift forces a jump.

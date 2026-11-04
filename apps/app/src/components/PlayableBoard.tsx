@@ -76,9 +76,12 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // move plays, toward the gap instead of in place — so the fall reads as
   // "there was nothing there to land on"; a tap on true background has no
   // cell to jump to and falls right where the kangaroo already stands, as
-  // it always has.
+  // it always has. A target off that step/jump shape (CANGUPA-65 — a tile
+  // not on the same row/column, too far, or a jump-distance one with jumps
+  // off) was never a move attempt at all, so it does nothing.
   const handlePressEmpty = (target?: { x: number; y: number }) => {
     if (falling || won) return;
+    if (target && !game.inMoveShape(target.x, target.y)) return;
     setFalling(true);
     if (target) {
       setFallFacing(facingFor(target.x - game.x, target.y - game.y));

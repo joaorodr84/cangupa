@@ -76,6 +76,14 @@ Open work is listed in [TODO.md](TODO.md).
   empty background between tiles, or walking off the edge of the board
   with the arrow keys, still falls in place, since there's nowhere to
   jump to.
+- When the "fall when there's no move" setting is on, tapping or clicking
+  a tile now only makes the kangaroo fall when that tile is a step or
+  jump away from it in one of the four cardinal directions — the same
+  shape a legal move checks. A diagonal tap, a tap too far away, or a
+  jump-distance tap with the jumps rule off used to also trigger a fall;
+  now those taps do nothing, same as before falling could jump to a
+  target. Tapping true empty background, with no tile at all, still
+  falls in place as before.
 
 ## 2026-11-03
 

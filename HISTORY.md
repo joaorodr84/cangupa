@@ -795,7 +795,12 @@ rules/levels, still green) and, on the `apps/app` side, new
 `onPressEmpty` and the jump-then-fall sequencing, the full suite (285 tests,
 25 suites) green, and `tsc --noEmit` clean. The web-classic UI change itself
 was not checked live in a browser this round — no dev server was reachable
-from this session.
+from this session. CANGUPA-65 then fixed a bug this introduced: a tap on
+any tile with no legal move, not just one a step or jump away in a
+cardinal direction, was wrongly treated as a fall target, so both
+`Game` implementations gained an `inMoveShape()` check, used by
+`ui.js`'s click handler and `PlayableBoard.tsx`'s `handlePressEmpty`
+to reject an out-of-shape tap as a no-op instead of falling.
 
 ---
 

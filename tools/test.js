@@ -20,6 +20,25 @@ assert.deepStrictEqual(g.legalMoves().map(m => [m.x, m.jump]), [[2, true]]); // 
 g = new Game(['S.1'], { jumps: false });
 assert.strictEqual(g.legalMoves().length, 0);
 
+// fall()'s shape check (CANGUPA-65): only a step or jump in one of the four
+// cardinal directions counts, tile or no tile there.
+g = new Game([
+  'S....',
+  '.....',
+  '.....',
+  '.....',
+  '.....',
+]);
+assert.ok(g.inMoveShape(1, 0));                     // step right
+assert.ok(g.inMoveShape(0, 1));                      // step down
+assert.ok(g.inMoveShape(2, 0));                      // jump right
+assert.ok(g.inMoveShape(0, 2));                      // jump down
+assert.ok(!g.inMoveShape(2, 2));                     // diagonal: not a straight line
+assert.ok(!g.inMoveShape(3, 0));                     // in line, but past jump range
+assert.ok(!g.inMoveShape(0, 0));                     // standing still
+g = new Game(['S....', '.....'], { jumps: false });
+assert.ok(!g.inMoveShape(2, 0));                     // jump-shaped distance, but jumps are off
+
 // levels
 LEVELS.forEach((rows, i) => {
   const g = new Game(rows);

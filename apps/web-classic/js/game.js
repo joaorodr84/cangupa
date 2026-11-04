@@ -65,6 +65,18 @@ class Game {
     return out;
   }
 
+  // Whether (x, y) sits where a step or jump could land from `pos` — same
+  // geometry as legalMoves(), minus the "is there actually a tile" check.
+  // Lets fall() (ui.js) tell a real move attempt (e.g. a step/jump onto a
+  // worn or missing tile) from an arbitrary tap elsewhere on the board.
+  inMoveShape(x, y, pos = this.pos) {
+    const px = pos % this.w, py = (pos / this.w) | 0;
+    const dx = x - px, dy = y - py;
+    if (dx !== 0 && dy !== 0) return false;
+    const d = Math.abs(dx || dy);
+    return d >= 1 && d <= (this.rules.jumps ? 2 : 1);
+  }
+
   // Play a move from legalMoves().
   play(move) {
     this.history.push({ pos: this.pos, cells: Uint8Array.from(this.cells) });
