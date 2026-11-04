@@ -9,9 +9,10 @@ import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
+import { facingFor, type Facing } from '../game/boardView';
 import { type UseBoardResult } from '../game/useBoard';
 import { type Palette } from '../theme/palette';
-import Board, { type BoardHandle } from './Board';
+import Board, { HOP_MS, type BoardHandle } from './Board';
 import { fitBoardWidth } from './boardLayout';
 
 // styles.frame's own padding, subtracted before fitting the board to the
@@ -46,6 +47,13 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // settles, the same guard ui.js's `falling` module-level flag gives the
   // web version.
   const [falling, setFalling] = useState(false);
+  // Set only for a fall with a known target cell (CANGUPA-64): overrides
+  // where Board renders the kangaroo and which way it faces for the jump
+  // toward the gap that precedes the sink, without touching `game`'s actual
+  // position — the move was never legal, so there's nothing to play().
+  // Cleared by `reset()`'s own re-render once the fall completes.
+  const [fallTarget, setFallTarget] = useState<{ x: number; y: number } | null>(null);
+  const [fallFacing, setFallFacing] = useState<Facing | null>(null);
 
   const handlePressTile = (x: number, y: number) => {
     if (falling) return;
@@ -63,15 +71,31 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   };
 
   // A tap on empty board space or a tile with no legal move — ui.js's click
-  // handler falls through to the same thing when settings.fall is on.
-  const handlePressEmpty = () => {
+  // handler falls through to the same thing when settings.fall is on. A
+  // known target cell (CANGUPA-64) gets a jump first — the same hop a real
+  // move plays, toward the gap instead of in place — so the fall reads as
+  // "there was nothing there to land on"; a tap on true background has no
+  // cell to jump to and falls right where the kangaroo already stands, as
+  // it always has.
+  const handlePressEmpty = (target?: { x: number; y: number }) => {
     if (falling || won) return;
     setFalling(true);
-    Sound.fall();
-    boardRef.current?.fall(() => {
-      setFalling(false);
-      reset();
-    });
+    if (target) {
+      setFallFacing(facingFor(target.x - game.x, target.y - game.y));
+      setFallTarget(target);
+      boardRef.current?.hop();
+      Sound.jump();
+    }
+    const jumpMs = target && anim ? HOP_MS : 0;
+    setTimeout(() => {
+      Sound.fall();
+      boardRef.current?.fall(() => {
+        setFalling(false);
+        setFallTarget(null);
+        setFallFacing(null);
+        reset();
+      });
+    }, jumpMs);
   };
 
   const boardWidth =
@@ -94,10 +118,10 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
         w={game.w}
         h={game.h}
         tiles={tiles}
-        rooX={game.x}
-        rooY={game.y}
-        face={facing.face}
-        flip={facing.flip}
+        rooX={fallTarget?.x ?? game.x}
+        rooY={fallTarget?.y ?? game.y}
+        face={fallFacing?.face ?? facing.face}
+        flip={fallFacing?.flip ?? facing.flip}
         palette={palette}
         anim={anim}
         width={boardWidth}

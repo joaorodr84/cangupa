@@ -757,6 +757,48 @@ exactly with no clipping or overlap.
 
 ---
 
+## Era 27 — Nov 4 (continued): falling jumps to its landing cell before it sinks
+
+CANGUPA-64 fixes a gap in TILE-JUMPER-3/CANGUPA-58's falling feature: tapping
+(or arrow-keying into) a tile with no legal move sank the kangaroo in place,
+where it already stood, instead of showing it fall at the cell the player
+actually aimed at. Both apps now play the kangaroo's normal jump animation
+toward that cell first, then sink-and-restart at the landed position; a tap
+or key-press with nowhere to jump to (true board background, or walking off
+the grid's edge) still falls in place, since there's nowhere to jump to. On
+web-classic (`apps/web-classic/js/ui.js`), the facing-direction calculation
+was factored out of `move()` into a shared `faceFor(dx, dy)`, reused by the
+now target-aware `fall(target)`, which sets position/facing and plays the
+jump sound and hop bounce before the sink begins, 240ms later
+(`apps/web-classic/style.css`) to match the hop, skipped when animations are
+off. Along the way, a real latent bug surfaced: the `.falling` sink/shrink/
+fade keyframe had been applied to `#roo` itself, which also carries the
+kangaroo's own position transform, so a fall away from column/row 0 blended
+the horizontal position back toward the top-left corner while sinking —
+pre-existing since CANGUPA-58/TILE-JUMPER-3, just not obvious until this
+change made falls land away from the origin more often. Fixed by moving the
+`fall-through` animation to the nested `.hopper` element, which only ever
+carries the bounce. On `apps/app`, `Board`'s `onPressEmpty` prop now takes an
+optional target cell instead of none, with an always-empty cell and any tile
+with no legal move each getting their own `Pressable` reporting their own
+coordinates; `PlayableBoard` added local state that, only during a fall with
+a known target, overrides where `Board` renders the kangaroo (never touching
+the real game position, since the move was illegal), runs the existing
+`hop()` and jump sound, waits the newly exported `HOP_MS` (240ms) when
+animations are on, then runs the existing sink exactly as before — no
+analogous positional bug there, since the sink was already a separate layer
+from the position-bearing slot.
+
+One commit across both apps. Verified with `node tools/test.js` (unaffected
+rules/levels, still green) and, on the `apps/app` side, new
+`Board.test.tsx`/`PlayableBoard.test.tsx` cases covering the target-aware
+`onPressEmpty` and the jump-then-fall sequencing, the full suite (285 tests,
+25 suites) green, and `tsc --noEmit` clean. The web-classic UI change itself
+was not checked live in a browser this round — no dev server was reachable
+from this session.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

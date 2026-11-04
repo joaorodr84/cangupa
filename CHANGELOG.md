@@ -67,6 +67,16 @@ Open work is listed in [TODO.md](TODO.md).
   clear your progress?" with Yes/No buttons, and No — the safe choice — is
   focused as soon as the pop-up opens.
 
+### Fixed
+
+- When the "fall when there's no move" setting is on and the kangaroo
+  taps or arrow-keys into a specific stuck tile, it now hops there first
+  — the same jump a real move plays — before sinking through the board,
+  instead of sinking in place where it already stood. Tapping truly
+  empty background between tiles, or walking off the edge of the board
+  with the arrow keys, still falls in place, since there's nowhere to
+  jump to.
+
 ## 2026-11-03
 
 ### Changed

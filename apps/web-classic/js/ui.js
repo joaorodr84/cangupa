@@ -110,12 +110,16 @@ function renderLevels() {
   });
 }
 
+// Shared by move() and fall(): a mostly-horizontal step/jump faces sideways
+// (mirrored when heading left); anything else faces up (back) or down (front).
+function faceFor(dx, dy) {
+  return Math.abs(dx) >= Math.abs(dy) && dx ? { dir: 'side', left: dx < 0 } : { dir: dy < 0 ? 'up' : 'down', left: false };
+}
+
 function move(m) {
   if (game.won || !m) return;
   tip = null;
-  const dx = m.x - game.x, dy = m.y - game.y;
-  if (Math.abs(dx) >= Math.abs(dy) && dx) face = { dir: 'side', left: dx < 0 };
-  else face = { dir: dy < 0 ? 'up' : 'down', left: false };
+  face = faceFor(m.x - game.x, m.y - game.y);
   game.play(m);
   Sound.jump();
   if (game.won) {
@@ -135,8 +139,9 @@ boardEl.addEventListener('click', e => {
   if (dest) { move(dest); return; }
   // No `.cell` at all (board background between tiles) or a cell with no
   // legal move both count as "empty space" here — tapping either one only
-  // does something once falling is turned on.
-  if (settings.fall) fall();
+  // does something once falling is turned on. A cell gives fall() a target
+  // to jump toward (CANGUPA-64); true background has none.
+  if (settings.fall) fall(cell && { x: +cell.dataset.x, y: +cell.dataset.y });
 });
 
 // Arrow / WASD: a step if one is possible that way, else a jump. Shift forces a jump.
@@ -145,18 +150,40 @@ function undo() { if (game.undo()) { tip = null; render(false); } }
 function reset() { game.reset(); tip = null; render(false); }
 
 // Falling (opt-in, settings.fall): nowhere to land, so the level restarts
-// instead of the move being a no-op.
-function fall() {
+// instead of the move being a no-op. A target cell (CANGUPA-64) gets the
+// same jump a real move plays — translate transition plus hop bounce —
+// before the sink starts, so it reads as "there was nothing there to land
+// on" instead of stumbling in place; a target-less fall (true background,
+// no cell to jump to) sinks right where the kangaroo already stands, as
+// it always has. No render() here: it would reset #roo's transform back
+// to game.x/y, undoing the jump just set below — the final position is
+// restored by reset()'s own render() once the fall completes.
+function fall(target) {
   if (game.won || falling) return;
   falling = true;
-  boardEl.classList.add('falling');
-  Sound.fall();
-  render(false);
+  if (target) {
+    face = faceFor(target.x - game.x, target.y - game.y);
+    const p = cellPos(target.x, target.y);
+    roo.style.transform = `translate(${p.x}%, ${p.y}%)`;
+    roo.dataset.face = face.dir === 'up' ? 'back' : face.dir === 'down' ? 'front' : 'side';
+    roo.querySelector('.flip').classList.toggle('left', face.left);
+    Sound.jump();
+    if (settings.anim && roo.animate) {
+      roo.querySelector('.hopper').animate(
+        [{ transform: 'translateY(0)' }, { transform: 'translateY(-40%)' }, { transform: 'translateY(0)' }],
+        { duration: 240, easing: 'ease-out' });
+    }
+  }
+  const jumpMs = target && settings.anim ? 240 : 0;
   setTimeout(() => {
-    boardEl.classList.remove('falling');
-    falling = false;
-    reset();
-  }, 500);
+    boardEl.classList.add('falling');
+    Sound.fall();
+    setTimeout(() => {
+      boardEl.classList.remove('falling');
+      falling = false;
+      reset();
+    }, 500);
+  }, jumpMs);
 }
 function hint() {
   if (game.won) return;
@@ -178,7 +205,13 @@ document.addEventListener('keydown', e => {
     const at = n => moves.find(m => m.x === game.x + d[0] * n && m.y === game.y + d[1] * n);
     const m = e.shiftKey ? at(2) : at(1) || at(2);
     if (m) move(m);
-    else if (settings.fall) fall();
+    else if (settings.fall) {
+      // The cell one step in the pressed direction, if it's inside the
+      // board's bounding box — a target for fall() to jump toward, same as
+      // a tapped cell. Past the edge, there's nothing there to jump to.
+      const tx = game.x + d[0], ty = game.y + d[1];
+      fall(tx >= 0 && tx < game.w && ty >= 0 && ty < game.h ? { x: tx, y: ty } : undefined);
+    }
   } else if (k === 'z' || k === 'Backspace') undo();
   else if (k === 'r') reset();
   else if (k === 'h') hint();

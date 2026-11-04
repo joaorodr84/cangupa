@@ -15,6 +15,10 @@ import Kangaroo, { type Face } from './Kangaroo';
 // instead. It reads fine at every grid size the game actually uses.
 const HOP_HEIGHT = 16;
 const HOP_LEG_MS = 120;
+// Total duration of hop()'s up-then-down sequence — PlayableBoard waits this
+// long after a fall's lead-in jump before starting fall() (CANGUPA-64), the
+// same way it waits for a real move's hop before anything else happens.
+export const HOP_MS = HOP_LEG_MS * 2;
 
 // style.css's `.falling #roo` keyframe (sink, shrink, fade) over the same
 // 0.5s — ui.js's fall() waits exactly this long before resetting the level.
@@ -43,8 +47,11 @@ interface BoardProps {
   // A tap anywhere else on the board — truly empty space between tiles, or a
   // tile with no legal move — only when the falling setting is on
   // (CANGUPA-58). Undefined (the setting is off): the board stays a plain,
-  // non-interactive background there, as it always was.
-  readonly onPressEmpty?: () => void;
+  // non-interactive background there, as it always was. Called with the
+  // tapped tile's cell when there was one (CANGUPA-64, so the caller can jump
+  // the kangaroo there before falling), or with no argument for a tap on
+  // true background between tiles, which has no cell to jump to.
+  readonly onPressEmpty?: (target?: { x: number; y: number }) => void;
 }
 
 export interface BoardHandle {
@@ -117,10 +124,19 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     <Pressable
       style={[styles.board, { aspectRatio: w / h, backgroundColor: palette.pit }, width !== undefined && { width }]}
       testID="board"
-      onPress={onPressEmpty}
+      onPress={onPressEmpty && (() => onPressEmpty())}
     >
       {tiles.map((tile) => (
-        <Tile key={`${tile.x}-${tile.y}`} tile={tile} w={w} h={h} palette={palette} anim={anim} onPress={onPressTile} />
+        <Tile
+          key={`${tile.x}-${tile.y}`}
+          tile={tile}
+          w={w}
+          h={h}
+          palette={palette}
+          anim={anim}
+          onPress={onPressTile}
+          onPressEmpty={onPressEmpty}
+        />
       ))}
       <View
         pointerEvents="none"
@@ -152,9 +168,14 @@ interface TileProps {
   readonly palette: Palette;
   readonly anim: boolean;
   readonly onPress?: (x: number, y: number) => void;
+  // Same prop Board received (CANGUPA-64): a tile with no legal move (worn
+  // down to nothing, or just out of reach) reports its own cell here instead
+  // of falling through to the board's blanket onPress, which has no cell to
+  // give.
+  readonly onPressEmpty?: (target?: { x: number; y: number }) => void;
 }
 
-function Tile({ tile, w, h, palette, anim, onPress }: TileProps) {
+function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
   useAnimatedTip(pulse, tile.tip && anim);
@@ -197,6 +218,14 @@ function Tile({ tile, w, h, palette, anim, onPress }: TileProps) {
           testID={`tile-press-${tile.x}-${tile.y}`}
           style={styles.pressable}
           onPress={() => onPress?.(tile.x, tile.y)}
+        >
+          {content}
+        </Pressable>
+      ) : onPressEmpty ? (
+        <Pressable
+          testID={`tile-empty-${tile.x}-${tile.y}`}
+          style={styles.pressable}
+          onPress={() => onPressEmpty({ x: tile.x, y: tile.y })}
         >
           {content}
         </Pressable>

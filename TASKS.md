@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-64`**
+**Next ID to assign: `CANGUPA-65`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -28,6 +28,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Date | Commit |
 | --- | --- | --- | --- | --- | --- |
+| CANGUPA-64 | P2 | Make falling, when there is no legal move, jump to the targeted cell before sinking there, in both apps/web-classic and apps/app, instead of sinking in place where the kangaroo already stood. A press with no specific cell (true empty background, or walking off the grid edge on web) still falls in place | done | 2026-11-04 | — |
 | TILE-JUMPER-1 | P2 | Set up the project's process docs: `CLAUDE.md`, this ledger, `TODO.md`, the `commit` and `changelog-updater` agents, `CHANGELOG.md` and `HISTORY.md` — replicated from Watchr's and DigiSpin's house rules and scaled down to a dependency-free static page | done | 2026-10-30 | — |
 | CANGUPA-8 | P2 | Rename the project from Tile Jumper to Cangupa everywhere: agents, process docs, code, storage keys and bookkeeping | done | 2026-11-01 | — |
 | CANGUPA-9 | P1 | Move the web game into `apps/web-classic/`, to leave the repo root free for the planned Expo/React Native app | done | 2026-11-01 | — |

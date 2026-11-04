@@ -142,6 +142,35 @@ test('a tile that is not a legal destination is not pressable', async () => {
   expect(screen.queryByTestId('tile-press-2-0')).toBeNull();
 });
 
+test('a tile that is not a legal destination reports its own cell, when a fall handler is given (CANGUPA-64)', async () => {
+  // Same shape as the test above, but now with a fall handler: x=2 is out
+  // of reach, yet it is still a real tile (unlike x=1's gap), so a tap
+  // there should report its own cell rather than falling through to the
+  // board's own blanket onPressEmpty, which has no cell to give.
+  const g = new Game(['S.1'], { jumps: false });
+  const tiles = tilesOf(g, { hints: true });
+  const onPressEmpty = jest.fn();
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      onPressEmpty={onPressEmpty}
+    />,
+  );
+
+  await fireEvent.press(screen.getByTestId('tile-empty-2-0'));
+
+  expect(onPressEmpty).toHaveBeenCalledWith({ x: 2, y: 0 });
+});
+
 test('fall() does not throw and calls onComplete (CANGUPA-58)', async () => {
   const g = new Game(['S1.']);
   const tiles = tilesOf(g, { hints: true });

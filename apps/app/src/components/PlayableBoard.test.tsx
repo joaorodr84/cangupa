@@ -103,6 +103,24 @@ test('falling resets the board, when the fall setting is on (CANGUPA-58)', async
   expect(Sound.fall).toHaveBeenCalledTimes(1);
 });
 
+test('tapping a tile with no legal move jumps there before falling, facing it (CANGUPA-64)', async () => {
+  // 'S11', jumps off: from x=0 the only legal move is to x=1; x=2 exists
+  // but is out of reach without a jump, so tapping it should report its own
+  // cell (tile-empty-2-0) rather than falling through to the board's own
+  // blanket onPressEmpty.
+  await render(<Harness level={['S11']} rules={{ jumps: false }} fall />);
+
+  await act(async () => {
+    fireEvent.press(screen.getByTestId('tile-empty-2-0'));
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  });
+
+  expect(Sound.jump).toHaveBeenCalledTimes(1);
+  expect(Sound.fall).toHaveBeenCalledTimes(1);
+  // Back at the start: the move to x=1 is legal again.
+  expect(screen.getByTestId('tile-press-1-0')).toBeTruthy();
+});
+
 test('tapping empty space does nothing when the fall setting is off', async () => {
   await render(<Harness level={['S1.1']} rules={{ jumps: false }} fall={false} />);
 
