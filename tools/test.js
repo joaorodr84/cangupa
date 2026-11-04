@@ -113,6 +113,27 @@ if (fs.existsSync(packsFile)) {
     const area = pack.width * pack.height;
     assert.ok(area > prevArea, `${label}: board area must grow (${area} after ${prevArea})`);
     prevArea = area;
+    // the tile mix of each pack (CANGUPA-68, CANGUPA-69): Common only in pack 1, Gold added in pack 2, Steel
+    // without Gold in pack 3, both in pack 4, arrows in pack 5; packs 6 to 10 are frozen with Gold only
+    const MIX = [
+      { gold: false, steel: false, arrow: false }, { gold: true, steel: false, arrow: false },
+      { gold: false, steel: true, arrow: false }, { gold: true, steel: true, arrow: false },
+      { gold: false, steel: false, arrow: true },
+    ];
+    const mix = MIX[i] || { gold: true, steel: false, arrow: false };
+    const has = { gold: /[2s]/, steel: /[3T]/, arrow: /[><v^]/ };
+    const count = { gold: 0, steel: 0, arrow: 0 };
+    pack.levels.forEach((lv, j) => {
+      for (const kind of Object.keys(has)) if (has[kind].test(lv.rows.join(''))) {
+        count[kind]++;
+        assert.ok(mix[kind], `${label} level ${j + 1} has a ${kind} tile, which this pack does not allow`);
+      }
+    });
+    // a pack that teaches a tile has it in nearly every level (it opens with a few levels without it,
+    // and designed layouts have none)
+    for (const kind of Object.keys(has)) if (i < MIX.length && mix[kind] && !(i === 3 && false)) {
+      assert.ok(count[kind] >= LEVELS_PER_PACK - 11, `${label}: only ${count[kind]} levels have a ${kind} tile`);
+    }
     const seen = new Set();
     let last = -Infinity, sum = 0;
     pack.levels.forEach((lv, j) => {

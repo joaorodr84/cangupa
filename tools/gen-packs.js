@@ -15,13 +15,15 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
-const { buildPool, pick, quantile, canonical, fillsBox, score } = require('./pack-generator.js');
+const { buildPool, pick, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow } = require('./pack-generator.js');
 const { designs } = require('./pack-designs.js');
 
 // How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
 const DESIGNED_PER_PACK = 6;
-// Pack 1 opens with this many levels that have no two-visit tile, to teach steps first.
+// A pack that introduces a tile (its plan entry's `intro`) opens with this many levels that do not
+// have it, so the pack starts gently. Every level after them is at least as hard as the last of those.
 const INTRO_PLAIN = 4;
+const INTRO_KIND = { gold: hasGold, steel: hasSteel, arrow: hasArrow };
 const CACHE = path.join(__dirname, '.cache');
 const OUT_JSON = path.join(__dirname, 'packs.json');
 const OUT_TS = path.join(__dirname, '../apps/app/src/game/packs.ts');
@@ -48,7 +50,7 @@ if (args.includes('--worker')) {
 function measureAll() {
   const jobs = Number(opt('jobs', os.cpus().length));
   // biggest boards first: they take longest, so they should not start last
-  const queue = PACKS.map((_, i) => i).filter(i => !fs.existsSync(poolFile(i))).reverse();
+  const queue = PACKS.map((_, i) => i).filter(i => !PACKS[i].frozen && !fs.existsSync(poolFile(i))).reverse();
   return new Promise((resolve, reject) => {
     let running = 0;
     const next = () => {
@@ -67,12 +69,22 @@ function measureAll() {
 // Each pack climbs from `lo` to `hi`. hi is the pool's 97th percentile score (the top 3%
 // are outliers that would stretch the ramp). lo starts at the pool's 3rd percentile but
 // never below OVERLAP (pack-plan.js) of the previous pack's hi, so each pack starts where
-// the last one was getting hard and the whole game only goes up.
-function select(pools) {
+// the last one was getting hard and the whole game only goes up. A frozen pack is taken as
+// it is from `frozen` (the packs.json being replaced), and the pack before one is held so it
+// cannot outgrow it: its hi stays under the frozen pack's easiest level divided by OVERLAP.
+function select(pools, frozen) {
   let prevHi = 0;
   return PACKS.map((spec, i) => {
+    if (spec.frozen) {
+      const kept = frozen[i];
+      if (!kept || kept.name !== spec.name) throw new Error(`pack ${i + 1} ${spec.name} is frozen but not in the current packs.json`);
+      prevHi = kept.levels[kept.levels.length - 1].pathBits;
+      return kept;
+    }
     const scores = pools[i].map(p => p.pathBits).sort((a, b) => a - b);
-    const hi = quantile(scores, .97);
+    let hi = quantile(scores, .97);
+    const next = PACKS[i + 1] && PACKS[i + 1].frozen ? frozen[i + 1].levels[0].pathBits : null;
+    if (next !== null) hi = Math.min(hi, next / OVERLAP);
     const lo = Math.min(Math.max(quantile(scores, .03), prevHi * OVERLAP), hi * .9);
 
     // Designed layouts first: they are kept as long as the solver and the pack rules
@@ -91,21 +103,22 @@ function select(pools) {
     const keptKeys = new Set(kept.map(d => canonical(d.rows)));
     const rest = pools[i].filter(p => !keptKeys.has(canonical(p.rows)));
 
-    // Pack 1 introduces the cracked tile, so it opens with INTRO_PLAIN levels that have only
-    // one-visit tiles. Every cracked-tile level after them is at least as hard as the last of
-    // those, which keeps the ramp (and the test that pathBits never drops) intact.
-    const cracked = p => /[2s]/.test(p.rows.join(''));
-    let intro = [], pool = rest;
-    if (i === 0) {
-      intro = pick(rest.filter(p => !cracked(p)), INTRO_PLAIN, lo, lo + (hi - lo) * .15) || [];
+    // Levels the pack teaches with have every kind it lists (`full`); a pack that introduces a tile
+    // opens with INTRO_PLAIN levels that lack it.
+    const introKind = spec.intro && INTRO_KIND[spec.intro];
+    const hasNew = p => (introKind ? introKind(p.rows) : true);
+    let intro = [], pool = rest.filter(p => p.full);
+    if (introKind) {
+      intro = pick(rest.filter(p => !hasNew(p)), INTRO_PLAIN, lo, lo + (hi - lo) * .15) || [];
       const introMax = Math.max(...intro.map(p => p.pathBits));
       const introKeys = new Set(intro.map(p => canonical(p.rows)));
-      pool = rest.filter(p => !introKeys.has(canonical(p.rows)) && cracked(p) && p.pathBits >= introMax);
+      pool = pool.filter(p => !introKeys.has(canonical(p.rows)) && p.pathBits >= introMax);
     }
     const need = LEVELS_PER_PACK - kept.length - intro.length;
-    const generated = pick(pool, need, i === 0 ? Math.max(lo, Math.max(...intro.map(p => p.pathBits))) : lo, hi);
+    const from = intro.length ? Math.max(lo, Math.max(...intro.map(p => p.pathBits))) : lo;
+    const generated = pick(pool, need, from, hi);
     if (!generated) throw new Error(`pack ${i + 1} ${spec.name}: only ${pool.length} candidates, need ${need}`);
-    const levels = [...intro, ...generated, ...kept].sort((a, b) => a.pathBits - b.pathBits || (i === 0 ? cracked(a) - cracked(b) : 0) || a.decisions - b.decisions || a.visits - b.visits);
+    const levels = [...intro, ...generated, ...kept].sort((a, b) => a.pathBits - b.pathBits || (introKind ? hasNew(a) - hasNew(b) : 0) || a.decisions - b.decisions || a.visits - b.visits);
     prevHi = hi;
     return { name: spec.name, blurb: spec.blurb, width: spec.width, height: spec.height, levels };
   });
@@ -132,12 +145,14 @@ function writeTs(packs) {
 
 (async () => {
   if (!args.includes('--reselect')) await measureAll();
-  const pools = PACKS.map((_, i) => JSON.parse(fs.readFileSync(poolFile(i), 'utf8')));
-  const packs = select(pools);
+  const pools = PACKS.map((spec, i) => spec.frozen ? null : JSON.parse(fs.readFileSync(poolFile(i), 'utf8')));
+  // the packs.json being replaced: where the frozen packs come from
+  const frozen = fs.existsSync(OUT_JSON) ? JSON.parse(fs.readFileSync(OUT_JSON, 'utf8')).packs : [];
+  const packs = select(pools, frozen);
   fs.writeFileSync(OUT_JSON, JSON.stringify({ seed, packs }, null, 1) + '\n');
   writeTs(packs);
   packs.forEach((p, i) => {
     const s = p.levels.map(l => l.pathBits);
-    console.log(`${String(i + 1).padStart(2)} ${p.name.padEnd(10)} ${p.width}x${p.height} pool ${String(pools[i].length).padStart(4)}  pathBits ${s[0]} .. ${s[s.length - 1]}`);
+    console.log(`${String(i + 1).padStart(2)} ${p.name.padEnd(10)} ${p.width}x${p.height} pool ${pools[i] ? String(pools[i].length).padStart(4) : 'kept'}  pathBits ${s[0]} .. ${s[s.length - 1]}`);
   });
 })().catch(e => { console.error(e.message); process.exit(1); });
