@@ -74,3 +74,64 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
+- [P2] `CANGUPA-57` — Port the jump sound effect (`TILE-JUMPER-2`) and a
+  sound on/off setting to `apps/app`: play a short effect on every move
+  (step or jump), mirroring the web version's synthesized Web Audio chirp
+  ([sound.js](apps/web-classic/js/sound.js)). React Native has no Web
+  Audio API, so this needs `expo-audio` (a new dependency) playing small
+  pre-generated WAV assets instead of synthesizing tones live at
+  runtime — a Node script under `apps/app/tools` (mirroring
+  `tools/gen-levels.js`'s generate-then-commit pattern) renders the
+  tone(s) to `assets/sounds/*.wav` at the same frequencies/envelopes as
+  the web version's `Sound` module, with the script committed alongside
+  its output. Needs: `Settings.sound: boolean` (default `true`) in
+  [state/settings.ts](apps/app/src/state/settings.ts) (parsing + default,
+  matching `jumps`/`hints`/`anim`'s pattern); a sound toggle row in
+  [SettingsScreen.tsx](apps/app/src/components/SettingsScreen.tsx)'s
+  existing Gameplay section (a 4th `ToggleRow`, so the existing three
+  need their `index`/`length` props updated); a new
+  `src/audio/sound.ts` module exposing `setEnabled()`/`jump()`; wired in
+  wherever a move is played
+  ([useBoard.ts](apps/app/src/game/useBoard.ts)'s `move()` or
+  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx)'s
+  `handlePressTile`). This is the foundation `CANGUPA-59`/`CANGUPA-60`
+  both build on — design the asset pipeline and the `Sound` module with
+  `win()`/`fall()` in mind even though only `jump()` ships here.
+- [P2] `CANGUPA-58` — Port falling as an opt-in setting (`TILE-JUMPER-3`)
+  to `apps/app`: add `Settings.fall: boolean` (default `false`, same
+  parsing/default pattern as `CANGUPA-57`'s `sound`), a toggle row in
+  `SettingsScreen.tsx`, and a `fall()` action in
+  [useBoard.ts](apps/app/src/game/useBoard.ts) (mirroring `ui.js`'s
+  `fall()`: sink-and-fade the kangaroo, then `game.reset()`). Touch-only,
+  so only the "tap empty space" half of the web version's behaviour
+  applies here — there's no keyboard.
+  [Board.tsx](apps/app/src/components/Board.tsx)'s outer board container
+  needs to catch taps that land on no tile's own `Pressable` (today only
+  a tile with a legal move — `tile.hint` — is wrapped in one; see its
+  `Tile` component), the same empty-space hit-testing problem
+  `TILE-JUMPER-3` called out for the web version, solved there by
+  falling through `ui.js`'s click handler when no `.cell`/legal move
+  matches.
+- [P2] `CANGUPA-59` — Port the finish-level sound effect
+  (`TILE-JUMPER-4`) to `apps/app`: a `win()` tone/melody added to
+  `src/audio/sound.ts` (`CANGUPA-57`) and its matching WAV asset
+  generated the same way, played from
+  [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx) when the
+  board's won state newly becomes true (its existing `onLevelComplete`
+  effect already detects exactly this transition). Blocked on
+  `CANGUPA-57` for the `Sound` module and asset pipeline.
+- [P2] `CANGUPA-60` — Port the falling sound effect (`TILE-JUMPER-5`) to
+  `apps/app`: a `fall()` tone added to `src/audio/sound.ts`
+  (`CANGUPA-57`) and its WAV asset, played from `useBoard.ts`'s `fall()`
+  action (`CANGUPA-58`) alongside the sink-and-fade animation. Blocked on
+  both `CANGUPA-57` (the `Sound` module) and `CANGUPA-58` (the `fall()`
+  action it hooks into).
+- [P2] `CANGUPA-61` — Port the joey-in-pouch art (`TILE-JUMPER-6`) to
+  `apps/app`: add the same joey (two ears, a round head, two eyes, a
+  nose) to [Kangaroo.tsx](apps/app/src/components/Kangaroo.tsx)'s
+  `SideSprite` and `FrontSprite`, ported 1:1 from the SVG paths
+  `apps/web-classic/js/sprites.js` carries after `TILE-JUMPER-6` —
+  `react-native-svg`'s `<G>`/`<Path>`/`<Ellipse>`/`<Circle>` mirror the
+  plain SVG elements directly. `BackSprite` stays untouched, same
+  reasoning as the web version: no pouch is visible from behind a
+  kangaroo.
