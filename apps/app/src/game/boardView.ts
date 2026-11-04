@@ -4,6 +4,10 @@
 import { type Game, type Move } from './board';
 import { type Face } from '../components/Kangaroo';
 
+export type ArrowDirection = 'right' | 'left' | 'down' | 'up';
+// Game's arrow directions are an index into its DIRS: right, left, down, up.
+const ARROW_DIRECTIONS: readonly ArrowDirection[] = ['right', 'left', 'down', 'up'];
+
 export interface TileView {
   readonly x: number;
   readonly y: number;
@@ -11,6 +15,12 @@ export interface TileView {
   readonly double: boolean;
   // A double tile with its first visit spent: one crack, one visit left.
   readonly cracked: boolean;
+  // How many visits the tile needs when whole: 1 Common, 2 Gold (double), 3 Steel.
+  readonly kind: 1 | 2 | 3;
+  // Visits still left, the number the strokes on a Gold or Steel tile show.
+  readonly left: number;
+  // The way an arrow tile can be left, or null for any other tile.
+  readonly arrow: ArrowDirection | null;
   // Used up and the kangaroo is standing on it.
   readonly worn: boolean;
   // Used up and the kangaroo has moved off it: it has dropped away.
@@ -47,6 +57,9 @@ export function tilesOf(game: Game, { hints, tip = null }: TilesOptions): readon
       y,
       double,
       cracked: double && left === 1,
+      kind: game.max[i] as 1 | 2 | 3,
+      left,
+      arrow: game.dir[i] >= 0 ? ARROW_DIRECTIONS[game.dir[i]] : null,
       worn: left === 0 && i === game.pos,
       gone: left === 0 && i !== game.pos,
       hint: Boolean(target) && hints,

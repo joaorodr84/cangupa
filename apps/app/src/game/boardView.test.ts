@@ -37,6 +37,34 @@ describe('tilesOf', () => {
     expect(tiles.find((t) => t.x === 1)).toMatchObject({ double: true, cracked: true });
   });
 
+  it('gives each tile its kind and the visits it has left', () => {
+    const g = new Game(['S2', '3.']);
+    let tiles = tilesOf(g, { hints: true });
+    expect(tiles.find((t) => t.x === 0 && t.y === 0)).toMatchObject({ kind: 1, left: 0 }); // the start counts as visited
+    expect(tiles.find((t) => t.x === 1 && t.y === 0)).toMatchObject({ kind: 2, left: 2 });
+    expect(tiles.find((t) => t.x === 0 && t.y === 1)).toMatchObject({ kind: 3, left: 3 });
+
+    g.play({ x: 1, y: 0 });
+    tiles = tilesOf(g, { hints: true });
+    expect(tiles.find((t) => t.x === 1 && t.y === 0)).toMatchObject({ kind: 2, left: 1 });
+  });
+
+  it('a Steel start tile counts one visit already', () => {
+    const tiles = tilesOf(new Game(['T1']), { hints: true });
+    expect(tiles.find((t) => t.x === 0)).toMatchObject({ kind: 3, left: 2 });
+  });
+
+  it('names the way an arrow tile points, and nothing for other tiles', () => {
+    const g = new Game(['S>v', '^<1']);
+    const at = (x: number, y: number) => tilesOf(g, { hints: true }).find((t) => t.x === x && t.y === y);
+    expect(at(1, 0)?.arrow).toBe('right');
+    expect(at(2, 0)?.arrow).toBe('down');
+    expect(at(0, 1)?.arrow).toBe('up');
+    expect(at(1, 1)?.arrow).toBe('left');
+    expect(at(2, 1)?.arrow).toBeNull();
+    expect(at(0, 0)?.arrow).toBeNull();
+  });
+
   it('marks the kangaroo\'s current tile worn once used up, and a used tile left behind as gone', () => {
     const g = new Game(['S1']);
     g.play({ x: 1, y: 0 });

@@ -36,6 +36,18 @@ export interface Palette {
   // The "drop shadow" a tile sits on, one shade per tile kind.
   readonly edge: string;
   readonly edge2: string;
+  // The Steel tile (three visits) and the arrow tile (CANGUPA-68, CANGUPA-69), colours chosen on the
+  // tile-metals review page. Like tile/tile2 they are this game's own and stay the same in both themes.
+  // The arrow tile's lip is lighter than its face: a dark face's darker lip would vanish on the dark board.
+  readonly tile3: string;
+  readonly edge3: string;
+  readonly tileArrow: string;
+  readonly edgeArrow: string;
+  // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on steel
+  // and on the raspberry arrow tile.
+  readonly mark2: string;
+  readonly mark3: string;
+  readonly markArrow: string;
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
@@ -67,6 +79,13 @@ export const DARK: Palette = {
   tile2: '#ffc857',
   edge: '#1f7a99',
   edge2: '#a8741a',
+  tile3: '#587790',
+  edge3: '#3c5162',
+  tileArrow: '#9d1057',
+  edgeArrow: '#ba5889',
+  mark2: '#3b2a06',
+  mark3: '#ffffff',
+  markArrow: '#ffffff',
   ink: THEMES_DARK.text,
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
@@ -84,6 +103,13 @@ export const LIGHT: Palette = {
   tile2: '#ffc857',
   edge: '#1f7a99',
   edge2: '#a8741a',
+  tile3: '#587790',
+  edge3: '#3c5162',
+  tileArrow: '#9d1057',
+  edgeArrow: '#ba5889',
+  mark2: '#3b2a06',
+  mark3: '#ffffff',
+  markArrow: '#ffffff',
   ink: THEMES_LIGHT.text,
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,

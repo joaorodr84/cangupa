@@ -14,7 +14,9 @@ import {
   View,
 } from 'react-native';
 
-import { type TileView } from '../game/boardView';
+import Svg, { Polygon } from 'react-native-svg';
+
+import { type ArrowDirection, type TileView } from '../game/boardView';
 import { type Palette } from '../theme/palette';
 import Kangaroo, { type Face } from './Kangaroo';
 
@@ -227,6 +229,51 @@ interface TileProps {
   readonly onPeekEnd?: () => void;
 }
 
+// The width of one visit-left stroke, in percent of the tile.
+const STROKE_WIDTH = 7.5;
+
+// The face and the lip of a tile: an arrow tile is raspberry whatever its visits, otherwise the kind sets it.
+function faceColor(tile: TileView, palette: Palette): string {
+  if (tile.arrow) return palette.tileArrow;
+  return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
+}
+function edgeColor(tile: TileView, palette: Palette): string {
+  if (tile.arrow) return palette.edgeArrow;
+  return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
+}
+
+// The visits left on a Gold or Steel tile, as short diagonal strokes from top right to bottom left, side by
+// side like tally marks (the design chosen on the tile-metals review page). A tile on its last visit has one.
+// Positions are percentages of the tile, so the strokes scale with the board.
+function Strokes({ x, y, count, color }: { readonly x: number; readonly y: number; readonly count: number; readonly color: string }) {
+  return (
+    <View testID={`tile-strokes-${x}-${y}`} pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {Array.from({ length: count }, (_, i) => (
+        <View
+          key={i}
+          style={[styles.stroke, { left: `${50 + (i - (count - 1) / 2) * 22 - STROKE_WIDTH / 2}%`, backgroundColor: color }]}
+        />
+      ))}
+    </View>
+  );
+}
+
+// An arrow tile's mark: a triangle on the edge it can be left by. Drawn in the tile's own 64 by 57 units
+// (preserveAspectRatio none stretches it to the tile's face), 15 deep and 28 wide, as chosen on the review page.
+const EDGE_TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
+  right: '45,14.5 59.5,28.5 45,42.5',
+  left: '19,14.5 4.5,28.5 19,42.5',
+  up: '18,19 32,4.5 46,19',
+  down: '18,38 32,52.5 46,38',
+};
+function ArrowMark({ x, y, direction, color }: { readonly x: number; readonly y: number; readonly direction: ArrowDirection; readonly color: string }) {
+  return (
+    <Svg testID={`tile-arrow-${x}-${y}-${direction}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
+      <Polygon points={EDGE_TRIANGLE[direction]} fill={color} stroke={color} strokeWidth={1.5} strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
 function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
@@ -240,7 +287,7 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
       testID={`tile-${tile.x}-${tile.y}`}
       style={[
         styles.tile,
-        { backgroundColor: tile.double ? palette.tile2 : palette.tile, borderBottomColor: tile.double ? palette.edge2 : palette.edge },
+        { backgroundColor: faceColor(tile, palette), borderBottomColor: edgeColor(tile, palette) },
         (tile.hint || tile.tip) && {
           borderWidth: 3,
           borderColor: outlineColor,
@@ -251,13 +298,10 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
         tile.tip && { transform: [{ scale }] },
       ]}
     >
-      {tile.double && !tile.cracked && (
-        <>
-          <View style={[styles.pip, { top: '34%' }]} />
-          <View style={[styles.pip, { top: '58%' }]} />
-        </>
+      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} direction={tile.arrow} color={palette.markArrow} />}
+      {!tile.arrow && tile.kind >= 2 && tile.left >= 1 && (
+        <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}
-      {tile.cracked && <View style={styles.crack} />}
     </Animated.View>
   );
 
@@ -339,26 +383,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderBottomWidth: 4,
   },
-  // Approximates style.css's `.tile.two::before/::after` pips: a double
-  // tile's two remaining visits.
-  pip: {
+  // One visit-left stroke: a bar a quarter of the way down, half the tile tall, turned 24 degrees so its top
+  // leans right. Narrower than it looks (7.5% of the tile) and spaced 22% apart, so four fit on a tile.
+  stroke: {
     position: 'absolute',
-    left: '30%',
-    width: '40%',
-    height: '8%',
+    top: '25%',
+    height: '50%',
+    width: `${STROKE_WIDTH}%`,
     borderRadius: 99,
-    backgroundColor: 'rgba(0,0,0,0.28)',
-  },
-  // `.tile.two.cracked::before`: one visit left, shown as a single angled crack.
-  crack: {
-    position: 'absolute',
-    top: '44%',
-    left: '22%',
-    width: '56%',
-    height: '6%',
-    borderRadius: 99,
-    backgroundColor: 'rgba(0,0,0,0.28)',
-    transform: [{ rotate: '-22deg' }],
+    transform: [{ rotate: '24deg' }],
   },
   // CSS used filter: brightness(.82); RN has no reliable cross-platform
   // filter, so a slight opacity drop stands in for the dimming.
