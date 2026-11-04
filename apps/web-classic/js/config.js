@@ -5,6 +5,7 @@ const DEFAULT_SETTINGS = {
   hints: true,   // highlight the tiles you can move to
   anim: true,
   fall: false,   // rule option: a direction/tap with no step or jump falls, restarting the level
+  sound: true,
 };
 
 const THEMES = ['cosmos', 'space', 'sand', 'ice', 'classic'];

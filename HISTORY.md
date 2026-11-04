@@ -644,7 +644,10 @@ level. A module-level `falling` flag ignores further input while the
 animation runs. `js/game.js` was untouched — "no legal move in that
 direction" is already exactly what `legalMoves()` computes, so this is a
 different UI response to an existing condition rather than a new rule,
-and ships with no new rules assertion.
+and ships with no new rules assertion. TILE-JUMPER-2 adds a short
+synthesized jump sound (new `js/sound.js`, a Web Audio API oscillator
+with a gain envelope, no audio files) that plays on every move, plus a
+new "Som" settings checkbox, on by default, to mute it.
 
 One commit. Verified with `node apps/web-classic/tools/test.js` (50
 levels, existing rules assertions); not yet checked visually in a

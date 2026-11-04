@@ -1,6 +1,7 @@
 const $ = id => document.getElementById(id);
 const boardEl = $('board');
 let settings = Settings.load();
+Sound.enabled = settings.sound;
 let progress = Progress.load();
 let game, levelIndex = 0, tip = null;
 let cellEls = [], roo = null, face = { dir: 'down', left: false };
@@ -116,6 +117,7 @@ function move(m) {
   if (Math.abs(dx) >= Math.abs(dy) && dx) face = { dir: 'side', left: dx < 0 };
   else face = { dir: dy < 0 ? 'up' : 'down', left: false };
   game.play(m);
+  Sound.jump();
   if (game.won && !progress.done.includes(levelIndex)) {
     progress.done.push(levelIndex);
     Progress.save(progress);
@@ -195,13 +197,14 @@ $('clear-progress').onclick = () => {
 };
 
 // Settings wiring
-const fields = { theme: 's-theme', jumps: 's-jumps', hints: 's-hints', anim: 's-anim', fall: 's-fall' };
+const fields = { theme: 's-theme', jumps: 's-jumps', hints: 's-hints', anim: 's-anim', fall: 's-fall', sound: 's-sound' };
 for (const [key, id] of Object.entries(fields)) {
   const el = $(id), isCheck = el.type === 'checkbox';
   isCheck ? (el.checked = settings[key]) : (el.value = settings[key]);
   el.onchange = () => {
     settings[key] = isCheck ? el.checked : el.value;
     Settings.save(settings);
+    if (key === 'sound') Sound.enabled = settings.sound;
     // A rule change can invalidate the current position, so restart the level.
     key === 'jumps' ? reset() : render(false);
   };

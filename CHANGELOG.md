@@ -18,6 +18,10 @@ Open work is listed in [TODO.md](TODO.md).
   kangaroo fall through the board — with a brief sink-and-fade animation —
   and restarts the level, instead of doing nothing. With it off, the game
   behaves as before.
+- The web game now plays a short, upward-gliding chirp on every move —
+  a step or a two-tile jump — synthesized on the fly rather than played
+  from a sound file. A new "Som" ("Sound") option in the settings panel,
+  on by default, mutes sound effects when turned off.
 
 ### Changed
 
