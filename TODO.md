@@ -34,25 +34,25 @@ The priority can change at any time; the ID never does.
   ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
   [BoardHud.tsx](apps/app/src/components/BoardHud.tsx), CANGUPA-53 —
   DigiSpin already has this badge, Cangupa doesn't), earned once each time
-  a level is finished perfectly — defined as clearing it in the fewest
-  possible steps, one step being one tile-to-tile move (one tap) — and
-  spent each time the hint button is used. The hint itself doesn't
-  change — [useBoard.ts](apps/app/src/game/useBoard.ts)'s `hint()` /
-  `game.solve()` already reveals a next step via the tip highlight; this
-  only gates that behind a balance instead of it being free and
-  unlimited. Needs each level's optimal (fewest-step) solution length to
-  compare the player's own move count against. Blocked on `CANGUPA-55`,
-  which is what makes that number available.
-- [P2] `CANGUPA-55` — Guarantee every level has more than one solution,
-  and make each level's optimal (fewest-step) solution length available
-  at runtime — needed by `CANGUPA-54` to judge a "perfect" clear. Today
-  [board.ts](apps/app/src/game/board.ts)'s `Game.solve()` is a DFS that
-  returns the first solution it finds, not necessarily the shortest one,
-  and the level generator
+  a level is finished, and spent each time the hint button is used. No
+  "perfect clear" check is needed: every move always consumes exactly one
+  unit of `remaining()` regardless of which legal target is chosen
+  (`play()` in [board.ts](apps/app/src/game/board.ts)), so every winning
+  sequence has the same length — there's no fewer-steps clear to compare
+  against. The hint itself doesn't change —
+  [useBoard.ts](apps/app/src/game/useBoard.ts)'s `hint()` / `game.solve()`
+  already reveals a next step via the tip highlight; this only gates that
+  behind a balance instead of it being free and unlimited. No longer
+  blocked on `CANGUPA-55`.
+- [P2] `CANGUPA-55` — Guarantee every level has more than one solution
+  (distinct paths through the same fixed move count — see `CANGUPA-54`'s
+  note on why that count can't vary). Today the level generator
   ([level-generator.js](tools/level-generator.js)'s
   `generateLevel`/`countSolutions`) only selects for the *fewest*
   solutions among random walks (for difficulty), with no floor requiring
   more than one — some of the 50 generated levels could already have
   just one. Touches the generator (re-verifying/regenerating levels as
-  needed), the solver (a shortest-path method alongside `solve()`), and
-  the ported level data ([levels.ts](apps/app/src/game/levels.ts)).
+  needed) and the ported level data
+  ([levels.ts](apps/app/src/game/levels.ts)). Dropped: a shortest-path
+  solver alongside `solve()` — moot, since `solve()`'s DFS result is
+  already optimal-length by construction.
