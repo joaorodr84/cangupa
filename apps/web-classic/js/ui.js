@@ -118,9 +118,12 @@ function move(m) {
   else face = { dir: dy < 0 ? 'up' : 'down', left: false };
   game.play(m);
   Sound.jump();
-  if (game.won && !progress.done.includes(levelIndex)) {
-    progress.done.push(levelIndex);
-    Progress.save(progress);
+  if (game.won) {
+    Sound.win();
+    if (!progress.done.includes(levelIndex)) {
+      progress.done.push(levelIndex);
+      Progress.save(progress);
+    }
   }
   render();
 }

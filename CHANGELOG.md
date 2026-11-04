@@ -22,6 +22,10 @@ Open work is listed in [TODO.md](TODO.md).
   a step or a two-tile jump — synthesized on the fly rather than played
   from a sound file. A new "Som" ("Sound") option in the settings panel,
   on by default, mutes sound effects when turned off.
+- The web game now also plays a cheerful four-note ascending tune whenever
+  a level is cleared, every time — not just on that level's first-ever
+  clear — synthesized the same way as the move sound, and muted by the
+  same "Som" setting.
 
 ### Changed
 

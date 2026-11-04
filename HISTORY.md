@@ -647,11 +647,16 @@ different UI response to an existing condition rather than a new rule,
 and ships with no new rules assertion. TILE-JUMPER-2 adds a short
 synthesized jump sound (new `js/sound.js`, a Web Audio API oscillator
 with a gain envelope, no audio files) that plays on every move, plus a
-new "Som" settings checkbox, on by default, to mute it.
+new "Som" settings checkbox, on by default, to mute it. TILE-JUMPER-4
+adds a win sound: `js/sound.js` gained a `melody()` helper (schedules a
+run of `tone()` notes against `ctx.currentTime` instead of stacking
+`setTimeout`s) and a `win()` four-note ascending arpeggio built on it,
+which `js/ui.js`'s `move()` now plays every time a level is cleared,
+including on a replay of an already-cleared level.
 
-One commit. Verified with `node apps/web-classic/tools/test.js` (50
-levels, existing rules assertions); not yet checked visually in a
-browser.
+Three commits. Verified with `node apps/web-classic/tools/test.js` (50
+levels, existing rules assertions); not yet checked visually/audibly in
+a browser.
 
 ---
 

@@ -17,14 +17,16 @@ const Sound = {
     return this.ctx;
   },
 
-  // A short tone, pitch optionally sliding from `freq` to `glideTo`.
-  tone(freq, duration, { type = 'sine', gain = 0.18, glideTo = null } = {}) {
+  // A short tone, pitch optionally sliding from `freq` to `glideTo`, starting
+  // `delay` seconds from now — lets `melody()` schedule several in sequence
+  // without each one waiting on a `setTimeout`.
+  tone(freq, duration, { type = 'sine', gain = 0.18, glideTo = null, delay = 0 } = {}) {
     if (!this.enabled) return;
     const ctx = this.ensure();
     if (!ctx) return;
     const osc = ctx.createOscillator(), amp = ctx.createGain();
     osc.type = type;
-    const t0 = ctx.currentTime;
+    const t0 = ctx.currentTime + delay;
     osc.frequency.setValueAtTime(freq, t0);
     if (glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo, t0 + duration);
     amp.gain.setValueAtTime(gain, t0);
@@ -34,5 +36,13 @@ const Sound = {
     osc.stop(t0 + duration);
   },
 
+  // A short run of notes (Hz), each `step` seconds after the last.
+  melody(freqs, { step = 0.09, duration = 0.14, type = 'triangle', gain = 0.18 } = {}) {
+    freqs.forEach((freq, i) => this.tone(freq, duration, { type, gain, delay: i * step }));
+  },
+
   jump() { this.tone(440, 0.12, { type: 'triangle', glideTo: 660 }); },
+
+  // A cheerful ascending arpeggio (C5, E5, G5, C6) for clearing a level.
+  win() { this.melody([523.25, 659.25, 783.99, 1046.5], { gain: 0.16 }); },
 };

@@ -21,7 +21,6 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P3] `TILE-JUMPER-4` — Play a sound effect on finishing a level.
 - [P3] `TILE-JUMPER-5` — Play a sound effect on falling. Depends on
   `TILE-JUMPER-3` landing first — there's no fall to cue the sound off until
   that exists.
