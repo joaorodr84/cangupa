@@ -73,4 +73,11 @@ export interface Strings {
     readonly language: string;
     readonly followDevice: string;
   };
+  // The level packs (CANGUPA-56), in play order: entry n is pack n + 1 in
+  // src/game/packs.ts, whose own English name and blurb are the same text as
+  // en.ts. A test keeps the two lists the same length.
+  readonly packs: readonly {
+    readonly name: string;
+    readonly blurb: string;
+  }[];
 }

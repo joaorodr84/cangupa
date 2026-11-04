@@ -71,4 +71,46 @@ export const pt: Strings = {
     language: 'Idioma',
     followDevice: 'Seguir o dispositivo',
   },
+  packs: [
+    {
+      name: 'Prado',
+      blurb: 'Passa de casa em casa. Algumas racham: têm de ser pisadas duas vezes.',
+    },
+    {
+      name: 'Ribeiro',
+      blurb: 'Aparecem buracos. Salta por cima de uma casa em falta.',
+    },
+    {
+      name: 'Barranco',
+      blurb: 'Saltos e casas duplas num tabuleiro quadrado.',
+    },
+    {
+      name: 'Afloramento',
+      blurb: 'Mais casas duplas e percursos mais longos.',
+    },
+    {
+      name: 'Billabong',
+      blurb: 'Água aberta no meio. Planeia o caminho à volta.',
+    },
+    {
+      name: 'Crista',
+      blurb: 'Longos percursos que voltam atrás sobre si mesmos.',
+    },
+    {
+      name: 'Mesa',
+      blurb: 'Tabuleiros largos onde um salto errado te deixa preso.',
+    },
+    {
+      name: 'Desfiladeiro',
+      blurb: 'Caminhos estreitos, muitas casas duplas.',
+    },
+    {
+      name: 'Planalto',
+      blurb: 'Tudo ao mesmo tempo, num tabuleiro grande.',
+    },
+    {
+      name: 'Outback',
+      blurb: 'Os percursos mais longos do jogo.',
+    },
+  ],
 };
