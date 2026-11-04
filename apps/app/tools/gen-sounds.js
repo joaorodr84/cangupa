@@ -5,9 +5,7 @@
 // expo-audio instead. Run with `node tools/gen-sounds.js` whenever a tone's
 // parameters change; the output is committed alongside this script, the same
 // pattern tools/gen-levels.js (web-classic) uses for its own
-// generated-then-committed output. Only jump() ships here (CANGUPA-57) —
-// win()/fall() (CANGUPA-59/CANGUPA-60) add their own tones to this same file
-// rather than starting a second script.
+// generated-then-committed output.
 const fs = require('fs');
 const path = require('path');
 
@@ -54,6 +52,16 @@ function renderSingle(duration, opts) {
   return samples;
 }
 
+// A run of notes (Hz), each `step` seconds after the last — mirrors
+// sound.js's `melody()`.
+function renderMelody(totalDuration, freqs, { step, duration, type, gain }) {
+  const samples = new Float64Array(Math.round(totalDuration * SAMPLE_RATE));
+  freqs.forEach((freq, i) => {
+    renderTone(samples, Math.round(i * step * SAMPLE_RATE), { freq, duration, type, gain });
+  });
+  return samples;
+}
+
 function writeWav(file, samples) {
   const pcm = Buffer.alloc(samples.length * 2);
   for (let i = 0; i < samples.length; i++) {
@@ -78,7 +86,11 @@ function writeWav(file, samples) {
   fs.writeFileSync(path.join(OUT_DIR, file), Buffer.concat([header, pcm]));
 }
 
-// Parameters match apps/web-classic/js/sound.js's jump() exactly.
+// Parameters match apps/web-classic/js/sound.js's jump()/win() exactly.
 writeWav('jump.wav', renderSingle(0.12, { freq: 440, glideTo: 660, type: 'triangle', gain: 0.18 }));
+writeWav(
+  'win.wav',
+  renderMelody(3 * 0.09 + 0.14, [523.25, 659.25, 783.99, 1046.5], { step: 0.09, duration: 0.14, type: 'triangle', gain: 0.16 }),
+);
 
-console.log(`wrote ${OUT_DIR}\\jump.wav`);
+console.log(`wrote ${OUT_DIR}\\{jump,win}.wav`);

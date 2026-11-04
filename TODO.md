@@ -81,14 +81,6 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
-- [P2] `CANGUPA-59` — Port the finish-level sound effect
-  (`TILE-JUMPER-4`) to `apps/app`: a `win()` tone/melody added to
-  `src/audio/sound.ts` (`CANGUPA-57`) and its matching WAV asset
-  generated the same way, played from
-  [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx) when the
-  board's won state newly becomes true (its existing `onLevelComplete`
-  effect already detects exactly this transition). Blocked on
-  `CANGUPA-57` for the `Sound` module and asset pipeline.
 - [P2] `CANGUPA-60` — Port the falling sound effect (`TILE-JUMPER-5`) to
   `apps/app`: a `fall()` tone added to `src/audio/sound.ts`
   (`CANGUPA-57`) and its WAV asset, played from

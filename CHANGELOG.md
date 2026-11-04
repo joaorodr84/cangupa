@@ -38,6 +38,10 @@ Open work is listed in [TODO.md](TODO.md).
   two-tile jump — matching the sound the web version already has. A new
   "Sound" toggle in the Settings screen's Gameplay section, on by
   default, turns it off for players who don't want it.
+- The app now also plays a cheerful four-note ascending tune whenever a
+  level is cleared, every time — not just on that level's first-ever
+  clear — matching the web version's own win sound, and muted by the same
+  "Sound" toggle.
 - The app's Settings screen's Gameplay section has a new "Fall when there
   is no move" toggle, off by default, matching the web version's own
   falling setting. With it on, tapping anywhere on the board with no legal

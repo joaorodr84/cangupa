@@ -726,6 +726,14 @@ and then resets the board, with a live-caught bug fixed along the way where the
 animation's driving value was never reset back to 0, leaving the kangaroo
 permanently invisible after the first fall.
 
+CANGUPA-59 continues the series, porting the finish-level sound effect
+(`TILE-JUMPER-4`): a new `win()` export in `src/audio/sound.ts`, backed by a
+`win.wav` rendered by a `renderMelody` helper added back to
+`tools/gen-sounds.js`, plays the same C5/E5/G5/C6 triangle-wave arpeggio as
+the web version, wired into `PlayableBoard.tsx`'s move handler (not
+`BoardScreen.tsx`'s first-clear-only progress effect) so it fires on every
+move that leaves the level cleared, matching `ui.js`'s own behaviour.
+
 ---
 
 ## Patterns, and what's still open

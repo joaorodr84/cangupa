@@ -1,9 +1,12 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
+import * as Sound from '../audio/sound';
 import PlayableBoard from './PlayableBoard';
 import { type Level, type Rules } from '../game/board';
 import { useBoard } from '../game/useBoard';
 import { DARK } from '../theme/palette';
+
+jest.mock('../audio/sound', () => ({ jump: jest.fn(), win: jest.fn() }));
 
 const palette = DARK;
 
@@ -39,6 +42,10 @@ function Harness({
   );
 }
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 test('tapping the only legal tile moves the kangaroo there', async () => {
   const onMoved = jest.fn();
 
@@ -50,6 +57,20 @@ test('tapping the only legal tile moves the kangaroo there', async () => {
   // kangaroo standing on it) rather than still hinted.
   expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
   expect(onMoved).toHaveBeenCalledTimes(1);
+});
+
+test('plays the jump sound on every move, and the win sound only on one that clears the level (CANGUPA-59)', async () => {
+  // 'S11': the first move (to x=1) doesn't clear the level yet (x=2 still
+  // needs a visit); the second (to x=2) does.
+  await render(<Harness level={['S11']} rules={{ jumps: true }} />);
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  expect(Sound.jump).toHaveBeenCalledTimes(1);
+  expect(Sound.win).not.toHaveBeenCalled();
+
+  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
+  expect(Sound.jump).toHaveBeenCalledTimes(2);
+  expect(Sound.win).toHaveBeenCalledTimes(1);
 });
 
 test('does not call onMoved for a tap with no legal destination', async () => {

@@ -52,6 +52,12 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
     if (move(x, y)) {
       boardRef.current?.hop();
       Sound.jump();
+      // `game.won` (not the destructured `won` above, stale from the last
+      // render) reflects the move just played — fires every time a level is
+      // completed, including a replay of an already-cleared level, matching
+      // ui.js's move(): the sound isn't gated by whether this is the first
+      // clear, only `onLevelDone`'s progress bookkeeping is (BoardScreen.tsx).
+      if (game.won) Sound.win();
       onMoved?.();
     }
   };

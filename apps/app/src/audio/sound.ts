@@ -8,6 +8,7 @@
 import { createAudioPlayer } from 'expo-audio';
 
 const jumpSource = require('../../assets/sounds/jump.wav');
+const winSource = require('../../assets/sounds/win.wav');
 
 let enabled = true;
 
@@ -19,6 +20,7 @@ export function setEnabled(value: boolean): void {
 // player per call — cheap enough for a short one-shot effect, and avoids
 // piling up players never torn down while the move it's tied to finishes.
 const jumpPlayer = createAudioPlayer(jumpSource);
+const winPlayer = createAudioPlayer(winSource);
 
 function replay(player: ReturnType<typeof createAudioPlayer>): void {
   if (!enabled) return;
@@ -28,4 +30,8 @@ function replay(player: ReturnType<typeof createAudioPlayer>): void {
 
 export function jump(): void {
   replay(jumpPlayer);
+}
+
+export function win(): void {
+  replay(winPlayer);
 }
