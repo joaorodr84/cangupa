@@ -29,13 +29,6 @@ The priority can change at any time; the ID never does.
   first solves 95 of them, 5 still fail and the slowest takes 14 seconds.
   Needs a better search, solving off the UI thread, or storing each
   level's solution in packs.json.
-- [P2] `CANGUPA-62` — Define level evaluation and difficulty metrics in
-  [difficulty.js](tools/difficulty.js): an exact
-  random-play score (`bits`) where the state space fits, plus cheap
-  estimators that scale to all levels (search effort, random-play survival,
-  branching along the solution). Validate against the existing 50-level
-  curve, then feed the score into the generator/plan so difficulty rises
-  gradually. Feeds `CANGUPA-55` and `CANGUPA-56`.
 - [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: a spendable
   hint count, shown as a badge on the hint control
   ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
