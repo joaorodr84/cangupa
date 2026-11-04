@@ -6,27 +6,16 @@
   /* Layout: one sortable table, a level per row — number, sketch, headline score bar, supporting metrics.
      Data comes from levels.json next to this file (made by tools/export-difficulty.js). */
   :root {
-    --bg: #f3f5f4;
-    --surface: #ffffff;
-    --fg: #17252a;
-    --muted: #5d6d72;
-    --line: #d9e0de;
-    --accent: #0e6b68;       /* score bar, sort arrow */
-    --tile: #8fc9c4;         /* tile needing one visit */
-    --tile-2: #2c8c86;       /* tile needing two visits */
-    --start: #e4a11b;        /* start marker */
+    /* dark only; the board and tile colours are the game's own (see tiles.js) */
+    --bg: #0c0d10;
+    --surface: #15171c;
+    --fg: #e6e8ec;
+    --muted: #8a909c;
+    --line: #22262e;
+    --accent: #4cc9f0;       /* score bar, sort arrow */
     --font-display: "Figtree", system-ui, sans-serif;
     --font-data: "IBM Plex Mono", ui-monospace, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c;
-      --accent: #4fc3bb; --tile: #3b8a85; --tile-2: #7fd4cd; --start: #f0b23a; color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c;
-    --accent: #4fc3bb; --tile: #3b8a85; --tile-2: #7fd4cd; --start: #f0b23a; color-scheme: dark;
+    color-scheme: dark;
   }
   body {
     background: var(--bg); color: var(--fg); font-family: var(--font-display);
@@ -39,6 +28,7 @@
   .lede { margin: 6px 0 0; color: var(--muted); max-width: 65ch; line-height: 1.5; font-size: .95rem; }
   .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i.dot { width: 9px; height: 9px; border-radius: 50%; background: #e6e8ec; border: 1px solid #0c0d10; }
   .legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
   .wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
   table { border-collapse: collapse; width: 100%; min-width: 720px; }
@@ -53,8 +43,6 @@
   td.num { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
   td.sketch { width: 140px; }
   svg.sketch { display: block; width: 120px; max-width: 100%; height: auto; }
-  .t1 { fill: var(--tile); } .t2 { fill: var(--tile-2); }
-  .st { fill: none; stroke: var(--start); stroke-width: 2.5; }
   .score { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; min-width: 150px; }
   .bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
   .bar b { display: block; height: 100%; background: var(--accent); }
@@ -81,9 +69,11 @@
     <button type="button" role="tab" id="tab-packs" aria-selected="false">Level packs</button>
   </div>
   <div class="legend" aria-label="Sketch key">
-    <span><i style="background:var(--tile)"></i>Tile, one visit</span>
-    <span><i style="background:var(--tile-2)"></i>Tile, two visits</span>
-    <span><i style="background:none;border:2.5px solid var(--start)"></i>Start</span>
+    <span><i style="background:#4cc9f0"></i>Common, one visit</span>
+    <span><i style="background:#ffc857"></i>Gold, two visits</span>
+    <span><i style="background:#587790"></i>Steel, three visits</span>
+    <span><i style="background:#9d1057"></i>Arrow, leave only the way it points</span>
+    <span><i class="dot"></i>Start (a tile with strokes shows the visits still to make)</span>
   </div>
   <div class="wrap">
     <table>
@@ -102,6 +92,7 @@
   </p>
 </main>
 
+<script src="tiles.js"></script>
 <script>
   // Two data sets, one table. "levels" is the shipped list (levels.json, tools/export-difficulty.js);
   // "packs" is the ten packs of 50 (packs.json, tools/gen-packs.js). Both are turned into the same row shape.
@@ -137,32 +128,7 @@
   const SVG = 'http://www.w3.org/2000/svg';
   const state = { set: 'levels', data: {}, sortKey: 'level', sortDir: 1 };
 
-  function sketch(l) {
-    const box = 120, cell = Math.floor(box / Math.max(l.width, l.height)), gap = Math.max(1, Math.round(cell / 8));
-    const w = l.width * cell, h = l.height * cell;
-    const svg = document.createElementNS(SVG, 'svg');
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    svg.setAttribute('class', 'sketch');
-    svg.setAttribute('width', w);
-    svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', `Level ${l.label} layout, ${l.width} by ${l.height}`);
-    const rect = (x, y, s, cls) => {
-      const r = document.createElementNS(SVG, 'rect');
-      r.setAttribute('x', x * cell + gap / 2 + s); r.setAttribute('y', y * cell + gap / 2 + s);
-      r.setAttribute('width', cell - gap - 2 * s); r.setAttribute('height', cell - gap - 2 * s);
-      r.setAttribute('rx', Math.max(1, cell / 8)); r.setAttribute('class', cls);
-      svg.appendChild(r);
-    };
-    l.rows.forEach((row, y) => {
-      for (let x = 0; x < l.width; x++) {
-        const c = row[x] || '.';
-        if (c === '.') continue;
-        rect(x, y, 0, c === '2' || c === 's' ? 't2' : 't1');
-        if (c === 'S' || c === 's') rect(x, y, 1, 'st');
-      }
-    });
-    return svg;
-  }
+  const drawLevel = l => sketch(l.rows, l.width, `Level ${l.label} layout, ${l.width} by ${l.height}`);
 
   const fmt = (v, d = 0) => v == null ? '–' : (d ? v.toFixed(d) : Math.round(v).toLocaleString('en'));
 
@@ -203,7 +169,7 @@
     const cell = {
       level: l => { const t = document.createElement('span'); t.textContent = l.label;
         if (l.sub) { const s = document.createElement('span'); s.className = 'sub'; s.textContent = l.sub; t.appendChild(s); } return t; },
-      sketch: l => { const d = document.createElement('div'); d.appendChild(sketch(l));
+      sketch: l => { const d = document.createElement('div'); d.appendChild(drawLevel(l));
         if (l.designed) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = l.designed; d.appendChild(t); } return d; },
       pathBits: l => { const d = document.createElement('div'); d.className = 'score';
         d.innerHTML = `<div class="bar" role="presentation"><b style="width:${(100 * (l.pathBits || 0) / max).toFixed(1)}%"></b></div><span>${fmt(l.pathBits, 1)}</span>`; return d; },

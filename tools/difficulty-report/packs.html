@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Cangupa Level Packs</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -5,28 +6,12 @@
   /* Layout: a ramp chart across every level, then one section per pack with a grid of level sketches.
      Data comes from packs.json next to this file (written by tools/gen-packs.js). */
   :root {
-    --bg: #f3f5f4;
-    --surface: #ffffff;
-    --fg: #17252a;
-    --muted: #5d6d72;
-    --line: #d9e0de;
-    --accent: #0e6b68;
-    --tile: #8fc9c4;
-    --tile-2: #2c8c86;
-    --start: #e4a11b;
-    --band: #e9eeec;
+    /* dark only; the board and tile colours are the game's own (see tiles.js) */
+    --bg: #0c0d10; --surface: #15171c; --fg: #e6e8ec; --muted: #8a909c; --line: #22262e; --band: #111318;
+    --accent: #4cc9f0;
     --font-display: "Figtree", system-ui, sans-serif;
     --font-data: "IBM Plex Mono", ui-monospace, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --band: #131f22;
-      --accent: #4fc3bb; --tile: #3b8a85; --tile-2: #7fd4cd; --start: #f0b23a; color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --band: #131f22;
-    --accent: #4fc3bb; --tile: #3b8a85; --tile-2: #7fd4cd; --start: #f0b23a; color-scheme: dark;
+    color-scheme: dark;
   }
   body {
     background: var(--bg); color: var(--fg); font-family: var(--font-display);
@@ -46,6 +31,7 @@
   .chart text { fill: var(--muted); font-family: var(--font-data); font-size: 10px; }
   .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i.dot { width: 9px; height: 9px; border-radius: 50%; background: #e6e8ec; border: 1px solid #0c0d10; }
   .legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
   .pack { display: grid; gap: 12px; }
   .pack header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
@@ -58,8 +44,6 @@
   .card .top b { color: var(--fg); font-family: var(--font-display); font-size: .85rem; }
   .card .tag { color: var(--accent); }
   svg.sketch { display: block; width: 88px; max-width: 100%; height: auto; }
-  .t1 { fill: var(--tile); } .t2 { fill: var(--tile-2); }
-  .st { fill: none; stroke: var(--start); stroke-width: 2.5; }
   .bar { height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; width: 100%; }
   .bar b { display: block; height: 100%; background: var(--accent); }
   .note { font-size: .8rem; color: var(--muted); max-width: 75ch; line-height: 1.55; }
@@ -78,35 +62,20 @@
     <p class="note">Each dot is a level, in play order. Height is <code>pathBits</code>, the luck a blind player needs to retrace a solution. Bands are the packs. Outlined dots are designed layouts.</p>
   </section>
   <div class="legend" aria-label="Sketch key">
-    <span><i style="background:var(--tile)"></i>Tile, one visit</span>
-    <span><i style="background:var(--tile-2)"></i>Tile, two visits</span>
-    <span><i style="background:none;border:2.5px solid var(--start)"></i>Start</span>
-    <span><i style="background:none;border:1.5px solid var(--accent)"></i>Designed layout</span>
+    <span><i style="background:#4cc9f0"></i>Common, one visit</span>
+    <span><i style="background:#ffc857"></i>Gold, two visits</span>
+    <span><i style="background:#587790"></i>Steel, three visits</span>
+    <span><i style="background:#9d1057"></i>Arrow, leave only the way it points</span>
+    <span><i class="dot"></i>Start (a tile with strokes shows the visits still to make)</span>
   </div>
   <div id="packs" class="pack-list" style="display:grid;gap:28px"></div>
 </main>
 
+<script src="tiles.js"></script>
 <script>
   const SVG = 'http://www.w3.org/2000/svg';
   const el = (tag, attrs = {}) => { const e = document.createElementNS(SVG, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
 
-  function sketch(rows, label) {
-    const w = rows[0].length, h = rows.length, box = 88;
-    const cell = Math.floor(box / Math.max(w, h)), gap = Math.max(1, Math.round(cell / 8));
-    const svg = el('svg', { viewBox: `0 0 ${w * cell} ${h * cell}`, class: 'sketch', width: w * cell, role: 'img', 'aria-label': label });
-    rows.forEach((row, y) => {
-      for (let x = 0; x < w; x++) {
-        const c = row[x];
-        if (c === '.') continue;
-        const a = { x: x * cell + gap / 2, y: y * cell + gap / 2, width: cell - gap, height: cell - gap, rx: Math.max(1, cell / 8) };
-        svg.appendChild(el('rect', { ...a, class: c === '2' || c === 's' ? 't2' : 't1' }));
-        if (c === 'S' || c === 's') {
-          svg.appendChild(el('rect', { ...a, x: a.x + 1, y: a.y + 1, width: a.width - 2, height: a.height - 2, class: 'st' }));
-        }
-      }
-    });
-    return svg;
-  }
 
   function ramp(packs) {
     const all = packs.flatMap((p, pi) => p.levels.map((l, i) => ({ ...l, pi, i })));
@@ -159,7 +128,7 @@
         const c = document.createElement('div');
         c.className = 'card' + (l.designed ? ' designed' : '');
         c.innerHTML = `<div class="top"><b>${pi + 1}-${i + 1}</b><span>${l.pathBits}</span></div>`;
-        c.appendChild(sketch(l.rows, `Pack ${pi + 1} level ${i + 1}`));
+        c.appendChild(sketch(l.rows, l.rows[0].length, `Pack ${pi + 1} level ${i + 1}`, 96));
         const bar = document.createElement('div');
         bar.className = 'bar';
         bar.innerHTML = `<b style="width:${(100 * l.pathBits / max).toFixed(1)}%"></b>`;
