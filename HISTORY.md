@@ -829,6 +829,18 @@ computed opacity goes 1 → 0.2 on mouse down over the kangaroo and back to
 1 on mouse up, with no console or page errors, and a screenshot taken while
 held showing the tile color reading through the faded sprite as intended.
 
+CANGUPA-71 then ported the same fade to apps/app: a new `peeking`
+boolean on `Board.tsx` (plain state, not an `Animated.Value`, since it
+only ever toggles between two fixed opacities) drives a 20%-opacity
+style on the kangaroo's `View`, wired through a new
+`isRoo`/`onPeekStart`/`onPeekEnd` prop pass-through on the per-cell
+`Tile` so its own cell gets press-in/press-out handling even when the
+`fall` setting's `onPressEmpty` handler isn't present. Verified with the
+full Jest suite (27 suites, 765 tests) plus `tsc --noEmit`, and a
+Playwright-driven check of the real Expo web build showing the
+kangaroo fade to a faint silhouette with the tile color reading through
+on press-and-hold, restoring on release, with no console errors.
+
 ---
 
 ## Patterns, and what's still open

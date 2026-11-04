@@ -3,7 +3,7 @@
 // build()/render() and style.css's #board/.cell/.tile rules. Owning the Game
 // and calling `hop()` through the ref after a played move is useBoard.ts's
 // job, not this component's — see PlayableBoard.tsx for the two wired together.
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
@@ -83,6 +83,13 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
   const fallAnim = useRef(new Animated.Value(0)).current;
+  // Peek (CANGUPA-71, ported from web-classic's CANGUPA-70): holding on the
+  // kangaroo's own tile fades it so a special tile underneath — easy to miss
+  // when it's cracked or a double tile hidden by the sprite — shows through.
+  // Plain state rather than another Animated value: it only ever toggles a
+  // single opacity between two fixed numbers, nothing to interpolate, and it
+  // stays a plain JS number the opacity test below can read back directly.
+  const [peeking, setPeeking] = useState(false);
   // The board's own rendered size (CANGUPA-66), kept in a ref rather than
   // state since it only feeds a later press's own math, not a render — set
   // once on layout and whenever the aspectRatio box is resized.
@@ -169,13 +176,18 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           anim={anim}
           onPress={onPressTile}
           onPressEmpty={onPressEmpty}
+          isRoo={tile.x === rooX && tile.y === rooY}
+          onPeekStart={() => setPeeking(true)}
+          onPeekEnd={() => setPeeking(false)}
         />
       ))}
       <View
+        testID="roo"
         pointerEvents="none"
         style={[
           styles.rooSlot,
           { width: `${100 / w}%`, height: `${100 / h}%`, left: `${(100 * rooX) / w}%`, top: `${(100 * rooY) / h}%` },
+          peeking && styles.peek,
         ]}
       >
         <Animated.View
@@ -206,9 +218,16 @@ interface TileProps {
   // of falling through to the board's blanket onPress, which has no cell to
   // give.
   readonly onPressEmpty?: (target?: { x: number; y: number }) => void;
+  // Whether this is the cell the kangaroo is currently rendered on (CANGUPA-71)
+  // — its own cell is never a legal move (distance 0) and, with the fall
+  // setting off, has no Pressable at all otherwise, so peeking needs its own
+  // press handling independent of onPress/onPressEmpty above.
+  readonly isRoo?: boolean;
+  readonly onPeekStart?: () => void;
+  readonly onPeekEnd?: () => void;
 }
 
-function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty }: TileProps) {
+function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
   useAnimatedTip(pulse, tile.tip && anim);
@@ -259,6 +278,17 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty }: TileProps) {
           testID={`tile-empty-${tile.x}-${tile.y}`}
           style={styles.pressable}
           onPress={() => onPressEmpty({ x: tile.x, y: tile.y })}
+          onPressIn={isRoo ? onPeekStart : undefined}
+          onPressOut={isRoo ? onPeekEnd : undefined}
+        >
+          {content}
+        </Pressable>
+      ) : isRoo ? (
+        <Pressable
+          testID={`tile-roo-${tile.x}-${tile.y}`}
+          style={styles.pressable}
+          onPressIn={onPeekStart}
+          onPressOut={onPeekEnd}
         >
           {content}
         </Pressable>
@@ -342,5 +372,11 @@ const styles = StyleSheet.create({
   rooSlot: {
     position: 'absolute',
     zIndex: 2,
+  },
+  // Peek (CANGUPA-71): 20% opacity, not 0, so the kangaroo stays visible as a
+  // landmark while the tile underneath shows through — same value web-classic
+  // uses (CANGUPA-70's `#roo.peek`).
+  peek: {
+    opacity: 0.2,
   },
 });

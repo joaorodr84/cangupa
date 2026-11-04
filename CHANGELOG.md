@@ -38,6 +38,10 @@ Open work is listed in [TODO.md](TODO.md).
   a faint outline, so a special tile hidden underneath it — a cracked
   tile or a double tile — shows through. Releasing restores the kangaroo
   to full view.
+- Holding a finger on the kangaroo's own cell in the app now does the same:
+  it fades to a faint outline so a special tile hidden underneath — a
+  cracked tile or a double tile — shows through, and releasing restores
+  the kangaroo to full view.
 - The app now plays a short sound effect on every move — a step or a
   two-tile jump — matching the sound the web version already has. A new
   "Sound" toggle in the Settings screen's Gameplay section, on by

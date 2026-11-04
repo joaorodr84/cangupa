@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-71`**
+**Next ID to assign: `CANGUPA-72`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -28,6 +28,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Date | Commit |
 | --- | --- | --- | --- | --- | --- |
+| CANGUPA-71 | P3 | Port the hold-to-peek fade (CANGUPA-70) to apps/app: holding on the kangaroo's own tile fades it to 20% opacity so a special tile underneath is visible, releasing restores it | done | 2026-11-04 | — |
 | CANGUPA-70 | P3 | Peek: holding on the kangaroo's own tile in apps/web-classic fades it to 20% opacity so a special tile (cracked/double) underneath is visible, releasing restores it | done | 2026-11-04 | — |
 | CANGUPA-65 | P1 | Fix falling (CANGUPA-64) wrongly treating a tap on any tile with no legal move as a fall target: restrict it to a tap that is a step or jump away in one of the four cardinal directions (the same geometric shape `legalMoves()` uses), in both apps/web-classic and apps/app | done | 2026-11-04 | — |
 | CANGUPA-64 | P2 | Make falling, when there is no legal move, jump to the targeted cell before sinking there, in both apps/web-classic and apps/app, instead of sinking in place where the kangaroo already stood. A press with no specific cell (true empty background, or walking off the grid edge on web) still falls in place | done | 2026-11-04 | — |

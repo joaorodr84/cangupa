@@ -287,3 +287,74 @@ test('tapping a hinted tile does not also report an empty-space press', async ()
   expect(onPressTile).toHaveBeenCalledWith(1, 0);
   expect(onPressEmpty).not.toHaveBeenCalled();
 });
+
+test('holding on the kangaroo fades it, releasing restores it (CANGUPA-71)', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  const roo = () => [screen.getByTestId('roo').props.style].flat();
+  expect(roo().some((s) => s?.opacity === 0.2)).toBe(false);
+
+  await fireEvent(screen.getByTestId('tile-roo-0-0'), 'pressIn');
+  expect(roo().some((s) => s?.opacity === 0.2)).toBe(true);
+
+  await fireEvent(screen.getByTestId('tile-roo-0-0'), 'pressOut');
+  expect(roo().some((s) => s?.opacity === 0.2)).toBe(false);
+});
+
+test('holding elsewhere on the board does not fade the kangaroo', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  await fireEvent(screen.getByTestId('tile-press-1-0'), 'pressIn');
+
+  const flat = [screen.getByTestId('roo').props.style].flat();
+  expect(flat.some((s) => s?.opacity === 0.2)).toBe(false);
+});
+
+test('holding on the kangaroo still peeks when a fall handler is given (CANGUPA-58 + CANGUPA-71)', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+  const onPressEmpty = jest.fn();
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      onPressEmpty={onPressEmpty}
+    />,
+  );
+
+  // With onPressEmpty given, the kangaroo's own cell is wrapped by that
+  // Pressable (tile-empty-0-0) rather than the dedicated peek-only one.
+  await fireEvent(screen.getByTestId('tile-empty-0-0'), 'pressIn');
+
+  const flat = [screen.getByTestId('roo').props.style].flat();
+  expect(flat.some((s) => s?.opacity === 0.2)).toBe(true);
+});
+
+test('the kangaroo peek Pressable has no onPress, so a tap there stays a no-op', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  expect(screen.getByTestId('tile-roo-0-0').props.onPress).toBeUndefined();
+});
