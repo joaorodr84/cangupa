@@ -1,4 +1,3 @@
-import { Alert } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import SettingsScreen from './SettingsScreen';
@@ -56,41 +55,29 @@ test.each([
   expect(screen.getByTestId(testID).props.value).toBe(false);
 });
 
-test('clearing progress asks for confirmation first', async () => {
+test('clearing progress asks for confirmation first, in its own popup', async () => {
   const onClearProgress = jest.fn();
-  const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation((_title, _msg, buttons) => {
-    const destructive = buttons?.find((b) => b.style === 'destructive');
-    destructive?.onPress?.();
-  });
-
   const { result } = renderScreen({ onClearProgress });
   await result;
 
   await fireEvent.press(screen.getByText('Clear progress'));
+  expect(screen.getByText('Are you sure you want to clear your progress?')).toBeTruthy();
+  expect(onClearProgress).not.toHaveBeenCalled();
 
-  expect(alertSpy).toHaveBeenCalledWith(
-    'Clear all progress?',
-    undefined,
-    expect.arrayContaining([expect.objectContaining({ text: 'Cancel' })]),
-  );
+  await fireEvent.press(screen.getByText('Yes'));
   expect(onClearProgress).toHaveBeenCalledTimes(1);
-
-  alertSpy.mockRestore();
 });
 
-test('cancelling the confirmation does not clear progress', async () => {
+test('answering No does not clear progress', async () => {
   const onClearProgress = jest.fn();
-  const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {
-    // Cancelled: no button's onPress is invoked.
-  });
-
   const { result } = renderScreen({ onClearProgress });
   await result;
 
   await fireEvent.press(screen.getByText('Clear progress'));
+  await fireEvent.press(screen.getByText('No'));
 
   expect(onClearProgress).not.toHaveBeenCalled();
-  alertSpy.mockRestore();
+  expect(screen.queryByText('Are you sure you want to clear your progress?')).toBeNull();
 });
 
 test('tapping a language row reports it', async () => {

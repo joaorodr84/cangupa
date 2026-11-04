@@ -63,10 +63,11 @@ export interface Strings {
     readonly jumps: string;
     readonly hints: string;
     readonly anim: string;
+    readonly data: string;
     readonly clearProgress: string;
     readonly clearProgressTitle: string;
-    readonly cancel: string;
-    readonly confirmClear: string;
+    readonly no: string;
+    readonly yes: string;
     readonly language: string;
     readonly followDevice: string;
   };

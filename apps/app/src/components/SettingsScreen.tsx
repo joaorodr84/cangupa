@@ -14,13 +14,22 @@
 // mainstream OS language picker follows, so "Português" still reads as
 // "Português" while the app is currently showing English. No on-screen title
 // (CANGUPA-49): the footer tab already names this screen "Settings".
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+//
+// Clearing progress sits under its own "Data" section (CANGUPA-52) and is
+// confirmed with Popup, the same screen-covering card WinPopup uses for the
+// win celebration, rather than the OS-native Alert.alert the web version's
+// confirm() inspired — matching the app's own visual language instead of
+// looking like a system dialog. The No button takes focus as soon as the
+// popup opens, since it's the safe default for a destructive confirmation.
+import { type ComponentRef, useEffect, useRef, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { LOCALES, type LanguageSetting, type Locale } from '../i18n/locale';
 import { useStrings } from '../i18n/useStrings';
 import { type Settings } from '../state/settings';
 import { type Palette, type ThemeMode } from '../theme/palette';
 import { groupedRowCorners } from './groupedRow';
+import Popup from './Popup';
 
 // The radius each row group rounds its first and last row to (CANGUPA-51);
 // matches the plain rounded corners the rows used before they were grouped.
@@ -55,6 +64,14 @@ export default function SettingsScreen({
   const t = useStrings();
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const noButtonRef = useRef<ComponentRef<typeof Pressable>>(null);
+
+  useEffect(() => {
+    if (confirmVisible) {
+      noButtonRef.current?.focus();
+    }
+  }, [confirmVisible]);
 
   // 'system' first, as the default and the choice most players want
   // (DigiSpin's SettingsScreen.tsx lists its own equivalent the same way).
@@ -69,108 +86,131 @@ export default function SettingsScreen({
     ...LOCALES.map((locale) => ({ language: locale, label: LANGUAGE_NAMES[locale] })),
   ];
 
-  const confirmClear = () => {
-    Alert.alert(t.settings.clearProgressTitle, undefined, [
-      { text: t.settings.cancel, style: 'cancel' },
-      { text: t.settings.confirmClear, style: 'destructive', onPress: onClearProgress },
-    ]);
+  const confirmAndClear = () => {
+    setConfirmVisible(false);
+    onClearProgress();
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={[styles.sectionLabel, muted]}>{t.settings.appearance}</Text>
-      <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
-        {themeChoices.map((choice, index) => {
-          const selected = choice.mode === settings.themeMode;
-          return (
-            <Pressable
-              key={choice.mode}
-              testID={`theme-mode-${choice.mode}`}
-              onPress={() => onChangeThemeMode(choice.mode)}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: selected }}
-              style={[
-                styles.row,
-                { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-                groupedRowCorners(index, themeChoices.length, ROW_RADIUS),
-              ]}
-            >
-              <Text style={ink}>{choice.label}</Text>
-              <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.wrap}>
+        <Text style={[styles.sectionLabel, muted]}>{t.settings.appearance}</Text>
+        <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
+          {themeChoices.map((choice, index) => {
+            const selected = choice.mode === settings.themeMode;
+            return (
+              <Pressable
+                key={choice.mode}
+                testID={`theme-mode-${choice.mode}`}
+                onPress={() => onChangeThemeMode(choice.mode)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: selected }}
+                style={[
+                  styles.row,
+                  { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+                  groupedRowCorners(index, themeChoices.length, ROW_RADIUS),
+                ]}
+              >
+                <Text style={ink}>{choice.label}</Text>
+                <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
+              </Pressable>
+            );
+          })}
+        </View>
 
-      <Text style={[styles.sectionLabel, muted]}>{t.settings.gameplay}</Text>
-      <View>
-        <ToggleRow
-          testID="toggle-jumps"
-          label={t.settings.jumps}
-          value={settings.jumps}
-          onChange={onChangeJumps}
-          ink={ink}
-          palette={palette}
-          index={0}
-          length={3}
-        />
-        <ToggleRow
-          testID="toggle-hints"
-          label={t.settings.hints}
-          value={settings.hints}
-          onChange={onChangeHints}
-          ink={ink}
-          palette={palette}
-          index={1}
-          length={3}
-        />
-        <ToggleRow
-          testID="toggle-anim"
-          label={t.settings.anim}
-          value={settings.anim}
-          onChange={onChangeAnim}
-          ink={ink}
-          palette={palette}
-          index={2}
-          length={3}
-        />
-      </View>
+        <Text style={[styles.sectionLabel, muted]}>{t.settings.gameplay}</Text>
+        <View>
+          <ToggleRow
+            testID="toggle-jumps"
+            label={t.settings.jumps}
+            value={settings.jumps}
+            onChange={onChangeJumps}
+            ink={ink}
+            palette={palette}
+            index={0}
+            length={3}
+          />
+          <ToggleRow
+            testID="toggle-hints"
+            label={t.settings.hints}
+            value={settings.hints}
+            onChange={onChangeHints}
+            ink={ink}
+            palette={palette}
+            index={1}
+            length={3}
+          />
+          <ToggleRow
+            testID="toggle-anim"
+            label={t.settings.anim}
+            value={settings.anim}
+            onChange={onChangeAnim}
+            ink={ink}
+            palette={palette}
+            index={2}
+            length={3}
+          />
+        </View>
 
-      <Text style={[styles.sectionLabel, muted]}>{t.settings.language}</Text>
-      <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.language}>
-        {languageChoices.map((choice, index) => {
-          const selected = choice.language === settings.language;
-          return (
-            <Pressable
-              key={choice.language}
-              testID={`language-${choice.language}`}
-              onPress={() => onChangeLanguage(choice.language)}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: selected }}
-              style={[
-                styles.row,
-                { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-                groupedRowCorners(index, languageChoices.length, ROW_RADIUS),
-              ]}
-            >
-              <Text style={ink}>{choice.label}</Text>
-              <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
-            </Pressable>
-          );
-        })}
-      </View>
+        <Text style={[styles.sectionLabel, muted]}>{t.settings.language}</Text>
+        <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.language}>
+          {languageChoices.map((choice, index) => {
+            const selected = choice.language === settings.language;
+            return (
+              <Pressable
+                key={choice.language}
+                testID={`language-${choice.language}`}
+                onPress={() => onChangeLanguage(choice.language)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: selected }}
+                style={[
+                  styles.row,
+                  { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+                  groupedRowCorners(index, languageChoices.length, ROW_RADIUS),
+                ]}
+              >
+                <Text style={ink}>{choice.label}</Text>
+                <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
+              </Pressable>
+            );
+          })}
+        </View>
 
-      <Pressable
-        style={[
-          styles.row,
-          { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-          groupedRowCorners(0, 1, ROW_RADIUS),
-        ]}
-        onPress={confirmClear}
-      >
-        <Text style={ink}>{t.settings.clearProgress}</Text>
-      </Pressable>
-    </ScrollView>
+        <Text style={[styles.sectionLabel, muted]}>{t.settings.data}</Text>
+        <Pressable
+          style={[
+            styles.row,
+            { backgroundColor: palette.panel, borderColor: palette.panelBorder },
+            groupedRowCorners(0, 1, ROW_RADIUS),
+          ]}
+          onPress={() => setConfirmVisible(true)}
+        >
+          <Text style={ink}>{t.settings.clearProgress}</Text>
+        </Pressable>
+      </ScrollView>
+
+      {confirmVisible && (
+        <Popup
+          palette={palette}
+          heading={t.settings.clearProgressTitle}
+          onClose={() => setConfirmVisible(false)}
+          actions={
+            <View style={styles.confirmActions}>
+              <Pressable
+                ref={noButtonRef}
+                style={[styles.cancelButton, { backgroundColor: palette.panel }]}
+                onPress={() => setConfirmVisible(false)}
+              >
+                <Text style={ink}>{t.settings.no}</Text>
+              </Pressable>
+              <Pressable style={[styles.primary, { backgroundColor: palette.control }]} onPress={confirmAndClear}>
+                <Text style={[styles.primaryLabel, ink]}>{t.settings.yes}</Text>
+              </Pressable>
+            </View>
+          }
+        />
+      )}
+    </View>
   );
 }
 
@@ -201,6 +241,9 @@ function ToggleRow({ testID, label, value, onChange, ink, palette, index, length
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   wrap: {
     gap: 12,
     padding: 4,
@@ -229,5 +272,24 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 2,
+  },
+  confirmActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 6,
+  },
+  cancelButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+  },
+  // Same pill shape and palette.control fill as WinPopup's primary button.
+  primary: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+  },
+  primaryLabel: {
+    fontWeight: '600',
   },
 });

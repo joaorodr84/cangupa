@@ -3,11 +3,14 @@
 // "Próximo nível" button BoardHud used to carry. It only covers part of the
 // screen, so BoardHud's Undo/Reset/Hint corner stays reachable underneath —
 // Reset is still the way to play the level again without leaving this popup
-// up, the same as before.
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+// up, the same as before. The overlay/card/close/heading frame itself now
+// lives in Popup (CANGUPA-52), shared with SettingsScreen's clear-progress
+// confirmation.
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
+import Popup from './Popup';
 
 interface WinPopupProps {
   readonly moves: number;
@@ -23,62 +26,31 @@ export default function WinPopup({ moves, hasNext, palette, onNext, onClose }: W
   const muted = { color: palette.muted };
 
   return (
-    <View style={styles.overlay} pointerEvents="box-none">
-      <View style={[styles.card, { backgroundColor: palette.panel }]}>
-        <Pressable style={styles.close} onPress={onClose}>
-          <Text style={ink}>✕</Text>
-        </Pressable>
-        <Text style={[styles.heading, ink]}>{t.winPopup.levelComplete}</Text>
-        <Text style={muted}>{t.winPopup.inMoves(moves)}</Text>
-        {hasNext ? (
-          <Pressable style={[styles.primary, { backgroundColor: 'rgba(255,214,90,0.3)' }]} onPress={onNext}>
+    <Popup
+      palette={palette}
+      heading={t.winPopup.levelComplete}
+      onClose={onClose}
+      actions={
+        hasNext && (
+          <Pressable style={[styles.primary, { backgroundColor: palette.control }]} onPress={onNext}>
             <Text style={[styles.primaryLabel, ink]}>{t.winPopup.nextLevel}</Text>
           </Pressable>
-        ) : (
-          <Text style={[styles.done, muted]}>{t.winPopup.gameComplete}</Text>
-        )}
-      </View>
-    </View>
+        )
+      }
+    >
+      <Text style={muted}>{t.winPopup.inMoves(moves)}</Text>
+      {!hasNext && <Text style={muted}>{t.winPopup.gameComplete}</Text>}
+    </Popup>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  card: {
-    minWidth: 220,
-    borderRadius: 14,
-    padding: 20,
-    alignItems: 'center',
-    gap: 10,
-  },
-  close: {
-    position: 'absolute',
-    top: 8,
-    right: 10,
-    padding: 4,
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
   primary: {
-    marginTop: 6,
     paddingVertical: 12,
     paddingHorizontal: 28,
     borderRadius: 999,
   },
   primaryLabel: {
     fontWeight: '600',
-  },
-  done: {
-    marginTop: 6,
   },
 });

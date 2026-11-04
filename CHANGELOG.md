@@ -7,6 +7,19 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-04
+
+### Changed
+
+- The settings screen's "Clear progress" row now sits under its own "Data"
+  section header, instead of under the Language section with no header of
+  its own.
+- Clearing progress now asks for confirmation with the app's own pop-up
+  card, matching the one shown when a level is cleared, instead of the
+  device's native confirmation dialog. It asks "Are you sure you want to
+  clear your progress?" with Yes/No buttons, and No — the safe choice — is
+  focused as soon as the pop-up opens.
+
 ## 2026-11-03
 
 ### Changed

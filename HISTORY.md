@@ -610,6 +610,27 @@ build.
 
 ---
 
+## Era 23 — Nov 4: clear-progress confirmation moves into the app's own Popup
+
+CANGUPA-52 gives the apps/app settings screen's "Clear progress" row its
+own "Data" section header (previously it sat under Language with no
+header of its own), and replaces the confirmation `Alert.alert` with the
+app's own in-app popup card instead of an OS dialog. A reusable `Popup`
+component is factored out of `WinPopup` (CANGUPA-32) so both the
+level-complete popup and this new confirmation share the same
+overlay/card/close/heading frame; `Popup` gains a new `actions` slot, a
+fixed-height strip pinned to the card's bottom, so the button row sits in
+the same place regardless of how much body text a given popup shows. The
+confirmation now reads "Are you sure you want to clear your progress?"
+with Yes/No buttons (previously "Clear all progress?" with Cancel/Clear),
+and the No button is focused automatically when the popup opens, since
+it's the safe default for a destructive action.
+
+One commit. Verified with `npx tsc --noEmit` clean and the full
+apps/app Jest suite green (271 tests).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
