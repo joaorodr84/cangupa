@@ -3,6 +3,10 @@ const assert = require('assert');
 const { Game } = require('../apps/web-classic/js/game.js');
 const { LEVELS } = require('../apps/web-classic/js/levels.js');
 const { measure, search, randomPlay } = require('./difficulty.js');
+const fs = require('fs');
+const path = require('path');
+const { canonical, fillsBox } = require('./pack-generator.js');
+const { PACKS, LEVELS_PER_PACK } = require('./pack-plan.js');
 
 // rules
 let g = new Game(['S1.', '.2.']);
@@ -61,4 +65,41 @@ assert.strictEqual(measure(['S1.', '.2.']).bits, Infinity); // unwinnable: no ch
 assert.strictEqual(search(['S1', '.1']).decisions, 0);      // every move forced
 assert.strictEqual(randomPlay(['S1', '.1']).randomWins, 1);
 
-console.log(`ok: rules and ${LEVELS.length} levels solvable`);
+// level packs (tools/packs.json, built by tools/gen-packs.js)
+const packsFile = path.join(__dirname, 'packs.json');
+let packCount = 0;
+if (fs.existsSync(packsFile)) {
+  const { packs } = JSON.parse(fs.readFileSync(packsFile, 'utf8'));
+  assert.strictEqual(packs.length, PACKS.length, 'pack count matches the plan');
+  let prevArea = 0, prevMax = 0, prevMean = 0;
+  packs.forEach((pack, i) => {
+    const label = `pack ${i + 1} ${pack.name}`;
+    assert.strictEqual(pack.levels.length, LEVELS_PER_PACK, `${label}: level count`);
+    const area = pack.width * pack.height;
+    assert.ok(area > prevArea, `${label}: board area must grow (${area} after ${prevArea})`);
+    prevArea = area;
+    const seen = new Set();
+    let last = -Infinity, sum = 0;
+    pack.levels.forEach((lv, j) => {
+      const id = `${label} level ${j + 1}`;
+      assert.strictEqual(lv.rows.length, pack.height, `${id}: height`);
+      assert.ok(lv.rows.every(r => r.length === pack.width), `${id}: width`);
+      assert.ok(fillsBox(lv.rows), `${id}: has an empty row or column`);
+      const key = canonical(lv.rows);
+      assert.ok(!seen.has(key), `${id}: repeats an earlier level (or a rotation of it)`);
+      seen.add(key);
+      const g = new Game(lv.rows), path = g.solve();
+      assert.ok(path, `${id}: no solution`);
+      path.forEach(m => g.play(m));
+      assert.ok(g.won, `${id}: solution does not clear`);
+      assert.ok(lv.pathBits >= last, `${id}: pathBits ${lv.pathBits} drops below ${last}`);
+      last = lv.pathBits; sum += lv.pathBits; packCount++;
+    });
+    const mean = sum / LEVELS_PER_PACK, min = pack.levels[0].pathBits, max = last;
+    assert.ok(mean > prevMean, `${label}: mean difficulty ${mean.toFixed(1)} must exceed ${prevMean.toFixed(1)}`);
+    assert.ok(min >= prevMax * .8, `${label}: easiest level (${min}) is far below the last pack's hardest (${prevMax})`);
+    prevMax = max; prevMean = mean;
+  });
+}
+
+console.log(`ok: rules and ${LEVELS.length} levels solvable` + (packCount ? `, ${packCount} pack levels` : ''));
