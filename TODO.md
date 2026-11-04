@@ -81,12 +81,3 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
-- [P2] `CANGUPA-61` — Port the joey-in-pouch art (`TILE-JUMPER-6`) to
-  `apps/app`: add the same joey (two ears, a round head, two eyes, a
-  nose) to [Kangaroo.tsx](apps/app/src/components/Kangaroo.tsx)'s
-  `SideSprite` and `FrontSprite`, ported 1:1 from the SVG paths
-  `apps/web-classic/js/sprites.js` carries after `TILE-JUMPER-6` —
-  `react-native-svg`'s `<G>`/`<Path>`/`<Ellipse>`/`<Circle>` mirror the
-  plain SVG elements directly. `BackSprite` stays untouched, same
-  reasoning as the web version: no pouch is visible from behind a
-  kangaroo.

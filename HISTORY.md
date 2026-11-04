@@ -687,7 +687,7 @@ jaw, or belly patch.
 
 ---
 
-## Era 26 — Nov 4: apps/app starts porting web-classic's sound effects
+## Era 26 — Nov 4: apps/app reaches parity with web-classic's sound, falling, and joey art
 
 CANGUPA-57 ports the web version's jump sound effect (`TILE-JUMPER-2`) and
 its sound on/off setting to apps/app, the first of five parity tasks
@@ -739,6 +739,21 @@ CANGUPA-60 continues the series, porting the falling sound effect
 `fall.wav` rendered by `tools/gen-sounds.js` matching the web version's
 300→70Hz sawtooth glide exactly, wired into `PlayableBoard.tsx`'s
 `handlePressEmpty` right before the sink-and-fade animation starts.
+
+CANGUPA-61 closes out the series, porting the joey-in-pouch art
+(`TILE-JUMPER-6`) to apps/app: the same joey (two ears, a round head, two
+eyes, a nose) was added to `Kangaroo.tsx`'s `SideSprite` and `FrontSprite`,
+ported 1:1 from `apps/web-classic/js/sprites.js`'s SVG paths —
+`react-native-svg`'s `<G>`/`<Path>`/`<Ellipse>`/`<Circle>` mirror the plain
+SVG elements directly, same coordinates, same nesting — while `BackSprite`
+stays untouched, since no pouch is visible from behind a kangaroo either.
+
+Five commits across CANGUPA-57–61, completing the apps/app parity series.
+Verified with `npx tsc --noEmit` clean, the full apps/app Jest suite green
+(283 tests, unchanged by this last task since it ships no new logic), and
+the two kangaroo poses (front-facing idle, side-facing after one move)
+checked against the live Expo web build, matching web-classic's rendering
+exactly with no clipping or overlap.
 
 ---
 

@@ -51,6 +51,10 @@ Open work is listed in [TODO.md](TODO.md).
   there is no move" setting triggers, alongside the kangaroo's
   sink-and-fade animation, matching the sound the web version already
   plays, and muted by the same "Sound" toggle.
+- The app's kangaroo now also has a joey peeking out of its pouch on its
+  side-facing and front-facing sprites, matching the web version's own
+  joey art. The back-facing sprite is unchanged, since a pouch isn't
+  visible from that angle either.
 
 ### Changed
 

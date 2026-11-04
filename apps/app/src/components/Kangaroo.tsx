@@ -1,6 +1,9 @@
 // Ported from apps/web-classic/js/sprites.js's three inline SVGs. `side`
 // faces right; pass `flip` to mirror it for moving left, the same job the
 // web version's CSS `.flip.left { transform: scaleX(-1) }` does.
+// `SideSprite` and `FrontSprite` carry a joey peeking out of the pouch
+// (TILE-JUMPER-6/CANGUPA-61); `BackSprite` has none — a pouch isn't visible
+// from behind a real kangaroo either.
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
 
@@ -47,11 +50,19 @@ function SideSprite() {
         <Ellipse cx={62.5} cy={15} rx={1.8} ry={7} transform="rotate(10 62 14)" fill="#f3b9a0" stroke="none" />
         <Path d="M32 66 C26 78 34 90 44 88 C56 86 60 78 54 72 C48 66 38 62 32 66 Z" fill="#c98b4a" />
         <Path d="M40 88 L74 90 C80 90 80 96 74 96 L36 96 C32 96 32 90 40 88 Z" fill="#b57535" />
+        <G stroke="#5a3515" strokeWidth={1.5}>
+          <Ellipse cx={56.5} cy={48} rx={2.8} ry={5.8} transform="rotate(-16 56.5 48)" fill="#e8a467" />
+          <Ellipse cx={63} cy={47.5} rx={2.8} ry={5.8} transform="rotate(12 63 47.5)" fill="#e8a467" />
+          <Circle cx={60} cy={55} r={6.2} fill="#dfa05a" />
+        </G>
         <Path d="M62 52 C70 54 74 58 76 62" fill="none" strokeWidth={4.5} />
       </G>
       <Circle cx={68} cy={29} r={2.6} fill="#fff" stroke="#5a3515" strokeWidth={1} />
       <Circle cx={69} cy={29.5} r={1.3} fill="#111" />
       <Ellipse cx={83.5} cy={35} rx={2.4} ry={1.8} fill="#3b2410" />
+      <Circle cx={57.8} cy={54.5} r={1} fill="#3b2410" />
+      <Circle cx={62.2} cy={54.5} r={1} fill="#3b2410" />
+      <Ellipse cx={60} cy={57.3} rx={1.3} ry={0.9} fill="#a9733a" />
     </Svg>
   );
 }
@@ -76,6 +87,11 @@ function FrontSprite() {
           stroke="none"
         />
         <Path d="M42 68 C46 74 54 74 58 68" fill="none" stroke="#a9733a" strokeWidth={1.8} />
+        <G stroke="#5a3515" strokeWidth={1.4}>
+          <Ellipse cx={44.5} cy={50} rx={2.6} ry={5.2} transform="rotate(-18 44.5 50)" fill="#e8a467" />
+          <Ellipse cx={55.5} cy={50} rx={2.6} ry={5.2} transform="rotate(18 55.5 50)" fill="#e8a467" />
+          <Circle cx={50} cy={57} r={6.5} fill="#dfa05a" />
+        </G>
         <Path d="M32 50 C26 54 26 60 30 64" fill="none" strokeWidth={4.5} />
         <Path d="M68 50 C74 54 74 60 70 64" fill="none" strokeWidth={4.5} />
         <Ellipse cx={50} cy={26} rx={17} ry={15} fill="#d9954f" />
@@ -101,6 +117,9 @@ function FrontSprite() {
         strokeWidth={1.3}
         strokeLinecap="round"
       />
+      <Circle cx={47.8} cy={56.5} r={1} fill="#3b2410" />
+      <Circle cx={52.2} cy={56.5} r={1} fill="#3b2410" />
+      <Ellipse cx={50} cy={59.3} rx={1.3} ry={0.9} fill="#a9733a" />
     </Svg>
   );
 }
