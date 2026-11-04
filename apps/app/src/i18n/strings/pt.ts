@@ -81,27 +81,27 @@ export const pt: Strings = {
   packs: [
     {
       name: 'Prado',
-      blurb: 'Passa de casa em casa. Cada casa é pisada uma vez.',
+      blurb: 'Salta de casa em casa e pisa cada uma só uma vez.',
     },
     {
       name: 'Ribeiro',
-      blurb: 'Aparecem buracos: salta por cima de uma casa em falta. As casas de ouro precisam de duas visitas.',
+      blurb: 'Salta por cima de uma casa em falta. As casas de ouro pedem duas visitas.',
     },
     {
       name: 'Barranco',
-      blurb: 'As casas de aço precisam de três visitas.',
+      blurb: 'As casas de aço aguentam três visitas.',
     },
     {
       name: 'Afloramento',
-      blurb: 'Casas de ouro e de aço juntas.',
+      blurb: 'Casas de ouro e de aço no mesmo tabuleiro.',
     },
     {
       name: 'Lagoa',
-      blurb: 'Casas com seta: só podes sair no sentido do triângulo.',
+      blurb: 'As casas com seta só se deixam no sentido para onde apontam.',
     },
     {
       name: 'Crista',
-      blurb: 'Setas e metais: ouro num nível, aço no seguinte.',
+      blurb: 'Setas e metais, ouro num nível e aço no seguinte.',
     },
     {
       name: 'Mesa',
@@ -109,15 +109,15 @@ export const pt: Strings = {
     },
     {
       name: 'Desfiladeiro',
-      blurb: 'Caminhos estreitos, muitas casas duplas.',
+      blurb: 'Caminhos estreitos e muitas casas de ouro.',
     },
     {
       name: 'Planalto',
-      blurb: 'Tudo ao mesmo tempo, num tabuleiro grande.',
+      blurb: 'Um tabuleiro grande e percursos longos para planear.',
     },
     {
       name: 'Ermo',
-      blurb: 'Os percursos mais longos do jogo.',
+      blurb: 'O maior tabuleiro e os percursos mais longos de todos.',
     },
   ],
   packRange: (first, last, solved, total) => `Níveis ${first}–${last} · ${solved}/${total} resolvidos`,

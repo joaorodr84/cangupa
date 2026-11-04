@@ -6,7 +6,7 @@ export type Pack = { name: string; blurb: string; width: number; height: number;
 export const PACKS: readonly Pack[] = [
   {
     name: "Meadow",
-    blurb: "Hop from tile to tile. Every tile is visited once.",
+    blurb: "Hop from tile to tile and visit each one once.",
     width: 3,
     height: 3,
     levels: [
@@ -64,7 +64,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Creek",
-    blurb: "Gaps appear: jump over one missing tile. Gold tiles need two visits.",
+    blurb: "Jump over a missing tile. Gold tiles need two visits.",
     width: 4,
     height: 3,
     levels: [
@@ -122,7 +122,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Gully",
-    blurb: "Steel tiles need three visits.",
+    blurb: "Steel tiles hold on for three visits.",
     width: 4,
     height: 4,
     levels: [
@@ -180,7 +180,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Outcrop",
-    blurb: "Gold and steel tiles together.",
+    blurb: "Gold and steel tiles share the board.",
     width: 5,
     height: 4,
     levels: [
@@ -238,7 +238,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Billabong",
-    blurb: "Arrow tiles: leave them only the way the triangle points.",
+    blurb: "Arrow tiles can only be left the way they point.",
     width: 5,
     height: 5,
     levels: [
@@ -296,7 +296,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Ridge",
-    blurb: "Arrows and metals: gold on one level, steel on the next.",
+    blurb: "Arrows and metals, gold on one level and steel on the next.",
     width: 6,
     height: 5,
     levels: [
@@ -354,7 +354,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Mesa",
-    blurb: "Wide boards where one wrong jump strands you.",
+    blurb: "Wide boards where one wrong jump leaves you stranded.",
     width: 6,
     height: 6,
     levels: [
@@ -412,7 +412,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Gorge",
-    blurb: "Narrow routes, many cracked tiles.",
+    blurb: "Narrow routes and plenty of gold tiles.",
     width: 7,
     height: 6,
     levels: [
@@ -470,7 +470,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Plateau",
-    blurb: "Everything at once, on a big board.",
+    blurb: "A big board and long routes to plan.",
     width: 7,
     height: 7,
     levels: [
@@ -528,7 +528,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Outback",
-    blurb: "The longest walks in the game.",
+    blurb: "The biggest board and the longest walks of all.",
     width: 8,
     height: 7,
     levels: [

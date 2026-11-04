@@ -156,5 +156,5 @@ test("shows the pack's own name, blurb and cleared count in its header", async (
   expect(screen.getByTestId('pack-header')).toBeTruthy();
   expect(screen.getByText('Creek')).toBeTruthy();
   expect(screen.getByText('1/3')).toBeTruthy();
-  expect(screen.getByText('Gaps appear: jump over one missing tile. Gold tiles need two visits.')).toBeTruthy();
+  expect(screen.getByText('Jump over a missing tile. Gold tiles need two visits.')).toBeTruthy();
 });

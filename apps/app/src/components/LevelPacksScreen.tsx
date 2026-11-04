@@ -55,7 +55,7 @@ export default function LevelPacksScreen({ packSizes, progress, palette, onOpenP
             style={({ pressed }) => [styles.row, { backgroundColor: palette.panel }, pressed && styles.pressed]}
           >
             <View testID={`pack-swatch-${packIndex + 1}`} style={[styles.swatch, { backgroundColor: color }]}>
-              <PackIcon color={packLabelColorFor(packIndex)} />
+              <PackIcon pack={packIndex} color={packLabelColorFor(packIndex)} />
             </View>
             <View style={styles.text}>
               <Text style={[styles.name, { color: palette.ink }]}>{text?.name ?? ''}</Text>

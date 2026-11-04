@@ -87,6 +87,12 @@ Open work is listed in [TODO.md](TODO.md).
 
 ### Changed
 
+- Each level pack has its own icon on the level packs screen, a simple
+  one-colour landscape shape (grass, waves, a V-shaped dip, rocks, a
+  waterhole, a ridge, a butte, cliff walls, a tabletop, a lone tree) in
+  place of the placeholder dot. Every pack's sentence is reworded in English
+  and Portuguese, and the ones for packs 7 to 10 no longer promise things
+  those packs do not have.
 - The app's 50 original levels are replaced by the new level packs. Because
   the levels are new, progress made on the old ones is not carried over and
   the game starts fresh. The web game keeps its own 50 levels, unchanged.

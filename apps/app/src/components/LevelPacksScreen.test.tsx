@@ -48,3 +48,16 @@ test('tapping a pack opens it', async () => {
   await fireEvent.press(screen.getByTestId('pack-2'));
   expect(onOpenPack).toHaveBeenCalledWith(1);
 });
+
+test('every pack row draws its own icon, not the same one for all', async () => {
+  await render(
+    <LevelPacksScreen
+      packSizes={[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}
+      progress={NO_PROGRESS}
+      palette={palette}
+      onOpenPack={jest.fn()}
+    />,
+  );
+
+  for (let n = 1; n <= 10; n++) expect(screen.getByTestId(`pack-icon-${n}`)).toBeTruthy();
+});
