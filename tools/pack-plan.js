@@ -42,4 +42,10 @@ const PACKS = [
 
 const LEVELS_PER_PACK = 30;
 
-module.exports = { PACKS, LEVELS_PER_PACK };
+// A pack's easiest level starts at about this share of the previous pack's hardest.
+// 1 would stack the packs end to end, but the small boards (3x3, 4x3) cannot get hard
+// enough to give a stacked pack any ramp of its own: at 0.85 Creek was squeezed into
+// 6.9-8.3 pathBits. At 0.65 each pack keeps a ramp and the game still only goes up.
+const OVERLAP = 0.65;
+
+module.exports = { PACKS, LEVELS_PER_PACK, OVERLAP };

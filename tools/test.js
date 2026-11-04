@@ -6,7 +6,7 @@ const { measure, search, randomPlay } = require('./difficulty.js');
 const fs = require('fs');
 const path = require('path');
 const { canonical, fillsBox } = require('./pack-generator.js');
-const { PACKS, LEVELS_PER_PACK } = require('./pack-plan.js');
+const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
 
 // rules
 let g = new Game(['S1.', '.2.']);
@@ -78,7 +78,7 @@ if (fs.existsSync(packsFile)) {
     });
     const mean = sum / LEVELS_PER_PACK, min = pack.levels[0].pathBits, max = last;
     assert.ok(mean > prevMean, `${label}: mean difficulty ${mean.toFixed(1)} must exceed ${prevMean.toFixed(1)}`);
-    assert.ok(min >= prevMax * .8, `${label}: easiest level (${min}) is far below the last pack's hardest (${prevMax})`);
+    assert.ok(min >= prevMax * (OVERLAP - .05), `${label}: easiest level (${min}) is far below the last pack's hardest (${prevMax})`);
     prevMax = max; prevMean = mean;
   });
 }

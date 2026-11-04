@@ -13,7 +13,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
-const { PACKS, LEVELS_PER_PACK } = require('./pack-plan.js');
+const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
 const { buildPool, pick, quantile } = require('./pack-generator.js');
 
 const CACHE = path.join(__dirname, '.cache');
@@ -57,14 +57,14 @@ function measureAll() {
 
 // Each pack climbs from `lo` to `hi`. hi is the pool's 97th percentile score (the top 3%
 // are outliers that would stretch the ramp). lo starts at the pool's 3rd percentile but
-// never below 85% of the previous pack's hi, so a pack's easiest levels are about as hard
-// as the last pack's hardest, and the whole game only goes up.
+// never below OVERLAP (pack-plan.js) of the previous pack's hi, so each pack starts where
+// the last one was getting hard and the whole game only goes up.
 function select(pools) {
   let prevHi = 0;
   return PACKS.map((spec, i) => {
     const scores = pools[i].map(p => p.pathBits).sort((a, b) => a - b);
     const hi = quantile(scores, .97);
-    const lo = Math.min(Math.max(quantile(scores, .03), prevHi * .85), hi * .9);
+    const lo = Math.min(Math.max(quantile(scores, .03), prevHi * OVERLAP), hi * .9);
     const levels = pick(pools[i], LEVELS_PER_PACK, lo, hi);
     if (!levels) throw new Error(`pack ${i + 1} ${spec.name}: only ${pools[i].length} candidates, need ${LEVELS_PER_PACK}`);
     prevHi = hi;
