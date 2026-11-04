@@ -21,9 +21,6 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P4] `TILE-JUMPER-7` — Design a logo for Cangupa. Unscoped: where it
-  would be used (title screen, favicon, README) and the style aren't
-  decided yet.
 - [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: a spendable
   hint count, shown as a badge on the hint control
   ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
