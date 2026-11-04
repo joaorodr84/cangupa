@@ -1,8 +1,7 @@
 // Draws a level the way the game does: same tile colours, same marks, on the dark board.
-// Shared by index.html and packs.html. Colours are the game's (apps/app/src/theme/palette.ts);
-// they are the same in its light and dark themes, so only the board is themed, and this
-// report is dark only. The old teal scheme knew two tile colours; Steel and the arrow tiles
-// came in with CANGUPA-68 and CANGUPA-69 and drew as plain Common tiles until now.
+// Shared by level-packs.html and level-difficulty.html. Colours are the game's
+// (apps/app/src/theme/palette.ts); they are the same in its light and dark themes, so
+// only the board is themed, and this report is dark only.
 const TILES = {
   '1': { face: '#4cc9f0', lip: '#1f7a99', visits: 1 },
   '2': { face: '#ffc857', lip: '#a8741a', mark: '#3b2a06', visits: 2 },
@@ -15,7 +14,10 @@ const EDGE = {
   '>': [[45, 14.5], [59.5, 28.5], [45, 42.5]], '<': [[19, 14.5], [4.5, 28.5], [19, 42.5]],
   '^': [[18, 19], [32, 4.5], [46, 19]], 'v': [[18, 38], [32, 52.5], [46, 38]],
 };
-const BOARD = { page: '#0c0d10', pit: '#1c1f26', start: '#e6e8ec' };
+const BOARD = { page: '#0c0d10', pit: '#1c1f26' };
+// The kangaroo's own colours (apps/app/src/components/Kangaroo.tsx): body fur for the fill,
+// its outline brown for the rim, so the start mark reads as "the kangaroo stood here".
+const KANGAROO = { fill: '#d9954f', rim: '#5a3515' };
 
 function sketch(rows, width, label, box = 120) {
   const NS = 'http://www.w3.org/2000/svg';
@@ -59,9 +61,9 @@ function sketch(rows, width, label, box = 120) {
             'stroke-width': Math.max(1, fw * .075), 'stroke-linecap': 'round', transform: `rotate(24 ${cx} ${cy})` });
         }
       }
-      // the start: a white dot with a dark rim in the corner, readable on all three tile colours
+      // the start: a kangaroo-brown dot with its own dark outline, centred on the tile
       if (START_OF[c]) {
-        add(svg, 'circle', { cx: fx + fw * .2, cy: fy + fh * .24, r: Math.max(1.5, cell * .13), fill: BOARD.start, stroke: BOARD.page, 'stroke-width': Math.max(.8, cell / 24) });
+        add(svg, 'circle', { cx: fx + fw / 2, cy: fy + fh / 2, r: Math.max(2.2, cell * .2), fill: KANGAROO.fill, stroke: KANGAROO.rim, 'stroke-width': Math.max(1, cell / 20) });
       }
     }
   });

@@ -4,7 +4,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   /* Layout: a ramp chart across every level, then one section per pack with a grid of level sketches.
-     Data comes from packs.json next to this file (written by tools/gen-packs.js). */
+     Data is inlined below by tools/gen-visualizers.js from tools/packs.json, so this page opens
+     straight from disk — no server, no fetch(). */
   :root {
     /* dark only; the board and tile colours are the game's own (see tiles.js) */
     --bg: #0c0d10; --surface: #15171c; --fg: #e6e8ec; --muted: #8a909c; --line: #22262e; --band: #111318;
@@ -19,7 +20,7 @@
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
-  main { max-width: 1040px; margin: 0 auto; display: grid; gap: 28px; }
+  main { max-width: 1440px; margin: 0 auto; display: grid; gap: 28px; }
   /* grid children default to min-width:auto, so the chart's 640px minimum stretched the whole page on a phone */
   main > * { min-width: 0; }
   h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
@@ -31,7 +32,7 @@
   .chart text { fill: var(--muted); font-family: var(--font-data); font-size: 10px; }
   .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .legend i.dot { width: 9px; height: 9px; border-radius: 50%; background: #e6e8ec; border: 1px solid #0c0d10; }
+  .legend i.dot { width: 9px; height: 9px; border-radius: 50%; background: #d9954f; border: 1px solid #5a3515; }
   .legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
   .pack { display: grid; gap: 12px; }
   .pack header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
@@ -66,11 +67,12 @@
     <span><i style="background:#ffc857"></i>Gold, two visits</span>
     <span><i style="background:#587790"></i>Steel, three visits</span>
     <span><i style="background:#9d1057"></i>Arrow, leave only the way it points</span>
-    <span><i class="dot"></i>Start (a tile with strokes shows the visits still to make)</span>
+    <span><i class="dot"></i>Start, the kangaroo's own colour (a tile with strokes shows the visits still to make)</span>
   </div>
   <div id="packs" class="pack-list" style="display:grid;gap:28px"></div>
 </main>
 
+<script type="application/json" id="packs-data">/*GEN:PACKS_JSON*/</script>
 <script src="tiles.js"></script>
 <script>
   const SVG = 'http://www.w3.org/2000/svg';
@@ -133,7 +135,6 @@
         bar.className = 'bar';
         bar.innerHTML = `<b style="width:${(100 * l.pathBits / max).toFixed(1)}%"></b>`;
         c.appendChild(bar);
-        if (l.designed) { const t = document.createElement('div'); t.className = 'top'; t.innerHTML = `<span class="tag">${l.designed}</span>`; c.appendChild(t); }
         grid.appendChild(c);
       });
       sec.appendChild(grid);
@@ -141,10 +142,5 @@
     }));
   }
 
-  // Beside the page when published; one folder up (tools/packs.json) when served from the repo.
-  const load = url => fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
-  load('packs.json').catch(() => load('../packs.json')).then(render).catch(() => {
-    document.getElementById('lede').textContent = 'Could not load packs.json.';
-    document.getElementById('packs').innerHTML = '<p class="err">packs.json was not found. Serve the tools/ folder over HTTP (for example <code>python3 -m http.server</code> from tools/, then open difficulty-report/packs.html), because browsers block fetch() on file:// pages.</p>';
-  });
+  render(JSON.parse(document.getElementById('packs-data').textContent));
 </script>

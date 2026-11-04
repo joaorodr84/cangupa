@@ -4,7 +4,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   /* Layout: one sortable table, a level per row — number, sketch, headline score bar, supporting metrics.
-     Data comes from levels.json next to this file (made by tools/export-difficulty.js). */
+     Data is inlined below by tools/gen-visualizers.js from tools/packs.json, so this page opens
+     straight from disk — no server, no fetch(). apps/app's packs only; apps/web-classic's original
+     50 levels have their own measure in tools/difficulty.js but no page here (out of CANGUPA-81's scope). */
   :root {
     /* dark only; the board and tile colours are the game's own (see tiles.js) */
     --bg: #0c0d10;
@@ -28,7 +30,7 @@
   .lede { margin: 6px 0 0; color: var(--muted); max-width: 65ch; line-height: 1.5; font-size: .95rem; }
   .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .legend i.dot { width: 9px; height: 9px; border-radius: 50%; background: #e6e8ec; border: 1px solid #0c0d10; }
+  .legend i.dot { width: 9px; height: 9px; border-radius: 50%; background: #d9954f; border: 1px solid #5a3515; }
   .legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
   .wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
   table { border-collapse: collapse; width: 100%; min-width: 720px; }
@@ -50,11 +52,6 @@
   .note { font-size: .8rem; color: var(--muted); max-width: 75ch; line-height: 1.55; }
   .note code { font-family: var(--font-data); font-size: .78rem; }
   .err { padding: 24px; color: var(--muted); }
-  .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tabs button { font: inherit; font-size: .85rem; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer;
-    background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
-  .tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); }
-  .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .sub { display: block; font-family: var(--font-display); font-weight: 400; font-size: .7rem; color: var(--muted); }
   .tag { color: var(--accent); font-size: .7rem; }
 </style>
@@ -64,16 +61,12 @@
     <h1>Cangupa level difficulty</h1>
     <p class="lede" id="lede">Loading levels…</p>
   </header>
-  <div class="tabs" role="tablist" aria-label="Level set">
-    <button type="button" role="tab" id="tab-levels" aria-selected="true">Original levels (50)</button>
-    <button type="button" role="tab" id="tab-packs" aria-selected="false">Level packs</button>
-  </div>
   <div class="legend" aria-label="Sketch key">
     <span><i style="background:#4cc9f0"></i>Common, one visit</span>
     <span><i style="background:#ffc857"></i>Gold, two visits</span>
     <span><i style="background:#587790"></i>Steel, three visits</span>
     <span><i style="background:#9d1057"></i>Arrow, leave only the way it points</span>
-    <span><i class="dot"></i>Start (a tile with strokes shows the visits still to make)</span>
+    <span><i class="dot"></i>Start, the kangaroo's own colour (a tile with strokes shows the visits still to make)</span>
   </div>
   <div class="wrap">
     <table>
@@ -83,58 +76,31 @@
   </div>
   <p class="note">
     <strong>Difficulty</strong> is <code>pathBits</code>: the luck a blind player needs to retrace one solution,
-    the sum of log₂(legal moves) over its steps. <code>Exact bits</code> is −log₂ of the chance that uniform random
-    play clears the level, computed over every reachable position; it is blank where the level has too many positions
-    to enumerate. <code>Decisions</code> counts steps with more than one legal move. <code>Effort</code> is how many
-    positions a depth-first solver expands before it finds a solution. <code>Random play</code> is the average share
-    of the level a random player completes before getting stuck. Definitions live in
-    <code>tools/difficulty.js</code>.
+    the sum of log₂(legal moves) over its steps. <code>Decisions</code> counts steps with more than one legal
+    move. <code>Effort</code> is how many positions a depth-first solver expands before it finds a solution.
+    Definitions live in <code>tools/difficulty.js</code>.
   </p>
 </main>
 
+<script type="application/json" id="packs-data">/*GEN:PACKS_JSON*/</script>
 <script src="tiles.js"></script>
 <script>
-  // Two data sets, one table. "levels" is the shipped list (levels.json, tools/export-difficulty.js);
-  // "packs" is the ten packs of 50 (packs.json, tools/gen-packs.js). Both are turned into the same row shape.
-  const SETS = {
-    levels: {
-      note: 'levels.json', cols: ['level', 'sketch', 'pathBits', 'decisions', 'bits', 'effort', 'survival', 'visits'],
-      load: json => ({ info: `${json.levels.length} levels, generated ${json.generated}.`,
-        rows: json.levels.map(l => ({ ...l, n: l.level, label: String(l.level) })) }),
-    },
-    packs: {
-      note: 'packs.json', cols: ['level', 'sketch', 'pathBits', 'decisions', 'bits', 'effort', 'visits'],
-      load: json => {
-        // running total of levels before each pack, so packs may differ in size
-        const offset = json.packs.map((_, pi) => json.packs.slice(0, pi).reduce((a, q) => a + q.levels.length, 0));
-        const rows = json.packs.flatMap((p, pi) => p.levels.map((l, i) => ({
-          ...l, n: offset[pi] + i + 1, label: `${pi + 1}-${i + 1}`, sub: p.name,
-          width: p.width, height: p.height, level: offset[pi] + i + 1,
-        })));
-        return { info: `${json.packs.length} packs of ${json.packs[0].levels.length} levels, ${rows.length} in all. Boards grow from ${json.packs[0].width}×${json.packs[0].height} to ${json.packs[json.packs.length - 1].width}×${json.packs[json.packs.length - 1].height}. Designed layouts are tagged.`, rows };
-      },
-    },
-  };
   const COLS = {
     level: { label: 'Level', cls: 'num' },
     sketch: { label: 'Sketch', cls: 'sketch left', nosort: true },
     pathBits: { label: 'Difficulty (pathBits)', cls: 'left' },
     decisions: { label: 'Decisions' },
-    bits: { label: 'Exact bits' },
     effort: { label: 'Effort' },
-    survival: { label: 'Random play' },
     visits: { label: 'Visits' },
   };
-  const SVG = 'http://www.w3.org/2000/svg';
-  const state = { set: 'levels', data: {}, sortKey: 'level', sortDir: 1 };
+  const COLS_ORDER = ['level', 'sketch', 'pathBits', 'decisions', 'effort', 'visits'];
+  const state = { sortKey: 'level', sortDir: 1 };
 
   const drawLevel = l => sketch(l.rows, l.width, `Level ${l.label} layout, ${l.width} by ${l.height}`);
-
   const fmt = (v, d = 0) => v == null ? '–' : (d ? v.toFixed(d) : Math.round(v).toLocaleString('en'));
 
   function renderHead() {
-    const set = SETS[state.set];
-    document.getElementById('head').replaceChildren(...set.cols.map(key => {
+    document.getElementById('head').replaceChildren(...COLS_ORDER.map(key => {
       const c = COLS[key], th = document.createElement('th');
       if (c.cls && c.cls.includes('left')) th.className = 'left';
       if (c.nosort) { th.textContent = c.label; return th; }
@@ -152,12 +118,9 @@
   }
 
   function render() {
-    const set = SETS[state.set], entry = state.data[state.set];
     renderHead();
-    document.getElementById('lede').textContent = entry
-      ? entry.info + ' Sort any column to compare how difficulty climbs with the level number.' : 'Loading levels…';
-    if (!entry) return;
-    const data = entry.rows, key = state.sortKey === 'level' ? 'n' : state.sortKey, dir = state.sortDir;
+    document.getElementById('lede').textContent = state.info + ' Sort any column to compare how difficulty climbs with the level number.';
+    const data = state.rows, key = state.sortKey === 'level' ? 'n' : state.sortKey, dir = state.sortDir;
     const max = Math.max(...data.map(l => l.pathBits || 0)) || 1;
     // missing values sort last whichever way the column is sorted
     const sorted = [...data].sort((a, b) => {
@@ -168,21 +131,18 @@
     });
     const cell = {
       level: l => { const t = document.createElement('span'); t.textContent = l.label;
-        if (l.sub) { const s = document.createElement('span'); s.className = 'sub'; s.textContent = l.sub; t.appendChild(s); } return t; },
-      sketch: l => { const d = document.createElement('div'); d.appendChild(drawLevel(l));
-        if (l.designed) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = l.designed; d.appendChild(t); } return d; },
+        const s = document.createElement('span'); s.className = 'sub'; s.textContent = l.sub; t.appendChild(s); return t; },
+      sketch: l => { const d = document.createElement('div'); d.appendChild(drawLevel(l)); return d; },
       pathBits: l => { const d = document.createElement('div'); d.className = 'score';
         d.innerHTML = `<div class="bar" role="presentation"><b style="width:${(100 * (l.pathBits || 0) / max).toFixed(1)}%"></b></div><span>${fmt(l.pathBits, 1)}</span>`; return d; },
       decisions: l => fmt(l.decisions),
-      bits: l => fmt(l.bits, 1),
       effort: l => fmt(l.effort),
-      survival: l => l.survival == null ? '–' : Math.round(l.survival * 100) + '%',
       visits: l => `${l.visits} · ${l.width}×${l.height}`,
     };
     const dim = { visits: 'dim' };
     document.getElementById('rows').replaceChildren(...sorted.map(l => {
       const tr = document.createElement('tr');
-      set.cols.forEach(k => {
+      COLS_ORDER.forEach(k => {
         const td = document.createElement('td');
         td.className = [COLS[k].cls, dim[k]].filter(Boolean).join(' ');
         const v = cell[k](l);
@@ -193,22 +153,14 @@
     }));
   }
 
-  // Beside the page when published; one folder up (tools/packs.json) when served from the repo.
-  const load = (name, fallback) => fetch(name).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .catch(() => fallback ? load(fallback) : Promise.reject());
-
-  function show(name) {
-    state.set = name; state.sortKey = 'level'; state.sortDir = 1;
-    for (const k of Object.keys(SETS)) document.getElementById('tab-' + k).setAttribute('aria-selected', String(k === name));
-    if (state.data[name]) return render();
+  (function load(json) {
+    // running total of levels before each pack, so packs may differ in size
+    const offset = json.packs.map((_, pi) => json.packs.slice(0, pi).reduce((a, q) => a + q.levels.length, 0));
+    state.rows = json.packs.flatMap((p, pi) => p.levels.map((l, i) => ({
+      ...l, n: offset[pi] + i + 1, label: `${pi + 1}-${i + 1}`, sub: p.name,
+      width: p.width, height: p.height, level: offset[pi] + i + 1,
+    })));
+    state.info = `${json.packs.length} packs of ${json.packs[0].levels.length} levels, ${state.rows.length} in all. Boards grow from ${json.packs[0].width}×${json.packs[0].height} to ${json.packs[json.packs.length - 1].width}×${json.packs[json.packs.length - 1].height}. Designed layouts are tagged.`;
     render();
-    load(SETS[name].note, name === 'packs' ? '../packs.json' : null)
-      .then(json => { state.data[name] = SETS[name].load(json); if (state.set === name) render(); })
-      .catch(() => {
-        document.getElementById('lede').textContent = `Could not load ${SETS[name].note}.`;
-        document.getElementById('rows').innerHTML = `<tr><td colspan="8" class="err">${SETS[name].note} was not found. When opening the file from disk, serve the tools/ folder over HTTP (for example <code>python3 -m http.server</code>) because browsers block fetch() on file:// pages.</td></tr>`;
-      });
-  }
-  for (const k of Object.keys(SETS)) document.getElementById('tab-' + k).addEventListener('click', () => show(k));
-  show(location.hash === '#packs' ? 'packs' : 'levels');
+  })(JSON.parse(document.getElementById('packs-data').textContent));
 </script>

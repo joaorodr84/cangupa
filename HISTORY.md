@@ -875,6 +875,28 @@ One commit. Verified with `tsc --noEmit` (clean) and the full Jest suite
 
 ---
 
+## Era 30 — Nov 4 (continued): the level pack and difficulty visualizers move to a standalone page
+
+CANGUPA-81 moved the level pack and level difficulty visualizer pages out of
+`tools/difficulty-report/` (deleted) into `tools/visualizers/`
+(`level-packs.html`, `level-difficulty.html`), built by a new
+`gen-visualizers.js` from `tools/packs.json` with the pack data inlined into
+the page instead of `fetch()`ed from a sibling JSON file, so each page opens
+straight from disk (`file://`) with no server needed — `serve-visualizer.js`
+is still there for anyone who'd rather open a `localhost` URL, now with a
+`--watch` mode that regenerates the pages and live-reloads any open tab over
+SSE whenever `tools/packs.json` or a template changes. `gen-packs.js` now
+calls `writeVisualizers()` at the end of every run, so the pages regenerate
+automatically whenever the packs change and can't go stale relative to
+`tools/packs.json`/`packs.ts`. Scoped to `apps/app`'s packs, per CANGUPA-80's
+scope decision; `apps/web-classic`'s original 50 levels keep a difficulty
+measure (`export-difficulty.js` → `tools/levels-difficulty.json`, moved out
+of the old `difficulty-report/` folder) but no page of their own.
+
+One commit. Verified with `node tools/test.js`.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

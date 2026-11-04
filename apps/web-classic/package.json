@@ -5,6 +5,10 @@
   "description": "A puzzle game in plain HTML, CSS and JavaScript, inspired by the DOS game WESP.",
   "scripts": {
     "test": "node ../../tools/test.js",
-    "gen-levels": "node ../../tools/gen-levels.js"
+    "gen-levels": "node ../../tools/gen-levels.js",
+    "visualizer:packs": "node ../../tools/serve-visualizer.js 4210 level-packs.html",
+    "visualizer:packs:watch": "node ../../tools/serve-visualizer.js 4210 level-packs.html --watch",
+    "visualizer:difficulty": "node ../../tools/serve-visualizer.js 4220 level-difficulty.html",
+    "visualizer:difficulty:watch": "node ../../tools/serve-visualizer.js 4220 level-difficulty.html --watch"
   }
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Builds tools/packs.json (and apps/app/src/game/packs.ts) from tools/pack-plan.js.
+// Builds tools/packs.json (and apps/app/src/game/packs.ts) from tools/pack-plan.js, then
+// regenerates tools/visualizers/{level-packs,level-difficulty}.html so they never go stale.
 //
 //   node tools/gen-packs.js                 build every pack, measuring pools in parallel
 //   node tools/gen-packs.js --reselect      reuse cached pools, redo only the picking
@@ -17,6 +18,7 @@ const { spawn } = require('child_process');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
 const { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow } = require('./pack-generator.js');
 const { designs } = require('./pack-designs.js');
+const { writeVisualizers } = require('./gen-visualizers.js');
 
 // How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
 const DESIGNED_PER_PACK = 6;
@@ -160,6 +162,7 @@ function writeTs(packs) {
   const packs = select(pools, frozen);
   fs.writeFileSync(OUT_JSON, JSON.stringify({ seed, packs }, null, 1) + '\n');
   writeTs(packs);
+  writeVisualizers(packs);
   packs.forEach((p, i) => {
     const s = p.levels.map(l => l.pathBits);
     console.log(`${String(i + 1).padStart(2)} ${p.name.padEnd(10)} ${p.width}x${p.height} pool ${pools[i] ? String(pools[i].length).padStart(4) : 'kept'}  pathBits ${s[0]} .. ${s[s.length - 1]}`);

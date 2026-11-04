@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// Writes tools/difficulty-report/levels.json: every level in apps/web-classic/js/levels.js with its
-// difficulty metrics (see difficulty.js). tools/difficulty-report/index.html reads it.
+// Writes tools/levels-difficulty.json: every level in apps/web-classic/js/levels.js with its
+// difficulty metrics (see difficulty.js). No visualizer page reads this file — apps/app's
+// packs have one (tools/visualizers/, fed from tools/packs.json); this is apps/web-classic's
+// original 50, kept as data for scripting/analysis.
 //
 //   node tools/export-difficulty.js [--out FILE]
 //
@@ -13,7 +15,7 @@ const { LEVELS } = require('../apps/web-classic/js/levels.js');
 const { measure, search, randomPlay } = require('./difficulty.js');
 
 const outFlag = process.argv.indexOf('--out');
-const out = outFlag > 0 ? process.argv[outFlag + 1] : path.join(__dirname, 'difficulty-report/levels.json');
+const out = outFlag > 0 ? process.argv[outFlag + 1] : path.join(__dirname, 'levels-difficulty.json');
 const round = (v, d) => v == null || !Number.isFinite(v) ? null : Number(v.toFixed(d));
 
 const levels = LEVELS.map((rows, i) => {
