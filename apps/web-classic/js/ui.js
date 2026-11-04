@@ -158,6 +158,19 @@ boardEl.addEventListener('click', e => {
   if (settings.fall && game.inMoveShape(c.x, c.y)) fall(c);
 });
 
+// Peek (CANGUPA-70): holding on the kangaroo's own cell fades it to 20%
+// opacity so the tile underneath — easy to miss when it's cracked or a
+// double tile — shows through; releasing restores it. Pointer events, not
+// click, since click only fires on release and gives no "while held" state.
+// pointerup/pointercancel are bound to document rather than #board so a
+// press that drags off the board (or off the window) still clears it.
+boardEl.addEventListener('pointerdown', e => {
+  const c = cellAt(e);
+  if (c && c.x === game.x && c.y === game.y) roo.classList.add('peek');
+});
+document.addEventListener('pointerup', () => roo.classList.remove('peek'));
+document.addEventListener('pointercancel', () => roo.classList.remove('peek'));
+
 // Arrow / WASD: a step if one is possible that way, else a jump. Shift forces a jump.
 const KEYDIR = { ArrowRight: [1, 0], d: [1, 0], ArrowLeft: [-1, 0], a: [-1, 0], ArrowDown: [0, 1], s: [0, 1], ArrowUp: [0, -1], w: [0, -1] };
 function undo() { if (game.undo()) { tip = null; render(false); } }

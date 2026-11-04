@@ -811,6 +811,26 @@ duration of a fall triggered by an already-exhausted landing tile.
 
 ---
 
+## Era 28 — Nov 4 (continued): holding on the kangaroo peeks at the tile underneath
+
+CANGUPA-70 adds a hold-to-peek: pressing down (pointerdown) on the
+kangaroo's own cell in web-classic fades it to 20% opacity via a new
+`#roo.peek` CSS class, so a special tile underneath — easy to miss when
+it's cracked or a double tile hidden by the sprite — shows through;
+releasing (pointerup/pointercancel, bound to `document` rather than the
+board so a press that drags off the board or the window still clears it)
+restores full opacity. `#roo`'s existing transform transition gained a
+matching opacity transition so the fade isn't instant.
+
+One commit. Verified with `node tools/test.js` (a pure UI/CSS change, so
+rules and level solvability are unaffected and stayed green) and a
+Playwright script driven against the real page, confirming `#roo`'s
+computed opacity goes 1 → 0.2 on mouse down over the kangaroo and back to
+1 on mouse up, with no console or page errors, and a screenshot taken while
+held showing the tile color reading through the faded sprite as intended.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

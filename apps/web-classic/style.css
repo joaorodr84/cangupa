@@ -52,8 +52,12 @@ h1 { margin: 0; font: 600 2.2rem Georgia, serif; letter-spacing: .12em; text-tra
 
 #roo { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none;
   width: calc(100% / var(--w)); height: calc(100% / var(--h));
-  transition: transform .2s cubic-bezier(.3,.7,.3,1); }
+  transition: transform .2s cubic-bezier(.3,.7,.3,1), opacity .15s ease; }
 .no-anim #roo { transition: none; }
+/* Peek (CANGUPA-70): 20% opacity, not 0, so the kangaroo stays visible as a
+   landmark while the tile underneath — easy to miss when it's cracked/double
+   under the sprite — shows through. */
+#roo.peek { opacity: .2; }
 #roo .shadow { position: absolute; inset: 78% 22% 6%; border-radius: 50%; background: rgba(0,0,0,.35); filter: blur(2px); }
 #roo .hopper, #roo .flip { position: absolute; inset: 2%; }
 #roo .flip.left { transform: scaleX(-1); }

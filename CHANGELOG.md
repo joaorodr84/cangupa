@@ -34,6 +34,10 @@ Open work is listed in [TODO.md](TODO.md).
   the kangaroo is shown hopping or standing idle. It isn't drawn from
   behind, since a pouch isn't visible from that angle on a real kangaroo
   either.
+- Holding down on the kangaroo's own cell in the web game now fades it to
+  a faint outline, so a special tile hidden underneath it — a cracked
+  tile or a double tile — shows through. Releasing restores the kangaroo
+  to full view.
 - The app now plays a short sound effect on every move — a step or a
   two-tile jump — matching the sound the web version already has. A new
   "Sound" toggle in the Settings screen's Gameplay section, on by
