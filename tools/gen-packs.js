@@ -10,6 +10,7 @@
 // Measuring is the slow part (minutes for the big boards), so the pools are cached in
 // tools/.cache/ and --reselect skips them. Pool n uses seed + n, so a run is reproducible.
 const fs = require('fs');
+const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -18,7 +19,7 @@ const { buildPool, pick, quantile, canonical, fillsBox, score } = require('./pac
 const { designs } = require('./pack-designs.js');
 
 // How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
-const DESIGNED_PER_PACK = 4;
+const DESIGNED_PER_PACK = 6;
 const CACHE = path.join(__dirname, '.cache');
 const OUT_JSON = path.join(__dirname, 'packs.json');
 const OUT_TS = path.join(__dirname, '../apps/app/src/game/packs.ts');
@@ -26,7 +27,10 @@ const OUT_TS = path.join(__dirname, '../apps/app/src/game/packs.ts');
 const args = process.argv.slice(2);
 const opt = (name, d) => { const i = args.indexOf('--' + name); return i < 0 ? d : args[i + 1]; };
 const seed = Number(opt('seed', 1000)), scale = Number(opt('scale', 1));
-const poolFile = i => path.join(CACHE, `pool-${i}-s${seed}-x${scale}.json`);
+// The cache name includes a hash of the pack's plan entry, so changing a pack's size or
+// ranges in pack-plan.js never reuses a pool measured for the old plan.
+const planHash = i => crypto.createHash('md5').update(JSON.stringify(PACKS[i])).digest('hex').slice(0, 8);
+const poolFile = i => path.join(CACHE, `pool-${i}-${planHash(i)}-s${seed}-x${scale}.json`);
 
 // worker: measure one pack's pool and write it to the cache
 if (args.includes('--worker')) {
