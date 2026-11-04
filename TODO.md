@@ -74,29 +74,6 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
-- [P2] `CANGUPA-57` — Port the jump sound effect (`TILE-JUMPER-2`) and a
-  sound on/off setting to `apps/app`: play a short effect on every move
-  (step or jump), mirroring the web version's synthesized Web Audio chirp
-  ([sound.js](apps/web-classic/js/sound.js)). React Native has no Web
-  Audio API, so this needs `expo-audio` (a new dependency) playing small
-  pre-generated WAV assets instead of synthesizing tones live at
-  runtime — a Node script under `apps/app/tools` (mirroring
-  `tools/gen-levels.js`'s generate-then-commit pattern) renders the
-  tone(s) to `assets/sounds/*.wav` at the same frequencies/envelopes as
-  the web version's `Sound` module, with the script committed alongside
-  its output. Needs: `Settings.sound: boolean` (default `true`) in
-  [state/settings.ts](apps/app/src/state/settings.ts) (parsing + default,
-  matching `jumps`/`hints`/`anim`'s pattern); a sound toggle row in
-  [SettingsScreen.tsx](apps/app/src/components/SettingsScreen.tsx)'s
-  existing Gameplay section (a 4th `ToggleRow`, so the existing three
-  need their `index`/`length` props updated); a new
-  `src/audio/sound.ts` module exposing `setEnabled()`/`jump()`; wired in
-  wherever a move is played
-  ([useBoard.ts](apps/app/src/game/useBoard.ts)'s `move()` or
-  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx)'s
-  `handlePressTile`). This is the foundation `CANGUPA-59`/`CANGUPA-60`
-  both build on — design the asset pipeline and the `Sound` module with
-  `win()`/`fall()` in mind even though only `jump()` ships here.
 - [P2] `CANGUPA-58` — Port falling as an opt-in setting (`TILE-JUMPER-3`)
   to `apps/app`: add `Settings.fall: boolean` (default `false`, same
   parsing/default pattern as `CANGUPA-57`'s `sound`), a toggle row in

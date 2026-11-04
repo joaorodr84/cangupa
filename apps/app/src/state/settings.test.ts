@@ -24,16 +24,16 @@ describe('parseSettings', () => {
     expect(parseSettings('{"theme":"ice"}')).toEqual(DEFAULT_SETTINGS);
   });
 
-  it.each(['jumps', 'hints', 'anim'] as const)('reads a saved %s toggle', (key) => {
+  it.each(['jumps', 'hints', 'anim', 'sound'] as const)('reads a saved %s toggle', (key) => {
     expect(parseSettings(`{"${key}":false}`)[key]).toBe(false);
   });
 
-  it.each(['jumps', 'hints', 'anim'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
+  it.each(['jumps', 'hints', 'anim', 'sound'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
     expect(parseSettings(`{"${key}":"false"}`)[key]).toBe(DEFAULT_SETTINGS[key]);
   });
 
   it('ignores fields it does not know, so a record from a later version still reads', () => {
-    expect(parseSettings('{"themeMode":"light","sound":false}')).toEqual({ ...DEFAULT_SETTINGS, themeMode: 'light' });
+    expect(parseSettings('{"themeMode":"light","turbo":true}')).toEqual({ ...DEFAULT_SETTINGS, themeMode: 'light' });
   });
 
   it.each(CORRUPT_RECORDS)('reads %s as the defaults', (_name, raw) => {
@@ -52,7 +52,14 @@ describe('parseSettings', () => {
 describe('saving and loading', () => {
   it('round-trips every setting through the store', async () => {
     const storage = memoryStorage();
-    const settings = { themeMode: 'dark' as const, jumps: false, hints: false, anim: false, language: 'pt' as const };
+    const settings = {
+      themeMode: 'dark' as const,
+      jumps: false,
+      hints: false,
+      anim: false,
+      sound: false,
+      language: 'pt' as const,
+    };
 
     await saveSettings(storage, settings);
 
@@ -65,7 +72,7 @@ describe('saving and loading', () => {
     await saveSettings(storage, DEFAULT_SETTINGS);
 
     expect(await storage.getItem(SETTINGS_KEY)).toBe(
-      '{"themeMode":"system","jumps":true,"hints":true,"anim":true,"language":"system"}',
+      '{"themeMode":"system","jumps":true,"hints":true,"anim":true,"sound":true,"language":"system"}',
     );
   });
 

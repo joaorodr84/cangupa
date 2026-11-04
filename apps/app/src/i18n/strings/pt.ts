@@ -62,6 +62,7 @@ export const pt: Strings = {
     jumps: 'Saltos de duas casas',
     hints: 'Destacar jogadas possíveis',
     anim: 'Animações',
+    sound: 'Som',
     data: 'Dados',
     clearProgress: 'Apagar progresso',
     clearProgressTitle: 'Tens a certeza de que queres apagar o teu progresso?',

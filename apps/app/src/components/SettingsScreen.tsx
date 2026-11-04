@@ -47,6 +47,7 @@ interface SettingsScreenProps {
   readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
+  readonly onChangeSound: (sound: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly onClearProgress: () => void;
 }
@@ -58,6 +59,7 @@ export default function SettingsScreen({
   onChangeJumps,
   onChangeHints,
   onChangeAnim,
+  onChangeSound,
   onChangeLanguage,
   onClearProgress,
 }: SettingsScreenProps) {
@@ -128,7 +130,7 @@ export default function SettingsScreen({
             ink={ink}
             palette={palette}
             index={0}
-            length={3}
+            length={4}
           />
           <ToggleRow
             testID="toggle-hints"
@@ -138,7 +140,7 @@ export default function SettingsScreen({
             ink={ink}
             palette={palette}
             index={1}
-            length={3}
+            length={4}
           />
           <ToggleRow
             testID="toggle-anim"
@@ -148,7 +150,17 @@ export default function SettingsScreen({
             ink={ink}
             palette={palette}
             index={2}
-            length={3}
+            length={4}
+          />
+          <ToggleRow
+            testID="toggle-sound"
+            label={t.settings.sound}
+            value={settings.sound}
+            onChange={onChangeSound}
+            ink={ink}
+            palette={palette}
+            index={3}
+            length={4}
           />
         </View>
 

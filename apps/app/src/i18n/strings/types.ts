@@ -64,6 +64,7 @@ export interface Strings {
     readonly jumps: string;
     readonly hints: string;
     readonly anim: string;
+    readonly sound: string;
     readonly data: string;
     readonly clearProgress: string;
     readonly clearProgressTitle: string;

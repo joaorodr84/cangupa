@@ -34,6 +34,10 @@ Open work is listed in [TODO.md](TODO.md).
   the kangaroo is shown hopping or standing idle. It isn't drawn from
   behind, since a pouch isn't visible from that angle on a real kangaroo
   either.
+- The app now plays a short sound effect on every move — a step or a
+  two-tile jump — matching the sound the web version already has. A new
+  "Sound" toggle in the Settings screen's Gameplay section, on by
+  default, turns it off for players who don't want it.
 
 ### Changed
 

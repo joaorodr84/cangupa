@@ -687,6 +687,39 @@ jaw, or belly patch.
 
 ---
 
+## Era 26 — Nov 4: apps/app starts porting web-classic's sound effects
+
+CANGUPA-57 ports the web version's jump sound effect (`TILE-JUMPER-2`) and
+its sound on/off setting to apps/app, the first of five parity tasks
+(CANGUPA-57–61) carrying work just landed on web-classic over to the
+Expo/React Native port. React Native has no Web Audio API to synthesize
+tones live, so the same tone math (oscillator waveform plus exponential
+gain/pitch envelopes) that `js/sound.js` computes at runtime is instead
+pre-rendered once to a WAV file by a new `tools/gen-sounds.js`, mirroring
+`tools/gen-levels.js`'s generate-then-commit pattern; the output
+(`assets/sounds/jump.wav`, a 440→660Hz triangle-wave chirp) is committed
+alongside the script. Playback goes through a new `expo-audio` dependency
+(plus its `expo-asset` peer dependency): a new `src/audio/sound.ts` module
+exposes `setEnabled()`/`jump()` backed by one `AudioPlayer` created once
+and replayed with `seekTo(0)`/`play()` rather than recreated per call.
+`expo-audio`'s native `AudioPlayer` isn't mocked by the `jest-expo` preset,
+so a manual `__mocks__/expo-audio.ts` stub was added. `Settings.sound:
+boolean` (default `true`) was added alongside `jumps`/`hints`/`anim` in
+`state/settings.ts`/`useSettings.ts`, and a fourth `ToggleRow` ("Sound")
+joins the Gameplay section of `SettingsScreen.tsx`. The asset pipeline and
+`Sound` module were built with `win()`/`fall()` in mind, for
+CANGUPA-59/CANGUPA-60 to extend later, even though only `jump()` ships
+here.
+
+One commit. Verified with `npx tsc --noEmit` clean, the full apps/app
+Jest suite green (274 tests), `npx expo-doctor` clean after adding the
+missing `expo-asset` peer dependency, and a headless-Chrome/Puppeteer run
+against the live Expo web build confirming the new Sound row renders
+correctly in Settings and that a tap-to-move still plays with no console
+errors from the new audio code path.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

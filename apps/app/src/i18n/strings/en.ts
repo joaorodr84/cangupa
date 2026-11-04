@@ -65,6 +65,7 @@ export const en: Strings = {
     jumps: 'Two-tile jumps',
     hints: 'Highlight possible moves',
     anim: 'Animations',
+    sound: 'Sound',
     data: 'Data',
     clearProgress: 'Clear progress',
     clearProgressTitle: 'Are you sure you want to clear your progress?',

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
+import * as Sound from './src/audio/sound';
 import BackArrow from './src/components/BackArrow';
 import BoardScreen from './src/components/BoardScreen';
 import FooterNav, { type FooterTab } from './src/components/FooterNav';
@@ -35,8 +36,17 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
-  const { settings, setThemeMode, setJumps, setHints, setAnim, setLanguage } = useSettings();
+  const { settings, setThemeMode, setJumps, setHints, setAnim, setSound, setLanguage } = useSettings();
   const { progress, recordDone, recordLevel, clearProgress } = useProgress();
+
+  // Kept in sync here rather than read fresh on every Sound.jump() call,
+  // the same split as the web version's `Sound.enabled` (ui.js sets it,
+  // sound.js only reads it).
+  useEffect(() => {
+    if (settings) {
+      Sound.setEnabled(settings.sound);
+    }
+  }, [settings]);
 
   if (!settings || !progress) {
     return <View style={styles.app} />;
@@ -51,6 +61,7 @@ export default function App() {
           onChangeJumps={setJumps}
           onChangeHints={setHints}
           onChangeAnim={setAnim}
+          onChangeSound={setSound}
           onChangeLanguage={setLanguage}
           progress={progress}
           onLevelDone={recordDone}
@@ -68,6 +79,7 @@ interface ShellProps {
   readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
+  readonly onChangeSound: (sound: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly progress: Progress;
   readonly onLevelDone: (levelIndex: number, moves: number) => void;
@@ -81,6 +93,7 @@ function Shell({
   onChangeJumps,
   onChangeHints,
   onChangeAnim,
+  onChangeSound,
   onChangeLanguage,
   progress,
   onLevelDone,
@@ -133,6 +146,7 @@ function Shell({
         onChangeJumps={onChangeJumps}
         onChangeHints={onChangeHints}
         onChangeAnim={onChangeAnim}
+        onChangeSound={onChangeSound}
         onChangeLanguage={onChangeLanguage}
         onClearProgress={() => {
           onClearProgress();

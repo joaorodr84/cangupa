@@ -8,6 +8,7 @@
 import { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import * as Sound from '../audio/sound';
 import { type UseBoardResult } from '../game/useBoard';
 import { type Palette } from '../theme/palette';
 import Board, { type BoardHandle } from './Board';
@@ -42,6 +43,7 @@ export default function PlayableBoard({ board, anim, palette, maxWidth, maxHeigh
   const handlePressTile = (x: number, y: number) => {
     if (move(x, y)) {
       boardRef.current?.hop();
+      Sound.jump();
       onMoved?.();
     }
   };

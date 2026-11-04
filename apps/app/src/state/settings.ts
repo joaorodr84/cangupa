@@ -19,6 +19,8 @@ export interface Settings {
   // Highlight the tiles you can move to.
   readonly hints: boolean;
   readonly anim: boolean;
+  // Mutes the sound effects (CANGUPA-57) played through src/audio/sound.ts.
+  readonly sound: boolean;
   // The app's language (CANGUPA-38): 'system' follows the device's own
   // language, falling back to English for anything Cangupa doesn't ship
   // (see i18n/locale.ts's resolveLocale), or the player can pin one.
@@ -30,6 +32,7 @@ export const DEFAULT_SETTINGS: Settings = {
   jumps: true,
   hints: true,
   anim: true,
+  sound: true,
   language: 'system',
 };
 
@@ -60,13 +63,14 @@ export function parseSettings(raw: string | null): Settings {
     const jumps = typeof record.jumps === 'boolean' ? record.jumps : DEFAULT_SETTINGS.jumps;
     const hints = typeof record.hints === 'boolean' ? record.hints : DEFAULT_SETTINGS.hints;
     const anim = typeof record.anim === 'boolean' ? record.anim : DEFAULT_SETTINGS.anim;
+    const sound = typeof record.sound === 'boolean' ? record.sound : DEFAULT_SETTINGS.sound;
     // A language this build does not know, such as one from a later
     // version, falls back to the default rather than leaving the app stuck
     // on a language it can no longer resolve.
     const language = LANGUAGE_SETTINGS.includes(record.language as LanguageSetting)
       ? (record.language as LanguageSetting)
       : DEFAULT_SETTINGS.language;
-    return { themeMode, jumps, hints, anim, language };
+    return { themeMode, jumps, hints, anim, sound, language };
   } catch {
     return DEFAULT_SETTINGS;
   }
