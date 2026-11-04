@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-62`**
+**Next ID to assign: `CANGUPA-63`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -22,6 +22,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 
 | ID | Pri | Task | Status | Commit |
 | --- | --- | --- | --- | --- |
+| CANGUPA-62 | P2 | Define level evaluation and difficulty metrics (`apps/web-classic/tools/difficulty.js`) that scale to every level, validate them against the existing 50-level curve, and use them to make generated levels get gradually harder | open | — |
 
 ## Done
 

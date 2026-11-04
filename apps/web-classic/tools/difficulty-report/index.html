@@ -1,0 +1,205 @@
+<title>Cangupa Level Difficulty</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one sortable table, a level per row — number, sketch, headline score bar, supporting metrics.
+     Data comes from levels.json next to this file (made by tools/export-difficulty.js). */
+  :root {
+    --bg: #f3f5f4;
+    --surface: #ffffff;
+    --fg: #17252a;
+    --muted: #5d6d72;
+    --line: #d9e0de;
+    --accent: #0e6b68;       /* score bar, sort arrow */
+    --tile: #8fc9c4;         /* tile needing one visit */
+    --tile-2: #2c8c86;       /* tile needing two visits */
+    --start: #e4a11b;        /* start marker */
+    --font-display: "Figtree", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c;
+      --accent: #4fc3bb; --tile: #3b8a85; --tile-2: #7fd4cd; --start: #f0b23a; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c;
+    --accent: #4fc3bb; --tile: #3b8a85; --tile-2: #7fd4cd; --start: #f0b23a; color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-display);
+    padding-block: 24px 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 1040px; margin: 0 auto; display: grid; gap: 20px; }
+  h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
+  .lede { margin: 6px 0 0; color: var(--muted); max-width: 65ch; line-height: 1.5; font-size: .95rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; }
+  th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--surface); position: sticky; top: 0; white-space: nowrap; }
+  th button { all: unset; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; text-transform: inherit; letter-spacing: inherit; }
+  th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  th[aria-sort] button { color: var(--fg); }
+  th:first-child, td:first-child, th.left, td.left { text-align: left; }
+  td { font-family: var(--font-data); font-size: .85rem; font-variant-numeric: tabular-nums; }
+  td.num { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+  td.sketch { width: 140px; }
+  svg.sketch { display: block; width: 120px; max-width: 100%; height: auto; }
+  .t1 { fill: var(--tile); } .t2 { fill: var(--tile-2); }
+  .st { fill: none; stroke: var(--start); stroke-width: 2.5; }
+  .score { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; min-width: 150px; }
+  .bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .bar b { display: block; height: 100%; background: var(--accent); }
+  .dim { color: var(--muted); }
+  .note { font-size: .8rem; color: var(--muted); max-width: 75ch; line-height: 1.55; }
+  .note code { font-family: var(--font-data); font-size: .78rem; }
+  .err { padding: 24px; color: var(--muted); }
+</style>
+
+<main>
+  <header>
+    <h1>Cangupa level difficulty</h1>
+    <p class="lede" id="lede">Loading levels…</p>
+  </header>
+  <div class="legend" aria-label="Sketch key">
+    <span><i style="background:var(--tile)"></i>Tile, one visit</span>
+    <span><i style="background:var(--tile-2)"></i>Tile, two visits</span>
+    <span><i style="background:none;border:2.5px solid var(--start)"></i>Start</span>
+  </div>
+  <div class="wrap">
+    <table>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="rows"><tr><td colspan="8" class="err">Loading…</td></tr></tbody>
+    </table>
+  </div>
+  <p class="note">
+    <strong>Difficulty</strong> is <code>pathBits</code>: the luck a blind player needs to retrace one solution,
+    the sum of log₂(legal moves) over its steps. <code>Exact bits</code> is −log₂ of the chance that uniform random
+    play clears the level, computed over every reachable position; it is blank where the level has too many positions
+    to enumerate. <code>Decisions</code> counts steps with more than one legal move. <code>Effort</code> is how many
+    positions a depth-first solver expands before it finds a solution. <code>Random play</code> is the average share
+    of the level a random player completes before getting stuck. Definitions live in
+    <code>tools/difficulty.js</code>.
+  </p>
+</main>
+
+<script>
+  const COLS = [
+    { key: 'level', label: 'Level', cls: 'num' },
+    { key: null, label: 'Sketch', cls: 'sketch left' },
+    { key: 'pathBits', label: 'Difficulty (pathBits)', cls: 'left' },
+    { key: 'decisions', label: 'Decisions' },
+    { key: 'bits', label: 'Exact bits' },
+    { key: 'effort', label: 'Effort' },
+    { key: 'survival', label: 'Random play' },
+    { key: 'visits', label: 'Visits' },
+  ];
+  const SVG = 'http://www.w3.org/2000/svg';
+  let data = [], sortKey = 'level', sortDir = 1;
+
+  function sketch(l) {
+    const box = 120, cell = Math.floor(box / Math.max(l.width, l.height)), gap = Math.max(1, Math.round(cell / 8));
+    const w = l.width * cell, h = l.height * cell;
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.setAttribute('class', 'sketch');
+    svg.setAttribute('width', w);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', `Level ${l.level} layout, ${l.width} by ${l.height}`);
+    l.rows.forEach((row, y) => {
+      for (let x = 0; x < l.width; x++) {
+        const c = row[x] || '.';
+        if (c === '.') continue;
+        const r = document.createElementNS(SVG, 'rect');
+        r.setAttribute('x', x * cell + gap / 2); r.setAttribute('y', y * cell + gap / 2);
+        r.setAttribute('width', cell - gap); r.setAttribute('height', cell - gap);
+        r.setAttribute('rx', Math.max(1, cell / 8));
+        r.setAttribute('class', c === '2' || c === 's' ? 't2' : 't1');
+        svg.appendChild(r);
+        if (c === 'S' || c === 's') {
+          const s = document.createElementNS(SVG, 'rect');
+          s.setAttribute('x', x * cell + gap / 2 + 1); s.setAttribute('y', y * cell + gap / 2 + 1);
+          s.setAttribute('width', cell - gap - 2); s.setAttribute('height', cell - gap - 2);
+          s.setAttribute('rx', Math.max(1, cell / 8)); s.setAttribute('class', 'st');
+          svg.appendChild(s);
+        }
+      }
+    });
+    return svg;
+  }
+
+  const fmt = (v, d = 0) => v == null ? '–' : (d ? v.toFixed(d) : Math.round(v).toLocaleString('en'));
+
+  function renderHead() {
+    const head = document.getElementById('head');
+    head.replaceChildren(...COLS.map(c => {
+      const th = document.createElement('th');
+      if (c.cls && c.cls.includes('left')) th.className = 'left';
+      if (c.key) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = c.label + (c.key === sortKey ? (sortDir > 0 ? ' ↑' : ' ↓') : '');
+        b.addEventListener('click', () => {
+          if (sortKey === c.key) sortDir = -sortDir; else { sortKey = c.key; sortDir = c.key === 'level' ? 1 : -1; }
+          render();
+        });
+        th.appendChild(b);
+        if (c.key === sortKey) th.setAttribute('aria-sort', sortDir > 0 ? 'ascending' : 'descending');
+      } else th.textContent = c.label;
+      return th;
+    }));
+  }
+
+  function render() {
+    renderHead();
+    const max = Math.max(...data.map(l => l.pathBits || 0)) || 1;
+    // missing values sort last whichever way the column is sorted
+    const sorted = [...data].sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      if (x == null && y == null) return a.level - b.level;
+      if (x == null) return 1; if (y == null) return -1;
+      return (x - y) * sortDir || a.level - b.level;
+    });
+    document.getElementById('rows').replaceChildren(...sorted.map(l => {
+      const tr = document.createElement('tr');
+      const cells = [
+        ['num', l.level],
+        ['sketch left', sketch(l)],
+        ['left', (() => {
+          const d = document.createElement('div'); d.className = 'score';
+          d.innerHTML = `<div class="bar" role="presentation"><b style="width:${(100 * (l.pathBits || 0) / max).toFixed(1)}%"></b></div><span>${fmt(l.pathBits, 1)}</span>`;
+          return d;
+        })()],
+        ['', fmt(l.decisions)],
+        ['', fmt(l.bits, 1)],
+        ['', fmt(l.effort)],
+        ['', l.survival == null ? '–' : Math.round(l.survival * 100) + '%'],
+        ['dim', `${l.visits} · ${l.width}×${l.height}`],
+      ];
+      cells.forEach(([cls, v]) => {
+        const td = document.createElement('td');
+        if (cls) td.className = cls;
+        if (v instanceof Node) td.appendChild(v); else td.textContent = v;
+        tr.appendChild(td);
+      });
+      return tr;
+    }));
+  }
+
+  fetch('levels.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
+    data = json.levels;
+    document.getElementById('lede').textContent =
+      `${data.length} levels, generated ${json.generated}. Sort any column to compare how difficulty climbs with the level number.`;
+    render();
+  }).catch(() => {
+    document.getElementById('lede').textContent = 'Could not load levels.json.';
+    document.getElementById('rows').innerHTML = '<tr><td colspan="8" class="err">levels.json was not found next to this page. When opening the file from disk, serve the folder (for example <code>python3 -m http.server</code>) because browsers block fetch() on file:// pages.</td></tr>';
+  });
+</script>

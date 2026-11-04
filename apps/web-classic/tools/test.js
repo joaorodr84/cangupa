@@ -2,6 +2,7 @@
 const assert = require('assert');
 const { Game } = require('../js/game.js');
 const { LEVELS } = require('../js/levels.js');
+const { measure, search, randomPlay } = require('./difficulty.js');
 
 // rules
 let g = new Game(['S1.', '.2.']);
@@ -27,4 +28,18 @@ LEVELS.forEach((rows, i) => {
   path.forEach(m => g.play(m));
   assert.ok(g.won, `level ${i + 1} solution does not clear`);
 });
+// difficulty metrics
+let d = measure(['S1', '.1']);                      // one forced path: no luck needed
+assert.strictEqual(d.bits, 0);
+assert.strictEqual(d.solutions, 1);
+d = measure(['S11']);                               // step-step or jump-step: both win
+assert.strictEqual(d.solutions, 2);
+assert.strictEqual(d.bits, 0);
+d = measure(LEVELS[0]);                             // level 1: one solution, 2 bits of luck
+assert.strictEqual(d.solutions, 1);
+assert.ok(Math.abs(d.bits - 2) < 0.05, `level 1 bits ${d.bits}`);
+assert.strictEqual(measure(['S1.', '.2.']).bits, Infinity); // unwinnable: no chance at all
+assert.strictEqual(search(['S1', '.1']).decisions, 0);      // every move forced
+assert.strictEqual(randomPlay(['S1', '.1']).randomWins, 1);
+
 console.log(`ok: rules and ${LEVELS.length} levels solvable`);
