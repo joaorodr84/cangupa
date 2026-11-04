@@ -4,7 +4,15 @@
 // and calling `hop()` through the ref after a played move is useBoard.ts's
 // job, not this component's — see PlayableBoard.tsx for the two wired together.
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Easing,
+  type GestureResponderEvent,
+  type LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { type TileView } from '../game/boardView';
 import { type Palette } from '../theme/palette';
@@ -48,9 +56,11 @@ interface BoardProps {
   // tile with no legal move — only when the falling setting is on
   // (CANGUPA-58). Undefined (the setting is off): the board stays a plain,
   // non-interactive background there, as it always was. Called with the
-  // tapped tile's cell when there was one (CANGUPA-64, so the caller can jump
-  // the kangaroo there before falling), or with no argument for a tap on
-  // true background between tiles, which has no cell to jump to.
+  // tapped cell (CANGUPA-64, so the caller can jump the kangaroo there
+  // before falling) — computed from the press location even over true
+  // background with no tile at all (CANGUPA-66), since the caller still
+  // needs a cell to jump to. Undefined only before the very first layout,
+  // when this Pressable's own size isn't known yet.
   readonly onPressEmpty?: (target?: { x: number; y: number }) => void;
 }
 
@@ -73,6 +83,28 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
   const fallAnim = useRef(new Animated.Value(0)).current;
+  // The board's own rendered size (CANGUPA-66), kept in a ref rather than
+  // state since it only feeds a later press's own math, not a render — set
+  // once on layout and whenever the aspectRatio box is resized.
+  const sizeRef = useRef({ width: 0, height: 0 });
+  const handleLayout = (e: LayoutChangeEvent) => {
+    sizeRef.current = { width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height };
+  };
+
+  // The grid cell under a press, from where it landed within this
+  // Pressable's own box — there is no border/padding between the two, so
+  // locationX/Y map 1:1 onto w x h. Undefined only before the first layout
+  // (practically unreachable: nothing is pressable before it renders).
+  // ui.js's cellAt() does the same job from a DOM rect, for the same reason:
+  // a tap on true background, with no tile at all, still needs a cell to
+  // jump to (CANGUPA-66), not just "no target".
+  const cellAt = ({ nativeEvent }: GestureResponderEvent): { x: number; y: number } | undefined => {
+    const { width, height } = sizeRef.current;
+    if (!width || !height) return undefined;
+    const x = Math.floor((nativeEvent.locationX / width) * w);
+    const y = Math.floor((nativeEvent.locationY / height) * h);
+    return x >= 0 && y >= 0 && x < w && y < h ? { x, y } : undefined;
+  };
 
   useImperativeHandle(
     ref,
@@ -124,7 +156,8 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     <Pressable
       style={[styles.board, { aspectRatio: w / h, backgroundColor: palette.pit }, width !== undefined && { width }]}
       testID="board"
-      onPress={onPressEmpty && (() => onPressEmpty())}
+      onLayout={handleLayout}
+      onPress={onPressEmpty && ((e) => onPressEmpty(cellAt(e)))}
     >
       {tiles.map((tile) => (
         <Tile

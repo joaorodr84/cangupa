@@ -74,11 +74,15 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // handler falls through to the same thing when settings.fall is on. A
   // known target cell (CANGUPA-64) gets a jump first — the same hop a real
   // move plays, toward the gap instead of in place — so the fall reads as
-  // "there was nothing there to land on"; a tap on true background has no
-  // cell to jump to and falls right where the kangaroo already stands, as
-  // it always has. A target off that step/jump shape (CANGUPA-65 — a tile
-  // not on the same row/column, too far, or a jump-distance one with jumps
-  // off) was never a move attempt at all, so it does nothing.
+  // "there was nothing there to land on", whether or not a tile actually
+  // sits there (CANGUPA-66: Board reports a cell under a tap on true
+  // background too, not just on an existing tile). A target off that
+  // step/jump shape (CANGUPA-65 — a tile not on the same row/column, too
+  // far, or a jump-distance one with jumps off — or CANGUPA-66's own
+  // position, distance zero) was never a move attempt at all, so it does
+  // nothing. `target` is undefined only before Board's first layout, when
+  // it can't yet say which cell a tap on background landed on — falls in
+  // place then, same as it always has.
   const handlePressEmpty = (target?: { x: number; y: number }) => {
     if (falling || won) return;
     if (target && !game.inMoveShape(target.x, target.y)) return;
@@ -106,6 +110,20 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
       ? fitBoardWidth(game.w, game.h, maxWidth - FRAME_PADDING * 2, maxHeight - FRAME_PADDING * 2)
       : undefined;
 
+  // The tile left behind, if it was already used up (CANGUPA-67): the
+  // kangaroo is visibly jumping away from it, even though the jump fails
+  // and falls instead of landing, so it should look vacated right away
+  // rather than still "worn" (occupied) for the whole fall. `tiles` itself
+  // is still read off the real, unchanged `game` (this never was a real
+  // move, so game.pos didn't move), which is why it still says worn — only
+  // this one entry is swapped for display, for as long as `falling` is
+  // true; once reset() runs, `falling` goes false and tiles recomputes
+  // fresh from the actually-reset game.
+  const displayTiles =
+    falling && game.at(game.x, game.y) === 0
+      ? tiles.map((t) => (t.x === game.x && t.y === game.y ? { ...t, worn: false, gone: true } : t))
+      : tiles;
+
   return (
     // ports style.css's #board-wrap: the padded card the board itself (the
     // "pit") sits in — found missing in the CANGUPA-24 parity pass, where
@@ -120,7 +138,7 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
         ref={boardRef}
         w={game.w}
         h={game.h}
-        tiles={tiles}
+        tiles={displayTiles}
         rooX={fallTarget?.x ?? game.x}
         rooY={fallTarget?.y ?? game.y}
         face={fallFacing?.face ?? facing.face}

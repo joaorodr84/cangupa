@@ -123,6 +123,39 @@ test('tapping a tile with no legal move jumps there before falling, facing it (C
   expect(screen.getByTestId('tile-press-1-0')).toBeTruthy();
 });
 
+test('vacates the tile jumped away from, even though the jump fails and falls instead (CANGUPA-67)', async () => {
+  // ['s.1', '.1.'], jumps on: x0,y0 is a double-visit start tile; x2,y0
+  // ("blue") and x1,y1 (an untouched decoy, so the level isn't won once the
+  // other two tiles are both spent) are the level's only other tiles.
+  // Step 1: jump from the start to the blue tile (its one visit). Step 2:
+  // jump back to the start (its last visit) — now worn, kangaroo standing
+  // on it. Step 3: attempt to jump again to the blue tile's spot, now
+  // exhausted — not legal, so it falls instead, with that spot (a valid
+  // jump distance) as the target. Mid-fall, the start tile — the one just
+  // jumped away from — should already look vacated (gone), not still
+  // occupied (worn), even though game.pos hasn't actually moved (the jump
+  // was never legal, so nothing was really played).
+  await render(<Harness level={['s.1', '.1.']} rules={{ jumps: true }} fall />);
+
+  await fireEvent.press(screen.getByTestId('tile-press-2-0')); // start -> blue tile
+  await fireEvent.press(screen.getByTestId('tile-press-0-0')); // blue tile -> back to the start
+
+  await act(async () => {
+    fireEvent.press(screen.getByTestId('tile-empty-2-0')); // attempt: start -> blue tile's spot (exhausted)
+  });
+
+  // Checked right as the state update from the press above flushes — before
+  // the sink's own setTimeout/reset() have any chance to run, so this isn't
+  // racing against how long that takes.
+  const flat = [screen.getByTestId('tile-0-0').props.style].flat(Infinity);
+  expect(flat.some((s) => s?.opacity === 0)).toBe(true); // "gone", not "worn" (opacity 0.82)
+
+  // Let the fall actually finish so no timer is left dangling into the next test.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+  });
+});
+
 test('tapping a tile off the step/jump line does nothing, even with the fall setting on (CANGUPA-65)', async () => {
   // A full 3x3 grid: (2, 2) is two over and two down from the start — not a
   // step or jump in any of the four cardinal directions, so it should never
@@ -146,6 +179,38 @@ test('tapping a jump-distance tile does nothing when the jumps rule is off (CANG
 
   expect(Sound.jump).not.toHaveBeenCalled();
   expect(Sound.fall).not.toHaveBeenCalled();
+});
+
+test("tapping the kangaroo's own cell does nothing (CANGUPA-66)", async () => {
+  // 'S11', jumps off: x=0 is the start tile, already worn and exactly where
+  // the kangaroo stands — distance zero, never a move attempt.
+  await render(<Harness level={['S11']} rules={{ jumps: false }} fall />);
+
+  await fireEvent.press(screen.getByTestId('tile-empty-0-0'));
+
+  expect(Sound.jump).not.toHaveBeenCalled();
+  expect(Sound.fall).not.toHaveBeenCalled();
+});
+
+test('tapping true background jumps to that cell before falling, once the board is measured (CANGUPA-66)', async () => {
+  // 'S.1', jumps on: x=1 is background with no tile at all, one step away —
+  // should jump there and fall, the same as a worn tile would (CANGUPA-64),
+  // not fall in place as if nothing specific had been tapped.
+  await render(<Harness level={['S.1']} rules={{ jumps: true }} fall />);
+
+  const board = screen.getByTestId('board');
+  // A 300x100 px board, 3 columns wide: x=1 spans the middle third, [100, 200).
+  await act(async () => {
+    fireEvent(board, 'layout', { nativeEvent: { layout: { width: 300, height: 100 } } });
+  });
+
+  await act(async () => {
+    fireEvent.press(board, { nativeEvent: { locationX: 150, locationY: 50 } });
+    await new Promise((resolve) => setTimeout(resolve, 700));
+  });
+
+  expect(Sound.jump).toHaveBeenCalledTimes(1);
+  expect(Sound.fall).toHaveBeenCalledTimes(1);
 });
 
 test('tapping empty space does nothing when the fall setting is off', async () => {

@@ -91,18 +91,32 @@ Open work is listed in [TODO.md](TODO.md).
 - When the "fall when there's no move" setting is on and the kangaroo
   taps or arrow-keys into a specific stuck tile, it now hops there first
   — the same jump a real move plays — before sinking through the board,
-  instead of sinking in place where it already stood. Tapping truly
-  empty background between tiles, or walking off the edge of the board
-  with the arrow keys, still falls in place, since there's nowhere to
-  jump to.
+  instead of sinking in place where it already stood. Walking off the
+  edge of the board with the arrow keys still falls in place, since
+  there's nowhere to jump to.
 - When the "fall when there's no move" setting is on, tapping or clicking
   a tile now only makes the kangaroo fall when that tile is a step or
   jump away from it in one of the four cardinal directions — the same
   shape a legal move checks. A diagonal tap, a tap too far away, or a
   jump-distance tap with the jumps rule off used to also trigger a fall;
   now those taps do nothing, same as before falling could jump to a
-  target. Tapping true empty background, with no tile at all, still
-  falls in place as before.
+  target.
+- Tapping or clicking the kangaroo's own current cell, with the "fall
+  when there's no move" setting on, is now correctly a no-op in both
+  the web game and the app, instead of making the kangaroo sink and
+  fall in place where it already stood.
+- Tapping or clicking true empty background that's a step or jump away
+  from the kangaroo, with the "fall when there's no move" setting on,
+  now hops it there first — the same jump a real move plays — before
+  falling through the board, matching what tapping a stuck tile at that
+  same distance already did, in both the web game and the app. Empty
+  background that isn't a step or jump away still falls in place, since
+  there's nowhere to jump to.
+- When the "fall when there's no move" setting is on and a jump lands
+  on a tile that's already been fully used up, the tile the kangaroo
+  jumped away from now correctly looks vacated for the brief moment it
+  takes to fall, instead of still looking occupied even though the
+  kangaroo has visibly left it, in both the web game and the app.
 
 ## 2026-11-03
 

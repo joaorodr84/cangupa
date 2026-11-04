@@ -801,6 +801,13 @@ cardinal direction, was wrongly treated as a fall target, so both
 `Game` implementations gained an `inMoveShape()` check, used by
 `ui.js`'s click handler and `PlayableBoard.tsx`'s `handlePressEmpty`
 to reject an out-of-shape tap as a no-op instead of falling.
+CANGUPA-66 and CANGUPA-67 then fixed two more gaps found in the same sitting:
+a tapped cell is now found purely from where the tap landed on the board
+instead of needing an existing tile there, so tapping the kangaroo's own
+cell is correctly a no-op and tapping true empty background a step or jump
+away now jumps there first instead of always falling in place; and the tile
+just jumped away from now renders as vacated, not still occupied, for the
+duration of a fall triggered by an already-exhausted landing tile.
 
 ---
 

@@ -227,6 +227,39 @@ test('tapping empty board space reports it, when a handler is given (CANGUPA-58)
   expect(onPressEmpty).toHaveBeenCalledTimes(1);
 });
 
+test('a tap on true background reports the cell under it, once the board is measured (CANGUPA-66)', async () => {
+  // 'S.1', jumps on: x=1 has no tile at all (tilesOf skips an always-empty
+  // cell), so only the board's own blanket Pressable can report it — and
+  // now does, from where the tap landed, instead of calling with no target.
+  const g = new Game(['S.1'], { jumps: true });
+  const tiles = tilesOf(g, { hints: true });
+  const onPressEmpty = jest.fn();
+
+  await render(
+    <Board
+      w={g.w}
+      h={g.h}
+      tiles={tiles}
+      rooX={g.x}
+      rooY={g.y}
+      face="front"
+      flip={false}
+      palette={palette}
+      anim={false}
+      onPressEmpty={onPressEmpty}
+    />,
+  );
+
+  const board = screen.getByTestId('board');
+  // A 300x100 px board, 3 columns wide: x=1 spans the middle third, [100, 200).
+  await act(async () => {
+    fireEvent(board, 'layout', { nativeEvent: { layout: { width: 300, height: 100 } } });
+  });
+  await fireEvent.press(board, { nativeEvent: { locationX: 150, locationY: 50 } });
+
+  expect(onPressEmpty).toHaveBeenCalledWith({ x: 1, y: 0 });
+});
+
 test('tapping a hinted tile does not also report an empty-space press', async () => {
   const g = new Game(['S1.']);
   const tiles = tilesOf(g, { hints: true });

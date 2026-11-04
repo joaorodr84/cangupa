@@ -132,21 +132,30 @@ function move(m) {
   render();
 }
 
+// The grid cell under a pointer event, from its position within boardEl's
+// own box — #board has no border/padding (style.css), so this maps 1:1 onto
+// game.w x game.h — rather than `.closest('.cell')`, which only finds an
+// element for a cell that actually has a tile (CANGUPA-66: a tap on true
+// background, with no tile at all, still needs a cell to jump to).
+function cellAt(e) {
+  const rect = boardEl.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / rect.width * game.w);
+  const y = Math.floor((e.clientY - rect.top) / rect.height * game.h);
+  return x >= 0 && y >= 0 && x < game.w && y < game.h ? { x, y } : null;
+}
+
 boardEl.addEventListener('click', e => {
   if (falling) return;
-  const cell = e.target.closest('.cell');
-  const dest = cell && game.legalMoves().find(mv => mv.x === +cell.dataset.x && mv.y === +cell.dataset.y);
+  const c = cellAt(e);
+  if (!c) return;
+  const dest = game.legalMoves().find(mv => mv.x === c.x && mv.y === c.y);
   if (dest) { move(dest); return; }
-  if (!settings.fall) return;
-  // No `.cell` at all (board background between tiles) counts as "empty
-  // space" with no specific target — falls in place (CANGUPA-64). A tapped
-  // cell only becomes a fall target when it's a step or jump away in one
-  // of the four directions (CANGUPA-65: a tile sitting off that line, or
-  // too far, or a jump-distance cell with jumps off, is not a move attempt
-  // at all and does nothing); otherwise it's the same "no specific cell" case.
-  if (!cell) { fall(); return; }
-  const x = +cell.dataset.x, y = +cell.dataset.y;
-  if (game.inMoveShape(x, y)) fall({ x, y });
+  // A step or jump away in one of the four directions (CANGUPA-65) is a
+  // real move attempt, tile or no tile there (CANGUPA-66) — jump to it
+  // before falling. inMoveShape() is false for game.x/game.y themselves
+  // (distance 0), so tapping the kangaroo's own cell is a no-op, same as
+  // anything off that shape (diagonal, too far, a jump with jumps off).
+  if (settings.fall && game.inMoveShape(c.x, c.y)) fall(c);
 });
 
 // Arrow / WASD: a step if one is possible that way, else a jump. Shift forces a jump.
@@ -158,14 +167,25 @@ function reset() { game.reset(); tip = null; render(false); }
 // instead of the move being a no-op. A target cell (CANGUPA-64) gets the
 // same jump a real move plays — translate transition plus hop bounce —
 // before the sink starts, so it reads as "there was nothing there to land
-// on" instead of stumbling in place; a target-less fall (true background,
-// no cell to jump to) sinks right where the kangaroo already stands, as
-// it always has. No render() here: it would reset #roo's transform back
-// to game.x/y, undoing the jump just set below — the final position is
-// restored by reset()'s own render() once the fall completes.
+// on" instead of stumbling in place; a target-less fall sinks right where
+// the kangaroo already stands, as it always has — reachable only from the
+// keyboard handler below, walking off the grid's edge (CANGUPA-66: a click
+// always has a cell under it, inside the board's own box, so cellAt() above
+// never leaves fall() without one). No render() here: it would reset #roo's
+// transform back to game.x/y, undoing the jump just set below — the final
+// position is restored by reset()'s own render() once the fall completes.
 function fall(target) {
   if (game.won || falling) return;
   falling = true;
+  // The tile left behind, if it was already used up (CANGUPA-67): the
+  // kangaroo is visibly jumping away from it, even though the jump fails
+  // and falls instead of landing, so it should look vacated right away
+  // rather than still "worn" (occupied) for the whole fall. game.pos itself
+  // is untouched — this never was a real move — so render() would still
+  // call it worn; only the one DOM class changes, same reason a full
+  // render() is avoided below.
+  const leftEl = cellEls[game.pos];
+  if (leftEl && game.cells[game.pos] === 0) leftEl.firstChild.classList.replace('worn', 'gone');
   if (target) {
     face = faceFor(target.x - game.x, target.y - game.y);
     const p = cellPos(target.x, target.y);
