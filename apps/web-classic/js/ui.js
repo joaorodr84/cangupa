@@ -4,6 +4,7 @@ let settings = Settings.load();
 let progress = Progress.load();
 let game, levelIndex = 0, tip = null;
 let cellEls = [], roo = null, face = { dir: 'down', left: false };
+let falling = false; // mid fall-and-restart animation (settings.fall), ignore input until it settles
 
 function loadLevel(n) {
   levelIndex = Math.max(0, Math.min(LEVELS.length - 1, n));
@@ -123,16 +124,34 @@ function move(m) {
 }
 
 boardEl.addEventListener('click', e => {
+  if (falling) return;
   const cell = e.target.closest('.cell');
-  if (!cell) return;
-  const x = +cell.dataset.x, y = +cell.dataset.y;
-  move(game.legalMoves().find(m => m.x === x && m.y === y));
+  const dest = cell && game.legalMoves().find(mv => mv.x === +cell.dataset.x && mv.y === +cell.dataset.y);
+  if (dest) { move(dest); return; }
+  // No `.cell` at all (board background between tiles) or a cell with no
+  // legal move both count as "empty space" here — tapping either one only
+  // does something once falling is turned on.
+  if (settings.fall) fall();
 });
 
 // Arrow / WASD: a step if one is possible that way, else a jump. Shift forces a jump.
 const KEYDIR = { ArrowRight: [1, 0], d: [1, 0], ArrowLeft: [-1, 0], a: [-1, 0], ArrowDown: [0, 1], s: [0, 1], ArrowUp: [0, -1], w: [0, -1] };
 function undo() { if (game.undo()) { tip = null; render(false); } }
 function reset() { game.reset(); tip = null; render(false); }
+
+// Falling (opt-in, settings.fall): nowhere to land, so the level restarts
+// instead of the move being a no-op.
+function fall() {
+  if (game.won || falling) return;
+  falling = true;
+  boardEl.classList.add('falling');
+  render(false);
+  setTimeout(() => {
+    boardEl.classList.remove('falling');
+    falling = false;
+    reset();
+  }, 500);
+}
 function hint() {
   if (game.won) return;
   const path = game.solve();
@@ -144,13 +163,16 @@ function next() { if (!$('next').disabled) loadLevel(levelIndex + 1); }
 
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || /^(SELECT|INPUT)$/.test(e.target.tagName)) return;
+  if (falling) return;
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   const d = KEYDIR[k];
   if (d) {
     e.preventDefault();
     const moves = game.legalMoves();
     const at = n => moves.find(m => m.x === game.x + d[0] * n && m.y === game.y + d[1] * n);
-    move(e.shiftKey ? at(2) : at(1) || at(2));
+    const m = e.shiftKey ? at(2) : at(1) || at(2);
+    if (m) move(m);
+    else if (settings.fall) fall();
   } else if (k === 'z' || k === 'Backspace') undo();
   else if (k === 'r') reset();
   else if (k === 'h') hint();
@@ -173,7 +195,7 @@ $('clear-progress').onclick = () => {
 };
 
 // Settings wiring
-const fields = { theme: 's-theme', jumps: 's-jumps', hints: 's-hints', anim: 's-anim' };
+const fields = { theme: 's-theme', jumps: 's-jumps', hints: 's-hints', anim: 's-anim', fall: 's-fall' };
 for (const [key, id] of Object.entries(fields)) {
   const el = $(id), isCheck = el.type === 'checkbox';
   isCheck ? (el.checked = settings[key]) : (el.value = settings[key]);

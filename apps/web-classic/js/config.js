@@ -4,6 +4,7 @@ const DEFAULT_SETTINGS = {
   jumps: true,   // rule option: allow jumping two tiles in a straight line
   hints: true,   // highlight the tiles you can move to
   anim: true,
+  fall: false,   // rule option: a direction/tap with no step or jump falls, restarting the level
 };
 
 const THEMES = ['cosmos', 'space', 'sand', 'ice', 'classic'];

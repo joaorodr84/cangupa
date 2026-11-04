@@ -22,14 +22,6 @@ The priority can change at any time; the ID never does.
 ## Backlog
 
 - [P3] `TILE-JUMPER-2` — Play a sound effect on a jump.
-- [P3] `TILE-JUMPER-3` — Add falling as an opt-in setting, off by default:
-  pressing a direction (arrow keys / WASD) with no step or jump that way
-  falls instead of doing nothing. When the setting is on, also allow
-  falling by clicking/tapping empty space — normally click/tap only ever
-  targets a specific legal destination cell (see
-  [apps/web-classic/js/ui.js](apps/web-classic/js/ui.js) click handler vs.
-  keydown handler), so this is the one case that breaks that pattern and
-  needs its own empty-space hit-testing.
 - [P3] `TILE-JUMPER-4` — Play a sound effect on finishing a level.
 - [P3] `TILE-JUMPER-5` — Play a sound effect on falling. Depends on
   `TILE-JUMPER-3` landing first — there's no fall to cue the sound off until

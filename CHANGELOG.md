@@ -9,6 +9,16 @@ Open work is listed in [TODO.md](TODO.md).
 
 ## 2026-11-04
 
+### Added
+
+- The web game's settings panel has a new "Cair ao não haver jogada" ("Fall
+  when there's no move") option, off by default. With it on, pressing a
+  direction (arrow keys or WASD) with no legal step or jump, or
+  clicking/tapping empty space or a tile with no legal move, makes the
+  kangaroo fall through the board — with a brief sink-and-fade animation —
+  and restarts the level, instead of doing nothing. With it off, the game
+  behaves as before.
+
 ### Changed
 
 - The settings screen's "Clear progress" row now sits under its own "Data"

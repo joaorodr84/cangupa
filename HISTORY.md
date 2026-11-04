@@ -631,6 +631,27 @@ apps/app Jest suite green (271 tests).
 
 ---
 
+## Era 24 — Nov 4: falling becomes an opt-in setting in the web game
+
+TILE-JUMPER-3 adds a "Cair ao não haver jogada" checkbox to
+apps/web-classic's settings panel (`js/config.js`'s `DEFAULT_SETTINGS`,
+off by default). With it on, a direction press (arrow keys/WASD) that
+finds no legal step or jump, or a click/tap on empty space or a tile with
+no legal move, falls instead of doing nothing: `js/ui.js`'s new `fall()`
+adds a `.falling` class to the board, which plays a sink-and-fade
+keyframe animation on the kangaroo sprite, then after 500ms resets the
+level. A module-level `falling` flag ignores further input while the
+animation runs. `js/game.js` was untouched — "no legal move in that
+direction" is already exactly what `legalMoves()` computes, so this is a
+different UI response to an existing condition rather than a new rule,
+and ships with no new rules assertion.
+
+One commit. Verified with `node apps/web-classic/tools/test.js` (50
+levels, existing rules assertions); not yet checked visually in a
+browser.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
