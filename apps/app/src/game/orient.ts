@@ -9,6 +9,10 @@
 // are generated landscape (tools/pack-plan.js) and stay that way in the data.
 import { type Level } from './board';
 
+// An arrow tile points a way, and swapping rows for columns swaps its axis: a tile pointing right now
+// points down, one pointing up now points left, and the other two likewise. Every other character stays.
+const TRANSPOSED: Readonly<Record<string, string>> = { '>': 'v', v: '>', '<': '^', '^': '<' };
+
 export function orientLevel(level: Level, landscape: boolean): Level {
   const height = level.length;
   const width = Math.max(...level.map((row) => row.length));
@@ -17,7 +21,7 @@ export function orientLevel(level: Level, landscape: boolean): Level {
   }
   const columns: string[] = [];
   for (let x = 0; x < width; x++) {
-    columns.push(level.map((row) => row[x] ?? '.').join(''));
+    columns.push(level.map((row) => { const c = row[x] ?? '.'; return TRANSPOSED[c] ?? c; }).join(''));
   }
   return columns;
 }

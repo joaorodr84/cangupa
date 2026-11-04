@@ -23,8 +23,11 @@ const MOVES = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 //   maxVisits  most visits any tile may need: 1, 2 or 3 (default 2, as the web game's levels have)
 //   noTwo      no tile may end on exactly two visits (a pack with Steel tiles but no Gold ones);
 //              a tile that has been visited twice is nudged towards its third
-function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false }, rand) {
+//   arrows     how many one-visit tiles (not the start, not the last) become arrow tiles. An arrow
+//              takes the direction the walk leaves its tile by, so the walk stays a valid solution
+function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0 }, rand) {
   const visits = new Map(); // cell index -> times landed on
+  const exits = new Map();  // cell index -> the direction (index into MOVES) the walk first left it by
   let x = (rand() * width) | 0, y = (rand() * height) | 0;
   const start = y * width + x;
   visits.set(start, 1);
@@ -32,7 +35,8 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
 
   for (let n = 1; n < steps; n++) {
     const options = [];
-    for (const [dx, dy] of MOVES) {
+    for (let k = 0; k < MOVES.length; k++) {
+      const [dx, dy] = MOVES[k];
       for (const dist of [1, 2]) {
         const nx = x + dx * dist, ny = y + dy * dist, i = ny * width + nx;
         if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
@@ -42,7 +46,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
         // jumps are rarer than steps; revisiting a tile is rarer than a fresh one, except a
         // tile stuck on two visits when two is not allowed: that one is wanted again
         const weight = (dist === 2 ? jump : 1 - jump) * (seen ? .35 : 1) * (noTwo && seen === 2 ? 3 : 1);
-        options.push({ nx, ny, i, weight });
+        options.push({ nx, ny, i, weight, k });
       }
     }
     if (!options.length) return null;
@@ -50,6 +54,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     let roll = rand() * options.reduce((sum, o) => sum + o.weight, 0), pick = options[0];
     for (const o of options) { if ((roll -= o.weight) <= 0) { pick = o; break; } }
 
+    if (!exits.has(y * width + x)) exits.set(y * width + x, pick.k);
     if (visits.get(pick.i) === 1) doubleCount++;
     visits.set(pick.i, (visits.get(pick.i) || 0) + 1);
     x = pick.nx; y = pick.ny;
@@ -57,12 +62,20 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
 
   if (noTwo && [...visits.values()].includes(2)) return null; // a tile left on two visits would be a Gold tile
 
+  // arrow tiles: some of the tiles visited once and left by a move, in a random order
+  const arrowAt = new Map();
+  if (arrows > 0) {
+    const candidates = [...exits.keys()].filter(i => i !== start && visits.get(i) === 1);
+    for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
+    for (const i of candidates.slice(0, arrows)) arrowAt.set(i, '><v^'[exits.get(i)]); // MOVES is in the order right, left, down, up
+  }
+
   const rows = [];
   for (let r = 0; r < height; r++) {
     let row = '';
     for (let c = 0; c < width; c++) {
       const i = r * width + c, count = visits.get(i) || 0;
-      row += !count ? '.' : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
+      row += !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
     }
     rows.push(row);
   }
