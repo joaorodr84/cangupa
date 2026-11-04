@@ -6,7 +6,7 @@ import { type Level, type Rules } from '../game/board';
 import { useBoard } from '../game/useBoard';
 import { DARK } from '../theme/palette';
 
-jest.mock('../audio/sound', () => ({ jump: jest.fn(), win: jest.fn() }));
+jest.mock('../audio/sound', () => ({ jump: jest.fn(), win: jest.fn(), fall: jest.fn() }));
 
 const palette = DARK;
 
@@ -100,6 +100,7 @@ test('falling resets the board, when the fall setting is on (CANGUPA-58)', async
 
   // Back at the start: the move to x=1 is legal again.
   expect(screen.getByTestId('tile-press-1-0')).toBeTruthy();
+  expect(Sound.fall).toHaveBeenCalledTimes(1);
 });
 
 test('tapping empty space does nothing when the fall setting is off', async () => {
@@ -112,6 +113,7 @@ test('tapping empty space does nothing when the fall setting is off', async () =
 
   // Still stuck at x=1 — no handler was wired up to react to the tap.
   expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
+  expect(Sound.fall).not.toHaveBeenCalled();
 });
 
 test('without maxWidth/maxHeight the board falls back to 100% (CANGUPA-33)', async () => {

@@ -47,6 +47,10 @@ Open work is listed in [TODO.md](TODO.md).
   falling setting. With it on, tapping anywhere on the board with no legal
   move — empty space, or a stuck tile — makes the kangaroo sink, shrink
   and fade, then resets the current level back to the start.
+- The app now also plays a falling sound effect when that "Fall when
+  there is no move" setting triggers, alongside the kangaroo's
+  sink-and-fade animation, matching the sound the web version already
+  plays, and muted by the same "Sound" toggle.
 
 ### Changed
 

@@ -67,6 +67,7 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   const handlePressEmpty = () => {
     if (falling || won) return;
     setFalling(true);
+    Sound.fall();
     boardRef.current?.fall(() => {
       setFalling(false);
       reset();

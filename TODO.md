@@ -81,16 +81,6 @@ The priority can change at any time; the ID never does.
   selection), and the board/rotation rendering
   ([Board.tsx](apps/app/src/components/Board.tsx) /
   [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
-- [P2] `CANGUPA-60` — Port the falling sound effect (`TILE-JUMPER-5`) to
-  `apps/app`: a `fall()` tone added to `src/audio/sound.ts`
-  (`CANGUPA-57`) and its WAV asset, played from
-  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx)'s
-  `handlePressEmpty` (`CANGUPA-58` — not `useBoard.ts`, which stayed a
-  pure state hook; the fall animation/timing and now its sound live
-  beside the hop animation/`Sound.jump()` call, both already there)
-  alongside the sink-and-fade animation. Blocked on both `CANGUPA-57`
-  (the `Sound` module) and `CANGUPA-58` (the fall handler it hooks
-  into).
 - [P2] `CANGUPA-61` — Port the joey-in-pouch art (`TILE-JUMPER-6`) to
   `apps/app`: add the same joey (two ears, a round head, two eyes, a
   nose) to [Kangaroo.tsx](apps/app/src/components/Kangaroo.tsx)'s

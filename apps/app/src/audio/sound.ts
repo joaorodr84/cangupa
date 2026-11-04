@@ -9,6 +9,7 @@ import { createAudioPlayer } from 'expo-audio';
 
 const jumpSource = require('../../assets/sounds/jump.wav');
 const winSource = require('../../assets/sounds/win.wav');
+const fallSource = require('../../assets/sounds/fall.wav');
 
 let enabled = true;
 
@@ -21,6 +22,7 @@ export function setEnabled(value: boolean): void {
 // piling up players never torn down while the move it's tied to finishes.
 const jumpPlayer = createAudioPlayer(jumpSource);
 const winPlayer = createAudioPlayer(winSource);
+const fallPlayer = createAudioPlayer(fallSource);
 
 function replay(player: ReturnType<typeof createAudioPlayer>): void {
   if (!enabled) return;
@@ -34,4 +36,8 @@ export function jump(): void {
 
 export function win(): void {
   replay(winPlayer);
+}
+
+export function fall(): void {
+  replay(fallPlayer);
 }

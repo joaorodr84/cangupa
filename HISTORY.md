@@ -734,6 +734,12 @@ the web version, wired into `PlayableBoard.tsx`'s move handler (not
 `BoardScreen.tsx`'s first-clear-only progress effect) so it fires on every
 move that leaves the level cleared, matching `ui.js`'s own behaviour.
 
+CANGUPA-60 continues the series, porting the falling sound effect
+(`TILE-JUMPER-5`): a new `fall()` export in `src/audio/sound.ts`, backed by a
+`fall.wav` rendered by `tools/gen-sounds.js` matching the web version's
+300→70Hz sawtooth glide exactly, wired into `PlayableBoard.tsx`'s
+`handlePressEmpty` right before the sink-and-fade animation starts.
+
 ---
 
 ## Patterns, and what's still open
