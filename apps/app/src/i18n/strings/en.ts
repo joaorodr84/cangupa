@@ -75,6 +75,7 @@ export const en: Strings = {
     language: 'Language',
     followDevice: 'Follow the device',
   },
+  collection: 'Base',
   packs: [
     {
       name: 'Meadow',

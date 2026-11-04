@@ -9,6 +9,7 @@ describe('pack text', () => {
     ['English', en],
     ['Portuguese', pt],
   ])('%s has a name and a blurb for every pack', (_label, strings) => {
+    expect(strings.collection.trim()).not.toBe('');
     expect(strings.packs).toHaveLength(PACKS.length);
     strings.packs.forEach((pack) => {
       expect(pack.name.trim()).not.toBe('');
