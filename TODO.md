@@ -66,3 +66,29 @@ The priority can change at any time; the ID never does.
   just one. Touches the generator (re-verifying/regenerating levels as
   needed), the solver (a shortest-path method alongside `solve()`), and
   the ported level data ([levels.ts](apps/app/src/game/levels.ts)).
+- [P2] `CANGUPA-56` — Replace the `apps/app` level set (CANGUPA-12,
+  [levels.ts](apps/app/src/game/levels.ts)) with 50 newly-generated
+  levels organized into size-based packs:
+  - Square packs (3×3, 4×4, 5×5, 6×6, and up).
+  - Rectangular packs (3×4, 4×5, and up).
+  - Exact size list and levels-per-pack still TBD.
+  - Every level must fill its full bounding box — no entirely empty row
+    or column.
+  - A rectangular level's board auto-rotates to whichever orientation
+    (portrait/landscape) best fits the device's current orientation,
+    rather than being generated in one fixed shape. Owner-confirmed:
+    this is part of the same task, not a follow-on.
+
+  Owner-confirmed: this replaces the existing 50 levels outright — a
+  breaking change to the saved `Progress` shape, since it's keyed by
+  level index into the old list — rather than adding a second set
+  alongside it. Touches the generator
+  ([level-generator.js](apps/web-classic/tools/level-generator.js)'s
+  `randomWalk`/`generateLevel`, which currently allows empty
+  rows/columns and has no notion of packs), the ported level data
+  (reshaped from one flat list into pack-grouped data), the levels
+  screen ([LevelsScreen.tsx](apps/app/src/components/LevelsScreen.tsx),
+  CANGUPA-20/46, built around one flat 50-level grid and needs pack
+  selection), and the board/rotation rendering
+  ([Board.tsx](apps/app/src/components/Board.tsx) /
+  [BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)).
