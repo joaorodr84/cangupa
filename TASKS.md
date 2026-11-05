@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-83`**
+**Next ID to assign: `CANGUPA-84`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -26,6 +26,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-72 | P2 | The hint solver (`Game.solve`) can run out of memory or take many seconds on some big levels turned the other way for a portrait screen, so pressing Hint could hang the app. Found while testing CANGUPA-69: of the 100 turned levels in packs 8 to 10 (frozen, from CANGUPA-56), the plain depth-first search blows past 400,000 positions on 50 and one run ended in `Set maximum size exceeded`. Trying the move with the fewest onward options first (tested, not applied) solves 95 of them but 5 still fail and the slowest takes 14 seconds. Packs 1 to 5 solve in at most 37 ms in either orientation, pack 6 in about 1.2 s. Options: a better search (pruning, not just ordering), solving off the UI thread, or storing each level's solution in packs.json | open | — |
 | CANGUPA-78 | P4 | Let players earn an extra hint by watching a reward video, building on CANGUPA-54's hint balance. Unscoped: which ad network/SDK, platform availability (the web has no rewarded-video SDK), and app-store review requirements aren't decided yet | open | — |
 | CANGUPA-79 | P4 | Let players buy hints in an in-app store, building on CANGUPA-54's hint balance. Unscoped: store listing, pricing, and which in-app-purchase SDK (App Store/Play Store) to use aren't decided yet | open | — |
+| CANGUPA-83 | P2 | Remove the `jumps` setting (the two-tile jump toggle) from both apps — it isn't optional in practice: `tools/pack-plan.js`'s `jump` range is nonzero from pack 1 (Meadow) on, and `gen-packs.js` solves every pack's levels with jumps enabled, so turning the setting off can already strand a player on a level that needs a jump to finish. Touches `apps/web-classic/js/config.js` (`DEFAULT_SETTINGS.jumps`, saved in localStorage), `game.js` (`rules.jumps` branches in `legalMoves`/`inMoveShape`), `ui.js`'s settings UI, and `README.md`'s "(can be switched off in settings)" line; and `apps/app`'s `state/settings.ts`/`useSettings.ts`, `components/SettingsScreen.tsx`, and the `jumps` string in `i18n/strings/en.ts`/`pt.ts`. Breaking change to both apps' saved settings shape | open | — |
 ## Done
 
 | ID | Pri | Task | Status | Date | Commit |
