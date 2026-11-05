@@ -25,9 +25,13 @@ const MOVES = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 //              a tile that has been visited twice is nudged towards its third
 //   arrows     how many one-visit tiles (not the start, not the last) become arrow tiles. An arrow
 //              takes the direction the walk leaves its tile by, so the walk stays a valid solution
-function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0 }, rand) {
+//   gates      how many one-visit tiles (not the start, not already an arrow) become Gate tiles
+//              (CANGUPA-104). A Gate takes the direction the walk enters its tile by, so the walk
+//              stays a valid solution — the mirror of how an arrow takes its exit direction.
+function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, gates = 0 }, rand) {
   const visits = new Map(); // cell index -> times landed on
   const exits = new Map();  // cell index -> the direction (index into MOVES) the walk first left it by
+  const entries = new Map(); // cell index -> the direction (index into MOVES) the walk first entered it by
   let x = (rand() * width) | 0, y = (rand() * height) | 0;
   const start = y * width + x;
   visits.set(start, 1);
@@ -58,6 +62,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     for (const o of options) { if ((roll -= o.weight) <= 0) { pick = o; break; } }
 
     if (!exits.has(y * width + x)) exits.set(y * width + x, pick.k);
+    if (!entries.has(pick.i)) entries.set(pick.i, pick.k);
     if (visits.get(pick.i) === 1) doubleCount++;
     visits.set(pick.i, (visits.get(pick.i) || 0) + 1);
     x = pick.nx; y = pick.ny;
@@ -73,12 +78,22 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     for (const i of candidates.slice(0, arrows)) arrowAt.set(i, '><v^'[exits.get(i)]); // MOVES is in the order right, left, down, up
   }
 
+  // Gate tiles (CANGUPA-104): some of the tiles visited once and entered by a move, excluding
+  // any already an arrow (a tile cannot be both), in a random order.
+  const gateAt = new Map();
+  if (gates > 0) {
+    const candidates = [...entries.keys()].filter(i => i !== start && visits.get(i) === 1 && !arrowAt.has(i));
+    for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
+    for (const i of candidates.slice(0, gates)) gateAt.set(i, 'RLDU'[entries.get(i)]); // MOVES is in the order right, left, down, up
+  }
+
   const rows = [];
   for (let r = 0; r < height; r++) {
     let row = '';
     for (let c = 0; c < width; c++) {
       const i = r * width + c, count = visits.get(i) || 0;
-      row += !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
+      row += !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : gateAt.has(i) ? gateAt.get(i)
+        : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
     }
     rows.push(row);
   }

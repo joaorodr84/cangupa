@@ -155,32 +155,22 @@ The priority can change at any time; the ID never does.
   investigation first since it decides the shape of the fix. Once
   decided, consider whether DigiSpin's own shell has the same
   hardcoded-back inconsistency and would benefit from the same fix.
-- [P2] `CANGUPA-104` — Implement the Gate tile in the engine and
-  generator: a tile that can only be *landed on* from one side (the
-  other three closed to it), leaving it is unrestricted once there —
-  the mirror of the Signpost/arrow tile's exit-side restriction
-  (`CANGUPA-69`). Named and coloured (raspberry red) by `CANGUPA-87`;
-  see [docs/tile-ideas.md](docs/tile-ideas.md)'s idea #22 for the
-  rule/engine/generator sketch. Needed before `CANGUPA-88` can
-  generate any Gate levels: today it has no level character, no
-  `legalMoves` rule in `game.js`/`board.ts`, no solver-key impact
-  (none needed — which side is open is fixed per tile, not stateful,
-  so it doesn't change the position the way a switch/gate pair would),
-  and no generator-walk support in `tools/level-generator.js`/
-  `tools/pack-generator.js`. Scoped to the mechanic itself, not any
-  shipped level — `CANGUPA-88` is where it actually appears in a pack.
 - [P2] `CANGUPA-88` — Archive packs 7 through 10's (Mesa, Gorge,
   Plateau, Outback) current `frozen: true` levels — the same way
   `MEADOW_V1_LEVELS` kept Meadow's superseded levels aside for
   `CANGUPA-82` — and rebuild all four as fresh sections around the new
-  Gate tile (`CANGUPA-87` settled its name/colour: raspberry red),
-  following the same teaching ramp packs 1-6 already use in
+  Gate tile (`CANGUPA-87` settled its name/colour: raspberry red;
+  `CANGUPA-104` built the mechanic itself), following the same
+  teaching ramp packs 1-6 already use in
   [pack-plan.js](tools/pack-plan.js). Owner-confirmed scope: all four
   packs are redesigned, not just 7-9 — Outback is not left untouched.
-  Blocked on the Gate tile actually existing in the engine and
-  generator — it has no character, no `legalMoves` rule, no
-  solver-key impact, and no generator-walk support today. None of
-  that is built by this task; it is `CANGUPA-104`'s job.
+  `CANGUPA-104` gave `tools/level-generator.js`'s `randomWalk` a
+  `gates` option (mirroring its existing `arrows` one) that places
+  solvable Gate tiles in a walk, but `tools/pack-generator.js` (the
+  rotation/mirroring in `variants()`, `hasKinds()`, `buildPool()`'s
+  pool-building) has no Gate support yet — wiring that up, and
+  `pack-plan.js`'s actual plan entries for packs 7-10, is this task's
+  own job, not already done.
 - [P4] `CANGUPA-89` — Full audit of `apps/app` (the Expo/React Native
   app) for bugs, improvements, and performance issues. Deliberately
   broad and unscoped: the existing Jest suite (796 tests) and `tsc

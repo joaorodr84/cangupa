@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { canonical, fillsBox } = require('./pack-generator.js');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
+const { makeRng, randomWalk, verifyLevel } = require('./level-generator.js');
 
 // rules
 let g = new Game(['S1.', '.2.']);
@@ -73,6 +74,38 @@ g = new Game(['^S']);
 assert.strictEqual(g.dir[0], 3);                     // ^ points up
 assert.ok(new Game(['S>1']).solve());                // a level with an arrow can still be cleared
 assert.strictEqual(new Game(['S>1']).start, 0);      // an arrow is never the start
+
+// a Gate tile (`R L D U`, CANGUPA-104): one visit, and it can only be ENTERED by moving the way
+// it names — the mirror of an arrow's exit restriction, checked on arrival instead of departure.
+// 'SL1': (1,0) is a Gate only enterable moving left (from the right); stepping onto it from the
+// start (moving right) must fail, but jumping past it to (2,0) and then stepping back (moving
+// left) must succeed.
+g = new Game(['SL1']);
+assert.strictEqual(g.max[1], 1);
+assert.strictEqual(g.gate[1], 1);                    // 1 is left
+assert.deepStrictEqual(to(g), [[2, 0]]);             // only the jump past the gate, not the step onto it
+g.play({ x: 2, y: 0 });                              // jump over the gate
+assert.deepStrictEqual(to(g), [[1, 0]]);             // now moving left: entering the gate is legal
+const gatePath = g.solve();
+assert.ok(gatePath);                                 // clearing still works once past the gate
+gatePath.forEach(m => g.play(m));
+assert.ok(g.won);
+assert.strictEqual(new Game(['SL1']).start, 0);      // a Gate is never the start
+
+// the generator's own Gate support (CANGUPA-104): a walk that places Gate tiles must still
+// produce a solvable level, the same guarantee arrows already have. Not shipped in any pack yet
+// (CANGUPA-88) -- this only proves the walk-marking logic itself is self-consistent.
+{
+  const rand = makeRng(42);
+  let sawGate = 0;
+  for (let n = 0; n < 200; n++) {
+    const rows = randomWalk({ width: 5, height: 5, steps: 14, doubles: 0, jump: .3, gates: 2 }, rand);
+    if (!rows) continue;
+    if (/[RLDU]/.test(rows.join(''))) sawGate++;
+    verifyLevel(rows); // throws if the walk's own path does not clear the level
+  }
+  assert.ok(sawGate > 150, `expected most of 200 walks to place a Gate tile, saw ${sawGate}`);
+}
 
 // levels
 LEVELS.forEach((rows, i) => {

@@ -1018,6 +1018,61 @@ tooling available in this environment.
 
 ---
 
+## Era 34 — Nov 5 (continued): the Gate tile lands in the engine, with no level using it yet
+
+CANGUPA-87 named and coloured Gate (raspberry red) as the mirror of the
+existing Signpost/arrow tile (CANGUPA-69): a Signpost can only be *left*
+in the direction it points, a Gate can only be *entered* by moving in
+the direction it names. CANGUPA-104 builds that mechanic for real, in
+both apps plus the level generator, while deliberately shipping no level
+that uses it — that's left to CANGUPA-88.
+
+A new `R L D U` level character parallels the arrow tile's `> < v ^`,
+same `DIRS` ordering (right/left/down/up), one visit, never the start —
+gate characters simply aren't in the start-character list, the same
+parsing rule arrows already used. A new `gate`/`this.gate` `Int8Array`
+parallels the existing `dir` array: `gate[i]` is the one direction of
+travel a move is allowed to land on tile `i` with, -1 for every other
+tile. `legalMoves()` now also rejects a candidate move whose direction
+doesn't match the destination tile's `gate` value, checked on arrival —
+the mirror of the existing check that rejects a move whose direction
+doesn't match the *current* tile's `dir` value, checked on departure.
+`inMoveShape()` needed no change — it stays purely geometric and unaware
+of gates, the same as it's already unaware of arrows, so a gate-blocked
+tap still counts as "in move shape" and falls instead of silently doing
+nothing. No solver-key change either: which side is open is fixed per
+tile (static board data, not mutable game state), so `solve()`/
+`countSolutions()`'s existing `pos + cells` memo key already covered it,
+same as arrows needed none. `apps/web-classic/js/game.js` and
+`apps/app/src/game/board.ts` both got this identically.
+
+`tools/level-generator.js`'s `randomWalk` gained a `gates` option
+mirroring its existing `arrows` one. A new `entries` map (the mirror of
+the existing `exits` map, which already records the direction each tile
+was first *left* by) records the direction each tile was first
+*entered* by. Up to `gates` single-visit, non-start tiles — excluding
+any already picked as an arrow, since a tile can't be both — are marked
+with the `RLDU` character matching that entry direction, so a walk that
+places Gate tiles is still guaranteed a valid solution: the walk's own
+path already used exactly that direction to get there.
+
+Deliberately left untouched, for CANGUPA-88 to pick up: `tools/
+pack-generator.js` (its `variants()`/`canonical()` rotation-and-mirroring
+logic has no Gate-turning support yet, the way `turnArrow` handles
+arrows; `hasKinds()`/`kindsOf()` don't know about gates; `buildPool()`
+has no `gates` option wired through), `tools/pack-plan.js` (no pack
+actually requests gates), `tools/gen-packs.js`, and `apps/app/src/game/
+orient.ts` (screen-orientation turning) — none of it is exercised yet
+since no real level contains a Gate tile.
+
+One commit. Verified with `node tools/test.js` (new rules assertions
+mirroring the existing arrow ones, plus a 200-trial check that
+`randomWalk({ gates: 2 })` always produces a solvable level), `npx tsc
+--noEmit` clean in `apps/app`, and the full `apps/app` Jest suite green
+(793 tests, up from 790 — three new Gate-tile tests in `board.test.ts`).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
