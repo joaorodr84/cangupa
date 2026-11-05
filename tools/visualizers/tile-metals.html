@@ -1,0 +1,423 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cangupa Tile Metals</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one table. Two colour columns draw every tile on the game's own board backgrounds (light and dark), taken from the theme package's `background`, so a tile can be judged as it will really look. */
+  :root {
+    --bg: #f3f5f4;
+    --surface: #ffffff;
+    --fg: #17252a;
+    --muted: #5d6d72;
+    --line: #d9e0de;
+    --accent: #0e6b68;
+    --font-display: "Figtree", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+    /* The game's background in each theme: @joaorodr84/themes LIGHT.background and DARK.background, which the app uses for its screen (bg2). Fixed on purpose: they do not follow this page's theme. */
+    --pit-light: #eef0f4;
+    --pit-dark: #0c0d10;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --accent: #4fc3bb; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --accent: #4fc3bb; color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-display);
+    padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 1040px; margin: 0 auto; display: grid; gap: 24px; }
+  main > * { min-width: 0; }
+  h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  .lede { margin: 6px 0 0; color: var(--muted); max-width: 65ch; line-height: 1.5; font-size: .95rem; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+
+  /* A swatch is drawn like a game tile: rounded, with a lip along the bottom. No outline: the game has none, so a tile that blends into its background should look like it does. */
+  .tile {
+    --c: #888; display: block; width: 44px; height: 44px; border-radius: 10px; background: var(--c);
+    /* the lip: 4px along the bottom only, as a hard shadow so the edge follows the rounded corners */
+    --lip: color-mix(in srgb, var(--c) 68%, black);
+    box-shadow: 0 4px 0 var(--lip);
+  }
+
+  /* dark tiles get a lighter edge than their centre: a darker one would vanish into the dark background */
+  .tile.lighter { --lip: color-mix(in srgb, var(--c) 70%, white); }
+
+  /* a patch of the game's board background with a tile on it */
+  /* display:grid only on the ladder's div patches: on a table cell it would take the cell out of the table layout */
+  div.pit { display: grid; place-items: center; }
+  td.pit .tile { margin: 0 auto; }
+  .pit.light { background: var(--pit-light); }
+  .pit.dark { background: var(--pit-dark); }
+  td.pit { width: 96px; padding: 14px 12px; border-bottom: 1px solid color-mix(in srgb, var(--pit-dark) 12%, var(--pit-light)); }
+  td.pit.dark { border-bottom-color: color-mix(in srgb, var(--pit-light) 8%, var(--pit-dark)); }
+  tbody tr:last-child td.pit { border-bottom: 0; }
+
+  td code { font-family: var(--font-data); font-size: .8rem; color: var(--muted); }
+
+  .wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; }
+  th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .tag { display: inline-block; font-size: .68rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
+  .tag.fic { color: var(--accent); border-color: var(--accent); }
+  .name { font-weight: 700; }
+  td.visits { font-family: var(--font-data); font-size: 1.1rem; font-weight: 500; text-align: center; }
+  th.visits { text-align: center; }
+  .sub { display: block; font-size: .8rem; color: var(--muted); margin-top: 2px; max-width: 34ch; }
+  .note { font-size: .82rem; color: var(--muted); max-width: 75ch; line-height: 1.55; }
+  .note code { font-family: var(--font-data); font-size: .78rem; }
+  /* examples of the visit marks: bigger tiles so the detail can be judged */
+  .tile.mk { width: 64px; height: 64px; border-radius: 12px; position: relative; box-shadow: 0 5px 0 var(--lip); flex: none; }
+  .mk .bar { position: absolute; left: 28%; width: 44%; height: 6px; border-radius: 99px; background: var(--m); }
+  .mk .num { position: absolute; inset: 0; display: grid; place-items: center; font: 700 34px/1 var(--font-display); color: var(--m); }
+  .markgrid { display: grid; grid-template-columns: 150px 1fr 1fr; min-width: 660px; }
+  .markgrid > div { border-bottom: 1px solid var(--line); }
+  .markgrid .lab { padding: 14px 12px; align-self: stretch; display: grid; align-content: center; gap: 2px; }
+  .markgrid .lab small { color: var(--muted); font-size: .75rem; font-family: var(--font-data); }
+  .markgrid .head { padding: 12px; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .strip { display: flex; gap: 14px; align-items: center; padding: 14px 16px 20px; }
+  .strip.light { background: var(--pit-light); }
+  .strip.dark { background: var(--pit-dark); }
+  .markgrid > div:nth-last-child(-n+3) { border-bottom: 0; }
+  .mk .dot { position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--m); transform: translate(-50%, -50%); }
+  /* a diagonal stroke runs from top right to bottom left: a vertical bar turned 24 degrees clockwise. Sizes are in % of the tile, so it scales from the 64px examples to the board */
+  .stroke { position: absolute; top: 50%; width: 7.5%; height: 50%; border-radius: 99px; background: var(--m); transform: translate(-50%, -50%) rotate(24deg); }
+  .cap { margin: 0 0 12px; color: var(--muted); font-size: .85rem; max-width: 80ch; line-height: 1.5; }
+  /* board mock: a big board on a phone-width screen */
+  .mock-controls { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 0 0 16px; }
+  .mock-controls label { font-size: .8rem; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .mock-controls select { font: inherit; font-size: .85rem; padding: 6px 8px; border-radius: 6px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+  .mock-controls select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .phones { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .phone-wrap { display: grid; gap: 8px; width: min(390px, 100%); min-width: 0; }
+  .phone-wrap h3 { margin: 0; font-size: .9rem; }
+  .phone { --g-bg: #eef0f4; --g-frame: #ffffff; --g-pit: #d9dee6; --g-ink: #1d1d1f; --g-muted: #62676f; --g-panel: #f7f8fa;
+    background: var(--g-bg); border-radius: 28px; padding: 16px; border: 1px solid var(--line); display: grid; gap: 14px; }
+  .phone.dark { --g-bg: #0c0d10; --g-frame: #15171c; --g-pit: #1c1f26; --g-ink: #e6e8ec; --g-muted: #8a909c; --g-panel: #181b21; }
+  .phone .hud { display: flex; align-items: center; justify-content: space-between; color: var(--g-ink); }
+  .phone .hud .back { width: 36px; height: 36px; border-radius: 50%; background: var(--g-panel); display: grid; place-items: center; }
+  .phone .hud .mid { text-align: center; font-weight: 700; line-height: 1.25; }
+  .phone .hud .mid small { display: block; font-weight: 400; color: var(--g-muted); font-size: .8rem; }
+  .phone .hud .tools { width: 92px; height: 36px; border-radius: 18px; background: var(--g-panel); }
+  .phone .frame { background: var(--g-frame); border-radius: 16px; padding: 12px; }
+  .phone .board { container-type: inline-size; background: var(--g-pit); border-radius: 8px; aspect-ratio: 8 / 7; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(7, 1fr); }
+  .bcell { position: relative; }
+  .face { position: absolute; top: 7%; left: 7%; right: 7%; bottom: 11%; border-radius: 8px; background: var(--c); border-bottom: 4px solid var(--lip); }
+  .t1 { --c: #4cc9f0; --lip: #1f7a99; }
+  .t2 { --c: #ffc857; --lip: #a8741a; --m: #3b2a06; }
+  .t3 { --c: #587790; --lip: color-mix(in srgb, #587790 68%, black); --m: #ffffff; }
+  .face .bar { position: absolute; left: 28%; width: 44%; height: 9%; border-radius: 99px; background: var(--m); }
+  .face .num { position: absolute; inset: 0; display: grid; place-items: center; font: 700 5.2cqw/1 var(--font-display); color: var(--m); }
+  .face .dot { position: absolute; width: 19%; aspect-ratio: 1; border-radius: 50%; background: var(--m); transform: translate(-50%, -50%); }
+  .t5 { --c: var(--arrow-face, #9d1057); --lip: var(--arrow-lip, #8a63e8); }
+  .face .arrow { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .roo { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .roo svg { width: 100%; height: 100%; display: block; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .8rem; color: var(--muted); margin: 14px 0 0; }
+  .legend-row span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-row i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; background: var(--c); }
+  /* arrow tile ideas */
+  .ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+  .idea { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; min-width: 0; }
+  .idea .txt { padding: 12px 14px 10px; display: grid; gap: 4px; }
+  .idea h3 { margin: 0; font-size: .95rem; }
+  .idea p { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.45; }
+  .idea small { font-family: var(--font-data); font-size: .72rem; color: var(--muted); }
+  .idea .patch { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 14px 14px; }
+  .idea .patch.light { background: var(--pit-light); }
+  .idea .patch.dark { background: var(--pit-dark); }
+  .idea .patch.small { padding-block: 10px; gap: 6px; }
+  .idea .patch .lab { font-family: var(--font-data); font-size: .66rem; color: #6b7280; margin-left: auto; }
+  .idea .patch.dark .lab { color: #8a909c; }
+  .idea svg { display: block; flex: none; }
+</style>
+
+<main>
+  <header>
+    <h1>Cangupa tile metals</h1>
+    <p class="lede">Candidate names and colours for tiles that need more than one visit. Each tile is drawn on the game's real background, light and dark, so you can judge how it reads in play.</p>
+  </header>
+
+  <div class="wrap">
+    <table>
+      <thead><tr><th>On light background</th><th>On dark background</th><th>Metal</th><th>Visits</th><th>Source</th><th>Game colour</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <section class="panel">
+    <h2>Visit marks: bars</h2>
+    <p class="cap">One bar per visit left, like the gold tile today. Each tile is shown as the visits run down, left to right. The gold row marked &ldquo;as in the game today&rdquo; uses the game's own mark, 28% black, which measures about 1.9:1 against the gold. The other rows use a colour that holds at least 4.7:1.</p>
+    <div class="wrap"><div class="markgrid" id="marks-bars"></div></div>
+  </section>
+
+  <section class="panel">
+    <h2>Visit marks: numbers</h2>
+    <p class="cap">The digit is the number of visits left. Same tiles and colours as above.</p>
+    <div class="wrap"><div class="markgrid" id="marks-numbers"></div></div>
+  </section>
+
+  <section class="panel">
+    <h2>Visit marks: dice dots</h2>
+    <p class="cap">Dots in the layout of a die: one in the centre, two on a diagonal, three on a diagonal. A small count like this is read at a glance, without counting. The Common tile is shown with one dot to see whether marking it too helps; today it has no mark.</p>
+    <div class="wrap"><div class="markgrid" id="marks-dice"></div></div>
+  </section>
+
+  <section class="panel" aria-label="Board mock">
+    <h2>A big board on a small screen</h2>
+    <p class="cap">An 8&times;7 board (the largest pack) at phone width, about 41 pixels per cell, with all three tiles and the four mark styles side by side. The tiles show visits <em>left</em>, so some are partly used. The kangaroo stands on the start tile, a Steel with two visits left, and covers its marks. Use the controls to try the dark theme and to see the board as people with colour blindness or low vision might.</p>
+    <div class="mock-controls">
+      <label for="mock-theme">Theme
+        <select id="mock-theme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label for="mock-arrow-style">Arrow style
+        <select id="mock-arrow-style"><option value="solid">Solid arrow</option><option value="edge">Edge triangles</option></select></label>
+      <label for="mock-vision">Vision
+        <select id="mock-vision">
+          <option value="none">Normal</option>
+          <option value="protan">Red-green: protanopia</option>
+          <option value="deutan">Red-green: deuteranopia</option>
+          <option value="tritan">Blue-yellow: tritanopia</option>
+          <option value="grey">Greyscale</option>
+          <option value="blur">Low vision: blurred</option>
+        </select></label>
+    </div>
+    <div class="phones" id="phones"></div>
+    <div class="legend-row">
+      <span style="--c:#4cc9f0"><i></i>Common, 1 visit, no mark</span>
+      <span style="--c:#ffc857"><i></i>Gold, 2</span>
+      <span style="--c:#587790"><i></i>Steel, 3</span>
+      <span style="--c:#9d1057"><i></i>Arrow, 1 visit, leave one way</span>
+    </div>
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+      <filter id="f-protan"><feColorMatrix type="matrix" values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"/></filter>
+      <filter id="f-deutan"><feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/></filter>
+      <filter id="f-tritan"><feColorMatrix type="matrix" values="1.255528 -0.076749 -0.178779 0 0  -0.078411 0.930809 0.147602 0 0  0.004733 0.691367 0.303900 0 0  0 0 0 1 0"/></filter>
+    </svg>
+  </section>
+
+  <section class="panel">
+    <h2>Visit marks: diagonal strokes</h2>
+    <p class="cap">Short strokes from top right to bottom left, one per visit left, side by side like tally marks. Same tiles and colours as the other examples. The Common tile is shown with one stroke to see whether marking it too helps; today it has no mark.</p>
+    <div class="wrap"><div class="markgrid" id="marks-strokes"></div></div>
+  </section>
+
+  <section class="panel" aria-label="Arrow tile">
+    <h2>Arrow tile</h2>
+    <p class="cap">A Common tile you can only leave in one direction, steps and jumps alike. The final design: a solid triangle tip on a thicker shaft, a raspberry tile and a white arrow. Shown in the four directions (right, down, left, up), on both game backgrounds, then again at board size (about 36 pixels). The second card is the edge-triangle version: the triangle sits on the edge you leave by.</p>
+    <div class="ideas" id="ideas"></div>
+  </section>
+
+  <p class="note">Backgrounds are the game's own, from the themes package's <code>background</code>: light <code>#eef0f4</code>, dark <code>#0c0d10</code>. They stay the same whichever theme this page is in. The board the tiles sit on is a little different: <code>#d9dee6</code> (light) and <code>#1c1f26</code> (dark), inside a frame of <code>#ffffff</code> and <code>#15171c</code>. The common tile and the gold tile are the game's current colours (<code>#4cc9f0</code> and <code>#ffc857</code>). Rows run from the most visits to the fewest.</p>
+</main>
+
+<script>
+  const ROWS = [
+    { name: 'Steel', visits: 3, colour: 'Steel grey-blue', hex: '#587790', note: 'A real metal, and hard. A mid-tone, so it shows on both boards.' },
+    { name: 'Gold', visits: 2, colour: 'Gold, as in the game', hex: '#FFC857', note: 'The two-visit tile.', plain: true },
+    { name: 'Common tile', visits: 1, colour: 'Sky blue, as in the game', hex: '#4CC9F0', note: 'The one-visit tile.', plain: true },
+  ];
+
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const tile = (hex, lighter) => { const t = el('span', 'tile' + (lighter ? ' lighter' : '')); t.style.setProperty('--c', hex); t.setAttribute('role', 'img'); t.setAttribute('aria-label', hex); return t; };
+
+  document.getElementById('rows').replaceChildren(...ROWS.map(r => {
+    const tr = document.createElement('tr');
+    const light = el('td', 'pit light'); light.append(tile(r.hex, r.lighterLip));
+    const dark = el('td', 'pit dark'); dark.append(tile(r.hex, r.lighterLip));
+    const name = el('td'); name.append(el('span', 'name', r.name));
+    if (r.note) name.append(el('span', 'sub', r.note));
+    const src = el('td'); src.append(el('span', 'tag' + (r.fic ? ' fic' : ''), r.fic ? r.fic : r.plain ? 'In game' : 'Real'));
+    const col = el('td'); col.append(document.createTextNode(r.colour), document.createElement('br'), el('code', null, r.hex));
+    const visits = el('td', 'visits', String(r.visits));
+    tr.append(light, dark, name, visits, src, col);
+    return tr;
+  }));
+
+  // Examples of the visit marks. m is the mark colour: whichever of near-black / near-white contrasts best with the face.
+  const MARKS = [
+    { name: 'Gold', sub: 'mark #3B2A06', hex: '#FFC857', m: '#3B2A06', states: [2, 1] },
+    { name: 'Steel', sub: 'mark #FFFFFF', hex: '#587790', m: '#FFFFFF', states: [3, 2, 1] },
+  ];
+  const GAME_GOLD = { name: 'Gold, as in the game today', sub: 'mark 28% black', hex: '#FFC857', m: 'rgba(0,0,0,.28)', states: [2] };
+  const markTile = (r, n, kind) => {
+    const t = el('span', 'tile mk' + (r.lighter ? ' lighter' : ''));
+    t.style.setProperty('--c', r.hex); t.style.setProperty('--m', r.m);
+    t.setAttribute('role', 'img'); t.setAttribute('aria-label', n + (n === 1 ? ' visit left' : ' visits left'));
+    if (kind === 'bars') {
+      const total = n * 6 + (n - 1) * 7, start = (64 - total) / 2;
+      for (let i = 0; i < n; i++) { const b = el('span', 'bar'); b.style.top = (start + i * 13) + 'px'; t.append(b); }
+    } else if (kind === 'strokes') {
+      for (let i = 0; i < n; i++) { const s = el('span', 'stroke'); s.style.left = (50 + (i - (n - 1) / 2) * 22) + '%'; t.append(s); }
+    } else if (kind === 'dice') {
+      const DICE = { 1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[27, 27], [50, 50], [73, 73]], 4: [[28, 28], [72, 28], [28, 72], [72, 72]] };
+      for (const [x, y] of DICE[n]) { const d = el('span', 'dot'); d.style.left = x + '%'; d.style.top = y + '%'; t.append(d); }
+    } else t.append(el('span', 'num', String(n)));
+    return t;
+  };
+  function renderMarks(id, kind, rows) {
+    const grid = document.getElementById(id);
+    const cells = [el('div', 'head', 'Tile'), el('div', 'head', 'On light background'), el('div', 'head', 'On dark background')];
+    for (const r of rows) {
+      const lab = el('div', 'lab'); lab.append(el('b', null, r.name), el('small', null, r.sub));
+      const mk = side => { const s = el('div', 'strip ' + side); s.append(...r.states.map(n => markTile(r, n, kind))); return s; };
+      cells.push(lab, mk('light'), mk('dark'));
+    }
+    grid.replaceChildren(...cells);
+  }
+  renderMarks('marks-bars', 'bars', [GAME_GOLD, ...MARKS]);
+  renderMarks('marks-numbers', 'numbers', MARKS);
+  const WITH_NORMAL = [{ name: 'Common tile', sub: 'mark #14171C (optional)', hex: '#4CC9F0', m: '#14171C', states: [1] }, ...MARKS];
+  renderMarks('marks-dice', 'dice', WITH_NORMAL);
+  renderMarks('marks-strokes', 'strokes', WITH_NORMAL);
+
+  // ---- arrow tile design ideas ------------------------------------------
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const sv = (tag, attrs = {}, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.append(e); return e; };
+  const lumOf = hex => { const n = parseInt(hex.slice(1), 16), f = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f((n >> 16) & 255) + 0.7152 * f((n >> 8) & 255) + 0.0722 * f(n & 255); };
+  const ratio = (a, b) => { const [x, y] = [lumOf(a), lumOf(b)].sort((p, q) => q - p); return ((x + 0.05) / (y + 0.05)).toFixed(1); };
+  const DIRS = [['right', 0], ['down', 90], ['left', 180], ['up', 270]];
+  // the lip follows the rule from the colour analysis: a lighter edge on dark tiles (luminance under 0.17), a darker one otherwise
+  const mixHex = (hex, to, p) => { const n = parseInt(hex.slice(1), 16), t = parseInt(to.slice(1), 16); const c = [16, 8, 0].map(s => Math.round(((n >> s) & 255) * (1 - p) + ((t >> s) & 255) * p)); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); };
+  const lipFor = hex => lumOf(hex) < 0.17 ? mixHex(hex, '#FFFFFF', 0.30) : mixHex(hex, '#000000', 0.32);
+  // the refined arrow: a solid triangle tip and a thicker shaft (10 against 7 before), drawn pointing right
+  const SOLID_ARROW = 'M11 23.5 H33 V11.5 L55 28.5 L33 45.5 V33.5 H11 Z';
+  // the arrow is drawn at 72% of its first size, turned about the tile's centre
+  const ARROW_SCALE = 0.72;
+  const arrowTransform = angle => 'rotate(' + angle + ' 32 28.5) translate(32 28.5) scale(' + ARROW_SCALE + ') translate(-32 -28.5)';
+  // the chosen design: a raspberry tile with a white arrow
+  const ARROW = { face: '#9D1057', ink: '#FFFFFF' };
+  function arrowTile(dirName, angle, size) {
+    const svg = sv('svg', { viewBox: '0 0 64 64', width: size, height: size, role: 'img', 'aria-label': 'Arrow tile, arrow pointing ' + dirName });
+    sv('rect', { x: 0, y: 5, width: 64, height: 57, rx: 12, fill: lipFor(ARROW.face) }, svg);
+    sv('rect', { x: 0, y: 0, width: 64, height: 57, rx: 12, fill: ARROW.face }, svg);
+    sv('path', { d: SOLID_ARROW, fill: ARROW.ink, stroke: ARROW.ink, 'stroke-width': 4, 'stroke-linejoin': 'round', transform: arrowTransform(angle) }, svg);
+    return svg;
+  }
+  (() => {
+    const card = el('div', 'idea'), txt = el('div', 'txt');
+    txt.append(el('h3', null, 'Raspberry, white arrow'),
+      el('p', null, 'Leave this tile one way only. 19.5 apart from the other tiles for colour-blind players. The tile is 5.9:1 on the light board and 2.1:1 on the dark one, where the lighter lip carries it.'),
+      el('small', null, ratio(ARROW.ink, ARROW.face) + ':1 arrow on the tile'));
+    const patch = (side, size, label) => { const p = el('div', 'patch ' + side + (size < 50 ? ' small' : '')); for (const [n, a] of DIRS) p.append(arrowTile(n, a, size)); p.append(el('span', 'lab', label)); return p; };
+    card.append(txt, patch('light', 64, 'light'), patch('dark', 64, 'dark'), patch('light', 36, 'board size'), patch('dark', 36, 'board size'));
+    document.getElementById('ideas').replaceChildren(card);
+  })();
+
+  // the edge-triangle version: a white triangle on each edge you may leave by. One for a single direction, two for a corner or a straight line
+  const EDGE_POINTS = { right: '45,14.5 59.5,28.5 45,42.5', left: '19,14.5 4.5,28.5 19,42.5', up: '18,19 32,4.5 46,19', down: '18,38 32,52.5 46,38' };
+  function edgeTile(dirs, size) {
+    const svg = sv('svg', { viewBox: '0 0 64 64', width: size, height: size, role: 'img', 'aria-label': 'Arrow tile, you may leave ' + dirs.join(' and ') });
+    sv('rect', { x: 0, y: 5, width: 64, height: 57, rx: 12, fill: lipFor(ARROW.face) }, svg);
+    sv('rect', { x: 0, y: 0, width: 64, height: 57, rx: 12, fill: ARROW.face }, svg);
+    for (const d of dirs) sv('polygon', { points: EDGE_POINTS[d], fill: ARROW.ink, stroke: ARROW.ink, 'stroke-width': 1.5, 'stroke-linejoin': 'round' }, svg);
+    return svg;
+  }
+  (() => {
+    const card = el('div', 'idea'), txt = el('div', 'txt');
+    txt.append(el('h3', null, 'Edge triangles'),
+      el('p', null, 'A white triangle on the edge you may leave by. With one direction per tile it can be large (15 units deep and 28 wide, against 10 and 16 when two had to fit on a tile). Same raspberry tile.'),
+      el('small', null, ratio(ARROW.ink, ARROW.face) + ':1 triangle on the tile'));
+    const SETS = [['One direction', [['right'], ['down'], ['left'], ['up']]]];
+    const rows = [];
+    for (const [label, sets] of SETS) for (const [side, size, tag] of [['light', 64, label], ['dark', 64, label], ['light', 36, label + ', board size'], ['dark', 36, label + ', board size']]) {
+      const p = el('div', 'patch ' + side + (size < 50 ? ' small' : ''));
+      for (const dirs of sets) p.append(edgeTile(dirs, size));
+      p.append(el('span', 'lab', tag));
+      rows.push(p);
+    }
+    card.append(txt, ...rows);
+    document.getElementById('ideas').append(card);
+  })();
+
+  // ---- big board on a small screen --------------------------------------
+  const MOCK_LEVEL = ["S1111111", "11.11.11", "1111.111", ".11.11.1", "1.11111.", "11.11.11", "11111111"];
+  const ROO_SVG = "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\">\n  <g stroke=\"#5a3515\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\">\n    <ellipse cx=\"37\" cy=\"13\" rx=\"4.8\" ry=\"11\" transform=\"rotate(-14 37 13)\" fill=\"#d9954f\"/>\n    <ellipse cx=\"63\" cy=\"13\" rx=\"4.8\" ry=\"11\" transform=\"rotate(14 63 13)\" fill=\"#d9954f\"/>\n    <ellipse cx=\"37\" cy=\"14\" rx=\"1.9\" ry=\"7\" transform=\"rotate(-14 37 13)\" fill=\"#f3b9a0\" stroke=\"none\"/>\n    <ellipse cx=\"63\" cy=\"14\" rx=\"1.9\" ry=\"7\" transform=\"rotate(14 63 13)\" fill=\"#f3b9a0\" stroke=\"none\"/>\n    <path d=\"M50 38 C32 40 26 62 30 76 C34 88 66 88 70 76 C74 62 68 40 50 38 Z\" fill=\"#d9954f\"/>\n    <ellipse cx=\"29\" cy=\"76\" rx=\"9\" ry=\"13\" fill=\"#c98b4a\"/>\n    <ellipse cx=\"71\" cy=\"76\" rx=\"9\" ry=\"13\" fill=\"#c98b4a\"/>\n    <path d=\"M50 46 C38 48 36 66 40 78 C44 86 56 86 60 78 C64 66 62 48 50 46 Z\" fill=\"#f3d6a6\" stroke=\"none\"/>\n    <path d=\"M42 68 C46 74 54 74 58 68\" fill=\"none\" stroke=\"#a9733a\" stroke-width=\"1.8\"/>\n    <g stroke=\"#5a3515\" stroke-width=\"1.4\">\n      <ellipse cx=\"44.5\" cy=\"50\" rx=\"2.6\" ry=\"5.2\" transform=\"rotate(-18 44.5 50)\" fill=\"#e8a467\"/>\n      <ellipse cx=\"55.5\" cy=\"50\" rx=\"2.6\" ry=\"5.2\" transform=\"rotate(18 55.5 50)\" fill=\"#e8a467\"/>\n      <circle cx=\"50\" cy=\"57\" r=\"6.5\" fill=\"#dfa05a\"/>\n    </g>\n    <path d=\"M32 50 C26 54 26 60 30 64\" fill=\"none\" stroke-width=\"4.5\"/>\n    <path d=\"M68 50 C74 54 74 60 70 64\" fill=\"none\" stroke-width=\"4.5\"/>\n    <ellipse cx=\"50\" cy=\"26\" rx=\"17\" ry=\"15\" fill=\"#d9954f\"/>\n    <ellipse cx=\"50\" cy=\"32\" rx=\"9\" ry=\"7\" fill=\"#f3d6a6\" stroke=\"none\"/>\n    <path d=\"M14 94 C14 86 30 86 34 90 C36 96 30 98 22 98 C16 98 14 96 14 94 Z\" fill=\"#b57535\"/>\n    <path d=\"M86 94 C86 86 70 86 66 90 C64 96 70 98 78 98 C84 98 86 96 86 94 Z\" fill=\"#b57535\"/>\n  </g>\n  <circle cx=\"43\" cy=\"23\" r=\"2.6\" fill=\"#fff\" stroke=\"#5a3515\" stroke-width=\"1\"/>\n  <circle cx=\"57\" cy=\"23\" r=\"2.6\" fill=\"#fff\" stroke=\"#5a3515\" stroke-width=\"1\"/>\n  <circle cx=\"43.4\" cy=\"23.6\" r=\"1.3\" fill=\"#111\"/><circle cx=\"56.6\" cy=\"23.6\" r=\"1.3\" fill=\"#111\"/>\n  <ellipse cx=\"50\" cy=\"29.5\" rx=\"3.2\" ry=\"2.2\" fill=\"#3b2410\"/>\n  <path d=\"M50 31.5 V34.5 M46.5 35 C48.5 37 51.5 37 53.5 35\" fill=\"none\" stroke=\"#5a3515\" stroke-width=\"1.3\" stroke-linecap=\"round\"/>\n  <circle cx=\"47.8\" cy=\"56.5\" r=\"1\" fill=\"#3b2410\"/>\n  <circle cx=\"52.2\" cy=\"56.5\" r=\"1\" fill=\"#3b2410\"/>\n  <ellipse cx=\"50\" cy=\"59.3\" rx=\"1.3\" ry=\".9\" fill=\"#a9733a\"/>\n</svg>";
+  // tile type by reading order, cycled so every type shows up; visits left cycles per type
+  const CYCLE = [1, 1, 2, 3, 1, 1, 2, 1, 3, 1, 1, 2]; // the original pattern with each Katchin (4) turned into a Common tile (1), so Gold and Steel stay where they were
+  const LEFT = { 1: [1], 2: [2, 1], 3: [3, 2, 1] };
+  const DICE_POS = { 1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[27, 27], [50, 50], [73, 73]], 4: [[28, 28], [72, 28], [28, 72], [72, 72]] };
+  // arrow tiles: every third Common tile (not the start) becomes one, turning right, down, left, up in turn
+  const ARROWS = new Map();
+  const seen = { 1: 0, 2: 0, 3: 0 };
+  const MOCK_TILES = []; // [row, col, type, left]
+  let order = 0;
+  MOCK_LEVEL.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === '.') return;
+    let type = CYCLE[order++ % CYCLE.length], left;
+    if (ch === 'S') { type = 3; left = 2; } // the start tile: a Steel, already visited once
+    else { left = LEFT[type][seen[type]++ % LEFT[type].length]; }
+    MOCK_TILES.push([y, x, type, left]);
+  }));
+
+  const DIR_NAMES = ['right', 'down', 'left', 'up'], DIR_ANGLE = { right: 0, down: 90, left: 180, up: 270 };
+  // every third Common tile (not the start) is an arrow tile, turning right, down, left, up in turn
+  (() => { let n = 0, d = 0; for (const [y, x, type] of MOCK_TILES) if (type === 1 && !(y === 0 && x === 0) && n++ % 3 === 0) ARROWS.set(y + ',' + x, [DIR_NAMES[d++ % 4]]); })();
+  const EDGE_TRI = { right: '45,14.5 59.5,28.5 45,42.5', left: '19,14.5 4.5,28.5 19,42.5', up: '18,19 32,4.5 46,19', down: '18,38 32,52.5 46,38' };
+  let arrowStyle = 'solid';
+  // fill one arrow tile on the board in the chosen style: the solid arrow shows the first direction only, the edge triangles show every allowed one
+  function fillArrow(face) {
+    const dirs = face.dataset.dirs.split(',');
+    const s = sv('svg', { viewBox: '0 0 64 57', class: 'arrow', 'aria-hidden': 'true' });
+    if (arrowStyle === 'solid') sv('path', { d: SOLID_ARROW, fill: 'var(--arrow-ink, #fff)', stroke: 'var(--arrow-ink, #fff)', 'stroke-width': 4, 'stroke-linejoin': 'round', transform: arrowTransform(DIR_ANGLE[dirs[0]]) }, s);
+    else for (const d of dirs) sv('polygon', { points: EDGE_TRI[d], fill: 'var(--arrow-ink, #fff)', stroke: 'var(--arrow-ink, #fff)', 'stroke-width': 1.5, 'stroke-linejoin': 'round' }, s);
+    face.replaceChildren(s);
+  }
+  function markFace(face, kind, n) {
+    if (kind === 'bars') {
+      const total = n * 9 + (n - 1) * 8, start = (100 - total) / 2;
+      for (let i = 0; i < n; i++) { const b = el('span', 'bar'); b.style.top = (start + i * 17) + '%'; face.append(b); }
+    } else if (kind === 'numbers') face.append(el('span', 'num', String(n)));
+    else if (kind === 'strokes') { for (let i = 0; i < n; i++) { const s = el('span', 'stroke'); s.style.left = (50 + (i - (n - 1) / 2) * 22) + '%'; face.append(s); } }
+    else for (const [x, y] of DICE_POS[n]) { const d = el('span', 'dot'); d.style.left = x + '%'; d.style.top = y + '%'; face.append(d); }
+  }
+  function phone(kind, title) {
+    const wrap = el('div', 'phone-wrap'); wrap.append(el('h3', null, title));
+    const ph = el('div', 'phone'); ph.setAttribute('role', 'img'); ph.setAttribute('aria-label', title + ': an 8 by 7 board with Common, Gold and Steel tiles');
+    const hud = el('div', 'hud');
+    const back = el('div', 'back'); back.textContent = '←';
+    const mid = el('div', 'mid'); mid.append(document.createTextNode('Level 479'), el('small', null, 'Moves 1'));
+    hud.append(back, mid, el('div', 'tools'));
+    const frame = el('div', 'frame'), board = el('div', 'board');
+    const grid = {}; MOCK_TILES.forEach(t => grid[t[0] + ',' + t[1]] = t);
+    for (let y = 0; y < 7; y++) for (let x = 0; x < 8; x++) {
+      const cell = el('div', 'bcell'), t = grid[y + ',' + x];
+      if (t) {
+        const arrow = ARROWS.get(y + ',' + x);
+        const face = el('div', 'face t' + (arrow === undefined ? t[2] : 5));
+        if (arrow !== undefined) { face.dataset.dirs = arrow.join(','); fillArrow(face); }
+        else if (t[2] > 1) markFace(face, kind, t[3]);
+        cell.append(face);
+        if (y === 0 && x === 0) { const r = el('div', 'roo'); r.innerHTML = ROO_SVG; cell.append(r); }
+      }
+      board.append(cell);
+    }
+    frame.append(board); ph.append(hud, frame); wrap.append(ph);
+    return wrap;
+  }
+  const phonesEl = document.getElementById('phones');
+  phonesEl.append(phone('bars', 'Bars'), phone('numbers', 'Numbers'), phone('dice', 'Dice dots'), phone('strokes', 'Diagonal strokes'));
+  function applyMock() {
+    const dark = document.getElementById('mock-theme').value === 'dark';
+    phonesEl.querySelectorAll('.phone').forEach(p => p.classList.toggle('dark', dark));
+    phonesEl.style.setProperty('--arrow-face', ARROW.face); phonesEl.style.setProperty('--arrow-lip', lipFor(ARROW.face)); phonesEl.style.setProperty('--arrow-ink', ARROW.ink);
+    arrowStyle = document.getElementById('mock-arrow-style').value;
+    phonesEl.querySelectorAll('.face.t5').forEach(fillArrow);
+    const v = document.getElementById('mock-vision').value;
+    phonesEl.style.filter = v === 'none' ? '' : v === 'grey' ? 'grayscale(1)' : v === 'blur' ? 'blur(1.6px)' : 'url(#f-' + v + ')';
+  }
+  document.getElementById('mock-theme').addEventListener('change', applyMock);
+  document.getElementById('mock-vision').addEventListener('change', applyMock);
+  document.getElementById('mock-arrow-style').addEventListener('change', applyMock);
+  applyMock();
+
+</script>
+
+</body></html>

@@ -90,3 +90,291 @@ The priority can change at any time; the ID never does.
   the `jumps` string in
   [en.ts](apps/app/src/i18n/strings/en.ts)/[pt.ts](apps/app/src/i18n/strings/pt.ts).
   Breaking change to both apps' saved settings shape.
+- [P4] `CANGUPA-84` — Let some levels be completed in more than one
+  distinct, named way, instead of today's single solved/unsolved state —
+  e.g. a level offering "finish using the spiral path" and "finish
+  without using the spiral path" as two separate challenges on the same
+  board. Inspired by DigiSpin, which has levels completable through
+  multiple layouts. Pieces needed:
+  1. A named reference path to match or avoid.
+     [pack-designs.js](tools/pack-designs.js)'s `snake`/`spiral` walk
+     builders already generate exactly this (the same shapes used for
+     "designed" levels mixed into packs), so the shape data isn't new —
+     only using it as a *constraint* is.
+  2. A solver that can search for a solution that includes or excludes a
+     given path. Today `Game.solve` (hint lookup) and the generator's
+     `countSolutions` ([level-generator.js](tools/level-generator.js))
+     only ask "does *any* solution exist" / "how many" — neither is
+     constrained to a specific path, and an exclusion search (find *a*
+     solution, any solution, that never matches the named one) is a
+     different, likely more expensive, search than today's.
+  3. A way to grade a finished run against the chosen variant. No new
+     tracking is needed for this part: `Game.history`
+     ([game.js](apps/web-classic/js/game.js)) already records
+     `{pos, cells}` for every move in order, so the kangaroo's actual
+     path is already there — grading means comparing that recorded order
+     to the named path, not adding new instrumentation.
+  4. Per-level, per-variant progress and save data. Today a level is one
+     solved/unsolved bit; this needs that bit to become one per variant,
+     in both apps' save formats.
+  5. UI to present the available variants for a level and show which are
+     already completed.
+  Unscoped: which levels get this (all, or a curated few like a
+  milestone level 40), how many variants per level, whether it ships to
+  `apps/web-classic`, `apps/app`, or both, and how an exclusion-constraint
+  search stays fast on larger boards without just brute-forcing every
+  path. Parked until there's a concrete level and variant pair to
+  prototype against. Could also be a good fit for a daily-puzzle
+  feature — one shared level/variant per day, the same way `docs/tile-
+  ideas.md`'s "Daily level" idea already imagines (seeded from the
+  date).
+- [P3] `CANGUPA-85` — Add small previous/next level arrows below the
+  board on `apps/app`'s `BoardScreen`
+  ([BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)), porting
+  `apps/web-classic`'s existing `‹`/`›` toolbar buttons
+  ([index.html](apps/web-classic/index.html),
+  [ui.js](apps/web-classic/js/ui.js)). Previous is available except at
+  level 1; next is only available once the current level is done —
+  otherwise the next level is locked and the arrow is disabled or
+  hidden, same as web-classic's `next.disabled` check. `apps/app` already
+  has the lock logic (`isUnlocked`/`isDone` in
+  [progress.ts](apps/app/src/state/progress.ts)), used today only by
+  `LevelsScreen`'s grid; `BoardScreen` itself currently has no
+  "previous level" control at all, and "next" only appears inside the
+  win popup ([WinPopup.tsx](apps/app/src/components/WinPopup.tsx)) after
+  clearing the level, not as a persistent control.
+- [P2] `CANGUPA-86` — Investigate and decide `apps/app`'s back-navigation
+  model. [App.tsx](apps/app/App.tsx)'s `Shell` is one flat `panel` enum
+  (`home | board | levels | help | settings | stats`) with every "back"
+  a hardcoded `setPanel('x')` — there is no history stack. That already
+  shows a real inconsistency: `BoardScreen`'s `onBack` always goes to
+  `setPanel('home')` ([App.tsx:203](apps/app/App.tsx#L203)), but Board
+  has two legitimate entry points — Home's Play button, and Levels'
+  `onSelectLevel` → `goToLevel`
+  ([App.tsx:125-128](apps/app/App.tsx#L125-L128)) — so opening a level
+  from the Levels tab and tapping back lands on Home, not back on
+  Levels. Two candidate models:
+  1. **A true history stack** — track the actual sequence of screens
+     visited; back always pops to the literal previous one, like a
+     browser or Android back button.
+  2. **A fixed "came from" pointer per screen** — each transient screen
+     (Board, Help) remembers which tab launched it and returns there,
+     extending the pattern `openPack` already uses for the Levels tab's
+     own pack-grid/pack-list depth, rather than a general-purpose stack
+     for the whole app.
+  Leaning toward (2): Board and Help are one-level detail/modal screens
+  pushed on top of whichever footer tab was active
+  (`isFooterTab`/`showFooter`, [App.tsx:31-33](apps/app/App.tsx#L31-L33)
+  deliberately excludes them from the tab bar), not peers in a chain, so
+  a full arbitrary-depth stack risks a confusing bounce (Home → Board →
+  Help → Board → …) that doesn't match how a player thinks about the
+  app, for no real gain over a remembered pointer. Scoped as
+  investigation first since it decides the shape of the fix. Once
+  decided, consider whether DigiSpin's own shell has the same
+  hardcoded-back inconsistency and would benefit from the same fix.
+- [P4] `CANGUPA-87` — Give tile types a fixed, canonical colour
+  independent of the visual theme, and settle names/colours for two
+  tiles. Today a tile's colour comes from the selected theme
+  ([style.css](apps/web-classic/style.css)'s `--tile`/`--tile2` vary per
+  `data-theme` — `classic`'s common tile is already green, `sand`'s is
+  orange-red), so "the common tile is always blue" is itself a decision
+  to make tile-type colour a brand constant that themes no longer
+  override, not just a colour pick — needs deciding how that coexists
+  with the existing per-theme palette (do themes keep changing
+  background/frame/edge only, and leave tile colours alone?).
+  Two tiles to name and colour:
+  1. The existing one-way **arrow tile** (`ARROWS`/`dir` in
+     [game.js](apps/web-classic/js/game.js) — the rule is already
+     implemented, it has just never been rendered or shipped in a real
+     level). Renamed **Signpost**, coloured green — it reads as "go,"
+     and green isn't claimed by any other tile type.
+  2. A new, unimplemented tile: can only be *landed on* from one
+     direction, the mirror of the arrow tile's exit-side restriction.
+     Not in [docs/tile-ideas.md](docs/tile-ideas.md)'s existing list,
+     and distinct from that doc's Pillar idea (#16 — a true impassable
+     obstacle, not a tile). Named **Gate** rather than "wall," since
+     "wall" next to Pillar would read as impassable, when this tile is
+     still enterable from its one open side. Coloured raspberry red.
+  Common tile stays blue throughout. No engine/generator work scoped
+  yet for the Gate tile — this task is the naming/colour/vision
+  decision, not the implementation.
+- [P3] `CANGUPA-88` — Generate packs 7, 8 and 9 (Mesa, Gorge, Plateau)
+  around the new Gate tile from `CANGUPA-87`, following the same
+  teaching ramp packs 1-6 already use in
+  [pack-plan.js](tools/pack-plan.js):
+  - **Pack 7** — common tiles plus Gate only. Mirrors pack 5
+    (Billabong)'s "common + one new mechanic, nothing else" (`tiles:
+    [1]`, the mechanic as the only addition).
+  - **Pack 8** — Gate plus one metal, alternating gold and steel level
+    by level. Mirrors pack 6 (Ridge)'s `mixes` field (arrows alternating
+    with gold on one variant, steel on the next).
+  - **Pack 9** — Gate plus both metals together on the same level.
+    Mirrors pack 4 (Outcrop)'s combine step (`tiles: [1, 2, 3]`).
+  Pack 10 (Outback) is deliberately left out of this task's scope.
+  Blocked on:
+  1. `CANGUPA-87`'s naming/colour decision landing first.
+  2. The Gate tile actually existing in the engine and generator — it
+     has no character, no `legalMoves` rule, no solver-key impact, and
+     no generator-walk support today. None of that is built by this
+     task; it's a prerequisite for it.
+  3. An explicit decision to un-freeze and overwrite packs 7-9's
+     `frozen: true` levels in `pack-plan.js`/`tools/packs.json` — today
+     locked as a historical record that `CANGUPA-68`/`CANGUPA-69`
+     deliberately don't touch — rather than appending the new tile as
+     fresh packs after 10 instead. This task assumes the overwrite
+     approach; if taken, keep the superseded levels aside the way
+     `MEADOW_V1_LEVELS` did for Meadow's `CANGUPA-82` regeneration.
+- [P4] `CANGUPA-89` — Full audit of `apps/app` (the Expo/React Native
+  app) for bugs, improvements, and performance issues. Deliberately
+  broad and unscoped: the existing Jest suite (796 tests) and `tsc
+  --noEmit` already cover correctness of what's tested, so this is
+  about what those don't catch — real-device performance (board
+  render/animation cost on a big board, like packs 7-10's, bundle size,
+  startup time), UX rough edges, and anything else that isn't already
+  covered by a narrower, existing task. Should not duplicate `CANGUPA-72`
+  (hint-solver hangs on big levels) or `CANGUPA-80` (level-pack content
+  review) — those stay their own tasks. Expect this to get split into
+  concrete, scoped follow-ups once it actually runs, the way `CANGUPA-54`
+  was split into `CANGUPA-78`/`CANGUPA-79`.
+- [P4] `CANGUPA-90` — Add achievements. Nothing like this exists yet —
+  no engine or UI support, no tracked data beyond `apps/app`'s
+  `Progress` (`done`, `level`, `bestMoves` in
+  [progress.ts](apps/app/src/state/progress.ts)). Unscoped: what counts
+  as an achievement (level/pack milestones, no-hint/no-undo clears,
+  move-count records?), whether it's in-app only or wired to platform
+  services (Game Center on iOS, Google Play Games on Android), and
+  whether `apps/web-classic` gets it too or this is app-only.
+- [P3] `CANGUPA-91` — Think about what additional statistics the stats
+  page could show. Today
+  [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx) shows
+  exactly two rows — levels cleared and total (best) moves — backed by
+  `Progress`'s `done`/`bestMoves`
+  ([progress.ts](apps/app/src/state/progress.ts)). Most other candidate
+  stats aren't tracked yet and would need new fields: hints used (ties
+  to the parked `CANGUPA-54` hint balance), undos used, time played,
+  per-pack breakdown (cleared/best per pack rather than one global
+  total), longest streak of days played. Investigation only — figure
+  out which are worth tracking before adding fields to the saved
+  `Progress` shape.
+- [P1] `CANGUPA-92` — Set up App Store Connect submission for
+  `apps/app`: register/confirm the `com.joaorodr84.cangupa` bundle ID,
+  create the App Store Connect app record, and fill in
+  [eas.json](apps/app/eas.json)'s `submit.production` (today `{}` — no
+  Apple ID/ASC App ID/team ID set), so `eas submit` can run
+  non-interactively. Run at least one TestFlight build through
+  `eas build`'s existing `production` profile before attempting a
+  public submission.
+- [P1] `CANGUPA-93` — Write a privacy policy and host it at a public
+  URL, and fill in the App Store Connect "App Privacy" data-collection
+  questionnaire — both required by Apple before submission, and neither
+  exists yet (no privacy policy anywhere in the repo). Likely a short
+  policy: `apps/app` only stores progress/settings locally via
+  AsyncStorage ([storage.ts](apps/app/src/state/storage.ts)), nothing is
+  sent anywhere today, so the questionnaire should mostly come out
+  "data not collected" — but confirm against the actual code before
+  filing it, not from assumption.
+- [P2] `CANGUPA-94` — Produce the App Store listing content:
+  screenshots for each required device size, app description/subtitle/
+  keywords, support URL, category, and the age rating questionnaire.
+  Needs copy and screenshots decided before it's just execution — in
+  both Portuguese and English, matching the app's existing `en`/`pt`
+  localisation.
+- [P2] `CANGUPA-95` — Define `apps/app`'s own release/version process
+  and do the first bump toward a 1.0.0 App Store release. `CLAUDE.md`'s
+  "Releases" section only covers `apps/web-classic/package.json`'s
+  version today; `apps/app`'s [app.json](apps/app/app.json)/
+  [package.json](apps/app/package.json) version is still `0.1.0` (iOS
+  `buildNumber`/Android `versionCode` both `1`), with no documented
+  tagging convention of its own. Decide whether it shares
+  `apps/web-classic`'s `vX.Y.Z` tags or gets its own, and how
+  `eas.json`'s `production.autoIncrement` build numbering fits that.
+  Worth resolving `CANGUPA-72` (hint-solver hang on big levels) and at
+  least a pass of `CANGUPA-89` (full app audit) before, not after, the
+  first submission.
+- [P2] `CANGUPA-96` — Investigate a store structure to sell level packs,
+  or collections of packs, so the scaffolding exists before the first
+  App Store submission rather than being bolted on later. Today every
+  pack is free and gated only by progress
+  ([LevelPacksScreen.tsx](apps/app/src/components/LevelPacksScreen.tsx),
+  `isUnlocked` in [progress.ts](apps/app/src/state/progress.ts) — order,
+  not payment); nothing about packs, `PACK_SIZES`, or
+  [packs.ts](apps/app/src/game/packs.ts) currently distinguishes free
+  from paid content. Overlaps `CANGUPA-79` (buying hints), which already
+  flagged the in-app-purchase SDK choice (App Store/Play Store) as
+  unscoped — that decision, once made, likely serves both. Unscoped:
+  which packs/collections are free vs. paid, pricing, entitlement
+  storage and restore-purchase handling, and whether this blocks or
+  merely informs `CANGUPA-92`'s first submission. Investigation only —
+  no store, SDK, or paywall built here.
+- [P2] `CANGUPA-97` — Analyze visual accessibility. Concrete issue
+  already found: `CANGUPA-87`'s proposed tile colours (Signpost green,
+  Gate raspberry red) are exactly the pair hardest to tell apart under
+  red-green colour blindness (~8% of men) — tiles need to stay
+  distinguishable by shape too, the way Gold/Steel already are via a
+  dot-count overlay (`.tile.two::before`/`::after` in
+  [style.css](apps/web-classic/style.css)), not colour alone. Also
+  check: contrast across every theme (`style.css`'s per-`data-theme`
+  `--ink`/`--muted`/`--tile` sets, some combinations untested for
+  contrast), and whether `apps/app`'s text respects OS
+  dynamic-type/font-scaling settings (unconfirmed). Investigation only,
+  but should land before `CANGUPA-87`/`CANGUPA-88` are built, not after.
+- [P3] `CANGUPA-98` — Analyze motor accessibility — maybe add multiple
+  ways of controlling the kangaroo. `apps/web-classic` already has two
+  input modes (tap/click a tile, and keyboard — `WASD`/arrow keys,
+  `KEYDIR` in [ui.js](apps/web-classic/js/ui.js), from `CANGUPA-66`);
+  `apps/app` has only one — tapping the exact destination tile
+  (`onPressTile` in
+  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx)), no
+  keyboard, external game-controller, or directional-pad alternative.
+  Investigate: a directional-pad control scheme (pick a direction, let
+  it resolve via `legalMoves` rather than requiring a precise tap),
+  external keyboard/MFi controller support on iOS, and adjustable
+  tap-target size.
+- [P3] `CANGUPA-99` — Analyze auditory accessibility/impairments.
+  [sound.js](apps/web-classic/js/sound.js) has three effects (`jump`,
+  `win`, `fall`), all gated by a `settings.sound` toggle that can mute
+  them entirely, and `fall()`'s tone is already timed to a `.falling`
+  CSS animation rather than standing alone — so the baseline (nothing
+  is sound-only) looks likely already met, given sound can already be
+  switched off completely in both apps. Verify that's actually true for
+  every cue in both apps (confirm `apps/app`'s sound settings behave
+  the same), rather than assuming it from the toggle existing.
+- [P3] `CANGUPA-100` — Investigate which other disability types are
+  worth a dedicated accessibility analysis, beyond the visual
+  (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones
+  already opened. Candidates to consider: cognitive/learning load (the
+  game already has no timer or fail state, which likely helps by
+  default — confirm), photosensitivity/seizure risk (check board/tile
+  animations for flashing or strobing), and situational constraints
+  (one-handed use, glare/bright-sunlight contrast — may already be
+  covered by `CANGUPA-97`). Scoping only — decide which deserve their
+  own task.
+- [P4] `CANGUPA-101` — Rebuild the rules page
+  ([HelpScreen.tsx](apps/app/src/components/HelpScreen.tsx), ported from
+  `apps/web-classic`'s `#help` aside). Today it's one static, flat
+  bullet list — step, jump, double (gold), steel, arrow, plus two
+  general notes — with no structure beyond that. No specific complaint
+  driving this yet; worth revisiting as new tile types (`CANGUPA-87`'s
+  Signpost/Gate, whatever follows) keep adding bullets to what is
+  currently a plain, unstructured list.
+- [P2] `CANGUPA-102` — Decide what happens when a new tile type is
+  presented to the player for the first time: let them keep playing and
+  learn it from context, or redirect to a tutorial. Today's only
+  mechanism is [gen-packs.js](tools/gen-packs.js)'s `INTRO_PLAIN` — a
+  pack's first 4 levels after introducing a tile (`intro:
+  'gold'/'steel'/'arrow'` in [pack-plan.js](tools/pack-plan.js)) simply
+  lack that tile, easing in by level design alone; there's no popup,
+  forced tutorial level, or any other explicit callout. Decide if
+  that's enough, or if some tiles — especially a genuinely new mechanic
+  like `CANGUPA-87`'s Gate, rather than "a tile that needs one more
+  visit" — warrant an explicit tutorial moment. Feeds both
+  `CANGUPA-101` (the rules page) and `CANGUPA-103` (per-tile tutorials)
+  — decide this first.
+- [P2] `CANGUPA-103` — Make a tutorial for each tile type we currently
+  have — Common, Gold, Steel, and Arrow/Signpost (`CANGUPA-87`'s
+  rename), noting Arrow/Signpost exists in the engine (`ARROWS`/`dir`
+  in [game.js](apps/web-classic/js/game.js)) but has never actually
+  shipped in a level, so there's a real question of whether it counts
+  as one of "those we have now." Blocked on `CANGUPA-102`'s decision —
+  this only makes sense once "redirect to a tutorial" is the chosen
+  answer, rather than the current level-design-only approach.
