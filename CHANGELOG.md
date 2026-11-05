@@ -7,6 +7,22 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-05
+
+### Fixed
+
+- Meadow (the app's first level pack)'s easiest levels no longer solve as a
+  single forced walk with no real choice in it — the pack's difficulty
+  floor was raised so every one of its 50 levels now has at least one
+  actual decision point, while still keeping them varied from each other.
+- Fixed a level-generation bug that could leave a level's starting tile one
+  visit short of its real strength as a Gold (2-visit) or Steel (3-visit)
+  tile, since the game always spends one of its visits just having the
+  kangaroo stand there at the start. The Creek, Gully, Outcrop and Ridge
+  packs were regenerated to fix the 79 affected levels found in them; the
+  same issue in 67 levels across the frozen Mesa, Gorge, Plateau and
+  Outback packs is left for a follow-up.
+
 ## 2026-11-04
 
 ### Added

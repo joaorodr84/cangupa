@@ -41,8 +41,11 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
         const nx = x + dx * dist, ny = y + dy * dist, i = ny * width + nx;
         if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
         const seen = visits.get(i) || 0;
-        // a tile needs at most `maxVisits` visits, and only `doubles` tiles may need more than one
-        if (seen >= maxVisits || (seen === 1 && doubleCount >= doubles)) continue;
+        // a tile needs at most `maxVisits` visits, and only `doubles` tiles may need more than one.
+        // The start is never one of those: reset() in board.js/board.ts spends one of its visits
+        // just for standing there, so a start revisited into a Gold or Steel tile would begin
+        // already one visit short of full strength (CANGUPA-82) -- it always stays a 1-visit tile.
+        if (seen >= maxVisits || (seen === 1 && doubleCount >= doubles) || (i === start && seen >= 1)) continue;
         // jumps are rarer than steps; revisiting a tile is rarer than a fresh one, except a
         // tile stuck on two visits when two is not allowed: that one is wanted again
         const weight = (dist === 2 ? jump : 1 - jump) * (seen ? .35 : 1) * (noTwo && seen === 2 ? 3 : 1);

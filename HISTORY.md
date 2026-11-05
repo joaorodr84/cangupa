@@ -897,6 +897,43 @@ One commit. Verified with `node tools/test.js`.
 
 ---
 
+## Era 31 — Nov 5: the Meadow ramp and a start-tile bug found reviewing the packs for CANGUPA-80
+
+CANGUPA-82 fixed two problems found while reviewing `apps/app`'s level
+packs for CANGUPA-80. First, Meadow (pack 1)'s easiest third of levels had
+pathBits 0 — a forced walk with no actual decision anywhere in the solve,
+which felt like no puzzle at all. Raising `tools/pack-plan.js`'s `steps`
+floor to .80 fixed that (floor 0 to 3) but shrank the usable board pool
+from 137 to 53, and drawing 50 levels from only 53 boards made the pack
+look repetitive — nearly every level the same near-full board with the
+start shuffled. .65 was kept instead: 113 boards, floor raised to pathBits
+1 rather than all the way to 3, no more zero-decision levels, and real
+variety restored. Still a 3x3 board, Common tiles only, 50 levels. The
+superseded (pre-CANGUPA-82) Meadow levels are kept as an unused
+`MEADOW_V1_LEVELS` export in `pack-plan.js` rather than deleted, in case
+they're useful later.
+
+Second, `tools/level-generator.js`'s `randomWalk` could revisit a level's
+start cell later in the walk and turn it into a 2- or 3-visit tile (Gold or
+Steel) — but `board.ts`'s `reset()` always spends one of the start tile's
+visits just for standing there, so that tile began one visit short of its
+real strength (a Gold tile showing 1 stroke instead of 2, Steel showing 2
+instead of 3). An audit of all 500 shipped levels found 146 affected.
+`randomWalk` now never lets the start cell be revisited, and every
+non-frozen pack (Creek, Gully, Outcrop, Ridge) was regenerated to clear its
+79 affected levels. The remaining 67 live in the four frozen packs (Mesa,
+Gorge, Plateau, Outback) — `pack-plan.js` marks them `frozen: true` per
+CANGUPA-68/69's decision not to regenerate them, and this commit respects
+that rather than breaking it, leaving them as a known follow-up.
+`tools/packs.json`, `apps/app/src/game/packs.ts` and `tools/visualizers/`
+were regenerated to match.
+
+One commit. Verified with `node tools/test.js` (50 levels and 500 pack
+levels solvable) and the full `apps/app` Jest suite (796 tests), plus
+`npx tsc --noEmit` clean.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

@@ -13,6 +13,17 @@
 // Common tiles with none has only 37 distinct levels, too few for a pack of 50; with jumps
 // it has 137.
 //
+// Meadow's `steps` floor was raised from .60 to .65 (CANGUPA-82): the easiest third of
+// those 137 boards left several levels with pathBits 0 — not one single decision in the
+// whole solve, just a forced walk — which felt like no puzzle at all. .65 and .70 round to
+// the same minimum (6 of 9 tiles, steps is a share of the board rounded to a landing count),
+// so either gives the same pool: 113 boards, pathBits 1 to 8.17 — no more zero-decision
+// levels, and still close to the original 137 for variety. .75 or .80 raise the floor
+// further (to pathBits 3) but shrink the pool to 53, so close to all 50 levels come from
+// nearly the same handful of boards that they started looking the same; .65 was kept
+// instead, trading some of that steepness for a pack that still reads as 50 different
+// puzzles.
+//
 //   name         shown on the pack screen
 //   blurb        the idea the pack teaches
 //   width,height board size, landscape (width >= height)
@@ -36,7 +47,7 @@
 //   pool         random candidates measured for this pack; levels are picked from them
 const PACKS = [
   { name: 'Meadow',    blurb: 'Hop from tile to tile and visit each one once.',
-    width: 3, height: 3, steps: [.60, 1.0], jump: [0, .25],    tiles: [1],          pool: 4000 },
+    width: 3, height: 3, steps: [.65, 1.0], jump: [0, .25],    tiles: [1],          pool: 4000 },
   { name: 'Creek',     blurb: 'Jump over a missing tile. Gold tiles need two visits.',
     width: 4, height: 3, steps: [.55, .95], jump: [.15, .40],  tiles: [1, 2],       doubles: [0, .20],   intro: 'gold',  pool: 4000 },
   { name: 'Gully',     blurb: 'Steel tiles hold on for three visits.',
@@ -67,3 +78,60 @@ const LEVELS_PER_PACK = 50;
 const OVERLAP = 0.65;
 
 module.exports = { PACKS, LEVELS_PER_PACK, OVERLAP };
+
+// Meadow's 50 levels before CANGUPA-82 raised its steps floor from .60 to .80 for a
+// steeper ramp (pathBits 0-6.17, several with zero decisions at all). Not wired into
+// anything below -- kept only so this exact set can be reused later (a bonus pack, an
+// easier difficulty option, ...) instead of being lost to regeneration.
+const MEADOW_V1_LEVELS = [
+  ['..1', '.11', 'S1.'],
+  ['.11', '1.1', '.S.'],
+  ['.11', '11.', '..S'],
+  ['11.', '.S.', '1.1'],
+  ['1.S', '11.', '1..'],
+  ['S.1', '..1', '.11'],
+  ['.11', '11.', '1.S'],
+  ['1S.', '1.1', '.11'],
+  ['S1.', '.11', '1.1'],
+  ['.S1', '11.', '1.1'],
+  ['.11', '11S', '1..'],
+  ['1.1', '.11', '.1S'],
+  ['1S1', '11.', '..1'],
+  ['.11', '1S.', '11.'],
+  ['11S', '.11', '..1'],
+  ['..1', '11S', '.11'],
+  ['S11', '1.1', '1..'],
+  ['1.1', '11S', '..1'],
+  ['.11', '11S', '.1.'],
+  ['.11', '1S1', '..1'],
+  ['.11', '111', '..S'],
+  ['11.', '.11', '1S1'],
+  ['S11', '1.1', '11.'],
+  ['11.', '1S1', '.11'],
+  ['.11', 'S11', '11.'],
+  ['S11', '11.', '.11'],
+  ['S.1', '111', '11.'],
+  ['1S.', '111', '1.1'],
+  ['S11', '.11', '1.1'],
+  ['111', '..1', '11S'],
+  ['..1', '11S', '111'],
+  ['111', 'S11', '.1.'],
+  ['11.', '1S.', '111'],
+  ['111', '1..', '11S'],
+  ['1S1', '111', '1..'],
+  ['11S', '111', '1..'],
+  ['.11', 'S11', '.11'],
+  ['..S', '111', '111'],
+  ['.11', '111', '1S1'],
+  ['11.', '111', 'S11'],
+  ['S11', '111', '1.1'],
+  ['1S1', '111', '1.1'],
+  ['1.1', '1S1', '111'],
+  ['111', 'S11', '1.1'],
+  ['111', '1S1', '11.'],
+  ['S11', '1.1', '111'],
+  ['111', '1.S', '111'],
+  ['S11', '.11', '111'],
+  ['111', '111', '.1S'],
+  ['111', '111', '.S1'],
+];
