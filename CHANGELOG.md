@@ -27,6 +27,13 @@ Open work is listed in [TODO.md](TODO.md).
 - The app's help screen now explains the Gate tile, in English and
   Portuguese: "Gate tiles (raspberry) can only be entered through the edge
   where the triangle is."
+- The app's Rules screen is split into two labelled sections, "Moves" and
+  "Tiles" ("Jogadas" and "Casas" in Portuguese), instead of one flat list —
+  and each tile's line now shows a small colour swatch, taken from the
+  current theme, next to its description, so the page matches whatever
+  colours are actually on the board and works as a quick reference rather
+  than a wall of text. The screen now scrolls, since the new layout made it
+  taller.
 
 ### Changed
 

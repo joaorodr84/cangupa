@@ -21,6 +21,8 @@ export const pt: Strings = {
   help: {
     heading: 'Regras',
     intro: 'Pisa todas as casas para limpar o nível. Começas na casa marcada com o canguru.',
+    movesSection: 'Jogadas',
+    tilesSection: 'Casas',
     stepBold: 'Passo:',
     stepRest: ' move-te uma casa para cima, baixo, esquerda ou direita.',
     jumpBold: 'Salto:',

@@ -273,14 +273,6 @@ The priority can change at any time; the ID never does.
   (one-handed use, glare/bright-sunlight contrast — may already be
   covered by `CANGUPA-97`). Scoping only — decide which deserve their
   own task.
-- [P4] `CANGUPA-101` — Rebuild the rules page
-  ([HelpScreen.tsx](apps/app/src/components/HelpScreen.tsx), ported from
-  `apps/web-classic`'s `#help` aside). Today it's one static, flat
-  bullet list — step, jump, double (gold), steel, arrow, plus two
-  general notes — with no structure beyond that. No specific complaint
-  driving this yet; worth revisiting as new tile types (`CANGUPA-87`'s
-  Signpost/Gate, whatever follows) keep adding bullets to what is
-  currently a plain, unstructured list.
 - [P2] `CANGUPA-102` — Decide what happens when a new tile type is
   presented to the player for the first time: let them keep playing and
   learn it from context, or redirect to a tutorial. Today's only

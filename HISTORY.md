@@ -1130,6 +1130,43 @@ place, which had asserted the old, wrong "Back returns to the board"
 behavior, plus two new tests covering the Levels-tab and
 clear-progress entry points).
 
+## Era 36 — Nov 5 (continued): the rules page gets labelled sections and tile swatches
+
+CANGUPA-101 rebuilt `apps/app`'s rules page (`HelpScreen.tsx`, ported from
+`apps/web-classic`'s `#help` aside) out of one flat, undifferentiated
+bullet list — step, jump, a general note, then one bullet per tile kind
+added as each shipped (double/Gold and Steel from CANGUPA-68/69, Signpost,
+Gate from CANGUPA-88) plus two closing notes — that had simply kept
+growing in a straight line with nothing grouping it.
+
+The screen is now two labelled sections, reusing `SettingsScreen.tsx`'s own
+section-label styling (uppercase, letter-spaced, muted colour) for visual
+consistency with the rest of the app: "Moves" (Step, Jump, and the "you can
+only land where visits are left" note) and "Tiles" (one row per tile kind
+that actually exists today — Gold, Steel, Signpost, Gate). Common isn't
+given its own row — it's already covered by the Moves section and doesn't
+need a swatch to recognise. Each tile's row now carries a small colour
+swatch next to its text, read live from the palette (`palette.tile2`/
+`tile3`/`tileSignpost`/`tileGate`) rather than only describing the colour in
+words ("Gold tiles (yellow)..."), so the page works as an actual
+quick-reference a player can check against what's on their board, not just
+a wall of text to read once and forget. The screen is now wrapped in a
+`ScrollView` (was a plain `View`), since the new section structure makes
+the content taller than before.
+
+This also sets up where CANGUPA-103's per-tile tutorial content is decided
+to live — the same screen, reframed from a separate tutorial flow, per an
+explicit owner decision — and what a new Board HUD help icon (also
+CANGUPA-103, not part of this commit) will open.
+
+One commit. New i18n strings: `help.movesSection`/`help.tilesSection` in
+`types.ts`/`en.ts` ("Moves"/"Tiles") / `pt.ts` ("Jogadas"/"Casas").
+Verified with `npx tsc --noEmit` clean in `apps/app` and the full `apps/
+app` Jest suite green (802 tests, up from 800 — two new tests, one
+confirming the "Moves"/"Tiles" section labels render, one confirming each
+tile row's swatch, queried by a new `help-swatch-<kind>` testID, actually
+carries the right palette colour).
+
 ---
 
 ## Patterns, and what's still open

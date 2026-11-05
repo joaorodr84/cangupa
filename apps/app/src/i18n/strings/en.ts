@@ -24,6 +24,8 @@ export const en: Strings = {
   help: {
     heading: 'Rules',
     intro: 'Step on every tile to clear the level. You start on the tile marked with the kangaroo.',
+    movesSection: 'Moves',
+    tilesSection: 'Tiles',
     stepBold: 'Step:',
     stepRest: ' move one tile up, down, left or right.',
     jumpBold: 'Jump:',

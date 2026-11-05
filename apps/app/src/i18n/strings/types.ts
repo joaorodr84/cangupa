@@ -24,6 +24,11 @@ export interface Strings {
   readonly help: {
     readonly heading: string;
     readonly intro: string;
+    // Section labels (CANGUPA-101): grouping the flat rule list the way
+    // SettingsScreen.tsx groups its own rows, so new tile types keep adding
+    // their own line under "Tiles" instead of growing one undifferentiated list.
+    readonly movesSection: string;
+    readonly tilesSection: string;
     readonly stepBold: string;
     readonly stepRest: string;
     readonly jumpBold: string;
