@@ -68,7 +68,7 @@ test('pressing the back arrow calls onBack', async () => {
 
   await renderScreen({ level: ['S1.'], onBack });
 
-  await fireEvent.press(screen.getByLabelText('Back to home'));
+  await fireEvent.press(screen.getByLabelText('Back'));
   expect(onBack).toHaveBeenCalledTimes(1);
 });
 

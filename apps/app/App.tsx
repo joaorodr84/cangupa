@@ -32,6 +32,16 @@ function isFooterTab(panel: Panel): panel is FooterTab {
   return panel === 'home' || panel === 'levels' || panel === 'stats' || panel === 'settings';
 }
 
+// Board and Help are one-level detail screens pushed on top of whichever
+// footer tab was active, not peers in a general-purpose history stack
+// (CANGUPA-86) — Board has two real entry points (Home's Play button,
+// Levels' onSelectLevel), so a hardcoded "back always goes home" stranded a
+// level opened from Levels on the wrong tab. `returnTo` remembers which tab
+// launched the current Board/Help, the same way `openPack` already does for
+// the Levels tab's own pack-grid/pack-list depth, instead of a full stack —
+// which would risk a confusing bounce (Home → Board → Help → Board → …) for
+// screens that are never more than one level deep.
+
 // The app root. Settings and progress are read before anything is shown, so
 // no panel flashes the wrong theme or the wrong level while they load —
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
@@ -111,6 +121,10 @@ function Shell({
   // list without using its own back arrow is tapping the Levels tab again
   // while already on it.
   const [openPack, setOpenPack] = useState<number | null>(null);
+  // Which footer tab Board/Help should return to (CANGUPA-86) — set by
+  // `goTo` every time either opens, defaulting to 'home' since that's the
+  // first screen there is anything to return from at all.
+  const [returnTo, setReturnTo] = useState<FooterTab>('home');
   const palette = paletteFor(settings.themeMode, useColorScheme());
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
   // Where Play opens into, not just progress.level (the last level played):
@@ -119,9 +133,19 @@ function Shell({
   // played out of order.
   const playLevel = firstUnsolvedLevel(progress, LEVELS.length);
 
+  // Opens Board or Help, remembering the footer tab to return to. `panel` is
+  // always a footer tab here: this is only ever called from a footer tab's
+  // own content (Home, Levels, Settings), never from Board or Help itself.
+  const goTo = (target: 'board' | 'help') => {
+    if (isFooterTab(panel)) {
+      setReturnTo(panel);
+    }
+    setPanel(target);
+  };
+
   const goToLevel = (levelIndex: number) => {
     onChangeLevel(levelIndex);
-    setPanel('board');
+    goTo('board');
   };
 
   const selectFooterTab = (tab: FooterTab) => {
@@ -140,7 +164,7 @@ function Shell({
         palette={palette}
         levelNumber={playLevel + 1}
         onPlay={() => goToLevel(playLevel)}
-        onRules={() => setPanel('help')}
+        onRules={() => goTo('help')}
       />
     );
   } else if (panel === 'levels') {
@@ -175,7 +199,7 @@ function Shell({
         onChangeLanguage={onChangeLanguage}
         onClearProgress={() => {
           onClearProgress();
-          setPanel('board');
+          goTo('board');
         }}
       />
     );
@@ -194,7 +218,7 @@ function Shell({
         levelNumber={currentLevel + 1}
         totalLevels={LEVELS.length}
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
-        onBack={() => setPanel('home')}
+        onBack={() => setPanel(returnTo)}
         onNext={() => onChangeLevel(currentLevel + 1)}
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
       />
@@ -212,14 +236,15 @@ function Shell({
           { paddingTop: insets.top + 16, paddingBottom: showFooter ? 0 : insets.bottom + 16 },
         ]}
       >
-        {/* Redundant on 'settings' and on the whole Levels tab (CANGUPA-73):
-            the pack list is a footer tab's own top-level view, already one
-            tap from Home, and an open pack now carries its own back button
-            in LevelsScreen's own header row (CANGUPA-76) instead of this
-            floating one. */}
-        {panel !== 'board' && panel !== 'home' && panel !== 'settings' && panel !== 'levels' && (
+        {/* Help is the only panel that still needs this floating button: every
+            footer tab is one tap from another via FooterNav (no "back" concept
+            of its own — CANGUPA-86 fixed `stats` wrongly showing this too,
+            alongside the footer nav, left over from before it was a tab), an
+            open pack carries its own back button in LevelsScreen's own header
+            row (CANGUPA-76) instead, and Board has BoardHud's own (CANGUPA-35). */}
+        {panel === 'help' && (
           <Pressable
-            onPress={() => setPanel('board')}
+            onPress={() => setPanel(returnTo)}
             accessibilityRole="button"
             accessibilityLabel={t.common.back}
             style={[styles.backButton, { backgroundColor: palette.panel }]}

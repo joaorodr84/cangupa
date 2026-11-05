@@ -62,7 +62,7 @@ test('pressing the back arrow calls onBack', async () => {
   const onBack = jest.fn();
   await renderHud({ status, onBack });
 
-  await fireEvent.press(screen.getByLabelText('Back to home'));
+  await fireEvent.press(screen.getByLabelText('Back'));
   expect(onBack).toHaveBeenCalledTimes(1);
 });
 

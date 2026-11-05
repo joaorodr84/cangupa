@@ -50,7 +50,7 @@ export const pt: Strings = {
     gameComplete: 'Acabaste o jogo!',
   },
   boardHud: {
-    backToHome: 'Voltar ao início',
+    back: 'Voltar',
     undo: 'Desfazer',
     restart: 'Reiniciar',
     hint: 'Dica',

@@ -34,7 +34,7 @@ test('starts on the home screen, and the board screen has its own way back to it
   expect(await screen.findByText('Moves 0')).toBeTruthy();
   expect(screen.queryByText('Play')).toBeNull();
 
-  await fireEvent.press(screen.getByLabelText('Back to home'));
+  await fireEvent.press(screen.getByLabelText('Back'));
   expect(await screen.findByText('Play')).toBeTruthy();
 });
 
@@ -95,14 +95,39 @@ test("a pack's own back arrow returns to the pack list, and reopening the Levels
   expect(screen.queryByTestId('level-1')).toBeNull();
 });
 
-test('the home screen\'s Rules button opens the rules screen, and Back returns to the board', async () => {
+test('the home screen\'s Rules button opens the rules screen, and Back returns to home (CANGUPA-86)', async () => {
   await render(<App />);
 
   await fireEvent.press(await screen.findByText('Rules'));
   expect(screen.getByText('Rules')).toBeTruthy();
 
   await fireEvent.press(screen.getByLabelText('‹ Back'));
+  expect(await screen.findByText('Play')).toBeTruthy();
+});
+
+test('opening a level from the Levels tab and pressing Back returns there, not home (CANGUPA-86)', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-levels'));
+  await fireEvent.press(screen.getByTestId('pack-1'));
+  await fireEvent.press(screen.getByTestId('level-1'));
   expect(await screen.findByText('Level 1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByLabelText('Back'));
+  expect(screen.getByTestId('level-1')).toBeTruthy();
+  expect(screen.queryByText('Play')).toBeNull();
+});
+
+test('clearing progress from settings opens the board, and Back returns to settings (CANGUPA-86)', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-settings'));
+  await fireEvent.press(screen.getByText('Clear progress'));
+  await fireEvent.press(screen.getByText('Yes'));
+  expect(await screen.findByText('Level 1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByLabelText('Back'));
+  expect(await screen.findByText('Appearance')).toBeTruthy();
 });
 
 test('the footer nav opens the settings screen, and changing the theme mode is reflected on return', async () => {

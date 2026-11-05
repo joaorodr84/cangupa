@@ -7,8 +7,11 @@
 // about controlling the board, not what happens once it's cleared. The
 // level-navigation ‹/› buttons this toolbar used to carry are gone outright —
 // › became WinPopup's "Próximo nível", and CANGUPA-35 gives ‹ its own
-// replacement: a plain arrow back to the home screen, upper-left, the same
-// corner DigiSpin's board header puts its own back arrow in.
+// replacement: a plain arrow back, upper-left, the same corner DigiSpin's
+// board header puts its own back arrow in. CANGUPA-86 made where it actually
+// goes track whichever footer tab opened this level (Home or Levels), not
+// always home — the label stayed generic ("Back") rather than naming a
+// destination that varies.
 //
 // CANGUPA-53 reworked the row again, closer still to DigiSpin's own layout:
 // the status text became a centred "Level N" / "Moves M" pair (DigiSpin's
@@ -42,7 +45,7 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
       <Pressable
         onPress={onBack}
         accessibilityRole="button"
-        accessibilityLabel={t.boardHud.backToHome}
+        accessibilityLabel={t.boardHud.back}
         style={[styles.sideButton, { backgroundColor: palette.panel }]}
       >
         <BackArrow color={palette.ink} />

@@ -53,7 +53,7 @@ export interface Strings {
     readonly gameComplete: string;
   };
   readonly boardHud: {
-    readonly backToHome: string;
+    readonly back: string;
     readonly undo: string;
     readonly restart: string;
     readonly hint: string;

@@ -55,6 +55,16 @@ Open work is listed in [TODO.md](TODO.md).
   the correct direction when the board is turned to fit a portrait phone
   screen — previously this case wasn't handled and could have stranded the
   player on a level that got turned.
+- The app's back button on the board screen now returns to wherever the
+  level was actually opened from — Home or the Levels tab — instead of
+  always landing on Home. The same fix applies to the back button on the
+  Help/Rules screen. Its accessibility label no longer claims "Back to
+  home" ("Voltar ao início") now that it doesn't always go there — it's
+  just "Back" ("Voltar").
+- The app's Stats tab no longer shows a stray floating back button
+  alongside its normal footer navigation; Stats is reached and left
+  through the footer tabs like Home, Levels and Settings, so it never
+  needed one.
 
 ### Removed
 

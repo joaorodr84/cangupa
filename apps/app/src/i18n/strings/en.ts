@@ -53,7 +53,7 @@ export const en: Strings = {
     gameComplete: "You've finished the game!",
   },
   boardHud: {
-    backToHome: 'Back to home',
+    back: 'Back',
     undo: 'Undo',
     restart: 'Restart',
     hint: 'Hint',

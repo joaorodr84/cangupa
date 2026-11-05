@@ -1081,6 +1081,57 @@ project's three-tile-kind limit.
 
 ---
 
+## Era 35 — Nov 5 (continued): the back button learns which tab a level or the rules screen was opened from
+
+CANGUPA-86 decided between two fixes for a real inconsistency in `apps/
+app`'s `Shell` (`App.tsx`): a true history stack (back always returns to
+the literal previous screen) versus a fixed per-screen "came from"
+pointer. Board and Help are one-level detail screens pushed on top of
+whichever footer tab was active, not peers in an arbitrary-depth chain,
+so a general stack risked a confusing bounce (Home → Board → Help →
+Board → …) for no real gain over just remembering which tab launched
+the current screen — the pointer won. Before the fix, `BoardScreen`'s
+`onBack` always went to `setPanel('home')`, but Board has two legitimate
+entry points, Home's Play button and Levels' `onSelectLevel`, so opening
+a level from the Levels tab and pressing back landed on Home instead of
+back on Levels.
+
+A new `returnTo: FooterTab` state (default `'home'`) and a `goTo(target:
+'board' | 'help')` helper capture the current `panel` into `returnTo`
+immediately before switching panels — `panel` is always a footer tab at
+each of this helper's three call sites, since Board/Help can only be
+entered from a footer tab's own content. `goToLevel`, the home screen's
+`onRules`, and the settings screen's clear-progress handler all go
+through `goTo` now instead of calling `setPanel('board')`/`setPanel(
+'help')` directly; `BoardScreen`'s `onBack` and the floating back button
+both read `returnTo` instead of a hardcoded target.
+
+Two smaller bugs sitting right next to this one got fixed while touching
+the same code. The floating back button's exclusion condition had never
+excluded `'stats'`, even though Stats is a footer tab with no "back"
+concept of its own — so viewing Stats showed both the footer nav and
+this floating button at once, the button wired to a stale, wrong target
+(`setPanel('board')`) left over from before Stats became a footer tab;
+the condition simplified to `panel === 'help'`, the only panel that
+genuinely still needs it, since Board has had its own back arrow since
+CANGUPA-35, an open pack its own since CANGUPA-76, and every footer tab
+is one tap from another via FooterNav. `BoardHud`'s back button was also
+accessibility-labelled "Back to home" (`boardHud.backToHome`) even on
+levels that no longer return to home — renamed to `boardHud.back`/
+"Back" (`en.ts`) / "Voltar" (`pt.ts`) across `types.ts`/`en.ts`/`pt.ts`/
+`BoardHud.tsx` and every test referencing the old label text.
+
+One commit. `TODO.md`'s own suggestion to check whether DigiSpin's shell
+has the same hardcoded-back inconsistency became the new `CANGUPA-105`,
+tracked but not done here since DigiSpin lives in a different repo.
+Verified with `npx tsc --noEmit` clean in `apps/app` and the full `apps/
+app` Jest suite green (800 tests, up from 798 — one stale test fixed in
+place, which had asserted the old, wrong "Back returns to the board"
+behavior, plus two new tests covering the Levels-tab and
+clear-progress entry points).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

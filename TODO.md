@@ -134,35 +134,14 @@ The priority can change at any time; the ID never does.
   "previous level" control at all, and "next" only appears inside the
   win popup ([WinPopup.tsx](apps/app/src/components/WinPopup.tsx)) after
   clearing the level, not as a persistent control.
-- [P2] `CANGUPA-86` — Investigate and decide `apps/app`'s back-navigation
-  model. [App.tsx](apps/app/App.tsx)'s `Shell` is one flat `panel` enum
-  (`home | board | levels | help | settings | stats`) with every "back"
-  a hardcoded `setPanel('x')` — there is no history stack. That already
-  shows a real inconsistency: `BoardScreen`'s `onBack` always goes to
-  `setPanel('home')` ([App.tsx:203](apps/app/App.tsx#L203)), but Board
-  has two legitimate entry points — Home's Play button, and Levels'
-  `onSelectLevel` → `goToLevel`
-  ([App.tsx:125-128](apps/app/App.tsx#L125-L128)) — so opening a level
-  from the Levels tab and tapping back lands on Home, not back on
-  Levels. Two candidate models:
-  1. **A true history stack** — track the actual sequence of screens
-     visited; back always pops to the literal previous one, like a
-     browser or Android back button.
-  2. **A fixed "came from" pointer per screen** — each transient screen
-     (Board, Help) remembers which tab launched it and returns there,
-     extending the pattern `openPack` already uses for the Levels tab's
-     own pack-grid/pack-list depth, rather than a general-purpose stack
-     for the whole app.
-  Leaning toward (2): Board and Help are one-level detail/modal screens
-  pushed on top of whichever footer tab was active
-  (`isFooterTab`/`showFooter`, [App.tsx:31-33](apps/app/App.tsx#L31-L33)
-  deliberately excludes them from the tab bar), not peers in a chain, so
-  a full arbitrary-depth stack risks a confusing bounce (Home → Board →
-  Help → Board → …) that doesn't match how a player thinks about the
-  app, for no real gain over a remembered pointer. Scoped as
-  investigation first since it decides the shape of the fix. Once
-  decided, consider whether DigiSpin's own shell has the same
-  hardcoded-back inconsistency and would benefit from the same fix.
+- [P3] `CANGUPA-105` — Check whether DigiSpin's own app shell has the
+  same hardcoded-"back always goes home" inconsistency `CANGUPA-86`
+  just fixed in `apps/app` (a screen reachable from more than one tab,
+  whose back button ignored which one actually launched it), and port
+  the same "came from" pointer fix there if so. Lives in DigiSpin's own
+  repo, not this one — `CANGUPA-86`'s own note flagged it as worth
+  checking once a fix landed here, but doing it is out of this
+  session's scope.
 - [P4] `CANGUPA-89` — Full audit of `apps/app` (the Expo/React Native
   app) for bugs, improvements, and performance issues. Deliberately
   broad and unscoped: the existing Jest suite (796 tests) and `tsc
