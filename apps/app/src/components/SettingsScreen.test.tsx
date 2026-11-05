@@ -11,7 +11,6 @@ function renderScreen(overrides: Partial<Parameters<typeof SettingsScreen>[0]> =
     settings: DEFAULT_SETTINGS,
     palette,
     onChangeThemeMode: jest.fn(),
-    onChangeJumps: jest.fn(),
     onChangeHints: jest.fn(),
     onChangeAnim: jest.fn(),
     onChangeSound: jest.fn(),
@@ -40,16 +39,15 @@ test('marks the current theme mode choice as selected', async () => {
 });
 
 test('toggling a switch reports its new value', async () => {
-  const onChangeJumps = jest.fn();
-  const { result } = renderScreen({ onChangeJumps, settings: { ...DEFAULT_SETTINGS, jumps: true } });
+  const onChangeHints = jest.fn();
+  const { result } = renderScreen({ onChangeHints, settings: { ...DEFAULT_SETTINGS, hints: true } });
   await result;
 
-  fireEvent(screen.getByTestId('toggle-jumps'), 'valueChange', false);
-  expect(onChangeJumps).toHaveBeenCalledWith(false);
+  fireEvent(screen.getByTestId('toggle-hints'), 'valueChange', false);
+  expect(onChangeHints).toHaveBeenCalledWith(false);
 });
 
 test.each([
-  ['toggle-jumps', 'jumps'] as const,
   ['toggle-hints', 'hints'] as const,
   ['toggle-anim', 'anim'] as const,
   ['toggle-sound', 'sound'] as const,

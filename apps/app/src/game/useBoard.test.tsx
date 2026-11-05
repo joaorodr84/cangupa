@@ -3,14 +3,14 @@ import { act, renderHook } from '@testing-library/react-native';
 import { useBoard } from './useBoard';
 
 test('starts at the level start, facing front', async () => {
-  const { result } = await renderHook(() => useBoard(['S1.'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S1.'], true));
   expect(result.current.game.x).toBe(0);
   expect(result.current.game.y).toBe(0);
   expect(result.current.facing).toEqual({ face: 'front', flip: false });
 });
 
 test('a tap on a legal destination plays the move and updates facing', async () => {
-  const { result } = await renderHook(() => useBoard(['S1.'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S1.'], true));
 
   let played = false;
   await act(async () => {
@@ -23,7 +23,7 @@ test('a tap on a legal destination plays the move and updates facing', async () 
 });
 
 test('a tap outside the legal destinations is a no-op', async () => {
-  const { result } = await renderHook(() => useBoard(['S1.'], { jumps: false }, true));
+  const { result } = await renderHook(() => useBoard(['S1.'], true));
 
   let played = false;
   await act(async () => {
@@ -35,7 +35,7 @@ test('a tap outside the legal destinations is a no-op', async () => {
 });
 
 test('no move plays once the level is won', async () => {
-  const { result } = await renderHook(() => useBoard(['S1'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S1'], true));
 
   await act(async () => {
     result.current.move(1, 0);
@@ -50,12 +50,12 @@ test('no move plays once the level is won', async () => {
 });
 
 test('hints off reports no hinted tiles even though moves are legal', async () => {
-  const { result } = await renderHook(() => useBoard(['S1.'], { jumps: true }, false));
+  const { result } = await renderHook(() => useBoard(['S1.'], false));
   expect(result.current.tiles.every((t) => !t.hint)).toBe(true);
 });
 
 test('tracks moves played and tiles remaining', async () => {
-  const { result } = await renderHook(() => useBoard(['S11'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S11'], true));
   expect(result.current.moves).toBe(0);
   expect(result.current.remaining).toBe(2);
 
@@ -67,7 +67,7 @@ test('tracks moves played and tiles remaining', async () => {
 });
 
 test('undo restores the previous position and can undo reports false once exhausted', async () => {
-  const { result } = await renderHook(() => useBoard(['S11'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S11'], true));
   expect(result.current.canUndo).toBe(false);
 
   await act(async () => {
@@ -83,7 +83,7 @@ test('undo restores the previous position and can undo reports false once exhaus
 });
 
 test('reset returns to the start with an empty history', async () => {
-  const { result } = await renderHook(() => useBoard(['S11'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S11'], true));
 
   await act(async () => {
     result.current.move(1, 0);
@@ -95,7 +95,7 @@ test('reset returns to the start with an empty history', async () => {
 });
 
 test('hint sets the tip to the solver\'s first move', async () => {
-  const { result } = await renderHook(() => useBoard(['S11'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S11'], true));
 
   await act(async () => {
     result.current.hint();
@@ -107,8 +107,8 @@ test('hint sets the tip to the solver\'s first move', async () => {
 });
 
 test('hint reports a dead end when no solution remains, and a move clears it', async () => {
-  // S.1 with jumps off: the only tile left is unreachable, so solve() fails.
-  const { result } = await renderHook(() => useBoard(['S.1'], { jumps: false }, true));
+  // S..1: the remaining tile sits three tiles away, past jump range, so solve() fails.
+  const { result } = await renderHook(() => useBoard(['S..1'], true));
 
   await act(async () => {
     result.current.hint();
@@ -118,7 +118,7 @@ test('hint reports a dead end when no solution remains, and a move clears it', a
 });
 
 test('a played move clears a pending hint and hintFailed', async () => {
-  const { result } = await renderHook(() => useBoard(['S11'], { jumps: true }, true));
+  const { result } = await renderHook(() => useBoard(['S11'], true));
 
   await act(async () => {
     result.current.hint();

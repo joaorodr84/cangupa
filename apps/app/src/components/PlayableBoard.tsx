@@ -78,11 +78,10 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // sits there (CANGUPA-66: Board reports a cell under a tap on true
   // background too, not just on an existing tile). A target off that
   // step/jump shape (CANGUPA-65 — a tile not on the same row/column, too
-  // far, or a jump-distance one with jumps off — or CANGUPA-66's own
-  // position, distance zero) was never a move attempt at all, so it does
-  // nothing. `target` is undefined only before Board's first layout, when
-  // it can't yet say which cell a tap on background landed on — falls in
-  // place then, same as it always has.
+  // far — or CANGUPA-66's own position, distance zero) was never a move
+  // attempt at all, so it does nothing. `target` is undefined only before
+  // Board's first layout, when it can't yet say which cell a tap on
+  // background landed on — falls in place then, same as it always has.
   const handlePressEmpty = (target?: { x: number; y: number }) => {
     if (falling || won) return;
     if (target && !game.inMoveShape(target.x, target.y)) return;

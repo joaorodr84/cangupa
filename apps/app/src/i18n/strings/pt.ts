@@ -64,7 +64,6 @@ export const pt: Strings = {
     light: 'Claro',
     dark: 'Escuro',
     gameplay: 'Jogabilidade',
-    jumps: 'Saltos de duas casas',
     hints: 'Destacar jogadas possíveis',
     anim: 'Animações',
     sound: 'Som',

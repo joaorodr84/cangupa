@@ -16,9 +16,7 @@ const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 const ARROWS = '><v^';
 
 class Game {
-  // `rules` is read live: { jumps }
-  constructor(rows, rules = { jumps: true }) {
-    this.rules = rules;
+  constructor(rows) {
     this.h = rows.length;
     this.w = Math.max(...rows.map(r => r.length));
     this.max = new Uint8Array(this.w * this.h);
@@ -59,15 +57,15 @@ class Game {
   get won() { return this.remaining() === 0; }
   get stuck() { return !this.won && this.legalMoves().length === 0; }
 
-  // Steps of one tile, plus jumps of two when the rule is on. Standing on an
-  // arrow tile, only the way it points.
+  // Steps of one tile, plus jumps of two. Standing on an arrow tile, only
+  // the way it points.
   legalMoves(cells = this.cells, pos = this.pos) {
     const px = pos % this.w, py = (pos / this.w) | 0;
     const out = [];
     for (let k = 0; k < DIRS.length; k++) {
       if (this.dir[pos] >= 0 && k !== this.dir[pos]) continue;
       const [dx, dy] = DIRS[k];
-      for (let d = 1; d <= (this.rules.jumps ? 2 : 1); d++) {
+      for (let d = 1; d <= 2; d++) {
         const x = px + dx * d, y = py + dy * d;
         if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
         if (cells[y * this.w + x] > 0) out.push({ x, y, jump: d === 2 });
@@ -85,7 +83,7 @@ class Game {
     const dx = x - px, dy = y - py;
     if (dx !== 0 && dy !== 0) return false;
     const d = Math.abs(dx || dy);
-    return d >= 1 && d <= (this.rules.jumps ? 2 : 1);
+    return d >= 1 && d <= 2;
   }
 
   // Play a move from legalMoves().

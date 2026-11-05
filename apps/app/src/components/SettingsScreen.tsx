@@ -44,7 +44,6 @@ interface SettingsScreenProps {
   readonly settings: Settings;
   readonly palette: Palette;
   readonly onChangeThemeMode: (themeMode: ThemeMode) => void;
-  readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
   readonly onChangeSound: (sound: boolean) => void;
@@ -57,7 +56,6 @@ export default function SettingsScreen({
   settings,
   palette,
   onChangeThemeMode,
-  onChangeJumps,
   onChangeHints,
   onChangeAnim,
   onChangeSound,
@@ -125,24 +123,14 @@ export default function SettingsScreen({
         <Text style={[styles.sectionLabel, muted]}>{t.settings.gameplay}</Text>
         <View>
           <ToggleRow
-            testID="toggle-jumps"
-            label={t.settings.jumps}
-            value={settings.jumps}
-            onChange={onChangeJumps}
-            ink={ink}
-            palette={palette}
-            index={0}
-            length={5}
-          />
-          <ToggleRow
             testID="toggle-hints"
             label={t.settings.hints}
             value={settings.hints}
             onChange={onChangeHints}
             ink={ink}
             palette={palette}
-            index={1}
-            length={5}
+            index={0}
+            length={4}
           />
           <ToggleRow
             testID="toggle-anim"
@@ -151,8 +139,8 @@ export default function SettingsScreen({
             onChange={onChangeAnim}
             ink={ink}
             palette={palette}
-            index={2}
-            length={5}
+            index={1}
+            length={4}
           />
           <ToggleRow
             testID="toggle-fall"
@@ -161,8 +149,8 @@ export default function SettingsScreen({
             onChange={onChangeFall}
             ink={ink}
             palette={palette}
-            index={3}
-            length={5}
+            index={2}
+            length={4}
           />
           <ToggleRow
             testID="toggle-sound"
@@ -171,8 +159,8 @@ export default function SettingsScreen({
             onChange={onChangeSound}
             ink={ink}
             palette={palette}
-            index={4}
-            length={5}
+            index={3}
+            length={4}
           />
         </View>
 

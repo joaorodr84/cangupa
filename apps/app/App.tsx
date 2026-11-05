@@ -37,7 +37,7 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
-  const { settings, setThemeMode, setJumps, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
+  const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
   const { progress, recordDone, recordLevel, clearProgress } = useProgress();
 
   // Kept in sync here rather than read fresh on every Sound.jump() call,
@@ -59,7 +59,6 @@ export default function App() {
         <Shell
           settings={settings}
           onChangeThemeMode={setThemeMode}
-          onChangeJumps={setJumps}
           onChangeHints={setHints}
           onChangeAnim={setAnim}
           onChangeSound={setSound}
@@ -78,7 +77,6 @@ export default function App() {
 interface ShellProps {
   readonly settings: Settings;
   readonly onChangeThemeMode: (themeMode: ThemeMode) => void;
-  readonly onChangeJumps: (jumps: boolean) => void;
   readonly onChangeHints: (hints: boolean) => void;
   readonly onChangeAnim: (anim: boolean) => void;
   readonly onChangeSound: (sound: boolean) => void;
@@ -93,7 +91,6 @@ interface ShellProps {
 function Shell({
   settings,
   onChangeThemeMode,
-  onChangeJumps,
   onChangeHints,
   onChangeAnim,
   onChangeSound,
@@ -171,7 +168,6 @@ function Shell({
         settings={settings}
         palette={palette}
         onChangeThemeMode={onChangeThemeMode}
-        onChangeJumps={onChangeJumps}
         onChangeHints={onChangeHints}
         onChangeAnim={onChangeAnim}
         onChangeSound={onChangeSound}
@@ -185,14 +181,12 @@ function Shell({
     );
   } else {
     content = (
-      // Keyed on the level and on the jumps rule: a new level starts from a
-      // fresh board, and so does a jumps toggle mid-level — ui.js's reset()
-      // call on a rule change, achieved here by remounting rather than by
-      // useBoard reacting to a changed prop (see useBoard.ts).
+      // Keyed on the level: a new level starts from a fresh board, achieved
+      // here by remounting rather than by useBoard reacting to a changed
+      // prop (see useBoard.ts).
       <BoardScreen
-        key={`${currentLevel}-${settings.jumps}`}
+        key={currentLevel}
         level={LEVELS[currentLevel]}
-        rules={{ jumps: settings.jumps }}
         hints={settings.hints}
         anim={settings.anim}
         fall={settings.fall}

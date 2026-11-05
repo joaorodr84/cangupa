@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import * as Sound from '../audio/sound';
 import PlayableBoard from './PlayableBoard';
-import { type Level, type Rules } from '../game/board';
+import { type Level } from '../game/board';
 import { useBoard } from '../game/useBoard';
 import { DARK } from '../theme/palette';
 
@@ -15,20 +15,18 @@ const palette = DARK;
 // the minimal thing that constructs one for these tests.
 function Harness({
   level,
-  rules,
   fall = false,
   onMoved,
   maxWidth,
   maxHeight,
 }: {
   level: Level;
-  rules: Rules;
   fall?: boolean;
   onMoved?: () => void;
   maxWidth?: number;
   maxHeight?: number;
 }) {
-  const board = useBoard(level, rules, true);
+  const board = useBoard(level, true);
   return (
     <PlayableBoard
       board={board}
@@ -49,7 +47,7 @@ beforeEach(() => {
 test('tapping the only legal tile moves the kangaroo there', async () => {
   const onMoved = jest.fn();
 
-  await render(<Harness level={['S1']} rules={{ jumps: true }} onMoved={onMoved} />);
+  await render(<Harness level={['S1']} onMoved={onMoved} />);
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
@@ -62,7 +60,7 @@ test('tapping the only legal tile moves the kangaroo there', async () => {
 test('plays the jump sound on every move, and the win sound only on one that clears the level (CANGUPA-59)', async () => {
   // 'S11': the first move (to x=1) doesn't clear the level yet (x=2 still
   // needs a visit); the second (to x=2) does.
-  await render(<Harness level={['S11']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S11']} />);
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
   expect(Sound.jump).toHaveBeenCalledTimes(1);
@@ -76,19 +74,20 @@ test('plays the jump sound on every move, and the win sound only on one that cle
 test('does not call onMoved for a tap with no legal destination', async () => {
   const onMoved = jest.fn();
 
-  await render(<Harness level={['S.1']} rules={{ jumps: false }} onMoved={onMoved} />);
+  // 'S..1': the only other tile sits three tiles away, past jump range —
+  // nothing pressable renders there at all.
+  await render(<Harness level={['S..1']} onMoved={onMoved} />);
 
-  // With jumps off there is nothing pressable at all — the far tile never renders a Pressable.
-  expect(screen.queryByTestId('tile-press-2-0')).toBeNull();
+  expect(screen.queryByTestId('tile-press-3-0')).toBeNull();
   expect(onMoved).not.toHaveBeenCalled();
 });
 
 test('falling resets the board, when the fall setting is on (CANGUPA-58)', async () => {
-  // 'S1.1', jumps off: the only move from the start is to x=1 (x=3 needs a
-  // jump). From x=1, with jumps off, there is no legal move at all — x=0 is
-  // used up, x=2 is always empty — and the level is not yet won (x=3 still
-  // needs a visit), leaving a stuck board with empty space to tap.
-  await render(<Harness level={['S1.1']} rules={{ jumps: false }} fall />);
+  // 'S1...1': the only move from the start is to x=1 (every other tile is
+  // either used, empty, or past jump range). From x=1, the remaining tile
+  // (x=5) is four tiles away — out of reach regardless of jumps — leaving a
+  // stuck board, not yet won, with empty space to tap.
+  await render(<Harness level={['S1...1']} fall />);
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
   expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
@@ -104,11 +103,10 @@ test('falling resets the board, when the fall setting is on (CANGUPA-58)', async
 });
 
 test('tapping a tile with no legal move jumps there before falling, facing it (CANGUPA-64)', async () => {
-  // 'S11', jumps off: the only legal move from x=0 is the step to x=1.
-  // After that move, x=0 is a used/worn tile but still one step away, so
-  // tapping it should report its own cell (tile-empty-0-0) rather than
-  // falling through to the board's own blanket onPressEmpty.
-  await render(<Harness level={['S11']} rules={{ jumps: false }} fall />);
+  // 'S11': after stepping to x=1, x=0 is a used/worn tile but still one
+  // step away, so tapping it should report its own cell (tile-empty-0-0)
+  // rather than falling through to the board's own blanket onPressEmpty.
+  await render(<Harness level={['S11']} fall />);
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
@@ -124,9 +122,9 @@ test('tapping a tile with no legal move jumps there before falling, facing it (C
 });
 
 test('vacates the tile jumped away from, even though the jump fails and falls instead (CANGUPA-67)', async () => {
-  // ['s.1', '.1.'], jumps on: x0,y0 is a double-visit start tile; x2,y0
-  // ("blue") and x1,y1 (an untouched decoy, so the level isn't won once the
-  // other two tiles are both spent) are the level's only other tiles.
+  // ['s.1', '.1.']: x0,y0 is a double-visit start tile; x2,y0 ("blue") and
+  // x1,y1 (an untouched decoy, so the level isn't won once the other two
+  // tiles are both spent) are the level's only other tiles.
   // Step 1: jump from the start to the blue tile (its one visit). Step 2:
   // jump back to the start (its last visit) — now worn, kangaroo standing
   // on it. Step 3: attempt to jump again to the blue tile's spot, now
@@ -135,7 +133,7 @@ test('vacates the tile jumped away from, even though the jump fails and falls in
   // jumped away from — should already look vacated (gone), not still
   // occupied (worn), even though game.pos hasn't actually moved (the jump
   // was never legal, so nothing was really played).
-  await render(<Harness level={['s.1', '.1.']} rules={{ jumps: true }} fall />);
+  await render(<Harness level={['s.1', '.1.']} fall />);
 
   await fireEvent.press(screen.getByTestId('tile-press-2-0')); // start -> blue tile
   await fireEvent.press(screen.getByTestId('tile-press-0-0')); // blue tile -> back to the start
@@ -160,7 +158,7 @@ test('tapping a tile off the step/jump line does nothing, even with the fall set
   // A full 3x3 grid: (2, 2) is two over and two down from the start — not a
   // step or jump in any of the four cardinal directions, so it should never
   // be treated as a fall target, tile or not.
-  await render(<Harness level={['S11', '111', '111']} rules={{ jumps: true }} fall />);
+  await render(<Harness level={['S11', '111', '111']} fall />);
 
   await fireEvent.press(screen.getByTestId('tile-empty-2-2'));
 
@@ -170,21 +168,10 @@ test('tapping a tile off the step/jump line does nothing, even with the fall set
   expect(screen.getByTestId('tile-press-1-0')).toBeTruthy();
 });
 
-test('tapping a jump-distance tile does nothing when the jumps rule is off (CANGUPA-65)', async () => {
-  // 'S.1', jumps off: x=2 sits exactly two over — a jump-shaped distance —
-  // but jumps are off, so tapping it should do nothing rather than fall.
-  await render(<Harness level={['S.1']} rules={{ jumps: false }} fall />);
-
-  await fireEvent.press(screen.getByTestId('tile-empty-2-0'));
-
-  expect(Sound.jump).not.toHaveBeenCalled();
-  expect(Sound.fall).not.toHaveBeenCalled();
-});
-
 test("tapping the kangaroo's own cell does nothing (CANGUPA-66)", async () => {
-  // 'S11', jumps off: x=0 is the start tile, already worn and exactly where
-  // the kangaroo stands — distance zero, never a move attempt.
-  await render(<Harness level={['S11']} rules={{ jumps: false }} fall />);
+  // 'S11': x=0 is the start tile, already worn and exactly where the
+  // kangaroo stands — distance zero, never a move attempt.
+  await render(<Harness level={['S11']} fall />);
 
   await fireEvent.press(screen.getByTestId('tile-empty-0-0'));
 
@@ -193,10 +180,10 @@ test("tapping the kangaroo's own cell does nothing (CANGUPA-66)", async () => {
 });
 
 test('tapping true background jumps to that cell before falling, once the board is measured (CANGUPA-66)', async () => {
-  // 'S.1', jumps on: x=1 is background with no tile at all, one step away —
-  // should jump there and fall, the same as a worn tile would (CANGUPA-64),
-  // not fall in place as if nothing specific had been tapped.
-  await render(<Harness level={['S.1']} rules={{ jumps: true }} fall />);
+  // 'S.1': x=1 is background with no tile at all, one step away — should
+  // jump there and fall, the same as a worn tile would (CANGUPA-64), not
+  // fall in place as if nothing specific had been tapped.
+  await render(<Harness level={['S.1']} fall />);
 
   const board = screen.getByTestId('board');
   // A 300x100 px board, 3 columns wide: x=1 spans the middle third, [100, 200).
@@ -214,7 +201,7 @@ test('tapping true background jumps to that cell before falling, once the board 
 });
 
 test('tapping empty space does nothing when the fall setting is off', async () => {
-  await render(<Harness level={['S1.1']} rules={{ jumps: false }} fall={false} />);
+  await render(<Harness level={['S1.1']} fall={false} />);
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
   expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
@@ -227,7 +214,7 @@ test('tapping empty space does nothing when the fall setting is off', async () =
 });
 
 test('without maxWidth/maxHeight the board falls back to 100% (CANGUPA-33)', async () => {
-  await render(<Harness level={['S1.']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S1.']} />);
 
   const flat = [screen.getByTestId('board').props.style].flat();
   expect(flat.some((s) => s?.width === '100%')).toBe(true);
@@ -237,7 +224,7 @@ test('caps the board width when the height available is the tighter fit (landsca
   // ['S1.'] is a 3x1 board (w=3, h=1). 90px of height would let a 3x1 board
   // be 270px wide, well past the 150px of width actually on offer, so width
   // stays the binding constraint here — see the next test for the reverse.
-  await render(<Harness level={['S1.']} rules={{ jumps: true }} maxWidth={150} maxHeight={90} />);
+  await render(<Harness level={['S1.']} maxWidth={150} maxHeight={90} />);
 
   const flat = [screen.getByTestId('board').props.style].flat();
   // 150 width minus the frame's 12px padding on each side.
@@ -247,7 +234,7 @@ test('caps the board width when the height available is the tighter fit (landsca
 test('caps the board width by the height available when that is the tighter fit', async () => {
   // Same 3x1 board, but now a generous width and a tight height: a 3x1
   // board as tall as 16px of height can only be 48px wide.
-  await render(<Harness level={['S1.']} rules={{ jumps: true }} maxWidth={400} maxHeight={40} />);
+  await render(<Harness level={['S1.']} maxWidth={400} maxHeight={40} />);
 
   const flat = [screen.getByTestId('board').props.style].flat();
   // (40 - 24) of height available * 3 (w/h) = 48px wide.
@@ -257,14 +244,14 @@ test('caps the board width by the height available when that is the tighter fit'
 // Visit marks and tile kinds (CANGUPA-68, CANGUPA-69)
 
 test('a Gold tile shows one stroke per visit left, and a Steel tile one per visit left too', async () => {
-  await render(<Harness level={['S23']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S23']} />);
 
   expect(screen.getByTestId('tile-strokes-1-0').children).toHaveLength(2);
   expect(screen.getByTestId('tile-strokes-2-0').children).toHaveLength(3);
 });
 
 test('the strokes count down as a tile is visited, and the last visit keeps one', async () => {
-  await render(<Harness level={['S2']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S2']} />);
   expect(screen.getByTestId('tile-strokes-1-0').children).toHaveLength(2);
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
@@ -272,12 +259,12 @@ test('the strokes count down as a tile is visited, and the last visit keeps one'
 });
 
 test('a Common tile has no strokes', async () => {
-  await render(<Harness level={['S1']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S1']} />);
   expect(screen.queryByTestId('tile-strokes-1-0')).toBeNull();
 });
 
 test('an arrow tile shows a triangle on the edge it can be left by, and no strokes', async () => {
-  await render(<Harness level={['S>1']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S>1']} />);
 
   expect(screen.getByTestId('tile-arrow-1-0-right')).toBeTruthy();
   expect(screen.queryByTestId('tile-strokes-1-0')).toBeNull();
@@ -285,7 +272,7 @@ test('an arrow tile shows a triangle on the edge it can be left by, and no strok
 
 test('an arrow tile only lets the kangaroo leave the way it points', async () => {
   // S steps onto the arrow at (1,0), which points right: the tile below it is out of reach
-  await render(<Harness level={['S>1', '.1.']} rules={{ jumps: true }} />);
+  await render(<Harness level={['S>1', '.1.']} />);
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
   expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();

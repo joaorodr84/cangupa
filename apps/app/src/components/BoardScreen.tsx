@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { type Level, type Rules } from '../game/board';
+import { type Level } from '../game/board';
 import { statusFor } from '../game/boardView';
 import { orientLevel } from '../game/orient';
 import { useBoard } from '../game/useBoard';
@@ -18,7 +18,6 @@ import WinPopup from './WinPopup';
 
 interface BoardScreenProps {
   readonly level: Level;
-  readonly rules: Rules;
   readonly hints: boolean;
   readonly anim: boolean;
   // Rule option (CANGUPA-58, off by default): tapping the board where there
@@ -38,7 +37,6 @@ interface BoardScreenProps {
 
 export default function BoardScreen({
   level,
-  rules,
   hints,
   anim,
   fall,
@@ -57,7 +55,7 @@ export default function BoardScreen({
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const startedLandscape = useRef(windowWidth > windowHeight);
   const oriented = useMemo(() => orientLevel(level, startedLandscape.current), [level]);
-  const board = useBoard(oriented, rules, hints);
+  const board = useBoard(oriented, hints);
   const { won, stuck, hintFailed, moves, remaining, canUndo, undo, reset, hint } = board;
 
   const wasWon = useRef(false);

@@ -131,23 +131,23 @@ test('uses an explicit width when one is given, capping the board (CANGUPA-33)',
 });
 
 test('a tile that is not a legal destination is not pressable', async () => {
-  // A 1x3 row with a gap in the middle and jumps off: x=2 is out of reach.
-  const g = new Game(['S.1'], { jumps: false });
+  // A 1x4 row with a two-tile gap: x=3 sits three tiles away, past jump range.
+  const g = new Game(['S..1']);
   const tiles = tilesOf(g, { hints: true });
 
   await render(
     <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
   );
 
-  expect(screen.queryByTestId('tile-press-2-0')).toBeNull();
+  expect(screen.queryByTestId('tile-press-3-0')).toBeNull();
 });
 
 test('a tile that is not a legal destination reports its own cell, when a fall handler is given (CANGUPA-64)', async () => {
-  // Same shape as the test above, but now with a fall handler: x=2 is out
-  // of reach, yet it is still a real tile (unlike x=1's gap), so a tap
+  // Same shape as the test above, but now with a fall handler: x=3 is out
+  // of reach, yet it is still a real tile (unlike x=1/x=2's gap), so a tap
   // there should report its own cell rather than falling through to the
   // board's own blanket onPressEmpty, which has no cell to give.
-  const g = new Game(['S.1'], { jumps: false });
+  const g = new Game(['S..1']);
   const tiles = tilesOf(g, { hints: true });
   const onPressEmpty = jest.fn();
 
@@ -166,9 +166,9 @@ test('a tile that is not a legal destination reports its own cell, when a fall h
     />,
   );
 
-  await fireEvent.press(screen.getByTestId('tile-empty-2-0'));
+  await fireEvent.press(screen.getByTestId('tile-empty-3-0'));
 
-  expect(onPressEmpty).toHaveBeenCalledWith({ x: 2, y: 0 });
+  expect(onPressEmpty).toHaveBeenCalledWith({ x: 3, y: 0 });
 });
 
 test('fall() does not throw and calls onComplete (CANGUPA-58)', async () => {
@@ -200,10 +200,7 @@ test('fall() does not throw and calls onComplete (CANGUPA-58)', async () => {
 });
 
 test('tapping empty board space reports it, when a handler is given (CANGUPA-58)', async () => {
-  // A 1x3 row with a gap in the middle and jumps off: x=2 has no element at
-  // all (tilesOf skips an always-empty cell), so a tap there only reaches
-  // the board's own Pressable, not a tile's.
-  const g = new Game(['S.1'], { jumps: false });
+  const g = new Game(['S.1']);
   const tiles = tilesOf(g, { hints: true });
   const onPressEmpty = jest.fn();
 
@@ -228,10 +225,10 @@ test('tapping empty board space reports it, when a handler is given (CANGUPA-58)
 });
 
 test('a tap on true background reports the cell under it, once the board is measured (CANGUPA-66)', async () => {
-  // 'S.1', jumps on: x=1 has no tile at all (tilesOf skips an always-empty
-  // cell), so only the board's own blanket Pressable can report it — and
-  // now does, from where the tap landed, instead of calling with no target.
-  const g = new Game(['S.1'], { jumps: true });
+  // 'S.1': x=1 has no tile at all (tilesOf skips an always-empty cell), so
+  // only the board's own blanket Pressable can report it — and now does,
+  // from where the tap landed, instead of calling with no target.
+  const g = new Game(['S.1']);
   const tiles = tilesOf(g, { hints: true });
   const onPressEmpty = jest.fn();
 

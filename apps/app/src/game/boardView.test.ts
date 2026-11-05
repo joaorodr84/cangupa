@@ -21,7 +21,7 @@ describe('tilesOf', () => {
   });
 
   it('marks a jump destination as a jump hint', () => {
-    const g = new Game(['S.1'], { jumps: true });
+    const g = new Game(['S.1']);
     const tiles = tilesOf(g, { hints: true });
     const target = tiles.find((t) => t.x === 2 && t.y === 0);
     expect(target).toMatchObject({ hint: true, jump: true });

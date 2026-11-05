@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 
-import { Game, type Level, type Move, type Rules } from './board';
+import { Game, type Level, type Move } from './board';
 import { DEFAULT_FACING, facingFor, tilesOf, type Facing } from './boardView';
 
 // Owns one Game for the lifetime of the component that calls this — it is
-// built once, from the `level`/`rules` this hook first saw, the same way
-// DigiSpin's BoardScreen is remounted with `key={level.number}` for a new
-// level rather than kept reactive to a changed prop.
-export function useBoard(level: Level, rules: Rules, hints: boolean) {
-  const [game] = useState(() => new Game(level, rules));
+// built once, from the `level` this hook first saw, the same way DigiSpin's
+// BoardScreen is remounted with `key={level.number}` for a new level rather
+// than kept reactive to a changed prop.
+export function useBoard(level: Level, hints: boolean) {
+  const [game] = useState(() => new Game(level));
   const [tick, setTick] = useState(0);
   const [facing, setFacing] = useState<Facing>(DEFAULT_FACING);
   const [tip, setTip] = useState<Move | null>(null);

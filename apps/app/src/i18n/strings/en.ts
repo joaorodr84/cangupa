@@ -67,7 +67,6 @@ export const en: Strings = {
     light: 'Light',
     dark: 'Dark',
     gameplay: 'Gameplay',
-    jumps: 'Two-tile jumps',
     hints: 'Highlight possible moves',
     anim: 'Animations',
     sound: 'Sound',

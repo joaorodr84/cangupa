@@ -11,7 +11,7 @@ function loadLevel(n) {
   levelIndex = Math.max(0, Math.min(LEVELS.length - 1, n));
   progress.level = levelIndex;
   Progress.save(progress);
-  game = new Game(LEVELS[levelIndex], settings);
+  game = new Game(LEVELS[levelIndex]);
   tip = null;
   face = { dir: 'down', left: false };
   build();
@@ -154,7 +154,7 @@ boardEl.addEventListener('click', e => {
   // real move attempt, tile or no tile there (CANGUPA-66) — jump to it
   // before falling. inMoveShape() is false for game.x/game.y themselves
   // (distance 0), so tapping the kangaroo's own cell is a no-op, same as
-  // anything off that shape (diagonal, too far, a jump with jumps off).
+  // anything off that shape (diagonal, too far).
   if (settings.fall && game.inMoveShape(c.x, c.y)) fall(c);
 });
 
@@ -272,7 +272,7 @@ $('clear-progress').onclick = () => {
 };
 
 // Settings wiring
-const fields = { theme: 's-theme', jumps: 's-jumps', hints: 's-hints', anim: 's-anim', fall: 's-fall', sound: 's-sound' };
+const fields = { theme: 's-theme', hints: 's-hints', anim: 's-anim', fall: 's-fall', sound: 's-sound' };
 for (const [key, id] of Object.entries(fields)) {
   const el = $(id), isCheck = el.type === 'checkbox';
   isCheck ? (el.checked = settings[key]) : (el.value = settings[key]);
@@ -280,8 +280,7 @@ for (const [key, id] of Object.entries(fields)) {
     settings[key] = isCheck ? el.checked : el.value;
     Settings.save(settings);
     if (key === 'sound') Sound.enabled = settings.sound;
-    // A rule change can invalidate the current position, so restart the level.
-    key === 'jumps' ? reset() : render(false);
+    render(false);
   };
 }
 

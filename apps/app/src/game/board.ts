@@ -13,10 +13,6 @@
 
 export type Level = readonly string[];
 
-export interface Rules {
-  readonly jumps: boolean;
-}
-
 export interface Move {
   readonly x: number;
   readonly y: number;
@@ -38,7 +34,6 @@ const DIRS: ReadonlyArray<readonly [number, number]> = [
 const ARROWS = '><v^';
 
 export class Game {
-  readonly rules: Rules;
   readonly w: number;
   readonly h: number;
   readonly max: Uint8Array;
@@ -49,8 +44,7 @@ export class Game {
   pos!: number;
   private history!: HistoryEntry[];
 
-  constructor(rows: Level, rules: Rules = { jumps: true }) {
-    this.rules = rules;
+  constructor(rows: Level) {
     this.h = rows.length;
     this.w = Math.max(...rows.map((r) => r.length));
     this.max = new Uint8Array(this.w * this.h);
@@ -112,8 +106,8 @@ export class Game {
     return !this.won && this.legalMoves().length === 0;
   }
 
-  // Steps of one tile, plus jumps of two when the rule is on. Standing on an
-  // arrow tile, only the way it points.
+  // Steps of one tile, plus jumps of two. Standing on an arrow tile, only
+  // the way it points.
   legalMoves(cells: Uint8Array = this.cells, pos: number = this.pos): Move[] {
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
@@ -121,7 +115,7 @@ export class Game {
     for (let k = 0; k < DIRS.length; k++) {
       if (this.dir[pos] >= 0 && k !== this.dir[pos]) continue;
       const [dx, dy] = DIRS[k];
-      for (let d = 1; d <= (this.rules.jumps ? 2 : 1); d++) {
+      for (let d = 1; d <= 2; d++) {
         const x = px + dx * d;
         const y = py + dy * d;
         if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
@@ -142,7 +136,7 @@ export class Game {
     const dy = y - py;
     if (dx !== 0 && dy !== 0) return false;
     const d = Math.abs(dx || dy);
-    return d >= 1 && d <= (this.rules.jumps ? 2 : 1);
+    return d >= 1 && d <= 2;
   }
 
   // Play a move from legalMoves().

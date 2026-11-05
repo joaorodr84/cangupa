@@ -14,8 +14,6 @@ export interface Settings {
   // appearance setting — 'system' follows the device the same way `language`
   // below does.
   readonly themeMode: ThemeMode;
-  // Rule option: allow jumping two tiles in a straight line.
-  readonly jumps: boolean;
   // Highlight the tiles you can move to.
   readonly hints: boolean;
   readonly anim: boolean;
@@ -32,7 +30,6 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   themeMode: 'system',
-  jumps: true,
   hints: true,
   anim: true,
   sound: true,
@@ -49,8 +46,9 @@ export const SETTINGS_KEY = 'cangupa.settings';
 // CANGUPA-40 has a `theme` field (one of the five old skin names) and no
 // `themeMode`, so it falls into that same missing-field case and resolves to
 // the new default ('system') rather than needing an explicit migration; the
-// rest of a pre-CANGUPA-40 record (jumps/hints/anim/language) still parses
-// as before.
+// rest of a pre-CANGUPA-40 record (hints/anim/language) still parses as
+// before. A pre-CANGUPA-83 record's `jumps` field is simply ignored, the
+// same way any other field this build doesn't know is (see below).
 export function parseSettings(raw: string | null): Settings {
   if (raw === null) {
     return DEFAULT_SETTINGS;
@@ -64,7 +62,6 @@ export function parseSettings(raw: string | null): Settings {
     const themeMode = THEME_MODES.includes(record.themeMode as ThemeMode)
       ? (record.themeMode as ThemeMode)
       : DEFAULT_SETTINGS.themeMode;
-    const jumps = typeof record.jumps === 'boolean' ? record.jumps : DEFAULT_SETTINGS.jumps;
     const hints = typeof record.hints === 'boolean' ? record.hints : DEFAULT_SETTINGS.hints;
     const anim = typeof record.anim === 'boolean' ? record.anim : DEFAULT_SETTINGS.anim;
     const sound = typeof record.sound === 'boolean' ? record.sound : DEFAULT_SETTINGS.sound;
@@ -75,7 +72,7 @@ export function parseSettings(raw: string | null): Settings {
     const language = LANGUAGE_SETTINGS.includes(record.language as LanguageSetting)
       ? (record.language as LanguageSetting)
       : DEFAULT_SETTINGS.language;
-    return { themeMode, jumps, hints, anim, sound, fall, language };
+    return { themeMode, hints, anim, sound, fall, language };
   } catch {
     return DEFAULT_SETTINGS;
   }

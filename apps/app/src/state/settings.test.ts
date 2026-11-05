@@ -24,7 +24,7 @@ describe('parseSettings', () => {
     expect(parseSettings('{"theme":"ice"}')).toEqual(DEFAULT_SETTINGS);
   });
 
-  it.each(['jumps', 'hints', 'anim', 'sound'] as const)('reads a saved %s toggle', (key) => {
+  it.each(['hints', 'anim', 'sound'] as const)('reads a saved %s toggle', (key) => {
     expect(parseSettings(`{"${key}":false}`)[key]).toBe(false);
   });
 
@@ -35,7 +35,7 @@ describe('parseSettings', () => {
     expect(parseSettings('{"fall":true}').fall).toBe(true);
   });
 
-  it.each(['jumps', 'hints', 'anim', 'sound', 'fall'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
+  it.each(['hints', 'anim', 'sound', 'fall'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
     expect(parseSettings(`{"${key}":"false"}`)[key]).toBe(DEFAULT_SETTINGS[key]);
   });
 
@@ -61,7 +61,6 @@ describe('saving and loading', () => {
     const storage = memoryStorage();
     const settings = {
       themeMode: 'dark' as const,
-      jumps: false,
       hints: false,
       anim: false,
       sound: false,
@@ -80,7 +79,7 @@ describe('saving and loading', () => {
     await saveSettings(storage, DEFAULT_SETTINGS);
 
     expect(await storage.getItem(SETTINGS_KEY)).toBe(
-      '{"themeMode":"system","jumps":true,"hints":true,"anim":true,"sound":true,"fall":false,"language":"system"}',
+      '{"themeMode":"system","hints":true,"anim":true,"sound":true,"fall":false,"language":"system"}',
     );
   });
 

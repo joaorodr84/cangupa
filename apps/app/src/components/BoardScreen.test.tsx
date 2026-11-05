@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useWindowDimensions } from 'react-native';
 
 import BoardScreen from './BoardScreen';
-import { type Level, type Rules } from '../game/board';
+import { type Level } from '../game/board';
 import { DARK } from '../theme/palette';
 
 const palette = DARK;
@@ -25,7 +25,7 @@ function noop() {
   /* not under test */
 }
 
-function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { level: Level; rules: Rules }) {
+function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { level: Level }) {
   return {
     hints: true,
     anim: false,
@@ -40,12 +40,12 @@ function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { l
   };
 }
 
-function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { level: Level; rules: Rules }) {
+function renderScreen(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { level: Level }) {
   return render(<BoardScreen {...screenProps(overrides)} />);
 }
 
 test('shows the level number and move count while playing', async () => {
-  await renderScreen({ level: ['S1.'], rules: { jumps: true }, levelNumber: 5 });
+  await renderScreen({ level: ['S1.'], levelNumber: 5 });
 
   expect(screen.getByText('Level 5')).toBeTruthy();
   expect(screen.getByText('Moves 0')).toBeTruthy();
@@ -54,7 +54,7 @@ test('shows the level number and move count while playing', async () => {
 test('calls onLevelComplete with the move count exactly once when the level is won, and shows the win popup', async () => {
   const onLevelComplete = jest.fn();
 
-  await renderScreen({ level: ['S1'], rules: { jumps: true }, onLevelComplete });
+  await renderScreen({ level: ['S1'], onLevelComplete });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
@@ -66,14 +66,14 @@ test('calls onLevelComplete with the move count exactly once when the level is w
 test('pressing the back arrow calls onBack', async () => {
   const onBack = jest.fn();
 
-  await renderScreen({ level: ['S1.'], rules: { jumps: true }, onBack });
+  await renderScreen({ level: ['S1.'], onBack });
 
   await fireEvent.press(screen.getByLabelText('Back to home'));
   expect(onBack).toHaveBeenCalledTimes(1);
 });
 
 test('undo, reset and hint operate on the same board the HUD reflects', async () => {
-  await renderScreen({ level: ['S11'], rules: { jumps: true } });
+  await renderScreen({ level: ['S11'] });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
   expect(screen.getByText('Moves 1')).toBeTruthy();
@@ -91,7 +91,7 @@ test('undo, reset and hint operate on the same board the HUD reflects', async ()
 test('pressing the win popup\'s next-level button calls onNext', async () => {
   const onNext = jest.fn();
 
-  await renderScreen({ level: ['S1'], rules: { jumps: true }, onNext });
+  await renderScreen({ level: ['S1'], onNext });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
   await fireEvent.press(screen.getByText('Next level'));
@@ -100,7 +100,7 @@ test('pressing the win popup\'s next-level button calls onNext', async () => {
 });
 
 test('the win popup shows no next-level button on the last level', async () => {
-  await renderScreen({ level: ['S1'], rules: { jumps: true }, hasNext: false });
+  await renderScreen({ level: ['S1'], hasNext: false });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
@@ -109,7 +109,7 @@ test('the win popup shows no next-level button on the last level', async () => {
 });
 
 test('closing the win popup leaves the board reachable through Reset', async () => {
-  await renderScreen({ level: ['S1'], rules: { jumps: true } });
+  await renderScreen({ level: ['S1'] });
 
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
   expect(screen.getByText('Level complete!')).toBeTruthy();
@@ -124,7 +124,7 @@ test('closing the win popup leaves the board reachable through Reset', async () 
 test('turns a wide level tall when the screen is portrait', async () => {
   jest.mocked(useWindowDimensions).mockReturnValue(PORTRAIT);
 
-  await renderScreen({ level: ['S1'], rules: { jumps: true } });
+  await renderScreen({ level: ['S1'] });
 
   // ['S1'] is two across and one down; turned, the second tile is below the first.
   expect(screen.getByTestId('tile-press-0-1')).toBeTruthy();
@@ -135,7 +135,7 @@ test('a turned level is still playable and clears', async () => {
   jest.mocked(useWindowDimensions).mockReturnValue(PORTRAIT);
   const onLevelComplete = jest.fn();
 
-  await renderScreen({ level: ['S1'], rules: { jumps: true }, onLevelComplete });
+  await renderScreen({ level: ['S1'], onLevelComplete });
   await fireEvent.press(screen.getByTestId('tile-press-0-1'));
 
   expect(onLevelComplete).toHaveBeenCalledWith(1);
@@ -143,11 +143,11 @@ test('a turned level is still playable and clears', async () => {
 
 test('does not turn the board again when the screen rotates mid-level', async () => {
   jest.mocked(useWindowDimensions).mockReturnValue(PORTRAIT);
-  const view = await renderScreen({ level: ['S1'], rules: { jumps: true } });
+  const view = await renderScreen({ level: ['S1'] });
   expect(screen.getByTestId('tile-press-0-1')).toBeTruthy();
 
   jest.mocked(useWindowDimensions).mockReturnValue(LANDSCAPE);
-  await view.rerender(<BoardScreen {...screenProps({ level: ['S1'], rules: { jumps: true } })} />);
+  await view.rerender(<BoardScreen {...screenProps({ level: ['S1'] })} />);
 
   expect(screen.getByTestId('tile-press-0-1')).toBeTruthy(); // still as it started
 });

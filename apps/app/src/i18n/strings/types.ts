@@ -69,7 +69,6 @@ export interface Strings {
     readonly light: string;
     readonly dark: string;
     readonly gameplay: string;
-    readonly jumps: string;
     readonly hints: string;
     readonly anim: string;
     readonly sound: string;

@@ -934,6 +934,43 @@ levels solvable) and the full `apps/app` Jest suite (796 tests), plus
 
 ---
 
+## Era 32 — Nov 5 (continued): the two-tile jump setting is removed as never truly optional
+
+CANGUPA-83 removed the `jumps` setting — the toggle that let a player turn
+off two-tile jumps — from both apps entirely, rather than just defaulting
+it on. It was never actually optional in practice: every shipped level in
+both apps already requires a jump to solve, so switching it off could
+strand a player with no way to finish. `apps/web-classic/js/game.js` and
+`apps/app/src/game/board.ts`'s `legalMoves`/`inMoveShape` now always allow
+a step or a jump (distance 1 or 2) unconditionally, and `Game`'s
+`rules`/`Rules` parameter is gone outright, since `jumps` was its only
+field. `apps/web-classic/js/config.js` and `apps/app/src/state/settings.ts`
+drop `DEFAULT_SETTINGS.jumps`/`Settings.jumps`; a pre-CANGUPA-83 saved
+record's `jumps` field is simply ignored on load now, like any other field
+this build doesn't know. The settings UI for it — `js/ui.js`'s wiring,
+`index.html`'s checkbox, `SettingsScreen.tsx`'s toggle row and
+`useSettings.ts`'s `setJumps`, and the `jumps` string in
+`i18n/strings/{types,en,pt}.ts` — are all removed, along with
+`README.md`'s "(can be switched off in settings)" line.
+
+Several tests in both apps had used `{ jumps: false }` purely as a way to
+put some tile out of reach for an unrelated assertion, mostly fall/stuck
+scenarios — those were redesigned around a tile placed past jump range
+instead (e.g. level `S..1`, three tiles from the start). The one test that
+was genuinely about the jumps toggle itself, `apps/app`'s
+`PlayableBoard.test.tsx`'s "tapping a jump-distance tile does nothing when
+the jumps rule is off", was deleted outright, since that behavior no
+longer exists. Net: `apps/app`'s Jest suite went from 796 to 790 tests,
+six removed rather than rewritten.
+
+One commit. Breaking change to both apps' saved-settings shape, expected
+and already noted when the task was opened. Verified with
+`node tools/test.js` (rules and all 550 levels across both apps solvable),
+`npx tsc --noEmit` clean in `apps/app`, and the full `apps/app` Jest suite
+green (790 tests).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

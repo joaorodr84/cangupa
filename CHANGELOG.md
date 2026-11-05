@@ -23,6 +23,14 @@ Open work is listed in [TODO.md](TODO.md).
   same issue in 67 levels across the frozen Mesa, Gorge, Plateau and
   Outback packs is left for a follow-up.
 
+### Removed
+
+- The "two-tile jumps" setting is gone from both the web game's and the
+  app's settings screens — jumping over a gap or another tile now always
+  works. No shipped level ever let you turn it off and still finish, so
+  no level plays any differently; the option just isn't there to toggle
+  any more.
+
 ## 2026-11-04
 
 ### Added

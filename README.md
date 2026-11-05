@@ -7,7 +7,7 @@ The game lives in [apps/web-classic/](apps/web-classic/), set apart from the rep
 Step on every tile to clear the level. You start on the tile marked by the kangaroo.
 
 - **Step**: one tile up, down, left or right.
-- **Jump**: two tiles in a straight line, over a gap or over another tile (can be switched off in the settings).
+- **Jump**: two tiles in a straight line, over a gap or over another tile.
 - You can only land on a tile that still has visits left. A used tile drops away as soon as you leave it.
 - **Double tiles** (gold) need two visits: they crack on the first and vanish on the second.
 - If you run out of moves, undo or restart.

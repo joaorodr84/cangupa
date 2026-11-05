@@ -29,14 +29,9 @@ test('undo restores both position and tile state', () => {
   expect(g.undo() && g.undo() && g.pos === 0).toBe(true);
 });
 
-test('jumping clears a gap or another tile when the jumps rule is on', () => {
-  const g = new Game(['S.1'], { jumps: true });
+test('jumping clears a gap or another tile', () => {
+  const g = new Game(['S.1']);
   expect(g.legalMoves().map((m) => [m.x, m.jump])).toEqual([[2, true]]);
-});
-
-test('jumping is unavailable when the jumps rule is off', () => {
-  const g = new Game(['S.1'], { jumps: false });
-  expect(g.legalMoves()).toHaveLength(0);
 });
 
 // fall()'s shape check (CANGUPA-65): only a step or jump in one of the four
@@ -50,11 +45,6 @@ test('inMoveShape accepts only a straight step or jump within range', () => {
   expect(g.inMoveShape(2, 2)).toBe(false); // diagonal: not a straight line
   expect(g.inMoveShape(3, 0)).toBe(false); // in line, but past jump range
   expect(g.inMoveShape(0, 0)).toBe(false); // standing still
-});
-
-test('inMoveShape rejects a jump-shaped distance when the jumps rule is off', () => {
-  const g = new Game(['S....', '.....'], { jumps: false });
-  expect(g.inMoveShape(2, 0)).toBe(false);
 });
 
 test('a Steel tile needs three visits, and T starts on one', () => {

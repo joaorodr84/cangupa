@@ -73,23 +73,6 @@ The priority can change at any time; the ID never does.
   on `CANGUPA-54`'s hint balance. Unscoped: store listing, pricing, and
   which in-app-purchase SDK (App Store/Play Store) to use aren't decided
   yet.
-- [P2] `CANGUPA-83` — Remove the `jumps` setting (the two-tile jump
-  toggle) from both apps: it isn't optional in practice.
-  `tools/pack-plan.js`'s `jump` range is nonzero from pack 1 (Meadow) on,
-  and `gen-packs.js` solves every pack's levels with jumps enabled, so
-  switching the setting off can already strand a player on a level that
-  needs a jump to finish. Touches
-  [config.js](apps/web-classic/js/config.js) (`DEFAULT_SETTINGS.jumps`,
-  saved in localStorage), [game.js](apps/web-classic/js/game.js)
-  (`rules.jumps` branches in `legalMoves`/`inMoveShape`),
-  [ui.js](apps/web-classic/js/ui.js)'s settings UI, and
-  [README.md](README.md)'s "(can be switched off in settings)" line; and
-  `apps/app`'s [settings.ts](apps/app/src/state/settings.ts) /
-  [useSettings.ts](apps/app/src/state/useSettings.ts),
-  [SettingsScreen.tsx](apps/app/src/components/SettingsScreen.tsx), and
-  the `jumps` string in
-  [en.ts](apps/app/src/i18n/strings/en.ts)/[pt.ts](apps/app/src/i18n/strings/pt.ts).
-  Breaking change to both apps' saved settings shape.
 - [P4] `CANGUPA-84` — Let some levels be completed in more than one
   distinct, named way, instead of today's single solved/unsolved state —
   e.g. a level offering "finish using the spiral path" and "finish
