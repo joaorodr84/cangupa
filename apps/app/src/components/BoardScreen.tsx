@@ -29,6 +29,8 @@ interface BoardScreenProps {
   readonly hasNext: boolean;
   readonly onBack: () => void;
   readonly onNext: () => void;
+  // Opens the rules screen mid-level (CANGUPA-103's Help button on BoardHud).
+  readonly onHelp: () => void;
   // Fired once per win (not again until a reset is followed by another win),
   // the moment ui.js's move() would have added the level to progress.done —
   // with the move count it was cleared in, for CANGUPA-30's per-level best.
@@ -46,6 +48,7 @@ export default function BoardScreen({
   hasNext,
   onBack,
   onNext,
+  onHelp,
   onLevelComplete,
 }: BoardScreenProps) {
   // A rectangular level is turned once, to the orientation the device is in when
@@ -97,6 +100,7 @@ export default function BoardScreen({
         onUndo={undo}
         onReset={reset}
         onHint={hint}
+        onHelp={onHelp}
       />
       <View
         style={styles.boardArea}

@@ -62,6 +62,9 @@ export interface Strings {
     readonly undo: string;
     readonly restart: string;
     readonly hint: string;
+    // Opens the rules screen (CANGUPA-103) — reachable mid-level now, not
+    // just from the home screen's own Rules button (CANGUPA-29).
+    readonly help: string;
     readonly deadEnd: string;
     readonly undoSomeMoves: string;
     readonly level: (levelNumber: number) => string;

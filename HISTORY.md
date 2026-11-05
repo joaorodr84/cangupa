@@ -1167,6 +1167,13 @@ confirming the "Moves"/"Tiles" section labels render, one confirming each
 tile row's swatch, queried by a new `help-swatch-<kind>` testID, actually
 carries the right palette colour).
 
+CANGUPA-103 followed through on that setup: `BoardHud.tsx` gained a fourth
+icon-button, Help, next to Undo/Restart/Hint and never disabled the way Hint is
+once a level is won, opening the same rules page mid-level — which required
+widening `App.tsx`'s `returnTo` pointer (CANGUPA-86) from `FooterTab` to the
+full `Panel`, so Back from a Board-opened Help screen returns to Board instead
+of wherever launched Board in the first place.
+
 ---
 
 ## Patterns, and what's still open

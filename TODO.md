@@ -286,11 +286,3 @@ The priority can change at any time; the ID never does.
   visit" — warrant an explicit tutorial moment. Feeds both
   `CANGUPA-101` (the rules page) and `CANGUPA-103` (per-tile tutorials)
   — decide this first.
-- [P2] `CANGUPA-103` — Make a tutorial for each tile type we currently
-  have — Common, Gold, Steel, and Arrow/Signpost (`CANGUPA-87`'s
-  rename), noting Arrow/Signpost exists in the engine (`ARROWS`/`dir`
-  in [game.js](apps/web-classic/js/game.js)) but has never actually
-  shipped in a level, so there's a real question of whether it counts
-  as one of "those we have now." Blocked on `CANGUPA-102`'s decision —
-  this only makes sense once "redirect to a tutorial" is the chosen
-  answer, rather than the current level-design-only approach.

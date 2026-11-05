@@ -18,7 +18,9 @@
 // `centre` column) instead of one left-aligned "Level N/Total · Moves M · R
 // left" line, and Undo/Restart/Hint became one joined icon-button group
 // (DigiSpin's `group`/`groupDivider`), kept at Cangupa's own fully-rounded
-// pill radius rather than DigiSpin's 8pt corners.
+// pill radius rather than DigiSpin's 8pt corners. CANGUPA-103 added a fourth
+// button, Help, opening the rules screen mid-level — the group's own always-
+// available escape hatch, never disabled the way Hint is once the level is won.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { type Status } from '../game/boardView';
@@ -36,9 +38,10 @@ interface BoardHudProps {
   readonly onUndo: () => void;
   readonly onReset: () => void;
   readonly onHint: () => void;
+  readonly onHelp: () => void;
 }
 
-export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onReset, onHint }: BoardHudProps) {
+export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onReset, onHint, onHelp }: BoardHudProps) {
   const t = useStrings();
   return (
     <View style={styles.wrap}>
@@ -71,6 +74,8 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
           disabled={status.kind === 'won'}
           onPress={onHint}
         />
+        <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
+        <GroupButton id="help" label={t.boardHud.help} palette={palette} onPress={onHelp} />
       </View>
     </View>
   );

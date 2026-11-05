@@ -34,6 +34,10 @@ Open work is listed in [TODO.md](TODO.md).
   colours are actually on the board and works as a quick reference rather
   than a wall of text. The screen now scrolls, since the new layout made it
   taller.
+- The app's board screen now has a Help button alongside Undo, Restart and
+  Hint, always available (even after winning the level), so you can check
+  the rules mid-level without leaving the board. Pressing Back from the
+  rules screen returns you to the level you were on.
 
 ### Changed
 

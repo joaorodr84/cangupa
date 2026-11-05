@@ -36,6 +36,7 @@ function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { l
     hasNext: true,
     onBack: noop,
     onNext: noop,
+    onHelp: noop,
     ...overrides,
   };
 }
@@ -70,6 +71,15 @@ test('pressing the back arrow calls onBack', async () => {
 
   await fireEvent.press(screen.getByLabelText('Back'));
   expect(onBack).toHaveBeenCalledTimes(1);
+});
+
+test('pressing Help calls onHelp (CANGUPA-103)', async () => {
+  const onHelp = jest.fn();
+
+  await renderScreen({ level: ['S1.'], onHelp });
+
+  await fireEvent.press(screen.getByLabelText('Help'));
+  expect(onHelp).toHaveBeenCalledTimes(1);
 });
 
 test('undo, reset and hint operate on the same board the HUD reflects', async () => {

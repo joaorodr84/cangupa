@@ -18,6 +18,7 @@ function renderHud(overrides: Partial<Parameters<typeof BoardHud>[0]> & { status
     onUndo: noop,
     onReset: noop,
     onHint: noop,
+    onHelp: noop,
     ...overrides,
   };
   return render(<BoardHud {...props} />);
@@ -64,6 +65,15 @@ test('pressing the back arrow calls onBack', async () => {
 
   await fireEvent.press(screen.getByLabelText('Back'));
   expect(onBack).toHaveBeenCalledTimes(1);
+});
+
+test('pressing Help calls onHelp, even once won (CANGUPA-103)', async () => {
+  const status: Status = { kind: 'won', moves: 5, hasNext: false };
+  const onHelp = jest.fn();
+  await renderHud({ status, onHelp });
+
+  await fireEvent.press(screen.getByLabelText('Help'));
+  expect(onHelp).toHaveBeenCalledTimes(1);
 });
 
 test('reset is always enabled', async () => {

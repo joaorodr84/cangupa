@@ -105,6 +105,20 @@ test('the home screen\'s Rules button opens the rules screen, and Back returns t
   expect(await screen.findByText('Play')).toBeTruthy();
 });
 
+test("the board screen's Help button opens the rules screen, and Back returns to the board, not home (CANGUPA-103)", async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByText('Play'));
+  expect(await screen.findByText('Level 1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByLabelText('Help'));
+  expect(screen.getByText('Rules')).toBeTruthy();
+
+  await fireEvent.press(screen.getByLabelText('‹ Back'));
+  expect(await screen.findByText('Level 1')).toBeTruthy();
+  expect(screen.queryByText('Play')).toBeNull();
+});
+
 test('opening a level from the Levels tab and pressing Back returns there, not home (CANGUPA-86)', async () => {
   await render(<App />);
 

@@ -26,21 +26,24 @@ import { DARK, paletteFor, type ThemeMode } from './src/theme/palette';
 type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
 
 // Which panels FooterNav covers (CANGUPA-31) — 'board' (reworked chrome-free
-// in CANGUPA-32) and 'help' (reachable only via the home screen's Rules
-// button, CANGUPA-29) are deliberately left out.
+// in CANGUPA-32) and 'help' (reachable from the home screen's Rules button,
+// CANGUPA-29, and from CANGUPA-103's BoardHud Help button) are deliberately
+// left out.
 function isFooterTab(panel: Panel): panel is FooterTab {
   return panel === 'home' || panel === 'levels' || panel === 'stats' || panel === 'settings';
 }
 
 // Board and Help are one-level detail screens pushed on top of whichever
-// footer tab was active, not peers in a general-purpose history stack
-// (CANGUPA-86) — Board has two real entry points (Home's Play button,
-// Levels' onSelectLevel), so a hardcoded "back always goes home" stranded a
-// level opened from Levels on the wrong tab. `returnTo` remembers which tab
-// launched the current Board/Help, the same way `openPack` already does for
-// the Levels tab's own pack-grid/pack-list depth, instead of a full stack —
-// which would risk a confusing bounce (Home → Board → Help → Board → …) for
-// screens that are never more than one level deep.
+// panel was active, not peers in a general-purpose history stack (CANGUPA-86)
+// — Board has two real entry points (Home's Play button, Levels'
+// onSelectLevel), so a hardcoded "back always goes home" stranded a level
+// opened from Levels on the wrong tab, and (CANGUPA-103) Help now also opens
+// from Board itself, not just Home. `returnTo` remembers whichever single
+// panel launched the current Board/Help, the same way `openPack` already
+// does for the Levels tab's own pack-grid/pack-list depth, instead of a full
+// stack — which would risk a confusing bounce (Home → Board → Help → Board →
+// …) for screens that are never more than one level deep from whatever's
+// right behind them.
 
 // The app root. Settings and progress are read before anything is shown, so
 // no panel flashes the wrong theme or the wrong level while they load —
@@ -121,10 +124,13 @@ function Shell({
   // list without using its own back arrow is tapping the Levels tab again
   // while already on it.
   const [openPack, setOpenPack] = useState<number | null>(null);
-  // Which footer tab Board/Help should return to (CANGUPA-86) — set by
-  // `goTo` every time either opens, defaulting to 'home' since that's the
-  // first screen there is anything to return from at all.
-  const [returnTo, setReturnTo] = useState<FooterTab>('home');
+  // Which panel Board/Help should return to (CANGUPA-86, widened by
+  // CANGUPA-103) — set by `goTo` every time either opens, defaulting to
+  // 'home' since that's the first screen there is anything to return from at
+  // all. Board is only ever opened from a footer tab, so its own `returnTo`
+  // is always one; Help can now also open from Board itself (CANGUPA-103's
+  // BoardHud button), so this has to be a full `Panel`, not just a `FooterTab`.
+  const [returnTo, setReturnTo] = useState<Panel>('home');
   const palette = paletteFor(settings.themeMode, useColorScheme());
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
   // Where Play opens into, not just progress.level (the last level played):
@@ -133,13 +139,12 @@ function Shell({
   // played out of order.
   const playLevel = firstUnsolvedLevel(progress, LEVELS.length);
 
-  // Opens Board or Help, remembering the footer tab to return to. `panel` is
-  // always a footer tab here: this is only ever called from a footer tab's
-  // own content (Home, Levels, Settings), never from Board or Help itself.
+  // Opens Board or Help, remembering whichever panel is active right now so
+  // its own Back returns to exactly that — a footer tab in most cases, or
+  // 'board' when Help is opened from BoardHud's own Help button (CANGUPA-103)
+  // mid-level, rather than from the home screen's Rules button.
   const goTo = (target: 'board' | 'help') => {
-    if (isFooterTab(panel)) {
-      setReturnTo(panel);
-    }
+    setReturnTo(panel);
     setPanel(target);
   };
 
@@ -220,6 +225,7 @@ function Shell({
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
         onBack={() => setPanel(returnTo)}
         onNext={() => onChangeLevel(currentLevel + 1)}
+        onHelp={() => goTo('help')}
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
       />
     );

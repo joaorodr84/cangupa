@@ -59,6 +59,7 @@ export const en: Strings = {
     undo: 'Undo',
     restart: 'Restart',
     hint: 'Hint',
+    help: 'Help',
     deadEnd: 'Dead end.',
     undoSomeMoves: 'Undo a few moves.',
     level: (levelNumber) => `Level ${levelNumber}`,

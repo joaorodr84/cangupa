@@ -56,6 +56,7 @@ export const pt: Strings = {
     undo: 'Desfazer',
     restart: 'Reiniciar',
     hint: 'Dica',
+    help: 'Ajuda',
     deadEnd: 'Beco sem saída.',
     undoSomeMoves: 'Desfaz algumas jogadas.',
     level: (levelNumber) => `Nível ${levelNumber}`,
