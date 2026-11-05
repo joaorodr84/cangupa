@@ -971,6 +971,53 @@ green (790 tests).
 
 ---
 
+## Era 33 — Nov 5 (continued): tile colours become theme-independent, and two tiles get names
+
+CANGUPA-87 decided tile-type colours should be a fixed brand constant, not
+something each visual theme recolors, and settled names/colours for two
+tiles. `apps/app`'s `theme/palette.ts` tile colours (`tile`/`tile2`/
+`tile3`/edges) were already theme-independent constants as of
+CANGUPA-42/43, so the real gap was `apps/web-classic/style.css`:
+`--tile`/`--tile2`/`--edge`/`--edge2` used to vary per `[data-theme="..."]`
+block (classic's common tile was green, sand's was orange-red); they now
+live in `:root` as fixed constants — the same cyan (`#4cc9f0`)/gold
+(`#ffc857`) `apps/app` already used — and the five theme blocks only vary
+`--bg1`/`--bg2`/`--frame`/`--pit`/`--ink`/`--muted`/`--panel`/`--stars`
+now.
+
+The arrow tile (`ARROWS`/`dir` in `game.js`, implemented since CANGUPA-69
+but never rendered or shipped in a real level) is renamed Signpost
+everywhere it's player-facing and recoloured green, freeing raspberry for
+the future Gate tile: `theme/palette.ts`'s `tileArrow`/`edgeArrow`/
+`markArrow` fields are renamed `tileSignpost`/`edgeSignpost`/
+`markSignpost` and changed from raspberry (`#9d1057`/`#ba5889`) to green
+(`#2f9e44`/`#7cd48f`); `Board.tsx`'s call sites, `i18n/strings/{types,en,
+pt}.ts`'s help-screen strings (`arrowBold`/`arrowRest` →
+`signpostBold`/`signpostRest`), and the pack 5 (Billabong)/pack 6
+(Ridge) blurbs in `en.ts` and `tools/pack-plan.js` all follow. The
+internal mechanic identifiers (`ARROWS`, `TileView.arrow`,
+`ArrowDirection`, `ArrowMark`, `tile-arrow-*` testIDs) were deliberately
+left alone, since they name the mechanic itself, not the tile's display
+name.
+
+The second tile, Gate (raspberry red, a new unimplemented entry-locked
+tile that mirrors Signpost's exit-side restriction on the entry side
+instead), is a naming/colour decision only — written up as idea #22 in
+`docs/tile-ideas.md`, distinct from that doc's Pillar (#16). Actually
+implementing it is split out as the new CANGUPA-104, which the
+rebuilt-packs task CANGUPA-88 is now blocked on. Changing the pack 5/6
+blurb text changed `pack-plan.js`'s cache-key hash for those two pools, so
+`tools/packs.json`, `apps/app/src/game/packs.ts`, and `tools/visualizers/`
+were regenerated; only the two blurb strings changed in the output,
+packs 5/6's levels came out byte-identical, and packs 7-10 stayed frozen.
+
+One commit. Verified with `node tools/test.js`, `npx tsc --noEmit` clean
+in `apps/app`, and the full `apps/app` Jest suite green (790 tests,
+unchanged count) — not checked live in a browser, no browser-automation
+tooling available in this environment.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

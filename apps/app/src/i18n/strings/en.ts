@@ -33,8 +33,8 @@ export const en: Strings = {
     doubleRest: ' (yellow) need two visits. The strokes on a tile show how many visits it has left.',
     steelBold: 'Steel tiles',
     steelRest: ' (grey-blue) need three visits.',
-    arrowBold: 'Arrow tiles',
-    arrowRest: ' (raspberry) can only be left through the edge where the triangle is.',
+    signpostBold: 'Signpost tiles',
+    signpostRest: ' (green) can only be left through the edge where the triangle is.',
     outOfMoves: 'If you run out of moves, undo or restart.',
     note: 'Tap a highlighted tile to play.',
   },
@@ -99,11 +99,11 @@ export const en: Strings = {
     },
     {
       name: 'Billabong',
-      blurb: 'Arrow tiles can only be left the way they point.',
+      blurb: 'Signpost tiles can only be left the way they point.',
     },
     {
       name: 'Ridge',
-      blurb: 'Arrows and metals, gold on one level and steel on the next.',
+      blurb: 'Signposts and metals, gold on one level and steel on the next.',
     },
     {
       name: 'Mesa',

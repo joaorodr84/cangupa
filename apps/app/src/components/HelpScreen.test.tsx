@@ -11,5 +11,5 @@ test('renders the rules heading and every rule', async () => {
   expect(screen.getByText('Jump:')).toBeTruthy();
   expect(screen.getByText('Gold tiles')).toBeTruthy();
   expect(screen.getByText('Steel tiles')).toBeTruthy();
-  expect(screen.getByText('Arrow tiles')).toBeTruthy();
+  expect(screen.getByText('Signpost tiles')).toBeTruthy();
 });

@@ -9,6 +9,16 @@ Open work is listed in [TODO.md](TODO.md).
 
 ## 2026-11-05
 
+### Changed
+
+- Every tile type now keeps the same colours in every visual theme —
+  the common tile, the gold double-tile and the steel triple-tile no
+  longer change look when you switch themes. Themes still differ in
+  background, frame, pit and other decoration.
+- The one-way directional tile is now called "Signpost" instead of
+  "Arrow", and is green instead of raspberry/magenta, in the help
+  screens and level pack descriptions of both the web game and the app.
+
 ### Fixed
 
 - Meadow (the app's first level pack)'s easiest levels no longer solve as a

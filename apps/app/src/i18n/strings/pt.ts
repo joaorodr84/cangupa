@@ -30,8 +30,8 @@ export const pt: Strings = {
     doubleRest: ' (amarelas) precisam de duas visitas. Os riscos numa casa mostram quantas visitas ainda lhe restam.',
     steelBold: 'Casas de aço',
     steelRest: ' (azul-acinzentadas) precisam de três visitas.',
-    arrowBold: 'Casas com seta',
-    arrowRest: ' (cor de framboesa) só se podem deixar pelo lado onde está o triângulo.',
+    signpostBold: 'Casas de sinalização',
+    signpostRest: ' (verdes) só se podem deixar pelo lado onde está o triângulo.',
     outOfMoves: 'Se ficares sem jogadas, desfaz ou reinicia.',
     note: 'Toca numa casa destacada para jogar.',
   },
@@ -96,11 +96,11 @@ export const pt: Strings = {
     },
     {
       name: 'Lagoa',
-      blurb: 'As casas com seta só se deixam no sentido para onde apontam.',
+      blurb: 'As casas de sinalização só se deixam no sentido para onde apontam.',
     },
     {
       name: 'Crista',
-      blurb: 'Setas e metais, ouro num nível e aço no seguinte.',
+      blurb: 'Sinalização e metais, ouro num nível e aço no seguinte.',
     },
     {
       name: 'Mesa',

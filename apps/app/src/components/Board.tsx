@@ -232,13 +232,13 @@ interface TileProps {
 // The width of one visit-left stroke, in percent of the tile.
 const STROKE_WIDTH = 7.5;
 
-// The face and the lip of a tile: an arrow tile is raspberry whatever its visits, otherwise the kind sets it.
+// The face and the lip of a tile: a Signpost tile is green whatever its visits, otherwise the kind sets it.
 function faceColor(tile: TileView, palette: Palette): string {
-  if (tile.arrow) return palette.tileArrow;
+  if (tile.arrow) return palette.tileSignpost;
   return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
 }
 function edgeColor(tile: TileView, palette: Palette): string {
-  if (tile.arrow) return palette.edgeArrow;
+  if (tile.arrow) return palette.edgeSignpost;
   return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
 }
 
@@ -298,7 +298,7 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
         tile.tip && { transform: [{ scale }] },
       ]}
     >
-      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} direction={tile.arrow} color={palette.markArrow} />}
+      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} direction={tile.arrow} color={palette.markSignpost} />}
       {!tile.arrow && tile.kind >= 2 && tile.left >= 1 && (
         <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}

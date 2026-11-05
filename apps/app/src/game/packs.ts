@@ -238,7 +238,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Billabong",
-    blurb: "Arrow tiles can only be left the way they point.",
+    blurb: "Signpost tiles can only be left the way they point.",
     width: 5,
     height: 5,
     levels: [
@@ -296,7 +296,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Ridge",
-    blurb: "Arrows and metals, gold on one level and steel on the next.",
+    blurb: "Signposts and metals, gold on one level and steel on the next.",
     width: 6,
     height: 5,
     levels: [

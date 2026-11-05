@@ -36,18 +36,19 @@ export interface Palette {
   // The "drop shadow" a tile sits on, one shade per tile kind.
   readonly edge: string;
   readonly edge2: string;
-  // The Steel tile (three visits) and the arrow tile (CANGUPA-68, CANGUPA-69), colours chosen on the
-  // tile-metals review page. Like tile/tile2 they are this game's own and stay the same in both themes.
-  // The arrow tile's lip is lighter than its face: a dark face's darker lip would vanish on the dark board.
+  // The Steel tile (three visits) and the Signpost tile (CANGUPA-68, CANGUPA-69's arrow tile, renamed and
+  // recoloured green by CANGUPA-87 — raspberry is reserved for the future Gate tile instead, see
+  // docs/tile-ideas.md). Like tile/tile2 they are this game's own and stay the same in both themes. The
+  // Signpost tile's lip is lighter than its face: a dark face's darker lip would vanish on the dark board.
   readonly tile3: string;
   readonly edge3: string;
-  readonly tileArrow: string;
-  readonly edgeArrow: string;
+  readonly tileSignpost: string;
+  readonly edgeSignpost: string;
   // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on steel
-  // and on the raspberry arrow tile.
+  // and on the green Signpost tile.
   readonly mark2: string;
   readonly mark3: string;
-  readonly markArrow: string;
+  readonly markSignpost: string;
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
@@ -81,11 +82,11 @@ export const DARK: Palette = {
   edge2: '#a8741a',
   tile3: '#587790',
   edge3: '#3c5162',
-  tileArrow: '#9d1057',
-  edgeArrow: '#ba5889',
+  tileSignpost: '#2f9e44',
+  edgeSignpost: '#7cd48f',
   mark2: '#3b2a06',
   mark3: '#ffffff',
-  markArrow: '#ffffff',
+  markSignpost: '#ffffff',
   ink: THEMES_DARK.text,
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
@@ -105,11 +106,11 @@ export const LIGHT: Palette = {
   edge2: '#a8741a',
   tile3: '#587790',
   edge3: '#3c5162',
-  tileArrow: '#9d1057',
-  edgeArrow: '#ba5889',
+  tileSignpost: '#2f9e44',
+  edgeSignpost: '#7cd48f',
   mark2: '#3b2a06',
   mark3: '#ffffff',
-  markArrow: '#ffffff',
+  markSignpost: '#ffffff',
   ink: THEMES_LIGHT.text,
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,

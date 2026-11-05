@@ -33,8 +33,8 @@ export interface Strings {
     readonly doubleRest: string;
     readonly steelBold: string;
     readonly steelRest: string;
-    readonly arrowBold: string;
-    readonly arrowRest: string;
+    readonly signpostBold: string;
+    readonly signpostRest: string;
     readonly outOfMoves: string;
     readonly note: string;
   };

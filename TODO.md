@@ -155,58 +155,32 @@ The priority can change at any time; the ID never does.
   investigation first since it decides the shape of the fix. Once
   decided, consider whether DigiSpin's own shell has the same
   hardcoded-back inconsistency and would benefit from the same fix.
-- [P4] `CANGUPA-87` — Give tile types a fixed, canonical colour
-  independent of the visual theme, and settle names/colours for two
-  tiles. Today a tile's colour comes from the selected theme
-  ([style.css](apps/web-classic/style.css)'s `--tile`/`--tile2` vary per
-  `data-theme` — `classic`'s common tile is already green, `sand`'s is
-  orange-red), so "the common tile is always blue" is itself a decision
-  to make tile-type colour a brand constant that themes no longer
-  override, not just a colour pick — needs deciding how that coexists
-  with the existing per-theme palette (do themes keep changing
-  background/frame/edge only, and leave tile colours alone?).
-  Two tiles to name and colour:
-  1. The existing one-way **arrow tile** (`ARROWS`/`dir` in
-     [game.js](apps/web-classic/js/game.js) — the rule is already
-     implemented, it has just never been rendered or shipped in a real
-     level). Renamed **Signpost**, coloured green — it reads as "go,"
-     and green isn't claimed by any other tile type.
-  2. A new, unimplemented tile: can only be *landed on* from one
-     direction, the mirror of the arrow tile's exit-side restriction.
-     Not in [docs/tile-ideas.md](docs/tile-ideas.md)'s existing list,
-     and distinct from that doc's Pillar idea (#16 — a true impassable
-     obstacle, not a tile). Named **Gate** rather than "wall," since
-     "wall" next to Pillar would read as impassable, when this tile is
-     still enterable from its one open side. Coloured raspberry red.
-  Common tile stays blue throughout. No engine/generator work scoped
-  yet for the Gate tile — this task is the naming/colour/vision
-  decision, not the implementation.
-- [P3] `CANGUPA-88` — Generate packs 7, 8 and 9 (Mesa, Gorge, Plateau)
-  around the new Gate tile from `CANGUPA-87`, following the same
-  teaching ramp packs 1-6 already use in
-  [pack-plan.js](tools/pack-plan.js):
-  - **Pack 7** — common tiles plus Gate only. Mirrors pack 5
-    (Billabong)'s "common + one new mechanic, nothing else" (`tiles:
-    [1]`, the mechanic as the only addition).
-  - **Pack 8** — Gate plus one metal, alternating gold and steel level
-    by level. Mirrors pack 6 (Ridge)'s `mixes` field (arrows alternating
-    with gold on one variant, steel on the next).
-  - **Pack 9** — Gate plus both metals together on the same level.
-    Mirrors pack 4 (Outcrop)'s combine step (`tiles: [1, 2, 3]`).
-  Pack 10 (Outback) is deliberately left out of this task's scope.
-  Blocked on:
-  1. `CANGUPA-87`'s naming/colour decision landing first.
-  2. The Gate tile actually existing in the engine and generator — it
-     has no character, no `legalMoves` rule, no solver-key impact, and
-     no generator-walk support today. None of that is built by this
-     task; it's a prerequisite for it.
-  3. An explicit decision to un-freeze and overwrite packs 7-9's
-     `frozen: true` levels in `pack-plan.js`/`tools/packs.json` — today
-     locked as a historical record that `CANGUPA-68`/`CANGUPA-69`
-     deliberately don't touch — rather than appending the new tile as
-     fresh packs after 10 instead. This task assumes the overwrite
-     approach; if taken, keep the superseded levels aside the way
-     `MEADOW_V1_LEVELS` did for Meadow's `CANGUPA-82` regeneration.
+- [P2] `CANGUPA-104` — Implement the Gate tile in the engine and
+  generator: a tile that can only be *landed on* from one side (the
+  other three closed to it), leaving it is unrestricted once there —
+  the mirror of the Signpost/arrow tile's exit-side restriction
+  (`CANGUPA-69`). Named and coloured (raspberry red) by `CANGUPA-87`;
+  see [docs/tile-ideas.md](docs/tile-ideas.md)'s idea #22 for the
+  rule/engine/generator sketch. Needed before `CANGUPA-88` can
+  generate any Gate levels: today it has no level character, no
+  `legalMoves` rule in `game.js`/`board.ts`, no solver-key impact
+  (none needed — which side is open is fixed per tile, not stateful,
+  so it doesn't change the position the way a switch/gate pair would),
+  and no generator-walk support in `tools/level-generator.js`/
+  `tools/pack-generator.js`. Scoped to the mechanic itself, not any
+  shipped level — `CANGUPA-88` is where it actually appears in a pack.
+- [P2] `CANGUPA-88` — Archive packs 7 through 10's (Mesa, Gorge,
+  Plateau, Outback) current `frozen: true` levels — the same way
+  `MEADOW_V1_LEVELS` kept Meadow's superseded levels aside for
+  `CANGUPA-82` — and rebuild all four as fresh sections around the new
+  Gate tile (`CANGUPA-87` settled its name/colour: raspberry red),
+  following the same teaching ramp packs 1-6 already use in
+  [pack-plan.js](tools/pack-plan.js). Owner-confirmed scope: all four
+  packs are redesigned, not just 7-9 — Outback is not left untouched.
+  Blocked on the Gate tile actually existing in the engine and
+  generator — it has no character, no `legalMoves` rule, no
+  solver-key impact, and no generator-walk support today. None of
+  that is built by this task; it is `CANGUPA-104`'s job.
 - [P4] `CANGUPA-89` — Full audit of `apps/app` (the Expo/React Native
   app) for bugs, improvements, and performance issues. Deliberately
   broad and unscoped: the existing Jest suite (796 tests) and `tsc
