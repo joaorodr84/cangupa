@@ -31,11 +31,19 @@ The priority can change at any time; the ID never does.
   the player makes a single move.
 - [P2] `CANGUPA-72` — The hint solver (`Game.solve`) can run out of memory or
   take many seconds on some big levels turned for a portrait screen, so
-  pressing Hint could hang the app. Packs 8 to 10 (frozen) are the problem:
-  50 of their 100 turned levels pass 400,000 positions, one run ended in
-  `Set maximum size exceeded`. Trying the move with the fewest onward options
-  first solves 95 of them, 5 still fail and the slowest takes 14 seconds.
-  Needs a better search, solving off the UI thread, or storing each
+  pressing Hint could hang the app. Originally found on packs 8 to 10 while
+  they were still frozen (from `CANGUPA-56`); `CANGUPA-88` later rebuilt
+  packs 7 to 10 around the Gate tile, with fresh content, so re-checked
+  against what actually ships today: the *rectangular* packs — 8 Gorge
+  (7×6) and 10 Outback (8×7) — still hit it for real, about 15 of each
+  pack's 50 levels failing a 400,000-position capped search when turned to
+  portrait. The *square* packs — 7 Mesa (6×6) and 9 Plateau (7×7) — are
+  never turned at all (`orient.ts` only turns a rectangular level), so they
+  were never actually at risk, in this round or the original one. Trying
+  the move with the fewest onward options first (tested against the old
+  content, not applied) solved 95 of 100 turned levels then, 5 still
+  failing with the slowest at 14 seconds — not re-verified against today's
+  levels. Needs a better search, solving off the UI thread, or storing each
   level's solution in packs.json.
 - [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: the game
   starts with a fixed balance of 3 hints, shown as a badge on the hint
@@ -155,22 +163,6 @@ The priority can change at any time; the ID never does.
   investigation first since it decides the shape of the fix. Once
   decided, consider whether DigiSpin's own shell has the same
   hardcoded-back inconsistency and would benefit from the same fix.
-- [P2] `CANGUPA-88` — Archive packs 7 through 10's (Mesa, Gorge,
-  Plateau, Outback) current `frozen: true` levels — the same way
-  `MEADOW_V1_LEVELS` kept Meadow's superseded levels aside for
-  `CANGUPA-82` — and rebuild all four as fresh sections around the new
-  Gate tile (`CANGUPA-87` settled its name/colour: raspberry red;
-  `CANGUPA-104` built the mechanic itself), following the same
-  teaching ramp packs 1-6 already use in
-  [pack-plan.js](tools/pack-plan.js). Owner-confirmed scope: all four
-  packs are redesigned, not just 7-9 — Outback is not left untouched.
-  `CANGUPA-104` gave `tools/level-generator.js`'s `randomWalk` a
-  `gates` option (mirroring its existing `arrows` one) that places
-  solvable Gate tiles in a walk, but `tools/pack-generator.js` (the
-  rotation/mirroring in `variants()`, `hasKinds()`, `buildPool()`'s
-  pool-building) has no Gate support yet — wiring that up, and
-  `pack-plan.js`'s actual plan entries for packs 7-10, is this task's
-  own job, not already done.
 - [P4] `CANGUPA-89` — Full audit of `apps/app` (the Expo/React Native
   app) for bugs, improvements, and performance issues. Deliberately
   broad and unscoped: the existing Jest suite (796 tests) and `tsc
@@ -263,8 +255,14 @@ The priority can change at any time; the ID never does.
   check: contrast across every theme (`style.css`'s per-`data-theme`
   `--ink`/`--muted`/`--tile` sets, some combinations untested for
   contrast), and whether `apps/app`'s text respects OS
-  dynamic-type/font-scaling settings (unconfirmed). Investigation only,
-  but should land before `CANGUPA-87`/`CANGUPA-88` are built, not after.
+  dynamic-type/font-scaling settings (unconfirmed). Investigation only
+  — didn't land before `CANGUPA-87`/`CANGUPA-88` after all (no owner
+  decision blocked on it, so the batch moved ahead), but the specific
+  colour-pair issue is already mitigated in practice: `apps/app`'s
+  `Board.tsx` draws the same triangle mark on both Signpost and Gate
+  tiles that Gold/Steel already get from their dot-count overlay, so
+  neither depends on colour alone. The contrast and dynamic-type
+  questions are still open.
 - [P3] `CANGUPA-98` — Analyze motor accessibility — maybe add multiple
   ways of controlling the kangaroo. `apps/web-classic` already has two
   input modes (tap/click a tile, and keyboard — `WASD`/arrow keys,

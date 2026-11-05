@@ -32,6 +32,8 @@ export const pt: Strings = {
     steelRest: ' (azul-acinzentadas) precisam de três visitas.',
     signpostBold: 'Casas de sinalização',
     signpostRest: ' (verdes) só se podem deixar pelo lado onde está o triângulo.',
+    gateBold: 'Casas de portão',
+    gateRest: ' (cor de framboesa) só se podem entrar pelo lado onde está o triângulo.',
     outOfMoves: 'Se ficares sem jogadas, desfaz ou reinicia.',
     note: 'Toca numa casa destacada para jogar.',
   },
@@ -104,19 +106,19 @@ export const pt: Strings = {
     },
     {
       name: 'Mesa',
-      blurb: 'Tabuleiros largos onde um salto errado te deixa preso.',
+      blurb: 'As casas de portão só podem ser pisadas a partir de um lado.',
     },
     {
       name: 'Desfiladeiro',
-      blurb: 'Caminhos estreitos e muitas casas de ouro.',
+      blurb: 'Portões e metais, ouro num nível e aço no seguinte.',
     },
     {
       name: 'Planalto',
-      blurb: 'Um tabuleiro grande e percursos longos para planear.',
+      blurb: 'Um tabuleiro maior com casas de ouro e de aço por todo o lado.',
     },
     {
       name: 'Ermo',
-      blurb: 'O maior tabuleiro e os percursos mais longos de todos.',
+      blurb: 'O maior tabuleiro e os percursos mais longos de todos, com ouro e aço por todo o lado.',
     },
   ],
   packRange: (first, last, solved, total) => `Níveis ${first}–${last} · ${solved}/${total} resolvidos`,

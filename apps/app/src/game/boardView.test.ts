@@ -65,6 +65,19 @@ describe('tilesOf', () => {
     expect(at(0, 0)?.arrow).toBeNull();
   });
 
+  it('names the one open side of a Gate tile (CANGUPA-104), and nothing for other tiles', () => {
+    // 'R' (entered moving right) opens on the left, the side moving right comes from — the
+    // mirror of an arrow's own direction, which names where it points rather than where it opens.
+    const g = new Game(['SRD', 'UL1']);
+    const at = (x: number, y: number) => tilesOf(g, { hints: true }).find((t) => t.x === x && t.y === y);
+    expect(at(1, 0)?.gate).toBe('left');
+    expect(at(2, 0)?.gate).toBe('up');
+    expect(at(0, 1)?.gate).toBe('down');
+    expect(at(1, 1)?.gate).toBe('right');
+    expect(at(2, 1)?.gate).toBeNull();
+    expect(at(0, 0)?.gate).toBeNull();
+  });
+
   it('marks the kangaroo\'s current tile worn once used up, and a used tile left behind as gone', () => {
     const g = new Game(['S1']);
     g.play({ x: 1, y: 0 });

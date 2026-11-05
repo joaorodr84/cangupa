@@ -1071,6 +1071,14 @@ mirroring the existing arrow ones, plus a 200-trial check that
 --noEmit` clean in `apps/app`, and the full `apps/app` Jest suite green
 (793 tests, up from 790 — three new Gate-tile tests in `board.test.ts`).
 
+CANGUPA-88 then picked up exactly where this left off, rebuilding packs
+7-10 (Mesa, Gorge, Plateau, Outback) around Gate — wiring the
+rotation/mirroring, pool-building, and portrait-turning support
+`pack-generator.js`/`orient.ts` still lacked, un-freezing the four packs,
+and giving Gate its first real levels, its rendering, and its help-screen
+rule line, while packs 9-10 stayed Gold+Steel only to keep within the
+project's three-tile-kind limit.
+
 ---
 
 ## Patterns, and what's still open

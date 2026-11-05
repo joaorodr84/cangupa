@@ -44,11 +44,16 @@ export interface Palette {
   readonly edge3: string;
   readonly tileSignpost: string;
   readonly edgeSignpost: string;
-  // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on steel
-  // and on the green Signpost tile.
+  // The Gate tile (CANGUPA-104, shipped from CANGUPA-88): raspberry red, the Signpost tile's own
+  // colour before CANGUPA-87 moved it to green and freed this one up.
+  readonly tileGate: string;
+  readonly edgeGate: string;
+  // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on
+  // steel, and on the green Signpost and raspberry Gate tiles.
   readonly mark2: string;
   readonly mark3: string;
   readonly markSignpost: string;
+  readonly markGate: string;
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
@@ -84,9 +89,12 @@ export const DARK: Palette = {
   edge3: '#3c5162',
   tileSignpost: '#2f9e44',
   edgeSignpost: '#7cd48f',
+  tileGate: '#9d1057',
+  edgeGate: '#ba5889',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markSignpost: '#ffffff',
+  markGate: '#ffffff',
   ink: THEMES_DARK.text,
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
@@ -108,9 +116,12 @@ export const LIGHT: Palette = {
   edge3: '#3c5162',
   tileSignpost: '#2f9e44',
   edgeSignpost: '#7cd48f',
+  tileGate: '#9d1057',
+  edgeGate: '#ba5889',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markSignpost: '#ffffff',
+  markGate: '#ffffff',
   ink: THEMES_LIGHT.text,
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,

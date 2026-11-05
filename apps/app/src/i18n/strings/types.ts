@@ -35,6 +35,8 @@ export interface Strings {
     readonly steelRest: string;
     readonly signpostBold: string;
     readonly signpostRest: string;
+    readonly gateBold: string;
+    readonly gateRest: string;
     readonly outOfMoves: string;
     readonly note: string;
   };

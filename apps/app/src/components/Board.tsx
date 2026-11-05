@@ -232,13 +232,16 @@ interface TileProps {
 // The width of one visit-left stroke, in percent of the tile.
 const STROKE_WIDTH = 7.5;
 
-// The face and the lip of a tile: a Signpost tile is green whatever its visits, otherwise the kind sets it.
+// The face and the lip of a tile: a Signpost tile is green and a Gate tile (CANGUPA-104) raspberry
+// whatever its visits, otherwise the kind sets it.
 function faceColor(tile: TileView, palette: Palette): string {
   if (tile.arrow) return palette.tileSignpost;
+  if (tile.gate) return palette.tileGate;
   return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
 }
 function edgeColor(tile: TileView, palette: Palette): string {
   if (tile.arrow) return palette.edgeSignpost;
+  if (tile.gate) return palette.edgeGate;
   return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
 }
 
@@ -258,17 +261,33 @@ function Strokes({ x, y, count, color }: { readonly x: number; readonly y: numbe
   );
 }
 
-// An arrow tile's mark: a triangle on the edge it can be left by. Drawn in the tile's own 64 by 57 units
-// (preserveAspectRatio none stretches it to the tile's face), 15 deep and 28 wide, as chosen on the review page.
+// An arrow tile's mark: a triangle on the edge it can be left by. A Gate tile's own mark
+// (CANGUPA-104) reuses the same shape on the edge it can be entered from instead — `tile.gate`
+// already names that edge (boardView.ts computes the opposite of Game.gate's travel direction),
+// so this is the same drawing either way, just a different `kind`/colour. Drawn in the tile's own
+// 64 by 57 units (preserveAspectRatio none stretches it to the tile's face), 15 deep and 28 wide,
+// as chosen on the review page.
 const EDGE_TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
   right: '45,14.5 59.5,28.5 45,42.5',
   left: '19,14.5 4.5,28.5 19,42.5',
   up: '18,19 32,4.5 46,19',
   down: '18,38 32,52.5 46,38',
 };
-function ArrowMark({ x, y, direction, color }: { readonly x: number; readonly y: number; readonly direction: ArrowDirection; readonly color: string }) {
+function ArrowMark({
+  x,
+  y,
+  kind,
+  direction,
+  color,
+}: {
+  readonly x: number;
+  readonly y: number;
+  readonly kind: 'arrow' | 'gate';
+  readonly direction: ArrowDirection;
+  readonly color: string;
+}) {
   return (
-    <Svg testID={`tile-arrow-${x}-${y}-${direction}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
+    <Svg testID={`tile-${kind}-${x}-${y}-${direction}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
       <Polygon points={EDGE_TRIANGLE[direction]} fill={color} stroke={color} strokeWidth={1.5} strokeLinejoin="round" />
     </Svg>
   );
@@ -298,8 +317,9 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
         tile.tip && { transform: [{ scale }] },
       ]}
     >
-      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} direction={tile.arrow} color={palette.markSignpost} />}
-      {!tile.arrow && tile.kind >= 2 && tile.left >= 1 && (
+      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markSignpost} />}
+      {tile.gate && <ArrowMark x={tile.x} y={tile.y} kind="gate" direction={tile.gate} color={palette.markGate} />}
+      {!tile.arrow && !tile.gate && tile.kind >= 2 && tile.left >= 1 && (
         <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}
     </Animated.View>

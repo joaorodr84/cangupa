@@ -22,6 +22,7 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
     { bold: t.help.doubleBold, rest: t.help.doubleRest },
     { bold: t.help.steelBold, rest: t.help.steelRest },
     { bold: t.help.signpostBold, rest: t.help.signpostRest },
+    { bold: t.help.gateBold, rest: t.help.gateRest },
     { rest: t.help.outOfMoves },
   ];
 

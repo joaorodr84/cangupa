@@ -35,6 +35,8 @@ export const en: Strings = {
     steelRest: ' (grey-blue) need three visits.',
     signpostBold: 'Signpost tiles',
     signpostRest: ' (green) can only be left through the edge where the triangle is.',
+    gateBold: 'Gate tiles',
+    gateRest: ' (raspberry) can only be entered through the edge where the triangle is.',
     outOfMoves: 'If you run out of moves, undo or restart.',
     note: 'Tap a highlighted tile to play.',
   },
@@ -107,19 +109,19 @@ export const en: Strings = {
     },
     {
       name: 'Mesa',
-      blurb: 'Wide boards where one wrong jump leaves you stranded.',
+      blurb: 'Gate tiles can only be entered from one side.',
     },
     {
       name: 'Gorge',
-      blurb: 'Narrow routes and plenty of gold tiles.',
+      blurb: 'Gates and metals, gold on one level and steel on the next.',
     },
     {
       name: 'Plateau',
-      blurb: 'A big board and long routes to plan.',
+      blurb: 'A bigger board with gold and steel tiles throughout.',
     },
     {
       name: 'Outback',
-      blurb: 'The biggest board and the longest walks of all.',
+      blurb: 'The biggest board and the longest walks of all, with gold and steel throughout.',
     },
   ],
   packRange: (first, last, solved, total) => `Levels ${first}–${last} · ${solved}/${total} solved`,

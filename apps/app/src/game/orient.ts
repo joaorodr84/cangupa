@@ -9,9 +9,11 @@
 // are generated landscape (tools/pack-plan.js) and stay that way in the data.
 import { type Level } from './board';
 
-// An arrow tile points a way, and swapping rows for columns swaps its axis: a tile pointing right now
-// points down, one pointing up now points left, and the other two likewise. Every other character stays.
-const TRANSPOSED: Readonly<Record<string, string>> = { '>': 'v', v: '>', '<': '^', '^': '<' };
+// An arrow (Signpost) tile points a way, and swapping rows for columns swaps its axis: a tile
+// pointing right now points down, one pointing up now points left, and the other two likewise.
+// A Gate tile (CANGUPA-104) turns the same way, with its own character set. Every other character
+// stays.
+const TRANSPOSED: Readonly<Record<string, string>> = { '>': 'v', v: '>', '<': '^', '^': '<', R: 'D', D: 'R', L: 'U', U: 'L' };
 
 export function orientLevel(level: Level, landscape: boolean): Level {
   const height = level.length;

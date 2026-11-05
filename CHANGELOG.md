@@ -9,6 +9,25 @@ Open work is listed in [TODO.md](TODO.md).
 
 ## 2026-11-05
 
+### Added
+
+- The app's Mesa pack (7, 6×6) is redesigned to teach the Gate tile on its
+  own, with only Common and Gate tiles — the first of the four previously
+  frozen Gold-only packs to be rebuilt around the Gate tile.
+- The app's Gorge pack (8, 7×6) is redesigned to combine the Gate tile with
+  one metal tile, alternating Gold and Steel from level to level.
+- The app's Plateau (9, 7×7) and Outback (10, 8×7) packs are redesigned to
+  combine Common, Gold and Steel tiles together — no Gate tiles in either
+  pack.
+- The Gate tile now has a visual appearance in the app: a raspberry-red
+  tile with a white triangle on the edge it must be entered from, mirroring
+  how Signpost tiles are drawn. The engine already enforced the rule, but
+  this is the first time a Gate tile is visible or playable in a shipped
+  level.
+- The app's help screen now explains the Gate tile, in English and
+  Portuguese: "Gate tiles (raspberry) can only be entered through the edge
+  where the triangle is."
+
 ### Changed
 
 - Every tile type now keeps the same colours in every visual theme —
@@ -32,6 +51,10 @@ Open work is listed in [TODO.md](TODO.md).
   packs were regenerated to fix the 79 affected levels found in them; the
   same issue in 67 levels across the frozen Mesa, Gorge, Plateau and
   Outback packs is left for a follow-up.
+- Gate tiles in the app's rectangular levels (Gorge and Outback) now point
+  the correct direction when the board is turned to fit a portrait phone
+  screen — previously this case wasn't handled and could have stranded the
+  player on a level that got turned.
 
 ### Removed
 

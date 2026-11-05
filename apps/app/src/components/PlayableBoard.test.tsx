@@ -278,3 +278,20 @@ test('an arrow tile only lets the kangaroo leave the way it points', async () =>
   expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();
   expect(screen.queryByTestId('tile-press-1-1')).toBeNull();
 });
+
+test('a Gate tile shows a triangle on the edge it can be entered by, and no strokes (CANGUPA-104)', async () => {
+  // 'SL1': the gate at (1,0) only opens to leftward entry, so its mark sits on its right edge.
+  await render(<Harness level={['SL1']} />);
+
+  expect(screen.getByTestId('tile-gate-1-0-right')).toBeTruthy();
+  expect(screen.queryByTestId('tile-strokes-1-0')).toBeNull();
+});
+
+test('a Gate tile only lets the kangaroo enter the way it names (CANGUPA-104)', async () => {
+  // 'SL1': stepping right onto the gate (entering while moving right) is blocked, since it only
+  // opens to leftward entry — only the jump past it to (2,0) is legal at first.
+  await render(<Harness level={['SL1']} />);
+
+  expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
+  expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();
+});
