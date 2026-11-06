@@ -80,7 +80,10 @@ The priority can change at any time; the ID never does.
 - [P4] `CANGUPA-79` — Let players buy hints in an in-app store, building
   on `CANGUPA-54`'s hint balance. Unscoped: store listing, pricing, and
   which in-app-purchase SDK (App Store/Play Store) to use aren't decided
-  yet.
+  yet. `CANGUPA-96`'s investigation flagged that this same SDK choice
+  should also serve the pack-unlock purchase it recommends
+  (`CANGUPA-106`), so decide it with both consumers in mind, not hints
+  alone.
 - [P4] `CANGUPA-84` — Let some levels be completed in more than one
   distinct, named way, instead of today's single solved/unsolved state —
   e.g. a level offering "finish using the spiral path" and "finish
@@ -197,21 +200,19 @@ The priority can change at any time; the ID never does.
   Needs copy and screenshots decided before it's just execution — in
   both Portuguese and English, matching the app's existing `en`/`pt`
   localisation.
-- [P2] `CANGUPA-96` — Investigate a store structure to sell level packs,
-  or collections of packs, so the scaffolding exists before the first
-  App Store submission rather than being bolted on later. Today every
-  pack is free and gated only by progress
-  ([LevelPacksScreen.tsx](apps/app/src/components/LevelPacksScreen.tsx),
-  `isUnlocked` in [progress.ts](apps/app/src/state/progress.ts) — order,
-  not payment); nothing about packs, `PACK_SIZES`, or
-  [packs.ts](apps/app/src/game/packs.ts) currently distinguishes free
-  from paid content. Overlaps `CANGUPA-79` (buying hints), which already
-  flagged the in-app-purchase SDK choice (App Store/Play Store) as
-  unscoped — that decision, once made, likely serves both. Unscoped:
-  which packs/collections are free vs. paid, pricing, entitlement
-  storage and restore-purchase handling, and whether this blocks or
-  merely informs `CANGUPA-92`'s first submission. Investigation only —
-  no store, SDK, or paywall built here.
+- [P3] `CANGUPA-106` — Build the actual pack-purchase entitlement flow
+  `CANGUPA-96`'s investigation scaffolded but deliberately didn't build:
+  a single "unlock all remaining packs" one-time purchase (the
+  recommended structure, over per-pack SKUs), an `Entitlements` record
+  alongside `Progress`/`Settings` in AsyncStorage
+  ([storage.ts](apps/app/src/state/storage.ts)'s existing pattern),
+  `isUnlocked` ([progress.ts](apps/app/src/state/progress.ts)) gated on
+  it past the free packs, restore-purchase handling, and the store UI
+  itself. Blocked on `CANGUPA-79` picking an in-app-purchase SDK (now
+  serving both hints and this) and on the owner confirming the
+  free/paid pack cut and pricing `CANGUPA-96` left open. Not blocking
+  `CANGUPA-92`'s first submission — ship with every pack free first,
+  add this as a fast-follow once the SDK is chosen.
 - [P2] `CANGUPA-97` — Analyze visual accessibility. Concrete issue
   already found: `CANGUPA-87`'s proposed tile colours (Signpost green,
   Gate raspberry red) are exactly the pair hardest to tell apart under
