@@ -197,18 +197,6 @@ The priority can change at any time; the ID never does.
   Needs copy and screenshots decided before it's just execution — in
   both Portuguese and English, matching the app's existing `en`/`pt`
   localisation.
-- [P2] `CANGUPA-95` — Define `apps/app`'s own release/version process
-  and do the first bump toward a 1.0.0 App Store release. `CLAUDE.md`'s
-  "Releases" section only covers `apps/web-classic/package.json`'s
-  version today; `apps/app`'s [app.json](apps/app/app.json)/
-  [package.json](apps/app/package.json) version is still `0.1.0` (iOS
-  `buildNumber`/Android `versionCode` both `1`), with no documented
-  tagging convention of its own. Decide whether it shares
-  `apps/web-classic`'s `vX.Y.Z` tags or gets its own, and how
-  `eas.json`'s `production.autoIncrement` build numbering fits that.
-  Worth resolving `CANGUPA-72` (hint-solver hang on big levels) and at
-  least a pass of `CANGUPA-89` (full app audit) before, not after, the
-  first submission.
 - [P2] `CANGUPA-96` — Investigate a store structure to sell level packs,
   or collections of packs, so the scaffolding exists before the first
   App Store submission rather than being bolted on later. Today every

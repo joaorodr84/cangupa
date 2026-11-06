@@ -33,7 +33,13 @@ squash) → delete the branch.
 ## Releases
 
 `main` only changes when we're cutting a new version, never as a side effect
-of closing an ordinary task. To release:
+of closing an ordinary task. `apps/web-classic` and `apps/app` are versioned
+and tagged independently of each other — releasing one doesn't require
+bumping the other — but both cuts share the same `main`/`develop` mechanics
+below, and a single fast-forward can carry both apps' version bumps at once
+if they happen to land together.
+
+### apps/web-classic
 
 1. Bump `apps/web-classic/package.json`'s `version` if this version hasn't
    already been bumped on `develop`.
@@ -44,7 +50,25 @@ of closing an ordinary task. To release:
    `version`) and push the tag.
 4. `develop` keeps going unchanged; it's never reset or rebased onto `main`.
 
-This is a deliberate, owner-requested action ("release", "ship", "cut
+### apps/app
+
+1. Bump `apps/app/package.json`'s `version` and `apps/app/app.json`'s
+   `expo.version` together — they must always match — if this version
+   hasn't already been bumped on `develop`.
+2. Fast-forward `main` to `develop`, same mechanics as step 2 above (one
+   fast-forward covers both apps if both just got bumped).
+3. Tag the release `app-vX.Y.Z` — the `app-` prefix is what tells it apart
+   from `apps/web-classic`'s own bare `vX.Y.Z` tags in the same repo — and
+   push the tag.
+4. `develop` keeps going unchanged, same as step 4 above.
+
+`ios.buildNumber` and `android.versionCode` (`apps/app/app.json`) are never
+bumped by hand as part of this: `eas.json`'s `production.autoIncrement`
+has EAS increment them itself on every production build, independently of
+the `expo.version` semver above, which is the only version a player or App
+Store listing ever sees.
+
+A release is a deliberate, owner-requested action ("release", "ship", "cut
 version X") — unlike the rest of this file, it is not standing authorization
 to merge to `main` on your own judgment.
 
@@ -126,9 +150,15 @@ Cangupa follows [Conventional Commits 1.0.0](https://www.conventionalcommits.org
 
 ## Versions
 
-`apps/web-classic/package.json`'s `version` is the source of truth. Cangupa
-(as Tile Jumper) started at `0.1.0` and stays `0.x` until the first tagged
-release.
+Each app's own `package.json` `version` is that app's source of truth.
+`apps/web-classic` (as Tile Jumper) started at `0.1.0` and stays `0.x` until
+its first tagged release. `apps/app` started independently at its own
+`0.1.0` and follows the same convention — `0.x` until *its* first tagged
+release, the one that actually reaches the App Store — regardless of where
+`apps/web-classic`'s own version is at the time; `apps/app/app.json`'s
+`expo.version` must always be kept equal to `apps/app/package.json`'s
+`version`, since Expo reads the former and tooling conventionally reads the
+latter.
 
 ## Tests
 
