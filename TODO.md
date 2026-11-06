@@ -273,16 +273,3 @@ The priority can change at any time; the ID never does.
   (one-handed use, glare/bright-sunlight contrast — may already be
   covered by `CANGUPA-97`). Scoping only — decide which deserve their
   own task.
-- [P2] `CANGUPA-102` — Decide what happens when a new tile type is
-  presented to the player for the first time: let them keep playing and
-  learn it from context, or redirect to a tutorial. Today's only
-  mechanism is [gen-packs.js](tools/gen-packs.js)'s `INTRO_PLAIN` — a
-  pack's first 4 levels after introducing a tile (`intro:
-  'gold'/'steel'/'arrow'` in [pack-plan.js](tools/pack-plan.js)) simply
-  lack that tile, easing in by level design alone; there's no popup,
-  forced tutorial level, or any other explicit callout. Decide if
-  that's enough, or if some tiles — especially a genuinely new mechanic
-  like `CANGUPA-87`'s Gate, rather than "a tile that needs one more
-  visit" — warrant an explicit tutorial moment. Feeds both
-  `CANGUPA-101` (the rules page) and `CANGUPA-103` (per-tile tutorials)
-  — decide this first.
