@@ -261,17 +261,25 @@ function Strokes({ x, y, count, color }: { readonly x: number; readonly y: numbe
   );
 }
 
-// An arrow tile's mark: a triangle on the edge it can be left by. A Gate tile's own mark
-// (CANGUPA-104) reuses the same shape on the edge it can be entered from instead — `tile.gate`
-// already names that edge (boardView.ts computes the opposite of Game.gate's travel direction),
-// so this is the same drawing either way, just a different `kind`/colour. Drawn in the tile's own
-// 64 by 57 units (preserveAspectRatio none stretches it to the tile's face), 15 deep and 28 wide,
-// as chosen on the review page.
+// An arrow tile's mark: a triangle on the edge it can be left by, pointing out through that
+// edge. Drawn in the tile's own 64 by 57 units (preserveAspectRatio none stretches it to the
+// tile's face), 15 deep and 28 wide, as chosen on the review page.
 const EDGE_TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
   right: '45,14.5 59.5,28.5 45,42.5',
   left: '19,14.5 4.5,28.5 19,42.5',
   up: '18,19 32,4.5 46,19',
   down: '18,38 32,52.5 46,38',
+};
+// A Gate tile's own mark sits on the same edge `tile.gate` names (boardView.ts computes the
+// opposite of Game.gate's travel direction, since that's the side the mark reads as "open") but
+// points the other way — in, toward the tile's centre, since Gate's edge is the one you enter
+// through rather than leave by. Each entry is EDGE_TRIANGLE's triangle for the same direction,
+// mirrored across its own base so the apex and base swap ends.
+const GATE_TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
+  right: '59.5,14.5 45,28.5 59.5,42.5',
+  left: '4.5,14.5 19,28.5 4.5,42.5',
+  up: '18,4.5 32,19 46,4.5',
+  down: '18,52.5 32,38 46,52.5',
 };
 function ArrowMark({
   x,
@@ -286,9 +294,10 @@ function ArrowMark({
   readonly direction: ArrowDirection;
   readonly color: string;
 }) {
+  const points = kind === 'gate' ? GATE_TRIANGLE[direction] : EDGE_TRIANGLE[direction];
   return (
     <Svg testID={`tile-${kind}-${x}-${y}-${direction}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
-      <Polygon points={EDGE_TRIANGLE[direction]} fill={color} stroke={color} strokeWidth={1.5} strokeLinejoin="round" />
+      <Polygon points={points} fill={color} stroke={color} strokeWidth={1.5} strokeLinejoin="round" />
     </Svg>
   );
 }
