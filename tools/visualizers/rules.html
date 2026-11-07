@@ -1,0 +1,350 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#0c0d10;color:#e6e8ec}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cangupa Rules</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* A rules reference for apps/app, always in the app's own dark theme (not toggleable —
+     this page intentionally has one look, not a light/dark pair). Colours are copied verbatim
+     from @joaorodr84/themes's DARK set (apps/app/src/theme/palette.ts reads these live for
+     bg1/bg2/frame/pit/panel/panelBorder/ink/muted), not re-picked by eye. Tile colours, visit
+     strokes and the Signpost/Gate marks come from Board.tsx; the HUD icon paths come from
+     ControlIcon.tsx/BackArrow.tsx — all ported exactly, so this page can't silently drift from
+     what the app actually renders.
+     Signpost/Gate mark: the doorway-bracket design chosen on tools/visualizers/tile-marks.html
+     (Option B) to replace the plain triangle — a bracket open on the edge it leaves/enters by,
+     with a real arrow threaded through that opening. */
+  :root {
+    --bg: #0c0d10; --surface: #15171c; --panel: #181b21; --line: #22262e;
+    --fg: #e6e8ec; --muted: #8a909c; --board: #1c1f26;
+    --font-display: "Figtree", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-display);
+    padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 760px; margin: 0 auto; display: grid; gap: 20px; }
+  main > * { min-width: 0; }
+  h1 { font-size: 1.7rem; margin: 0; text-wrap: balance; }
+  h2 { font-size: 1.15rem; margin: 0 0 10px; }
+  h3 { font-size: .92rem; margin: 0 0 8px; font-weight: 600; }
+  .kicker { font-family: var(--font-data); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .lede { margin: 8px 0 0; color: var(--muted); max-width: 62ch; line-height: 1.55; font-size: .98rem; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  p { line-height: 1.55; margin: 0 0 10px; }
+  p:last-child { margin-bottom: 0; }
+  .note { font-size: .85rem; color: var(--muted); }
+  code { font-family: var(--font-data); font-size: .85em; background: var(--bg); padding: .1em .4em; border-radius: 5px; }
+
+  /* --- mini boards: a tight slice of the real board, cells touching edge to edge --- */
+  .move-grid { display: grid; gap: 22px; grid-template-columns: 1fr; }
+  @media (min-width: 560px) { .move-grid { grid-template-columns: 1fr 1fr; } }
+  .move-card p { font-size: .92rem; margin-top: 8px; }
+  .mini-board-row { display: flex; justify-content: center; margin: 2px 0 10px; }
+  .mini-board { display: grid; background: var(--board); border-radius: 8px; }
+  .mb-cell { position: relative; width: 60px; height: 60px; }
+  .mb-face { position: absolute; top: 7%; right: 7%; bottom: 11%; left: 7%; border-radius: 14%; background: var(--c); box-shadow: 0 4px 0 var(--lip); box-sizing: border-box; }
+  .mb-face.hl-solid { border: 3px solid rgba(255,255,255,.85); }
+  .mb-face.hl-dashed { border: 3px dashed rgba(255,255,255,.85); }
+  .mb-stroke { position: absolute; top: 25%; height: 50%; width: 7.5%; border-radius: 99px; transform: rotate(24deg); }
+  .mb-mark { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mb-roo { position: absolute; inset: 6%; z-index: 2; pointer-events: none; }
+  .mb-roo svg { width: 100%; height: 100%; display: block; }
+  .mini-caption { text-align: center; font-size: .78rem; color: var(--muted); margin: 0 0 4px; }
+
+  /* --- tile table --- */
+  .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; }
+  th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--bg); }
+  .name { font-weight: 700; }
+  td.visits { font-family: var(--font-data); font-size: 1.05rem; text-align: center; }
+  th.visits { text-align: center; }
+  td.swatch-cell { width: 68px; }
+
+  /* --- board-screen buttons --- */
+  .btn-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+  .btn-row:last-child { margin-bottom: 0; }
+  .hud-btn { flex: none; width: 44px; height: 44px; border-radius: 999px; background: var(--panel); display: flex; align-items: center; justify-content: center; }
+  .btn-text { flex: 1; padding-top: 2px; }
+  .btn-text .name { display: block; margin-bottom: 2px; }
+  .btn-text .desc { color: var(--muted); font-size: .9rem; line-height: 1.5; }
+
+  footer { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+  footer a { color: var(--fg); }
+</style>
+
+<main>
+  <header>
+    <p class="kicker">Cangupa app — rules reference</p>
+    <h1>How to play</h1>
+    <p class="lede">Step on every tile on the board until none are left. You start on the tile
+      marked with the kangaroo. The diagrams below elaborate on the app's own in-game Rules
+      screen (<code>HelpScreen.tsx</code>) with real board pieces instead of words alone.</p>
+  </header>
+
+  <section class="panel">
+    <h2>Moves</h2>
+    <div class="move-grid">
+      <div class="move-card">
+        <h3>Step</h3>
+        <div class="mini-board-row" id="board-step"></div>
+        <p class="mini-caption">Solid outline: one step away.</p>
+        <p>Move one tile up, down, left or right.</p>
+      </div>
+      <div class="move-card">
+        <h3>Jump, over a gap</h3>
+        <div class="mini-board-row" id="board-jump-gap"></div>
+        <p class="mini-caption">Dashed outline: the far tile, two away in a line.</p>
+        <p>The middle tile is already gone — you jump straight over the empty space.</p>
+      </div>
+      <div class="move-card">
+        <h3>Jump, over a tile</h3>
+        <div class="mini-board-row" id="board-jump-tile"></div>
+        <p class="mini-caption">The middle tile is untouched by the jump.</p>
+        <p>The middle tile is still there, but a jump skips it — it isn't visited and doesn't
+          lose a visit. Only the highlighted tile at the far end counts.</p>
+      </div>
+    </div>
+    <p class="note">You can only land on a tile that still has visits left. The moment you
+      leave a tile, it disappears — there's no stepping back onto it, only undo.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Tiles</h2>
+    <div class="wrap">
+      <table>
+        <thead><tr><th></th><th>Tile</th><th class="visits">Visits</th><th>Rule</th></tr></thead>
+        <tbody id="tile-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>When you're stuck</h2>
+    <p>If no legal move remains, that's a dead end: undo a few moves or restart the level.
+      Nothing is ever permanently lost to a bad path — undo and restart are always there.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Buttons</h2>
+    <div id="hud-buttons"></div>
+    <p class="note" style="margin-top:14px">Between Back and this group, the board screen also
+      shows the level number and move count — replaced by "Dead end. Undo a few moves." or
+      "No moves left. Undo or restart." whenever one applies.</p>
+  </section>
+
+  <footer>
+    A reference, not shipped UI — nothing here is loaded by the app itself. If the in-game
+    rules text or controls change, update <code>apps/app/src/components/HelpScreen.tsx</code>,
+    <code>BoardHud.tsx</code> and <code>i18n/strings/en.ts</code> first, and revisit this page
+    to match.
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // Fixed game colours and marks, copied from apps/app/src/theme/palette.ts (DARK and LIGHT
+  // agree on every one — tile kind is not themed).
+  var TILES = {
+    common:   { c: '#4cc9f0', lip: '#1f7a99' },
+    gold:     { c: '#ffc857', lip: '#a8741a', m: '#3b2a06' },
+    steel:    { c: '#587790', lip: '#3c5162', m: '#ffffff' },
+    signpost: { c: '#2f9e44', lip: '#7cd48f', m: '#ffffff' },
+    gate:     { c: '#9d1057', lip: '#ba5889', m: '#ffffff' }
+  };
+
+  var ROO_SVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<g stroke="#5a3515" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">' +
+    '<ellipse cx="37" cy="13" rx="4.8" ry="11" transform="rotate(-14 37 13)" fill="#d9954f"/>' +
+    '<ellipse cx="63" cy="13" rx="4.8" ry="11" transform="rotate(14 63 13)" fill="#d9954f"/>' +
+    '<path d="M50 38 C32 40 26 62 30 76 C34 88 66 88 70 76 C74 62 68 40 50 38 Z" fill="#d9954f"/>' +
+    '<ellipse cx="29" cy="76" rx="9" ry="13" fill="#c98b4a"/><ellipse cx="71" cy="76" rx="9" ry="13" fill="#c98b4a"/>' +
+    '<ellipse cx="50" cy="26" rx="17" ry="15" fill="#d9954f"/>' +
+    '<path d="M14 94 C14 86 30 86 34 90 C36 96 30 98 22 98 C16 98 14 96 14 94 Z" fill="#b57535"/>' +
+    '<path d="M86 94 C86 86 70 86 66 90 C64 96 70 98 78 98 C84 98 86 96 86 94 Z" fill="#b57535"/></g>' +
+    '<circle cx="43" cy="23" r="2.6" fill="#fff" stroke="#5a3515" stroke-width="1"/>' +
+    '<circle cx="57" cy="23" r="2.6" fill="#fff" stroke="#5a3515" stroke-width="1"/>' +
+    '<circle cx="43.4" cy="23.6" r="1.3" fill="#111"/><circle cx="56.6" cy="23.6" r="1.3" fill="#111"/></svg>';
+
+  var el = function (tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; };
+
+  // Board.tsx's Strokes: short diagonal strokes, top 25%/height 50%/width 7.5%, rotated 24deg,
+  // left edges spaced 22% apart around the tile's centre.
+  function strokes(count, color) {
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < count; i++) {
+      var s = el('span', 'mb-stroke');
+      s.style.left = (50 + (i - (count - 1) / 2) * 22 - 7.5 / 2) + '%';
+      s.style.background = color;
+      frag.appendChild(s);
+    }
+    return frag;
+  }
+
+  // The doorway-bracket Signpost/Gate mark chosen on tile-marks.html (Option B): a bracket
+  // shut on three sides, open on the edge it leaves/enters by, with a real arrow threaded
+  // through that opening — tip past the edge for Signpost (leaves), tip at the bracket's back
+  // wall for Gate (enters). Ported verbatim from that page's AXIS/pt/bracketLines/
+  // threadedArrow/geometry/bracketMark functions, direction fixed to 'right' here.
+  var AXIS = {
+    right: { axis: 'x', sign: 1, edgeAt: 64, acrossCenter: 28.5 },
+    left:  { axis: 'x', sign: -1, edgeAt: 0, acrossCenter: 28.5 },
+    up:    { axis: 'y', sign: -1, edgeAt: 0, acrossCenter: 32 },
+    down:  { axis: 'y', sign: 1, edgeAt: 57, acrossCenter: 32 }
+  };
+  function pt(direction, k, c) {
+    var a = AXIS[direction];
+    var depth = a.edgeAt - a.sign * k;
+    return a.axis === 'x' ? [depth, a.acrossCenter + c] : [a.acrossCenter + c, depth];
+  }
+  function fmtPt(p) { return p[0] + ',' + p[1]; }
+  function bracketLines(direction, capK, w, openK) {
+    var cap = [pt(direction, capK, -w), pt(direction, capK, w)];
+    var railA = [pt(direction, capK, -w), pt(direction, openK, -w)];
+    var railB = [pt(direction, capK, w), pt(direction, openK, w)];
+    return [cap, railA, railB].map(function (seg) {
+      return '<line x1="' + seg[0][0] + '" y1="' + seg[0][1] + '" x2="' + seg[1][0] + '" y2="' + seg[1][1] +
+        '" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>';
+    }).join('');
+  }
+  function threadedArrow(direction, outward, deepK, shallowK) {
+    var headLen = 6;
+    var tailK = outward ? deepK : shallowK;
+    var headK = outward ? shallowK : deepK;
+    var baseK = outward ? headK + headLen : headK - headLen;
+    var tail = pt(direction, tailK, 0);
+    var base = pt(direction, baseK, 0);
+    var baseA = pt(direction, baseK, -5);
+    var baseB = pt(direction, baseK, 5);
+    var tip = pt(direction, headK, 0);
+    return '<line x1="' + tail[0] + '" y1="' + tail[1] + '" x2="' + base[0] + '" y2="' + base[1] +
+        '" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>' +
+      '<polygon points="' + fmtPt(baseA) + ' ' + fmtPt(tip) + ' ' + fmtPt(baseB) + '" fill="#ffffff"/>';
+  }
+  function geometry(direction) {
+    var SCALE = 2, BASE_K = 12, PADDING = 10, OPEN_K = 6, SHALLOW_K = 4, ARROW_GAP = 8;
+    var a = AXIS[direction];
+    var ext = a.axis === 'x' ? { depth: 64, across: 57 } : { depth: 57, across: 64 };
+    var capK = BASE_K + (ext.depth / 2 - PADDING) / SCALE;
+    var w = (ext.across / 2 - PADDING) / SCALE;
+    return { capK: capK, w: w, openK: OPEN_K, deepK: capK - ARROW_GAP, shallowK: SHALLOW_K };
+  }
+  function bracketMark(direction, isEnter) {
+    var SCALE = 2, BASE_K = 12;
+    var g = geometry(direction);
+    var inner = bracketLines(direction, g.capK, g.w, g.openK) + threadedArrow(direction, !isEnter, g.deepK, g.shallowK);
+    var localCenter = pt(direction, BASE_K, 0);
+    var transform = 'translate(32,28.5) scale(' + SCALE + ') translate(' + (-localCenter[0]) + ',' + (-localCenter[1]) + ')';
+    return '<svg viewBox="0 0 64 57" preserveAspectRatio="none" class="mb-mark"><g transform="' + transform + '">' + inner + '</g></svg>';
+  }
+
+  // spec: { kind, hl: 'solid'|'dashed', roo: bool, strokeCount, mark: 'arrow'|'gate' }
+  function mbCell(spec) {
+    spec = spec || {};
+    var c = el('div', 'mb-cell');
+    if (spec.kind) {
+      var t = TILES[spec.kind];
+      var face = el('div', 'mb-face' + (spec.hl ? ' hl-' + spec.hl : ''));
+      face.style.setProperty('--c', t.c);
+      face.style.setProperty('--lip', t.lip);
+      if (spec.strokeCount) face.appendChild(strokes(spec.strokeCount, t.m));
+      if (spec.mark) face.insertAdjacentHTML('beforeend', bracketMark('right', spec.mark === 'gate'));
+      c.appendChild(face);
+    }
+    if (spec.roo) {
+      var r = el('div', 'mb-roo');
+      r.innerHTML = ROO_SVG;
+      c.appendChild(r);
+    }
+    return c;
+  }
+
+  // Builds a cols x rows slice of the real board, cells touching edge to edge like the game's
+  // own grid (Board.tsx's .cell), rather than isolated swatches with space in between.
+  function miniBoard(cols, rows, specs) {
+    var board = el('div', 'mini-board');
+    board.style.gridTemplateColumns = 'repeat(' + cols + ', 60px)';
+    board.style.gridTemplateRows = 'repeat(' + rows + ', 60px)';
+    for (var y = 0; y < rows; y++) {
+      for (var x = 0; x < cols; x++) {
+        var found = null;
+        for (var i = 0; i < specs.length; i++) if (specs[i].x === x && specs[i].y === y) { found = specs[i]; break; }
+        board.appendChild(mbCell(found));
+      }
+    }
+    return board;
+  }
+
+  document.getElementById('board-step').appendChild(miniBoard(2, 1, [
+    { x: 0, y: 0, kind: 'common', roo: true },
+    { x: 1, y: 0, kind: 'common', hl: 'solid' }
+  ]));
+  document.getElementById('board-jump-gap').appendChild(miniBoard(3, 1, [
+    { x: 0, y: 0, kind: 'common', roo: true },
+    { x: 2, y: 0, kind: 'common', hl: 'dashed' }
+  ]));
+  document.getElementById('board-jump-tile').appendChild(miniBoard(3, 1, [
+    { x: 0, y: 0, kind: 'common', roo: true },
+    { x: 1, y: 0, kind: 'common' },
+    { x: 2, y: 0, kind: 'common', hl: 'dashed' }
+  ]));
+
+  var ROWS = [
+    { kind: 'common', name: 'Common', visits: 1, rule: 'Disappears as soon as you leave it.' },
+    { kind: 'gold', name: 'Gold', visits: 2, strokeCount: 2, rule: 'Cracks on the first visit, vanishes on the second. The strokes show how many visits are left.' },
+    { kind: 'steel', name: 'Steel', visits: 3, strokeCount: 3, rule: 'Same idea as Gold, one visit tougher — it takes three to clear.' },
+    { kind: 'signpost', name: 'Signpost', visits: 1, mark: 'arrow', rule: 'Can be entered from any side, but left only through the edge the bracket opens on.' },
+    { kind: 'gate', name: 'Gate', visits: 1, mark: 'gate', rule: 'The mirror of Signpost: left freely, but entered only through the edge the bracket opens on — steps and jumps alike.' }
+  ];
+  var rows = document.getElementById('tile-rows');
+  ROWS.forEach(function (r) {
+    var tr = document.createElement('tr');
+    var swatchTd = el('td', 'swatch-cell');
+    swatchTd.appendChild(mbCell({ kind: r.kind, strokeCount: r.strokeCount, mark: r.mark }));
+    var nameTd = el('td');
+    nameTd.appendChild(el('span', 'name')).textContent = r.name;
+    var visitsTd = el('td', 'visits'); visitsTd.textContent = String(r.visits);
+    var ruleTd = document.createElement('td'); ruleTd.textContent = r.rule;
+    tr.append(swatchTd, nameTd, visitsTd, ruleTd);
+    rows.appendChild(tr);
+  });
+
+  // The board screen's buttons, ported from BackArrow.tsx and ControlIcon.tsx — same 24-unit
+  // viewBox, same stroke paths, same round-cap/round-join styling.
+  var ICON_PATHS = {
+    back: 'M19 12 H6 M11 7 L6 12 L11 17',
+    undo: 'M9 14 L4 9 L9 4 M4 9 H14 A5 5 0 0 1 14 19 H11',
+    restart: 'M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M20.49 15a9 9 0 0 1-14.85 3.36L1 14',
+    hint: 'M12 3 A6 6 0 0 0 7 12.5 C7 14.5 8.5 15.5 9 17 H15 C15.5 15.5 17 14.5 17 12.5 A6 6 0 0 0 12 3 Z M9.5 21 H14.5',
+    help: 'M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 5 M12 17h.01'
+  };
+  function hudIconSvg(id) {
+    return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e6e8ec" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round"><path d="' + ICON_PATHS[id] + '"/></svg>';
+  }
+  var BUTTONS = [
+    { id: 'back', name: 'Back', desc: 'Leaves the board and returns to wherever you came from — Home or the Levels list.' },
+    { id: 'undo', name: 'Undo', desc: "Takes back your last move. Greyed out until you've made at least one." },
+    { id: 'restart', name: 'Restart', desc: 'Resets the level to its starting position, no confirmation needed.' },
+    { id: 'hint', name: 'Hint', desc: "Highlights the solver's suggested next move. Greyed out once the level is won — nothing left to suggest." },
+    { id: 'help', name: 'Help', desc: 'Opens this rules content without leaving the level — always available, even after winning.' }
+  ];
+  var hudHost = document.getElementById('hud-buttons');
+  BUTTONS.forEach(function (b) {
+    var row = el('div', 'btn-row');
+    var btn = el('div', 'hud-btn'); btn.innerHTML = hudIconSvg(b.id);
+    var text = el('div', 'btn-text');
+    text.appendChild(el('span', 'name')).textContent = b.name;
+    text.appendChild(el('span', 'desc')).textContent = b.desc;
+    row.append(btn, text);
+    hudHost.appendChild(row);
+  });
+})();
+</script>
+</body></html>
