@@ -252,6 +252,24 @@ The priority can change at any time; the ID never does.
   switched off completely in both apps. Verify that's actually true for
   every cue in both apps (confirm `apps/app`'s sound settings behave
   the same), rather than assuming it from the toggle existing.
+- [P2] `CANGUPA-107` — Decide and ship a clearer edge mark for Signpost and
+  Gate, replacing the triangle `apps/app`'s `Board.tsx`/`ArrowMark` draws
+  today. The triangle still reads as "direction of travel" first — Gate's
+  own copy (`CANGUPA-104`) already points it inward instead of outward to
+  say "enter," but that only trades one pointing-direction question for
+  another, not remove it. A review page,
+  [tools/visualizers/tile-marks.html](tools/visualizers/tile-marks.html)
+  (same purpose `tile-metals.html` served for the original arrow tile,
+  `CANGUPA-69`), compares that shipped triangle against a candidate
+  replacement: a doorway bracket shut on three sides with a real arrow
+  threaded through the one open side, large and centred on the tile. Needs
+  an owner decision on whether to ship the bracket, then wiring it into
+  `Board.tsx` (`apps/app`) — `apps/web-classic` draws no mark for either
+  tile today, so there's nothing to replace there, only to add if this
+  closes alongside giving it one. Related to `CANGUPA-97`'s open finding
+  that Signpost/Gate shouldn't depend on colour alone to stay
+  distinguishable — the bracket keeps that property (different shapes, not
+  a recolour), same as the triangle does.
 - [P3] `CANGUPA-100` — Investigate which other disability types are
   worth a dedicated accessibility analysis, beyond the visual
   (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones
