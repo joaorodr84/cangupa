@@ -42,8 +42,26 @@ export interface Strings {
     readonly signpostRest: string;
     readonly gateBold: string;
     readonly gateRest: string;
+    // "When you're stuck" (CANGUPA-109): its own section/card, matching
+    // rules.html's layout, rather than a bullet folded into Moves.
+    readonly stuckSection: string;
     readonly outOfMoves: string;
     readonly note: string;
+    // Captions under the Step/Jump mini-boards (CANGUPA-109) — built from the
+    // board's own Tile rendering rather than described in stepRest/jumpRest
+    // alone, which stay as the one combined explanation of the jump rule.
+    readonly stepCaption: string;
+    readonly jumpGapCaption: string;
+    readonly jumpTileCaption: string;
+    // The board screen's own controls (CANGUPA-109), explained here with
+    // their real icons — boardHud.back/undo/restart/hint/help already name
+    // them, these are just what each one does and when it's disabled.
+    readonly buttonsSection: string;
+    readonly backDesc: string;
+    readonly undoDesc: string;
+    readonly restartDesc: string;
+    readonly hintDesc: string;
+    readonly helpDesc: string;
   };
   readonly stats: {
     readonly levelsCleared: string;

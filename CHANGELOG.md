@@ -7,6 +7,35 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-08
+
+### Added
+
+- The app's in-game Rules/Help screen now shows three small live diagrams
+  in its "Moves" section — one step, one jump over a gap, and one jump
+  over a tile — each with a caption, using the same solid-outline (step)
+  vs. dashed-outline (jump) convention the real board's hints use.
+- The Help screen has a new "Buttons" section explaining the board
+  screen's five controls — Back, Undo, Restart, Hint and Help — each
+  shown with its real icon and a plain-language description of what it
+  does and when it's greyed out.
+
+### Changed
+
+- Signpost and Gate tiles in the app now show a doorway-bracket mark —
+  shut on three sides, with a real arrow threaded through the open side —
+  instead of the plain triangle they showed before. The arrow points out
+  through the edge for a Signpost tile, since that's the way it leaves,
+  and in toward the tile's centre for a Gate tile, since that's the way
+  it's entered.
+- The Help screen's "Tiles" section now shows real miniature tile
+  renders — with the real Gold/Steel visit-count strokes and the real
+  Signpost/Gate bracket mark — instead of flat colour swatches.
+- "When you're stuck" (the undo/restart tip) is now its own labelled
+  section on the Help screen, instead of a bullet buried in "Moves".
+- Every section of the Help screen is now visually grouped in its own
+  bordered card.
+
 ## 2026-11-05
 
 ### Added

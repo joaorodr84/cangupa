@@ -252,24 +252,6 @@ The priority can change at any time; the ID never does.
   switched off completely in both apps. Verify that's actually true for
   every cue in both apps (confirm `apps/app`'s sound settings behave
   the same), rather than assuming it from the toggle existing.
-- [P2] `CANGUPA-107` — Decide and ship a clearer edge mark for Signpost and
-  Gate, replacing the triangle `apps/app`'s `Board.tsx`/`ArrowMark` draws
-  today. The triangle still reads as "direction of travel" first — Gate's
-  own copy (`CANGUPA-104`) already points it inward instead of outward to
-  say "enter," but that only trades one pointing-direction question for
-  another, not remove it. A review page,
-  [tools/visualizers/tile-marks.html](tools/visualizers/tile-marks.html)
-  (same purpose `tile-metals.html` served for the original arrow tile,
-  `CANGUPA-69`), compares that shipped triangle against a candidate
-  replacement: a doorway bracket shut on three sides with a real arrow
-  threaded through the one open side, large and centred on the tile. Needs
-  an owner decision on whether to ship the bracket, then wiring it into
-  `Board.tsx` (`apps/app`) — `apps/web-classic` draws no mark for either
-  tile today, so there's nothing to replace there, only to add if this
-  closes alongside giving it one. Related to `CANGUPA-97`'s open finding
-  that Signpost/Gate shouldn't depend on colour alone to stay
-  distinguishable — the bracket keeps that property (different shapes, not
-  a recolour), same as the triangle does.
 - [P3] `CANGUPA-100` — Investigate which other disability types are
   worth a dedicated accessibility analysis, beyond the visual
   (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones
@@ -280,22 +262,3 @@ The priority can change at any time; the ID never does.
   (one-handed use, glare/bright-sunlight contrast — may already be
   covered by `CANGUPA-97`). Scoping only — decide which deserve their
   own task.
-- [P3] `CANGUPA-109` — Port `HelpScreen.tsx`'s rules content from a flat
-  tile list into live diagrams, following the pattern
-  `tools/visualizers/rules.html` and DigiSpin's own `ReferenceScreen.tsx`
-  both use: reuse the app's real components instead of redrawing them.
-  Two pieces: (1) three small Step/Jump mini-boards (one step; jump over
-  a gap; jump over a tile) built from `Board.tsx`'s own `Tile`/`Strokes`
-  rendering, each highlighting the destination with the same solid/
-  dashed outline `Board.tsx` already uses for a legal step vs. jump, in
-  place of today's plain "Moves" bullet list; (2) a Buttons section
-  listing Back/Undo/Restart/Hint/Help with their real `ControlIcon.tsx`/
-  `BackArrow.tsx` icons and a plain-language description of what each
-  does and when it's disabled — content `BoardHud.tsx` already renders
-  but nothing in-app explains. Blocked on `CANGUPA-107` landing first:
-  its chosen doorway-bracket mark for Signpost/Gate needs to actually
-  ship in `Board.tsx`/`ArrowMark` before this task's diagrams reuse it —
-  otherwise the in-app rules page would show a mark the board itself
-  doesn't draw, worse than today's plain colour swatch. Not scoped here:
-  `apps/web-classic`'s own rules panel (`index.html`'s `#help`), which
-  has no Steel/Signpost/Gate to diagram in the first place.

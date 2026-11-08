@@ -1174,6 +1174,48 @@ widening `App.tsx`'s `returnTo` pointer (CANGUPA-86) from `FooterTab` to the
 full `Panel`, so Back from a Board-opened Help screen returns to Board instead
 of wherever launched Board in the first place.
 
+## Era 37 — Nov 8: the doorway-bracket mark ships, and the rules page gets live diagrams
+
+CANGUPA-107's own review (`tools/visualizers/tile-marks.html`, Option B)
+had already picked a doorway-bracket mark over the plain triangle
+`Board.tsx`'s `ArrowMark` drew for Signpost and Gate, and CANGUPA-108 had
+ported that bracket into the dev-only visualizer — but the live board
+itself still drew the old triangle, so the two disagreed depending on
+where you looked. This commit wires the bracket into `ArrowMark` for real,
+ported verbatim from `tile-marks.html`'s own geometry functions rather
+than redrawn by hand: a single per-direction `AXIS` table expresses depth
+and lateral offset in `(k, c)` terms so the bracket shape is specified
+once instead of four times, and `capK`/`w` are solved per axis so the
+bracket sits with even padding inside the tile's own non-square 64×57
+face.
+
+That unblocked CANGUPA-109, which had been explicitly waiting on it:
+`HelpScreen.tsx`'s rules content moved from a flat tile list into live
+diagrams, following `tools/visualizers/rules.html`'s and DigiSpin's
+`ReferenceScreen.tsx`'s lead of reusing the app's real components instead
+of redrawing them. The Moves section traded its bullet list for three
+small Step/Jump mini-boards (one step; jump over a gap; jump over a
+tile), fed synthetic `TileView` rows into `Board.tsx` itself through a
+new `MiniBoard` wrapper, each captioned to tell the solid (step) from the
+dashed (jump) hint outline, and the two jump diagrams tell a gap (the
+cell simply absent) from an untouched middle tile. The Tiles section's
+flat colour squares became a new exported `TileSwatch` (`Board.tsx`) —
+the real face/edge/strokes/mark rendering minus a real `Tile`'s
+Pressable/animation/kangaroo plumbing — so Gold/Steel show their real
+tally strokes and Signpost/Gate the real bracket mark, not just a colour.
+A new Buttons section lists the board screen's five controls
+(Back/Undo/Restart/Hint/Help) with their real `BackArrow`/`ControlIcon`
+icons and a plain-language description of what each does and when it's
+disabled, content `BoardHud.tsx` already rendered but nothing in-app
+explained. "When you're stuck" was promoted out of the Moves bullet list
+into its own section, and every section is now wrapped in a bordered card
+(`StatsScreen.tsx`'s existing panel pattern), matching `rules.html`'s own
+panel layout.
+
+Both tasks landed in one commit, since CANGUPA-109 could not have reused
+the bracket mark before CANGUPA-107 shipped it. Verified: `npx tsc
+--noEmit` clean, full `apps/app` Jest suite green (810 tests).
+
 ---
 
 ## Patterns, and what's still open

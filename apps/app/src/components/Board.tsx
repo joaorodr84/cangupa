@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-import Svg, { Polygon } from 'react-native-svg';
+import Svg, { G, Line, Polygon } from 'react-native-svg';
 
 import { type ArrowDirection, type TileView } from '../game/boardView';
 import { type Palette } from '../theme/palette';
@@ -233,13 +233,15 @@ interface TileProps {
 const STROKE_WIDTH = 7.5;
 
 // The face and the lip of a tile: a Signpost tile is green and a Gate tile (CANGUPA-104) raspberry
-// whatever its visits, otherwise the kind sets it.
-function faceColor(tile: TileView, palette: Palette): string {
+// whatever its visits, otherwise the kind sets it. Typed on just the three fields either one
+// reads, not the full TileView, so TileSwatch below can call them without the fields (worn,
+// gone, hint, ...) that only make sense for a tile actually on the board.
+function faceColor(tile: Pick<TileView, 'kind' | 'arrow' | 'gate'>, palette: Palette): string {
   if (tile.arrow) return palette.tileSignpost;
   if (tile.gate) return palette.tileGate;
   return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
 }
-function edgeColor(tile: TileView, palette: Palette): string {
+function edgeColor(tile: Pick<TileView, 'kind' | 'arrow' | 'gate'>, palette: Palette): string {
   if (tile.arrow) return palette.edgeSignpost;
   if (tile.gate) return palette.edgeGate;
   return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
@@ -261,26 +263,49 @@ function Strokes({ x, y, count, color }: { readonly x: number; readonly y: numbe
   );
 }
 
-// An arrow tile's mark: a triangle on the edge it can be left by, pointing out through that
-// edge. Drawn in the tile's own 64 by 57 units (preserveAspectRatio none stretches it to the
-// tile's face), 15 deep and 28 wide, as chosen on the review page.
-const EDGE_TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
-  right: '45,14.5 59.5,28.5 45,42.5',
-  left: '19,14.5 4.5,28.5 19,42.5',
-  up: '18,19 32,4.5 46,19',
-  down: '18,38 32,52.5 46,38',
+// CANGUPA-107's chosen replacement for the plain triangle: a doorway bracket, shut on three
+// sides, open on the edge the tile is left/entered by, with a real arrow threaded through that
+// opening — tip past the edge for Signpost (leaves), tip at the bracket's back wall for Gate
+// (enters). Decided and reviewed on tools/visualizers/tile-marks.html's Option B; ported
+// verbatim from that page's AXIS/pt/geometry functions rather than redrawn, so this is exactly
+// what was reviewed there, just as React Native SVG elements instead of a markup string.
+//
+// Edge-relative coordinates: k is depth from the edge (0 = at the boundary, increasing = further
+// into the tile's interior), c is lateral offset from the edge's own midpoint. Converting
+// through this one axis table means the mark is designed once, in (k, c) terms, instead of by
+// hand for all four directions.
+const AXIS: Readonly<Record<ArrowDirection, { readonly axis: 'x' | 'y'; readonly sign: 1 | -1; readonly edgeAt: number; readonly acrossCenter: number }>> = {
+  right: { axis: 'x', sign: 1, edgeAt: 64, acrossCenter: 28.5 },
+  left: { axis: 'x', sign: -1, edgeAt: 0, acrossCenter: 28.5 },
+  up: { axis: 'y', sign: -1, edgeAt: 0, acrossCenter: 32 },
+  down: { axis: 'y', sign: 1, edgeAt: 57, acrossCenter: 32 },
 };
-// A Gate tile's own mark sits on the same edge `tile.gate` names (boardView.ts computes the
-// opposite of Game.gate's travel direction, since that's the side the mark reads as "open") but
-// points the other way — in, toward the tile's centre, since Gate's edge is the one you enter
-// through rather than leave by. Each entry is EDGE_TRIANGLE's triangle for the same direction,
-// mirrored across its own base so the apex and base swap ends.
-const GATE_TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
-  right: '59.5,14.5 45,28.5 59.5,42.5',
-  left: '4.5,14.5 19,28.5 4.5,42.5',
-  up: '18,4.5 32,19 46,4.5',
-  down: '18,52.5 32,38 46,52.5',
-};
+function pt(direction: ArrowDirection, k: number, c: number): readonly [number, number] {
+  const a = AXIS[direction];
+  const depth = a.edgeAt - a.sign * k;
+  return a.axis === 'x' ? [depth, a.acrossCenter + c] : [a.acrossCenter + c, depth];
+}
+
+// The bracket is drawn once in its own small coordinate patch near the edge, then scaled up and
+// recentred on the tile's true centre (32, 28.5 in this viewBox, regardless of direction). At
+// that size the padding to the tile's own edges would stop being even if capK/w stayed fixed:
+// the tile is 64 by 57, not square, so the same numbers leave more room behind the bracket's
+// back wall than beside its rails. capK and w are solved per direction instead, from that
+// direction's own depth/across extent, so every side lands on the same target padding.
+const BRACKET_SCALE = 2;
+const BRACKET_BASE_K = 12;
+const BRACKET_PADDING = 10;
+const BRACKET_OPEN_K = 6;
+const BRACKET_SHALLOW_K = 4;
+const BRACKET_ARROW_GAP = 8;
+function bracketGeometry(direction: ArrowDirection) {
+  const a = AXIS[direction];
+  const ext = a.axis === 'x' ? { depth: 64, across: 57 } : { depth: 57, across: 64 };
+  const capK = BRACKET_BASE_K + (ext.depth / 2 - BRACKET_PADDING) / BRACKET_SCALE;
+  const w = (ext.across / 2 - BRACKET_PADDING) / BRACKET_SCALE;
+  return { capK, w, openK: BRACKET_OPEN_K, deepK: capK - BRACKET_ARROW_GAP, shallowK: BRACKET_SHALLOW_K };
+}
+
 function ArrowMark({
   x,
   y,
@@ -294,11 +319,80 @@ function ArrowMark({
   readonly direction: ArrowDirection;
   readonly color: string;
 }) {
-  const points = kind === 'gate' ? GATE_TRIANGLE[direction] : EDGE_TRIANGLE[direction];
+  const isEnter = kind === 'gate';
+  const g = bracketGeometry(direction);
+
+  // The bracket: a back wall (cap) and two rails running from it to the opening.
+  const cap = [pt(direction, g.capK, -g.w), pt(direction, g.capK, g.w)];
+  const railA = [pt(direction, g.capK, -g.w), pt(direction, g.openK, -g.w)];
+  const railB = [pt(direction, g.capK, g.w), pt(direction, g.openK, g.w)];
+
+  // The threaded arrow: outward for Signpost (tip past the edge, it leaves this way), inward
+  // for Gate (tip at the bracket's back wall, it enters this way).
+  const outward = !isEnter;
+  const headLen = 6;
+  const tailK = outward ? g.deepK : g.shallowK;
+  const headK = outward ? g.shallowK : g.deepK;
+  const baseK = outward ? headK + headLen : headK - headLen;
+  const tail = pt(direction, tailK, 0);
+  const base = pt(direction, baseK, 0);
+  const baseA = pt(direction, baseK, -5);
+  const baseB = pt(direction, baseK, 5);
+  const tip = pt(direction, headK, 0);
+
+  const localCenter = pt(direction, BRACKET_BASE_K, 0);
+  const transform = `translate(32,28.5) scale(${BRACKET_SCALE}) translate(${-localCenter[0]},${-localCenter[1]})`;
+
   return (
     <Svg testID={`tile-${kind}-${x}-${y}-${direction}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
-      <Polygon points={points} fill={color} stroke={color} strokeWidth={1.5} strokeLinejoin="round" />
+      <G transform={transform}>
+        <Line x1={cap[0][0]} y1={cap[0][1]} x2={cap[1][0]} y2={cap[1][1]} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+        <Line x1={railA[0][0]} y1={railA[0][1]} x2={railA[1][0]} y2={railA[1][1]} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+        <Line x1={railB[0][0]} y1={railB[0][1]} x2={railB[1][0]} y2={railB[1][1]} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+        <Line x1={tail[0]} y1={tail[1]} x2={base[0]} y2={base[1]} stroke={color} strokeWidth={3} strokeLinecap="round" />
+        <Polygon points={`${baseA[0]},${baseA[1]} ${tip[0]},${tip[1]} ${baseB[0]},${baseB[1]}`} fill={color} />
+      </G>
     </Svg>
+  );
+}
+
+// Everything a static tile face needs to draw itself — no worn/gone/hint/jump/tip, since those
+// only mean something for a tile that's actually part of a playable board.
+export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'gate'>;
+
+// A tile's face, lip and visit/direction mark with none of the real Tile's Pressable,
+// animation or kangaroo — for anywhere else in the app that wants to show what a tile kind
+// looks like (CANGUPA-109: HelpScreen.tsx's Tiles section, replacing a flat colour square with
+// the tile's actual rendering, same strokes/marks a real board uses).
+export function TileSwatch({
+  tile,
+  palette,
+  size = 40,
+  testID,
+}: {
+  readonly tile: SwatchTile;
+  readonly palette: Palette;
+  readonly size?: number;
+  readonly testID?: string;
+}) {
+  return (
+    <View
+      testID={testID}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.18,
+        backgroundColor: faceColor(tile, palette),
+        borderBottomWidth: Math.max(3, Math.round(size * 0.1)),
+        borderBottomColor: edgeColor(tile, palette),
+      }}
+    >
+      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markSignpost} />}
+      {tile.gate && <ArrowMark x={tile.x} y={tile.y} kind="gate" direction={tile.gate} color={palette.markGate} />}
+      {!tile.arrow && !tile.gate && tile.kind >= 2 && tile.left >= 1 && (
+        <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
+      )}
+    </View>
   );
 }
 
