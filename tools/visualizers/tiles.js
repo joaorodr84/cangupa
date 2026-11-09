@@ -18,7 +18,11 @@ const GATE = { face: '#9d1057', lip: '#ba5889', mark: '#ffffff' };
 // Coordinates are in the app's 64x57 face space; sketch() below converts them to pixels the
 // same way the old EDGE triangles were.
 const SIGNPOST_DIR = { '>': 'right', '<': 'left', v: 'down', '^': 'up' };
-const GATE_DIR = { R: 'right', L: 'left', D: 'down', U: 'up' };
+// Flipped from the travel direction the letter names (R/L and D/U swapped): a Gate's mark sits
+// on the edge it's entered THROUGH, the opposite side from the direction of travel — same as
+// boardView.ts's `ARROW_DIRECTIONS[game.gate[i] ^ 1]`, which this was missing, pointing every
+// Gate's bracket at the wrong edge of the tile.
+const GATE_DIR = { R: 'left', L: 'right', D: 'up', U: 'down' };
 const AXIS = {
   right: { axis: 'x', sign: 1, edgeAt: 64, acrossCenter: 28.5 },
   left: { axis: 'x', sign: -1, edgeAt: 0, acrossCenter: 28.5 },

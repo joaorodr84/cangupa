@@ -1326,6 +1326,31 @@ rules, solvability); `npx tsc --noEmit` clean in `apps/app`; the full
 `orient.test.ts` fix, which failed before the fix and passed after,
 confirming it addresses a real crash rather than a pre-existing flake.
 
+Era 39 closes here: Nov 9, one commit, CANGUPA-112 — the last two packs
+combine every tile kind.
+
+---
+
+## Era 40 — Nov 9 (continued): the visualizer's Gate bracket points at the right edge
+
+CANGUPA-113 fixed `tools/visualizers/tiles.js`'s `GATE_DIR`, which mapped
+a Gate's letter (`R`/`L`/`D`/`U`) straight to its direction of travel
+instead of the opposite edge the tile is actually entered through.
+`apps/app/src/game/boardView.ts` deliberately flips this before
+rendering (`ARROW_DIRECTIONS[game.gate[i] ^ 1]`), because a Gate's mark
+belongs on the opposite edge from the direction `Game.gate` stores
+(`apps/web-classic/js/game.js`'s `GATES = 'RLDU'`); `tiles.js` never
+applied that flip, so every Gate tile in the visualizer showed its
+bracket mirrored relative to the real app. Swapped `GATE_DIR`'s four
+values to apply the same flip: `R: 'left', L: 'right', D: 'up',
+U: 'down'`.
+
+One commit. Verified: loaded `tiles.js` in a Node `vm` context under a
+minimal DOM stub and confirmed the new `GATE_DIR` values match
+`boardView.ts`'s `^ 1` table for all four directions; ran `sketch()`
+against a real Mesa (pack 7) Gate level with no thrown errors;
+`node tools/test.js` green (unaffected — `tiles.js` is browser-only).
+
 ---
 
 ## Patterns, and what's still open
