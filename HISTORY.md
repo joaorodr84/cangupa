@@ -1251,6 +1251,14 @@ Signpost level (pack 5) from `tools/packs.json`, confirming the
 expected fill colours (raspberry/green) and polygon count appear,
 rather than a live screenshot.
 
+CANGUPA-111 followed in the same era, porting
+`apps/app/src/components/Board.tsx`'s doorway-bracket mark verbatim into
+`tiles.js` in place of the plain triangle CANGUPA-110 had left drawing —
+stale again the moment CANGUPA-107 shipped that same replacement in the
+real app — and fixing `level-packs.template.html`/
+`level-difficulty.template.html`'s legend, which still read "Arrow, leave
+only the way it points" instead of separate Signpost/Gate entries.
+
 ---
 
 ## Patterns, and what's still open

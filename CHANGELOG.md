@@ -7,6 +7,20 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-09
+
+### Fixed
+
+- The dev-only level pack and level difficulty preview pages (used to
+  review the game's level packs, not shown to players) now draw Signpost
+  and Gate tiles with the same doorway-bracket mark — shut on three sides,
+  with a real arrow threaded through the open side — that the app itself
+  shows, instead of the older plain triangle the pages had kept drawing.
+  Their legend also now lists Signpost (green, "leave only the way it
+  points") and Gate (raspberry, "enter only from one side") as two separate
+  lines, matching the app's own rule text, instead of one leftover "Arrow"
+  line still shown in the wrong, pre-recolour colour.
+
 ## 2026-11-08
 
 ### Added
