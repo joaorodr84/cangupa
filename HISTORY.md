@@ -1259,6 +1259,73 @@ real app — and fixing `level-packs.template.html`/
 `level-difficulty.template.html`'s legend, which still read "Arrow, leave
 only the way it points" instead of separate Signpost/Gate entries.
 
+Era 38 closes here: Nov 9, two commits, CANGUPA-110 and CANGUPA-111 — the
+pack/difficulty visualizer catches up on Signpost and Gate.
+
+---
+
+## Era 39 — Nov 9: the last two packs combine every tile kind
+
+CANGUPA-112 rebuilt pack 9 Plateau (7×7) to put Common, Gold, Steel and
+Gate together on every level, and pack 10 Outback (8×7) to put every
+tile kind in the game together — Common, Gold, Steel, Signpost and Gate
+— as the series finale. Both packs had quietly respected a documented,
+test-enforced design rule since CANGUPA-68/69 that no single level may
+use more than three tile kinds, Common included
+(`1 + special <= 3` in `tools/test.js`); combining four kinds on pack 9
+or five on pack 10 meant breaking it, so, flagged to and confirmed by
+the owner, the rule was removed project-wide rather than worked around
+with alternating per-level mixes. `tools/test.js`'s assertion was
+deleted and its `MIX` table updated for packs 9 and 10;
+`tools/pack-plan.js`'s header comment, which used to document "no level
+in packs 1-10 has more than three tile kinds" as a hard rule, now says
+CANGUPA-112 dropped it — it was always a design choice, never an
+engine or save-format requirement.
+
+Getting there took more random-walk candidates than either pack had
+needed before: `pack-plan.js`'s Plateau entry gained
+`gates: [.12, .28]` and its pool went from 1000 to 4000, since
+`gen-packs.js`'s `full` filter requires gold, steel and gate together
+on every non-designed, non-intro level, and that combination is rare
+among random walks. Outback's entry gained `arrows: [.08, .20]` and
+`gates: [.08, .20]`; a first run at pool 8000 never finished in over
+three hours, likely the four-special-feature-together filter driving
+the measuring loop close to its internal try-cap with many wasted
+solver calls — killed and rerun at pool 4000 instead, matching
+Plateau's proven size, which completed in under an hour with no
+errors. `node tools/gen-packs.js` then produced the real
+`tools/packs.json` and `apps/app/src/game/packs.ts`, and regenerated
+`tools/visualizers/level-packs.html`/`level-difficulty.html` along the
+way (`gen-visualizers.js` runs at the end of `gen-packs.js`, not as a
+separate step). Both packs' blurbs changed to match — "Gold, steel and
+gate tiles, all together." for Plateau, "The biggest board, with every
+tile kind in the game together." for Outback — so
+`apps/app/src/i18n/strings/en.ts`/`pt.ts` were updated too, since
+`packText.test.ts` cross-checks them against the generated blurbs.
+
+This surfaced a real bug, not just a stale test: `orient.test.ts`'s
+"every level with arrows is still solvable when turned" test crashed
+with `RangeError: Set maximum size exceeded` inside `Game.solve()`'s
+uncapped recursive search (`board.ts`) — the already-open,
+already-tracked CANGUPA-72 backlog item (the hint solver can hang on
+big, complex turned levels), previously only ever hit by Outback's
+Gold/Steel levels, now also hit via its new Signpost tiles. The test's
+own filter had identified CANGUPA-72-risk levels indirectly, by "packs
+5/6 are the only ones with arrow characters" — an invariant CANGUPA-112
+just broke by giving Outback Signpost tiles too. Fixed by filtering on
+the pack by name instead (importing `PACKS` directly rather than the
+flat `LEVELS` list), with a comment explaining why. A note was also
+added to `TODO.md`'s existing CANGUPA-72 entry flagging that Outback's
+content changed again and that its "~15/50 levels" figure needs
+re-measuring whenever that task is actually picked up; CANGUPA-72
+itself was not attempted here.
+
+One commit. Verified: `node tools/test.js` green (500 pack levels,
+rules, solvability); `npx tsc --noEmit` clean in `apps/app`; the full
+`apps/app` Jest suite green (810/810 tests, 29/29 suites) after the
+`orient.test.ts` fix, which failed before the fix and passed after,
+confirming it addresses a real crash rather than a pre-existing flake.
+
 ---
 
 ## Patterns, and what's still open

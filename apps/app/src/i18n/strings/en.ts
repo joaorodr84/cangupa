@@ -130,11 +130,11 @@ export const en: Strings = {
     },
     {
       name: 'Plateau',
-      blurb: 'A bigger board with gold and steel tiles throughout.',
+      blurb: 'Gold, steel and gate tiles, all together.',
     },
     {
       name: 'Outback',
-      blurb: 'The biggest board and the longest walks of all, with gold and steel throughout.',
+      blurb: 'The biggest board, with every tile kind in the game together.',
     },
   ],
   packRange: (first, last, solved, total) => `Levels ${first}–${last} · ${solved}/${total} solved`,

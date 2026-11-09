@@ -9,6 +9,21 @@ Open work is listed in [TODO.md](TODO.md).
 
 ## 2026-11-09
 
+### Changed
+
+- The app's Plateau pack (9, 7×7) now combines Gold, Steel and Gate tiles
+  together on every level, instead of just Gold and Steel — its blurb
+  changes from "A bigger board with gold and steel tiles throughout." to
+  "Gold, steel and gate tiles, all together."
+- The app's Outback pack (10, 8×7), the game's final pack, now combines
+  every tile kind in the game — Gold, Steel, Signpost and Gate, alongside
+  the base Common tile — together on every level, instead of just Gold and
+  Steel — its blurb changes from "The biggest board and the longest walks
+  of all, with gold and steel throughout." to "The biggest board, with
+  every tile kind in the game together." Both packs' levels were rebuilt
+  from scratch for this, so players who already progressed through them
+  will see new, different levels there.
+
 ### Fixed
 
 - The dev-only level pack and level difficulty preview pages (used to

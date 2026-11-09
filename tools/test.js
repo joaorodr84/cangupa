@@ -142,18 +142,19 @@ if (fs.existsSync(packsFile)) {
     const area = pack.width * pack.height;
     assert.ok(area > prevArea, `${label}: board area must grow (${area} after ${prevArea})`);
     prevArea = area;
-    // the tile mix of each pack (CANGUPA-68, CANGUPA-69, CANGUPA-88): Common only in pack 1, Gold
-    // added in pack 2, Steel without Gold in pack 3, both in pack 4, Signposts in pack 5, Signposts
-    // with Gold then Steel alternately in pack 6, Gates in pack 7, Gates with Gold then Steel
-    // alternately in pack 8, both metals with no special tile in packs 9 and 10 (adding a Gate on
-    // top would be a fourth tile kind, past the cap below). No level in packs 1 to 10 has more than
-    // three tile kinds, Common included
+    // the tile mix of each pack (CANGUPA-68, CANGUPA-69, CANGUPA-88, CANGUPA-112): Common only in
+    // pack 1, Gold added in pack 2, Steel without Gold in pack 3, both in pack 4, Signposts in
+    // pack 5, Signposts with Gold then Steel alternately in pack 6, Gates in pack 7, Gates with
+    // Gold then Steel alternately in pack 8, both metals and Gate together in pack 9, and every
+    // kind in the game together in pack 10. Packs 1-8 still cap at three tile kinds per level,
+    // Common included; packs 9 and 10 intentionally exceed it (CANGUPA-112 dropped that as an
+    // enforced rule — see pack-plan.js)
     const MIX = [
       { gold: false, steel: false, arrow: false, gate: false }, { gold: true, steel: false, arrow: false, gate: false },
       { gold: false, steel: true, arrow: false, gate: false }, { gold: true, steel: true, arrow: false, gate: false },
       { gold: false, steel: false, arrow: true, gate: false }, { gold: true, steel: true, arrow: true, gate: false },
       { gold: false, steel: false, arrow: false, gate: true }, { gold: true, steel: true, arrow: false, gate: true },
-      { gold: true, steel: true, arrow: false, gate: false }, { gold: true, steel: true, arrow: false, gate: false },
+      { gold: true, steel: true, arrow: false, gate: true }, { gold: true, steel: true, arrow: true, gate: true },
     ];
     // Gold and Steel alternate (never together) in packs 6 and 8, so "nearly every level" below
     // would be wrong for them -- each dedicated alternation check further down covers those instead.
@@ -167,8 +168,6 @@ if (fs.existsSync(packsFile)) {
         count[kind]++;
         assert.ok(mix[kind], `${label} level ${j + 1} has a ${kind} tile, which this pack does not allow`);
       }
-      const special = Object.keys(has).filter(kind => has[kind].test(text)).length;
-      assert.ok(1 + special <= 3, `${label} level ${j + 1} has ${1 + special} tile kinds, more than three`);
       if (i === 5 || i === 7) {  // packs 6 and 8: a special tile and one metal, Gold on level 1, Steel on level 2, and so on
         const special = i === 5 ? 'arrow' : 'gate';
         assert.ok(has[special].test(text), `${label} level ${j + 1} has no ${special} tile`);

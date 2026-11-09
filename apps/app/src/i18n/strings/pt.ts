@@ -127,11 +127,11 @@ export const pt: Strings = {
     },
     {
       name: 'Planalto',
-      blurb: 'Um tabuleiro maior com casas de ouro e de aço por todo o lado.',
+      blurb: 'Casas de ouro, de aço e de portão, todas juntas.',
     },
     {
       name: 'Ermo',
-      blurb: 'O maior tabuleiro e os percursos mais longos de todos, com ouro e aço por todo o lado.',
+      blurb: 'O maior tabuleiro, com todas as casas do jogo juntas.',
     },
   ],
   packRange: (first, last, solved, total) => `Níveis ${first}–${last} · ${solved}/${total} resolvidos`,

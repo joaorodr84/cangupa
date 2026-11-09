@@ -36,7 +36,15 @@ The priority can change at any time; the ID never does.
   content, not applied) solved 95 of 100 turned levels then, 5 still
   failing with the slowest at 14 seconds — not re-verified against today's
   levels. Needs a better search, solving off the UI thread, or storing each
-  level's solution in packs.json.
+  level's solution in packs.json. `CANGUPA-112` rebuilt Outback's content
+  again (now Common, Gold, Steel, Signpost and Gate together on every
+  level) and hit this directly: `Game.solve()` — uncapped, unlike the
+  generator's own search — exhausted its `dead` Set rather than return on
+  at least one turned, arrow-containing Outback level, caught by
+  `orient.test.ts`. That test now excludes Outback outright rather than
+  exercising it, so the ~15/50 figure above is stale again and needs
+  re-measuring against the new content whenever this is actually picked
+  up.
 - [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: the game
   starts with a fixed balance of 3 hints, shown as a badge on the hint
   control ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /

@@ -10,12 +10,14 @@
 // Common and Steel (no Gold) in pack 3, all three in pack 4, Common and Signpost tiles in
 // pack 5, Common, Signposts and one metal per level in pack 6 (Gold then Steel then Gold),
 // Common and Gate tiles in pack 7 (CANGUPA-104's new mechanic, mirroring pack 5's role for
-// Signposts), Common, Gate and one metal per level in pack 8 (mirroring pack 6), and both
-// metals together with no special tile in packs 9 and 10 (mirroring pack 4's combine step —
-// adding Gate on top would be a fourth tile kind, past the cap below). No level in packs 1
-// to 10 has more than three tile kinds, Common included. Pack 1 has a few jumps (up to a
-// quarter of the moves) because a 3x3 board of Common tiles with none has only 37 distinct
-// levels, too few for a pack of 50; with jumps it has 137.
+// Signposts), Common, Gate and one metal per level in pack 8 (mirroring pack 6), both metals
+// and Gate together in pack 9, and every tile kind in the game together in pack 10
+// (CANGUPA-112) — the finale. Packs 1 to 8 never put more than three tile kinds on one level,
+// Common included, but that was only ever a design choice, not something the engine or save
+// format needs: CANGUPA-112 dropped it as an enforced rule, since pack 9 and 10's whole point
+// is breaking it. Pack 1 has a few jumps (up to a quarter of the moves) because a 3x3 board
+// of Common tiles with none has only 37 distinct levels, too few for a pack of 50; with jumps
+// it has 137.
 //
 // Meadow's `steps` floor was raised from .60 to .65 (CANGUPA-82): the easiest third of
 // those 137 boards left several levels with pathBits 0 — not one single decision in the
@@ -69,10 +71,12 @@ const PACKS = [
   { name: 'Gorge',     blurb: 'Gates and metals, gold on one level and steel on the next.',
     width: 7, height: 6, steps: [.50, .90], jump: [.25, .45],  designed: false, pool: 1300,
     mixes: [{ tiles: [1, 2], doubles: [.10, .25], gates: [.12, .28] }, { tiles: [1, 3], doubles: [.10, .20], gates: [.12, .28] }] },
-  { name: 'Plateau',   blurb: 'A bigger board with gold and steel tiles throughout.',
-    width: 7, height: 7, steps: [.50, .90], jump: [.25, .45],  tiles: [1, 2, 3],    doubles: [.15, .35],  pool: 1000 },
-  { name: 'Outback',   blurb: 'The biggest board and the longest walks of all, with gold and steel throughout.',
-    width: 8, height: 7, steps: [.50, .90], jump: [.25, .45],  tiles: [1, 2, 3],    doubles: [.15, .35],  pool: 800 },
+  { name: 'Plateau',   blurb: 'Gold, steel and gate tiles, all together.',
+    width: 7, height: 7, steps: [.50, .90], jump: [.25, .45],  tiles: [1, 2, 3],    doubles: [.15, .35],
+    gates: [.12, .28], pool: 4000 },
+  { name: 'Outback',   blurb: 'The biggest board, with every tile kind in the game together.',
+    width: 8, height: 7, steps: [.50, .90], jump: [.25, .45],  tiles: [1, 2, 3],    doubles: [.15, .35],
+    arrows: [.08, .20], gates: [.08, .20], pool: 4000 },
 ];
 
 const LEVELS_PER_PACK = 50;
