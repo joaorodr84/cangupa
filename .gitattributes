@@ -1,0 +1,5 @@
+# Pin text files to LF regardless of core.autocrlf. Without this, generated
+# files like tools/visualizers/*.html end up with mixed CRLF/LF on checkout
+# on Windows, which git then reports as perpetually modified even though the
+# content never changed.
+* text=auto eol=lf
