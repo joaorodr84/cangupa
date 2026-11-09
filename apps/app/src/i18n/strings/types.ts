@@ -38,10 +38,10 @@ export interface Strings {
     readonly doubleRest: string;
     readonly steelBold: string;
     readonly steelRest: string;
-    readonly signpostBold: string;
-    readonly signpostRest: string;
-    readonly gateBold: string;
-    readonly gateRest: string;
+    readonly departureBold: string;
+    readonly departureRest: string;
+    readonly arrivalBold: string;
+    readonly arrivalRest: string;
     // "When you're stuck" (CANGUPA-109): its own section/card, matching
     // rules.html's layout, rather than a bullet folded into Moves.
     readonly stuckSection: string;

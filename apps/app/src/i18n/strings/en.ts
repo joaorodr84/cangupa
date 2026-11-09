@@ -36,10 +36,10 @@ export const en: Strings = {
     doubleRest: ' (yellow) need two visits. The strokes on a tile show how many visits it has left.',
     steelBold: 'Steel tiles',
     steelRest: ' (grey-blue) need three visits.',
-    signpostBold: 'Signpost tiles',
-    signpostRest: ' (green) can only be left through the edge where the triangle is.',
-    gateBold: 'Gate tiles',
-    gateRest: ' (raspberry) can only be entered through the edge where the triangle is.',
+    departureBold: 'Departure tiles',
+    departureRest: ' (green) can only be left through the edge where the triangle is.',
+    arrivalBold: 'Arrival tiles',
+    arrivalRest: ' (raspberry) can only be entered through the edge where the triangle is.',
     outOfMoves: 'If you run out of moves, undo or restart.',
     note: 'Tap a highlighted tile to play.',
     stepCaption: 'Solid outline: one step away.',
@@ -114,23 +114,23 @@ export const en: Strings = {
     },
     {
       name: 'Billabong',
-      blurb: 'Signpost tiles can only be left the way they point.',
+      blurb: 'Departure tiles can only be left the way they point.',
     },
     {
       name: 'Ridge',
-      blurb: 'Signposts and metals, gold on one level and steel on the next.',
+      blurb: 'Departures and metals, gold on one level and steel on the next.',
     },
     {
       name: 'Mesa',
-      blurb: 'Gate tiles can only be entered from one side.',
+      blurb: 'Arrival tiles can only be entered from one side.',
     },
     {
       name: 'Gorge',
-      blurb: 'Gates and metals, gold on one level and steel on the next.',
+      blurb: 'Arrivals and metals, gold on one level and steel on the next.',
     },
     {
       name: 'Plateau',
-      blurb: 'Gold, steel and gate tiles, all together.',
+      blurb: 'Gold, steel and arrival tiles, all together.',
     },
     {
       name: 'Outback',

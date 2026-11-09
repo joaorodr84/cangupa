@@ -25,7 +25,7 @@ The priority can change at any time; the ID never does.
   take many seconds on some big levels turned for a portrait screen, so
   pressing Hint could hang the app. Originally found on packs 8 to 10 while
   they were still frozen (from `CANGUPA-56`); `CANGUPA-88` later rebuilt
-  packs 7 to 10 around the Gate tile, with fresh content, so re-checked
+  packs 7 to 10 around the Arrival tile, with fresh content, so re-checked
   against what actually ships today: the *rectangular* packs — 8 Gorge
   (7×6) and 10 Outback (8×7) — still hit it for real, about 15 of each
   pack's 50 levels failing a 400,000-position capped search when turned to
@@ -37,7 +37,7 @@ The priority can change at any time; the ID never does.
   failing with the slowest at 14 seconds — not re-verified against today's
   levels. Needs a better search, solving off the UI thread, or storing each
   level's solution in packs.json. `CANGUPA-112` rebuilt Outback's content
-  again (now Common, Gold, Steel, Signpost and Gate together on every
+  again (now Common, Gold, Steel, Departure and Arrival together on every
   level) and hit this directly: `Game.solve()` — uncapped, unlike the
   generator's own search — exhausted its `dead` Set rather than return on
   at least one turned, arrow-containing Outback level, caught by
@@ -214,8 +214,8 @@ The priority can change at any time; the ID never does.
   `CANGUPA-92`'s first submission — ship with every pack free first,
   add this as a fast-follow once the SDK is chosen.
 - [P2] `CANGUPA-97` — Analyze visual accessibility. Concrete issue
-  already found: `CANGUPA-87`'s proposed tile colours (Signpost green,
-  Gate raspberry red) are exactly the pair hardest to tell apart under
+  already found: `CANGUPA-87`'s proposed tile colours (Departure green,
+  Arrival raspberry red) are exactly the pair hardest to tell apart under
   red-green colour blindness (~8% of men) — tiles need to stay
   distinguishable by shape too, the way Gold/Steel already are via a
   dot-count overlay (`.tile.two::before`/`::after` in
@@ -227,7 +227,7 @@ The priority can change at any time; the ID never does.
   — didn't land before `CANGUPA-87`/`CANGUPA-88` after all (no owner
   decision blocked on it, so the batch moved ahead), but the specific
   colour-pair issue is already mitigated in practice: `apps/app`'s
-  `Board.tsx` draws the same triangle mark on both Signpost and Gate
+  `Board.tsx` draws the same triangle mark on both Departure and Arrival
   tiles that Gold/Steel already get from their dot-count overlay, so
   neither depends on colour alone. The contrast and dynamic-type
   questions are still open.

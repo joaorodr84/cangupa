@@ -11,8 +11,8 @@ test('renders the rules heading and every rule', async () => {
   expect(screen.getByText('Jump:')).toBeTruthy();
   expect(screen.getByText('Gold tiles')).toBeTruthy();
   expect(screen.getByText('Steel tiles')).toBeTruthy();
-  expect(screen.getByText('Signpost tiles')).toBeTruthy();
-  expect(screen.getByText('Gate tiles')).toBeTruthy();
+  expect(screen.getByText('Departure tiles')).toBeTruthy();
+  expect(screen.getByText('Arrival tiles')).toBeTruthy();
 });
 
 test('groups the rules into a Moves section and a Tiles section (CANGUPA-101)', async () => {
@@ -45,8 +45,8 @@ test('each tile kind shows a colour swatch taken from the live palette', async (
 
   expect(flat('help-swatch-gold').some((s) => s?.backgroundColor === DARK.tile2)).toBe(true);
   expect(flat('help-swatch-steel').some((s) => s?.backgroundColor === DARK.tile3)).toBe(true);
-  expect(flat('help-swatch-signpost').some((s) => s?.backgroundColor === DARK.tileSignpost)).toBe(true);
-  expect(flat('help-swatch-gate').some((s) => s?.backgroundColor === DARK.tileGate)).toBe(true);
+  expect(flat('help-swatch-departure').some((s) => s?.backgroundColor === DARK.tileDeparture)).toBe(true);
+  expect(flat('help-swatch-arrival').some((s) => s?.backgroundColor === DARK.tileArrival)).toBe(true);
 });
 
 // CANGUPA-109: the Step/Jump mini-boards render real board tiles rather than
@@ -88,8 +88,8 @@ test('the Tiles section swatches show real strokes and marks, not just colour (C
 
   expect(screen.getByTestId('tile-strokes-0-0')).toBeTruthy(); // Gold
   expect(screen.getByTestId('tile-strokes-0-1')).toBeTruthy(); // Steel
-  expect(screen.getByTestId('tile-arrow-0-2-right')).toBeTruthy(); // Signpost
-  expect(screen.getByTestId('tile-gate-0-3-right')).toBeTruthy(); // Gate
+  expect(screen.getByTestId('tile-arrow-0-2-right')).toBeTruthy(); // Departure
+  expect(screen.getByTestId('tile-arrival-0-3-right')).toBeTruthy(); // Arrival
 });
 
 test('groups the board screen controls into a Buttons section with their real icons (CANGUPA-109)', async () => {

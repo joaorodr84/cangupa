@@ -78,13 +78,13 @@ test('every level with arrows is still solvable when turned for a portrait or a 
   }
 }, 120000);
 
-test('a Gate tile turns with its level: swapping rows for columns swaps its axis', () => {
+test('an Arrival tile turns with its level: swapping rows for columns swaps its axis', () => {
   // R (entered moving right) becomes D (entered moving down) and D becomes R; L becomes U and U becomes L
   expect(orientLevel(['SR1', '.D.'], false)).toEqual(['S.', 'DR', '1.']);
   expect(orientLevel(['SL1', '.U.'], false)).toEqual(['S.', 'UL', '1.']);
 });
 
-test('a turned level with a Gate is the same puzzle', () => {
+test('a turned level with an Arrival tile is the same puzzle', () => {
   const original = ['SR.1', '.1D.', '.1.1']; // 4 wide, 3 tall
   const turned = orientLevel(original, false);
   expect(turned).toHaveLength(4);
@@ -94,11 +94,12 @@ test('a turned level with a Gate is the same puzzle', () => {
   expect(b.legalMoves().length).toBe(a.legalMoves().length);
 });
 
-// No exhaustive "every level with a Gate, both orientations" test here, unlike the arrow one
-// above: pack 7 (Mesa) is square, so orientLevel never turns it at all, but pack 8 (Gorge, 7x6)
-// hits CANGUPA-72's pre-existing hint-solver limitation for real — turning roughly 15 of its 50
-// levels to portrait makes the plain solve() blow past 400,000 positions (confirmed with
-// tools/difficulty.js's capped `search()` while building this pack, not a Gate-specific bug: the
-// same board size was already flagged in CANGUPA-72 before Gate existed). Fixing that is
+// No exhaustive "every level with an Arrival tile, both orientations" test here, unlike the
+// arrow one above: pack 7 (Mesa) is square, so orientLevel never turns it at all, but pack 8
+// (Gorge, 7x6) hits CANGUPA-72's pre-existing hint-solver limitation for real — turning roughly
+// 15 of its 50 levels to portrait makes the plain solve() blow past 400,000 positions (confirmed
+// with tools/difficulty.js's capped `search()` while building this pack, not an Arrival-specific
+// bug: the same board size was already flagged in CANGUPA-72 before the Arrival tile existed).
+// Fixing that is
 // CANGUPA-72's own job (a better search, solving off the UI thread, or storing each level's
 // solution), not this task's.

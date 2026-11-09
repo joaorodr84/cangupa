@@ -232,18 +232,18 @@ interface TileProps {
 // The width of one visit-left stroke, in percent of the tile.
 const STROKE_WIDTH = 7.5;
 
-// The face and the lip of a tile: a Signpost tile is green and a Gate tile (CANGUPA-104) raspberry
-// whatever its visits, otherwise the kind sets it. Typed on just the three fields either one
-// reads, not the full TileView, so TileSwatch below can call them without the fields (worn,
-// gone, hint, ...) that only make sense for a tile actually on the board.
-function faceColor(tile: Pick<TileView, 'kind' | 'arrow' | 'gate'>, palette: Palette): string {
-  if (tile.arrow) return palette.tileSignpost;
-  if (tile.gate) return palette.tileGate;
+// The face and the lip of a tile: a Departure tile is green and an Arrival tile (CANGUPA-104)
+// raspberry whatever its visits, otherwise the kind sets it. Typed on just the three fields
+// either one reads, not the full TileView, so TileSwatch below can call them without the fields
+// (worn, gone, hint, ...) that only make sense for a tile actually on the board.
+function faceColor(tile: Pick<TileView, 'kind' | 'arrow' | 'arrival'>, palette: Palette): string {
+  if (tile.arrow) return palette.tileDeparture;
+  if (tile.arrival) return palette.tileArrival;
   return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
 }
-function edgeColor(tile: Pick<TileView, 'kind' | 'arrow' | 'gate'>, palette: Palette): string {
-  if (tile.arrow) return palette.edgeSignpost;
-  if (tile.gate) return palette.edgeGate;
+function edgeColor(tile: Pick<TileView, 'kind' | 'arrow' | 'arrival'>, palette: Palette): string {
+  if (tile.arrow) return palette.edgeDeparture;
+  if (tile.arrival) return palette.edgeArrival;
   return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
 }
 
@@ -265,7 +265,7 @@ function Strokes({ x, y, count, color }: { readonly x: number; readonly y: numbe
 
 // CANGUPA-107's chosen replacement for the plain triangle: a doorway bracket, shut on three
 // sides, open on the edge the tile is left/entered by, with a real arrow threaded through that
-// opening — tip past the edge for Signpost (leaves), tip at the bracket's back wall for Gate
+// opening — tip past the edge for Departure (leaves), tip at the bracket's back wall for Arrival
 // (enters). Decided and reviewed on tools/visualizers/tile-marks.html's Option B; ported
 // verbatim from that page's AXIS/pt/geometry functions rather than redrawn, so this is exactly
 // what was reviewed there, just as React Native SVG elements instead of a markup string.
@@ -315,11 +315,11 @@ function ArrowMark({
 }: {
   readonly x: number;
   readonly y: number;
-  readonly kind: 'arrow' | 'gate';
+  readonly kind: 'arrow' | 'arrival';
   readonly direction: ArrowDirection;
   readonly color: string;
 }) {
-  const isEnter = kind === 'gate';
+  const isEnter = kind === 'arrival';
   const g = bracketGeometry(direction);
 
   // The bracket: a back wall (cap) and two rails running from it to the opening.
@@ -327,8 +327,8 @@ function ArrowMark({
   const railA = [pt(direction, g.capK, -g.w), pt(direction, g.openK, -g.w)];
   const railB = [pt(direction, g.capK, g.w), pt(direction, g.openK, g.w)];
 
-  // The threaded arrow: outward for Signpost (tip past the edge, it leaves this way), inward
-  // for Gate (tip at the bracket's back wall, it enters this way).
+  // The threaded arrow: outward for Departure (tip past the edge, it leaves this way), inward
+  // for Arrival (tip at the bracket's back wall, it enters this way).
   const outward = !isEnter;
   const headLen = 6;
   const tailK = outward ? g.deepK : g.shallowK;
@@ -358,7 +358,7 @@ function ArrowMark({
 
 // Everything a static tile face needs to draw itself — no worn/gone/hint/jump/tip, since those
 // only mean something for a tile that's actually part of a playable board.
-export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'gate'>;
+export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'arrival'>;
 
 // A tile's face, lip and visit/direction mark with none of the real Tile's Pressable,
 // animation or kangaroo — for anywhere else in the app that wants to show what a tile kind
@@ -387,9 +387,9 @@ export function TileSwatch({
         borderBottomColor: edgeColor(tile, palette),
       }}
     >
-      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markSignpost} />}
-      {tile.gate && <ArrowMark x={tile.x} y={tile.y} kind="gate" direction={tile.gate} color={palette.markGate} />}
-      {!tile.arrow && !tile.gate && tile.kind >= 2 && tile.left >= 1 && (
+      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
+      {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
+      {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
         <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}
     </View>
@@ -420,9 +420,9 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
         tile.tip && { transform: [{ scale }] },
       ]}
     >
-      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markSignpost} />}
-      {tile.gate && <ArrowMark x={tile.x} y={tile.y} kind="gate" direction={tile.gate} color={palette.markGate} />}
-      {!tile.arrow && !tile.gate && tile.kind >= 2 && tile.left >= 1 && (
+      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
+      {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
+      {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
         <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}
     </Animated.View>

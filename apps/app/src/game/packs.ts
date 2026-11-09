@@ -238,7 +238,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Billabong",
-    blurb: "Signpost tiles can only be left the way they point.",
+    blurb: "Departure tiles can only be left the way they point.",
     width: 5,
     height: 5,
     levels: [
@@ -296,7 +296,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Ridge",
-    blurb: "Signposts and metals, gold on one level and steel on the next.",
+    blurb: "Departures and metals, gold on one level and steel on the next.",
     width: 6,
     height: 5,
     levels: [
@@ -354,7 +354,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Mesa",
-    blurb: "Gate tiles can only be entered from one side.",
+    blurb: "Arrival tiles can only be entered from one side.",
     width: 6,
     height: 6,
     levels: [
@@ -412,7 +412,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Gorge",
-    blurb: "Gates and metals, gold on one level and steel on the next.",
+    blurb: "Arrivals and metals, gold on one level and steel on the next.",
     width: 7,
     height: 6,
     levels: [
@@ -470,7 +470,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Plateau",
-    blurb: "Gold, steel and gate tiles, all together.",
+    blurb: "Gold, steel and arrival tiles, all together.",
     width: 7,
     height: 7,
     levels: [

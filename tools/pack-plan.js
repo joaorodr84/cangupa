@@ -7,11 +7,11 @@
 //
 // Why these themes: a pack teaches one thing, so the curve is a sequence of ideas,
 // not just a bigger grid. The tile mix is Common only in pack 1, Common and Gold in pack 2,
-// Common and Steel (no Gold) in pack 3, all three in pack 4, Common and Signpost tiles in
-// pack 5, Common, Signposts and one metal per level in pack 6 (Gold then Steel then Gold),
-// Common and Gate tiles in pack 7 (CANGUPA-104's new mechanic, mirroring pack 5's role for
-// Signposts), Common, Gate and one metal per level in pack 8 (mirroring pack 6), both metals
-// and Gate together in pack 9, and every tile kind in the game together in pack 10
+// Common and Steel (no Gold) in pack 3, all three in pack 4, Common and Departure tiles in
+// pack 5, Common, Departures and one metal per level in pack 6 (Gold then Steel then Gold),
+// Common and Arrival tiles in pack 7 (CANGUPA-104's new mechanic, mirroring pack 5's role for
+// Departures), Common, Arrival and one metal per level in pack 8 (mirroring pack 6), both metals
+// and Arrival together in pack 9, and every tile kind in the game together in pack 10
 // (CANGUPA-112) — the finale. Packs 1 to 8 never put more than three tile kinds on one level,
 // Common included, but that was only ever a design choice, not something the engine or save
 // format needs: CANGUPA-112 dropped it as an enforced rule, since pack 9 and 10's whole point
@@ -40,15 +40,15 @@
 //                (two visits), 3 Steel (three visits). [1] only Common; [1, 3] Common and Steel and
 //                no Gold; [1, 2, 3] all three. Default [1, 2].
 //   doubles      [lo, hi] share of landings that may be on a tile needing more than one visit
-//   arrows       [lo, hi] share of landings that become Signpost tiles: one visit, and it can only
+//   arrows       [lo, hi] share of landings that become Departure tiles: one visit, and it can only
 //                be left in the way its triangle points
-//   gates        [lo, hi] share of landings that become Gate tiles (CANGUPA-104): one visit, and it
-//                can only be entered moving the way its triangle points — the mirror of arrows
-//   intro        the kind this pack introduces ('gold', 'steel', 'arrow' or 'gate'): its first few
+//   arrivals     [lo, hi] share of landings that become Arrival tiles (CANGUPA-104): one visit, and
+//                it can only be entered moving the way its triangle points — the mirror of arrows
+//   intro        the kind this pack introduces ('gold', 'steel', 'arrow' or 'arrival'): its first few
 //                levels (INTRO_PLAIN in gen-packs.js) do not have it, so the pack starts gently
-//   mixes        variants a pack alternates between, level by level (pack 6: Common, Signposts and
-//                Gold, then Common, Signposts and Steel; pack 8 the same with Gate in place of
-//                Signpost). Each variant has its own tiles / doubles / arrows / gates
+//   mixes        variants a pack alternates between, level by level (pack 6: Common, Departures and
+//                Gold, then Common, Departures and Steel; pack 8 the same with Arrival in place of
+//                Departure). Each variant has its own tiles / doubles / arrows / arrivals
 //   designed     false: no designed layouts in this pack (they have only Common tiles)
 //   frozen       true: leave this pack exactly as it is in tools/packs.json
 //   pool         random candidates measured for this pack; levels are picked from them
@@ -61,22 +61,22 @@ const PACKS = [
     width: 4, height: 4, steps: [.55, .90], jump: [0, .30],    tiles: [1, 3],       doubles: [.10, .25], intro: 'steel', pool: 4000 },
   { name: 'Outcrop',   blurb: 'Gold and steel tiles share the board.',
     width: 5, height: 4, steps: [.55, .85], jump: [.20, .40],  tiles: [1, 2, 3],    doubles: [.10, .30],  pool: 3000 },
-  { name: 'Billabong', blurb: 'Signpost tiles can only be left the way they point.',
+  { name: 'Billabong', blurb: 'Departure tiles can only be left the way they point.',
     width: 5, height: 5, steps: [.55, .90], jump: [.20, .40],  tiles: [1],          arrows: [.15, .35], intro: 'arrow', pool: 2500 },
-  { name: 'Ridge',     blurb: 'Signposts and metals, gold on one level and steel on the next.',
+  { name: 'Ridge',     blurb: 'Departures and metals, gold on one level and steel on the next.',
     width: 6, height: 5, steps: [.55, .90], jump: [.25, .40],  designed: false, pool: 3000,
     mixes: [{ tiles: [1, 2], doubles: [.10, .25], arrows: [.12, .28] }, { tiles: [1, 3], doubles: [.10, .20], arrows: [.12, .28] }] },
-  { name: 'Mesa',      blurb: 'Gate tiles can only be entered from one side.',
-    width: 6, height: 6, steps: [.50, .90], jump: [.25, .45],  tiles: [1],          gates: [.15, .35], intro: 'gate', pool: 1600 },
-  { name: 'Gorge',     blurb: 'Gates and metals, gold on one level and steel on the next.',
+  { name: 'Mesa',      blurb: 'Arrival tiles can only be entered from one side.',
+    width: 6, height: 6, steps: [.50, .90], jump: [.25, .45],  tiles: [1],          arrivals: [.15, .35], intro: 'arrival', pool: 1600 },
+  { name: 'Gorge',     blurb: 'Arrivals and metals, gold on one level and steel on the next.',
     width: 7, height: 6, steps: [.50, .90], jump: [.25, .45],  designed: false, pool: 1300,
-    mixes: [{ tiles: [1, 2], doubles: [.10, .25], gates: [.12, .28] }, { tiles: [1, 3], doubles: [.10, .20], gates: [.12, .28] }] },
-  { name: 'Plateau',   blurb: 'Gold, steel and gate tiles, all together.',
+    mixes: [{ tiles: [1, 2], doubles: [.10, .25], arrivals: [.12, .28] }, { tiles: [1, 3], doubles: [.10, .20], arrivals: [.12, .28] }] },
+  { name: 'Plateau',   blurb: 'Gold, steel and arrival tiles, all together.',
     width: 7, height: 7, steps: [.50, .90], jump: [.25, .45],  tiles: [1, 2, 3],    doubles: [.15, .35],
-    gates: [.12, .28], pool: 4000 },
+    arrivals: [.12, .28], pool: 4000 },
   { name: 'Outback',   blurb: 'The biggest board, with every tile kind in the game together.',
     width: 8, height: 7, steps: [.50, .90], jump: [.25, .45],  tiles: [1, 2, 3],    doubles: [.15, .35],
-    arrows: [.08, .20], gates: [.08, .20], pool: 4000 },
+    arrows: [.08, .20], arrivals: [.08, .20], pool: 4000 },
 ];
 
 const LEVELS_PER_PACK = 50;
@@ -146,7 +146,7 @@ const MEADOW_V1_LEVELS = [
   ['111', '111', '.S1'],
 ];
 
-// Packs 7-10's 200 levels before CANGUPA-88 rebuilt them around the new Gate tile
+// Packs 7-10's 200 levels before CANGUPA-88 rebuilt them around the new Arrival tile
 // (CANGUPA-104): Mesa, Gorge, Plateau and Outback were all Gold-only (CANGUPA-68/69's
 // `frozen: true` kept them as a historical record, since only Gold existed when they were
 // first generated). Not wired into anything below -- kept only so these exact sets can be

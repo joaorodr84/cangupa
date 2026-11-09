@@ -4,7 +4,7 @@
 //
 // Rebuilt for CANGUPA-101 from one flat bullet list into labelled sections
 // (SettingsScreen.tsx's own "Appearance"/"Gameplay" pattern), since each new
-// tile type (Steel, then Signpost, then Gate) had just kept adding another
+// tile type (Steel, then Departure, then Arrival) had just kept adding another
 // line to an undifferentiated list. Each tile's own line now carries a
 // colour swatch, taken from the live palette rather than a hardcoded hex, so
 // the page reads as a quick reference a player can actually check mid-level
@@ -18,7 +18,7 @@
 // ReferenceScreen.tsx) but built from the app's own real components instead
 // of redrawn: Board (via its exported TileSwatch) renders these exactly as
 // it renders the real board — real strokes on Gold/Steel, the real
-// doorway-bracket mark (CANGUPA-107) on Signpost/Gate — and BackArrow/
+// doorway-bracket mark (CANGUPA-107) on Departure/Arrival — and BackArrow/
 // ControlIcon are the exact icons BoardHud.tsx uses, so none of this can
 // silently drift from what the board screen actually looks like.
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -35,9 +35,9 @@ interface HelpScreenProps {
 }
 
 // Shared fields for every synthetic tile these diagrams ever need: Common
-// only, no Gold/Steel/Signpost/Gate — kind/arrow/gate stay fixed so a tile
-// literal only has to say where it is and what state it's in.
-const COMMON = { double: false, cracked: false, kind: 1, arrow: null, gate: null, tip: false } as const;
+// only, no Gold/Steel/Departure/Arrival — kind/arrow/arrival stay fixed so a
+// tile literal only has to say where it is and what state it's in.
+const COMMON = { double: false, cracked: false, kind: 1, arrow: null, arrival: null, tip: false } as const;
 
 // The kangaroo's own starting tile: a Common tile has one visit, and
 // `board.ts`'s `reset()` always spends it just for standing there (see
@@ -94,18 +94,18 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
 
   // One row per tile kind that exists today — Common isn't listed, since
   // "step on it once" is already covered by Step/Jump above and it needs no
-  // swatch to recognise. Steel, then Signpost, then Gate were each added
+  // swatch to recognise. Steel, then Departure, then Arrival were each added
   // here the moment they first shipped in a real level (CANGUPA-68/69/88).
   // Each swatch is a real tile at full strength (left === kind), rendered by
   // TileSwatch the same way rules.html's Tiles table does — real strokes for
-  // Gold/Steel, the real triangle for Signpost/Gate — not a flat colour
+  // Gold/Steel, the real triangle for Departure/Arrival — not a flat colour
   // square (CANGUPA-109). y is this row's index, just to keep each swatch's
   // own tile-strokes-*/tile-arrow-* testID distinct from the others on screen.
   const tiles: readonly { readonly key: string; readonly bold: string; readonly rest: string; readonly swatchTile: SwatchTile }[] = [
-    { key: 'gold', bold: t.help.doubleBold, rest: t.help.doubleRest, swatchTile: { x: 0, y: 0, kind: 2, left: 2, arrow: null, gate: null } },
-    { key: 'steel', bold: t.help.steelBold, rest: t.help.steelRest, swatchTile: { x: 0, y: 1, kind: 3, left: 3, arrow: null, gate: null } },
-    { key: 'signpost', bold: t.help.signpostBold, rest: t.help.signpostRest, swatchTile: { x: 0, y: 2, kind: 1, left: 1, arrow: 'right', gate: null } },
-    { key: 'gate', bold: t.help.gateBold, rest: t.help.gateRest, swatchTile: { x: 0, y: 3, kind: 1, left: 1, arrow: null, gate: 'right' } },
+    { key: 'gold', bold: t.help.doubleBold, rest: t.help.doubleRest, swatchTile: { x: 0, y: 0, kind: 2, left: 2, arrow: null, arrival: null } },
+    { key: 'steel', bold: t.help.steelBold, rest: t.help.steelRest, swatchTile: { x: 0, y: 1, kind: 3, left: 3, arrow: null, arrival: null } },
+    { key: 'departure', bold: t.help.departureBold, rest: t.help.departureRest, swatchTile: { x: 0, y: 2, kind: 1, left: 1, arrow: 'right', arrival: null } },
+    { key: 'arrival', bold: t.help.arrivalBold, rest: t.help.arrivalRest, swatchTile: { x: 0, y: 3, kind: 1, left: 1, arrow: null, arrival: 'right' } },
   ];
 
   // The board screen's five controls (BoardHud.tsx), each with the exact

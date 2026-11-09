@@ -97,30 +97,30 @@ describe('arrow tiles', () => {
   });
 });
 
-describe('Gate tiles (CANGUPA-104)', () => {
+describe('Arrival tiles (CANGUPA-104)', () => {
   const to = (g: Game) => g.legalMoves().map((m) => [m.x, m.y]);
 
-  test('a Gate tile can only be entered by moving the way it names', () => {
-    // 'SL1': (1,0) is a Gate only enterable moving left (from the right, (2,0)) — stepping onto
-    // it from the start (moving right) must fail, so only the jump past it is legal.
+  test('an Arrival tile can only be entered by moving the way it names', () => {
+    // 'SL1': (1,0) is an Arrival only enterable moving left (from the right, (2,0)) — stepping
+    // onto it from the start (moving right) must fail, so only the jump past it is legal.
     const g = new Game(['SL1']);
     expect(g.max[1]).toBe(1);
-    expect(g.gate[1]).toBe(1); // 1 is left
+    expect(g.arrival[1]).toBe(1); // 1 is left
     expect(to(g)).toEqual([[2, 0]]);
 
-    g.play({ x: 2, y: 0 }); // jump over the gate
-    expect(to(g)).toEqual([[1, 0]]); // now moving left: entering the gate is legal
+    g.play({ x: 2, y: 0 }); // jump over the arrival tile
+    expect(to(g)).toEqual([[1, 0]]); // now moving left: entering it is legal
   });
 
-  test('every Gate character names its own direction, and a Gate is never the start', () => {
-    expect(new Game(['SR1']).gate[1]).toBe(0);
-    expect(new Game(['SL1']).gate[1]).toBe(1);
-    expect(new Game(['S.', '1D']).gate[3]).toBe(2);
-    expect(new Game(['S.', '1U']).gate[3]).toBe(3);
+  test('every Arrival character names its own direction, and an Arrival is never the start', () => {
+    expect(new Game(['SR1']).arrival[1]).toBe(0);
+    expect(new Game(['SL1']).arrival[1]).toBe(1);
+    expect(new Game(['S.', '1D']).arrival[3]).toBe(2);
+    expect(new Game(['S.', '1U']).arrival[3]).toBe(3);
     expect(new Game(['SL1']).start).toBe(0);
   });
 
-  test('a level with a Gate can still be cleared', () => {
+  test('a level with an Arrival tile can still be cleared', () => {
     const g = new Game(['SL1']);
     g.play({ x: 2, y: 0 });
     const path = g.solve()!;

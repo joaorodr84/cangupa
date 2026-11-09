@@ -141,11 +141,11 @@ For each idea: the **rule**, what it would cost in the **engine** (`js/game.js`,
 - **Generator:** same as teleporters, with direction.
 - **Cost:** M.
 
-### 22. Gate tile (entry-locked)
-- **Rule:** the mirror of the one-way arrow/Signpost tile (#3): a Gate can only be *landed on* from one side; the other three are closed to it. Leaving it, once on it, is unrestricted.
-- **Engine:** `legalMoves` filters which direction a move *into* a Gate is allowed from, rather than which direction it can be left by (#3's filter runs the other way round).
-- **Generator:** when the walk lands on a Gate, the direction it arrived from becomes that gate's one open side — easy to add, mirrors #3.
-- **Cost:** S. Named Gate rather than "wall", which would read as impassable next to Pillar (#16) when this tile is still enterable from its one open side; coloured raspberry red once Signpost (#3's arrow tile, CANGUPA-87) freed that colour up by moving to green.
+### 22. Arrival tile (entry-locked)
+- **Rule:** the mirror of the one-way arrow/Departure tile (#3): an Arrival tile can only be *landed on* from one side; the other three are closed to it. Leaving it, once on it, is unrestricted.
+- **Engine:** `legalMoves` filters which direction a move *into* an Arrival tile is allowed from, rather than which direction it can be left by (#3's filter runs the other way round).
+- **Generator:** when the walk lands on an Arrival tile, the direction it arrived from becomes that tile's one open side — easy to add, mirrors #3.
+- **Cost:** S. Named Arrival rather than "wall", which would read as impassable next to Pillar (#16) when this tile is still enterable from its one open side; coloured raspberry red once Departure (#3's arrow tile, CANGUPA-87) freed that colour up by moving to green.
 
 ## Level modifiers and game features (not tiles)
 

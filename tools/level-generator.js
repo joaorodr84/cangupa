@@ -25,10 +25,10 @@ const MOVES = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 //              a tile that has been visited twice is nudged towards its third
 //   arrows     how many one-visit tiles (not the start, not the last) become arrow tiles. An arrow
 //              takes the direction the walk leaves its tile by, so the walk stays a valid solution
-//   gates      how many one-visit tiles (not the start, not already an arrow) become Gate tiles
-//              (CANGUPA-104). A Gate takes the direction the walk enters its tile by, so the walk
-//              stays a valid solution — the mirror of how an arrow takes its exit direction.
-function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, gates = 0 }, rand) {
+//   arrivals   how many one-visit tiles (not the start, not already an arrow) become Arrival tiles
+//              (CANGUPA-104). An Arrival takes the direction the walk enters its tile by, so the
+//              walk stays a valid solution — the mirror of how an arrow takes its exit direction.
+function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, arrivals = 0 }, rand) {
   const visits = new Map(); // cell index -> times landed on
   const exits = new Map();  // cell index -> the direction (index into MOVES) the walk first left it by
   const entries = new Map(); // cell index -> the direction (index into MOVES) the walk first entered it by
@@ -78,13 +78,13 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     for (const i of candidates.slice(0, arrows)) arrowAt.set(i, '><v^'[exits.get(i)]); // MOVES is in the order right, left, down, up
   }
 
-  // Gate tiles (CANGUPA-104): some of the tiles visited once and entered by a move, excluding
+  // Arrival tiles (CANGUPA-104): some of the tiles visited once and entered by a move, excluding
   // any already an arrow (a tile cannot be both), in a random order.
-  const gateAt = new Map();
-  if (gates > 0) {
+  const arrivalAt = new Map();
+  if (arrivals > 0) {
     const candidates = [...entries.keys()].filter(i => i !== start && visits.get(i) === 1 && !arrowAt.has(i));
     for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
-    for (const i of candidates.slice(0, gates)) gateAt.set(i, 'RLDU'[entries.get(i)]); // MOVES is in the order right, left, down, up
+    for (const i of candidates.slice(0, arrivals)) arrivalAt.set(i, 'RLDU'[entries.get(i)]); // MOVES is in the order right, left, down, up
   }
 
   const rows = [];
@@ -92,7 +92,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     let row = '';
     for (let c = 0; c < width; c++) {
       const i = r * width + c, count = visits.get(i) || 0;
-      row += !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : gateAt.has(i) ? gateAt.get(i)
+      row += !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : arrivalAt.has(i) ? arrivalAt.get(i)
         : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
     }
     rows.push(row);

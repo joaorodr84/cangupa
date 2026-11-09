@@ -8,21 +8,21 @@ const TILES = {
   '3': { face: '#587790', lip: '#3c5162', mark: '#ffffff', visits: 3 },
 };
 const START_OF = { S: '1', s: '2', T: '3' };
-// Signpost was raspberry until CANGUPA-87 recoloured it green and freed raspberry for the new
-// Gate tile (CANGUPA-88) — see apps/app/src/theme/palette.ts.
-const SIGNPOST = { face: '#2f9e44', lip: '#7cd48f', mark: '#ffffff' };
-const GATE = { face: '#9d1057', lip: '#ba5889', mark: '#ffffff' };
+// Departure was raspberry until CANGUPA-87 recoloured it green and freed raspberry for the new
+// Arrival tile (CANGUPA-88) — see apps/app/src/theme/palette.ts.
+const DEPARTURE = { face: '#2f9e44', lip: '#7cd48f', mark: '#ffffff' };
+const ARRIVAL = { face: '#9d1057', lip: '#ba5889', mark: '#ffffff' };
 // The doorway-bracket mark (CANGUPA-107), ported verbatim from apps/app/src/components/Board.tsx's
 // AXIS/pt/bracketGeometry/ArrowMark — the plain triangle this file drew before CANGUPA-110 was
 // already stale the day it shipped, since CANGUPA-107 had replaced that triangle in the real app.
 // Coordinates are in the app's 64x57 face space; sketch() below converts them to pixels the
 // same way the old EDGE triangles were.
-const SIGNPOST_DIR = { '>': 'right', '<': 'left', v: 'down', '^': 'up' };
-// Flipped from the travel direction the letter names (R/L and D/U swapped): a Gate's mark sits
-// on the edge it's entered THROUGH, the opposite side from the direction of travel — same as
-// boardView.ts's `ARROW_DIRECTIONS[game.gate[i] ^ 1]`, which this was missing, pointing every
-// Gate's bracket at the wrong edge of the tile.
-const GATE_DIR = { R: 'left', L: 'right', D: 'up', U: 'down' };
+const DEPARTURE_DIR = { '>': 'right', '<': 'left', v: 'down', '^': 'up' };
+// Flipped from the travel direction the letter names (R/L and D/U swapped): an Arrival's mark
+// sits on the edge it's entered THROUGH, the opposite side from the direction of travel — same
+// as boardView.ts's `ARROW_DIRECTIONS[game.arrival[i] ^ 1]`, which this was missing, pointing
+// every Arrival's bracket at the wrong edge of the tile.
+const ARRIVAL_DIR = { R: 'left', L: 'right', D: 'up', U: 'down' };
 const AXIS = {
   right: { axis: 'x', sign: 1, edgeAt: 64, acrossCenter: 28.5 },
   left: { axis: 'x', sign: -1, edgeAt: 0, acrossCenter: 28.5 },
@@ -43,8 +43,8 @@ function bracketGeometry(direction) {
   const w = (ext.across / 2 - BRACKET_PADDING) / BRACKET_SCALE;
   return { capK, w, openK: BRACKET_OPEN_K, deepK: capK - BRACKET_ARROW_GAP, shallowK: BRACKET_SHALLOW_K };
 }
-// isEnter: Gate's arrow threads inward, tip at the bracket's back wall (it enters this way);
-// Signpost's threads outward, tip past the edge (it leaves this way) — same as Board.tsx.
+// isEnter: Arrival's arrow threads inward, tip at the bracket's back wall (it enters this way);
+// Departure's threads outward, tip past the edge (it leaves this way) — same as Board.tsx.
 function bracketMark(direction, isEnter) {
   const g = bracketGeometry(direction);
   const cap = [arrowPt(direction, g.capK, -g.w), arrowPt(direction, g.capK, g.w)];
@@ -96,17 +96,17 @@ function sketch(rows, width, label, box = 120) {
       const c = row[x] || '.';
       if (c === '.') continue;
       const kind = START_OF[c] || c;
-      const t = ARROW_KEYS.includes(c) ? SIGNPOST : GATE_KEYS.includes(c) ? GATE : TILES[kind];
+      const t = ARROW_KEYS.includes(c) ? DEPARTURE : ARRIVAL_KEYS.includes(c) ? ARRIVAL : TILES[kind];
       if (!t) continue;
       const fx = pad + x * cell + gap / 2, fy = pad + y * cell + gap / 2;
       const fw = cell - gap, fh = cell - gap - lip, rx = Math.max(1, cell / 6);
       add(svg, 'rect', { x: fx, y: fy + lip, width: fw, height: fh, rx, fill: t.lip });
       add(svg, 'rect', { x: fx, y: fy, width: fw, height: fh, rx, fill: t.face });
-      const direction = SIGNPOST_DIR[c] || GATE_DIR[c];
+      const direction = DEPARTURE_DIR[c] || ARRIVAL_DIR[c];
       if (direction) {
         const conv = ([px, py]) => [fx + px / 64 * fw, fy + py / 57 * fh];
         const fmt = (p) => `${p[0].toFixed(2)},${p[1].toFixed(2)}`;
-        const m = bracketMark(direction, GATE_KEYS.includes(c));
+        const m = bracketMark(direction, ARRIVAL_KEYS.includes(c));
         const thin = Math.max(0.75, 1.5 * fw / 64), thick = Math.max(1.2, 3 * fw / 64);
         for (const [p1, p2] of m.lines) {
           const [x1, y1] = conv(p1), [x2, y2] = conv(p2);
@@ -135,4 +135,4 @@ function sketch(rows, width, label, box = 120) {
   return svg;
 }
 const ARROW_KEYS = ['>', '<', '^', 'v'];
-const GATE_KEYS = ['R', 'L', 'D', 'U'];
+const ARRIVAL_KEYS = ['R', 'L', 'D', 'U'];

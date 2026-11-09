@@ -19,12 +19,12 @@ export interface TileView {
   readonly kind: 1 | 2 | 3;
   // Visits still left, the number the strokes on a Gold or Steel tile show.
   readonly left: number;
-  // The way an arrow (Signpost) tile can be left, or null for any other tile.
+  // The way an arrow (Departure) tile can be left, or null for any other tile.
   readonly arrow: ArrowDirection | null;
-  // The one side a Gate tile (CANGUPA-104) can be entered from, or null for any other tile — the
-  // mirror of `arrow`: the opposite edge from the direction of travel Game.gate actually stores,
-  // since that's the side the triangle mark (and the player) reads as "open".
-  readonly gate: ArrowDirection | null;
+  // The one side an Arrival tile (CANGUPA-104) can be entered from, or null for any other tile —
+  // the mirror of `arrow`: the opposite edge from the direction of travel Game.arrival actually
+  // stores, since that's the side the triangle mark (and the player) reads as "open".
+  readonly arrival: ArrowDirection | null;
   // Used up and the kangaroo is standing on it.
   readonly worn: boolean;
   // Used up and the kangaroo has moved off it: it has dropped away.
@@ -65,7 +65,7 @@ export function tilesOf(game: Game, { hints, tip = null }: TilesOptions): readon
       left,
       arrow: game.dir[i] >= 0 ? ARROW_DIRECTIONS[game.dir[i]] : null,
       // ^ 1 flips right<->left (0<->1) and down<->up (2<->3) — DIRS' own pairing (see board.ts).
-      gate: game.gate[i] >= 0 ? ARROW_DIRECTIONS[game.gate[i] ^ 1] : null,
+      arrival: game.arrival[i] >= 0 ? ARROW_DIRECTIONS[game.arrival[i] ^ 1] : null,
       worn: left === 0 && i === game.pos,
       gone: left === 0 && i !== game.pos,
       hint: Boolean(target) && hints,

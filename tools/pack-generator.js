@@ -15,9 +15,9 @@ const { search, measure } = require('./difficulty.js');
 
 // The 8 ways to turn or mirror a board. Moves are symmetric in all four directions, so
 // two boards related by any of them are the same puzzle.
-// An arrow (Signpost) tile points a way, so it turns with the board: when a level is mirrored or
-// rotated, its direction goes through the same turn. A Gate tile (CANGUPA-104) turns the same way,
-// just with its own character set. `m` is the 2x2 matrix the 8 turns apply to a direction
+// An arrow (Departure) tile points a way, so it turns with the board: when a level is mirrored or
+// rotated, its direction goes through the same turn. An Arrival tile (CANGUPA-104) turns the same
+// way, just with its own character set. `m` is the 2x2 matrix the 8 turns apply to a direction
 // (dx, dy) -> (m[0]*dx + m[1]*dy, m[2]*dx + m[3]*dy), in the order the variants below are built.
 const ARROW_VEC = { '>': [1, 0], '<': [-1, 0], 'v': [0, 1], '^': [0, -1] };
 const VEC_ARROW = { '1,0': '>', '-1,0': '<', '0,1': 'v', '0,-1': '^' };
@@ -26,12 +26,12 @@ const turnArrow = (c, m) => {
   if (!v) return c;
   return VEC_ARROW[`${m[0] * v[0] + m[1] * v[1] || 0},${m[2] * v[0] + m[3] * v[1] || 0}`];
 };
-const GATE_VEC = { R: [1, 0], L: [-1, 0], D: [0, 1], U: [0, -1] };
-const VEC_GATE = { '1,0': 'R', '-1,0': 'L', '0,1': 'D', '0,-1': 'U' };
-const turnGate = (c, m) => {
-  const v = GATE_VEC[c];
+const ARRIVAL_VEC = { R: [1, 0], L: [-1, 0], D: [0, 1], U: [0, -1] };
+const VEC_ARRIVAL = { '1,0': 'R', '-1,0': 'L', '0,1': 'D', '0,-1': 'U' };
+const turnArrival = (c, m) => {
+  const v = ARRIVAL_VEC[c];
   if (!v) return c;
-  return VEC_GATE[`${m[0] * v[0] + m[1] * v[1] || 0},${m[2] * v[0] + m[3] * v[1] || 0}`];
+  return VEC_ARRIVAL[`${m[0] * v[0] + m[1] * v[1] || 0},${m[2] * v[0] + m[3] * v[1] || 0}`];
 };
 function variants(rows) {
   const h = rows.length, w = rows[0].length;
@@ -40,7 +40,7 @@ function variants(rows) {
     const out = [];
     for (let y = 0; y < nh; y++) {
       let r = '';
-      for (let x = 0; x < nw; x++) r += turnGate(turnArrow(f(x, y), m), m);
+      for (let x = 0; x < nw; x++) r += turnArrival(turnArrow(f(x, y), m), m);
       out.push(r);
     }
     return out.join('/');
@@ -62,12 +62,12 @@ const canonical = rows => variants(rows).sort()[0];
 const hasGold = rows => /[2s]/.test(rows.join(''));
 const hasSteel = rows => /[3T]/.test(rows.join(''));
 const hasArrow = rows => /[><v^]/.test(rows.join(''));
-const hasGate = rows => /[RLDU]/.test(rows.join(''));
+const hasArrival = rows => /[RLDU]/.test(rows.join(''));
 // Whether a level has every kind the plan entry lists (Common is always there).
 function hasKinds(spec, rows) {
   const kinds = kindsOf(spec);
   return (!kinds.includes(2) || hasGold(rows)) && (!kinds.includes(3) || hasSteel(rows))
-    && (!spec.arrows || hasArrow(rows)) && (!spec.gates || hasGate(rows));
+    && (!spec.arrows || hasArrow(rows)) && (!spec.arrivals || hasArrival(rows));
 }
 // The kinds a pack's plan entry allows (default: Normal and Gold, as before CANGUPA-68).
 const kindsOf = spec => spec.tiles || [1, 2];
@@ -98,11 +98,11 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     const doubles = Math.floor(steps * lerp(m.doubles || [0, 0], rand()));
     const jump = lerp(spec.jump, rand());
     const kinds = kindsOf(m);
-    // a share of candidates get no arrows/gates at all, so a pack that introduces them can open with levels that lack them
+    // a share of candidates get no arrows/arrivals at all, so a pack that introduces them can open with levels that lack them
     const arrows = m.arrows && (spec.mixes || rand() >= .12) ? Math.floor(steps * lerp(m.arrows, rand())) : 0;
-    const gates = m.gates && (spec.mixes || rand() >= .12) ? Math.floor(steps * lerp(m.gates, rand())) : 0;
+    const arrivals = m.arrivals && (spec.mixes || rand() >= .12) ? Math.floor(steps * lerp(m.arrivals, rand())) : 0;
     const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
-      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows, gates }, rand);
+      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows, arrivals }, rand);
     if (!rows || !fillsBox(rows)) continue;
     const key = canonical(rows);
     if (seen.has(key)) continue;
@@ -189,4 +189,4 @@ function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
 
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasGate, hasKinds, kindsOf };
+module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasArrival, hasKinds, kindsOf };

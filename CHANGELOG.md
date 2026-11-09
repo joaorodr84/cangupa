@@ -23,6 +23,12 @@ Open work is listed in [TODO.md](TODO.md).
   every tile kind in the game together." Both packs' levels were rebuilt
   from scratch for this, so players who already progressed through them
   will see new, different levels there.
+- The tile kind previously called Signpost is now called Departure, and
+  the one previously called Gate is now called Arrival, in the Help
+  screen and pack blurbs — more symmetrical, less jargon-y names for the
+  same tiles, colours, marks and rules as before. The Portuguese
+  translation changes to match: "casas de sinalização" becomes "casas de
+  partida", and "casas de portão" becomes "casas de chegada".
 
 ### Fixed
 

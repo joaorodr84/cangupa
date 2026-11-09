@@ -33,10 +33,10 @@ export const pt: Strings = {
     doubleRest: ' (amarelas) precisam de duas visitas. Os riscos numa casa mostram quantas visitas ainda lhe restam.',
     steelBold: 'Casas de aço',
     steelRest: ' (azul-acinzentadas) precisam de três visitas.',
-    signpostBold: 'Casas de sinalização',
-    signpostRest: ' (verdes) só se podem deixar pelo lado onde está o triângulo.',
-    gateBold: 'Casas de portão',
-    gateRest: ' (cor de framboesa) só se podem entrar pelo lado onde está o triângulo.',
+    departureBold: 'Casas de partida',
+    departureRest: ' (verdes) só se podem deixar pelo lado onde está o triângulo.',
+    arrivalBold: 'Casas de chegada',
+    arrivalRest: ' (cor de framboesa) só se podem entrar pelo lado onde está o triângulo.',
     outOfMoves: 'Se ficares sem jogadas, desfaz ou reinicia.',
     note: 'Toca numa casa destacada para jogar.',
     stepCaption: 'Contorno sólido: um passo de distância.',
@@ -111,23 +111,23 @@ export const pt: Strings = {
     },
     {
       name: 'Lagoa',
-      blurb: 'As casas de sinalização só se deixam no sentido para onde apontam.',
+      blurb: 'As casas de partida só se deixam no sentido para onde apontam.',
     },
     {
       name: 'Crista',
-      blurb: 'Sinalização e metais, ouro num nível e aço no seguinte.',
+      blurb: 'Partida e metais, ouro num nível e aço no seguinte.',
     },
     {
       name: 'Mesa',
-      blurb: 'As casas de portão só podem ser pisadas a partir de um lado.',
+      blurb: 'As casas de chegada só podem ser pisadas a partir de um lado.',
     },
     {
       name: 'Desfiladeiro',
-      blurb: 'Portões e metais, ouro num nível e aço no seguinte.',
+      blurb: 'Chegadas e metais, ouro num nível e aço no seguinte.',
     },
     {
       name: 'Planalto',
-      blurb: 'Casas de ouro, de aço e de portão, todas juntas.',
+      blurb: 'Casas de ouro, de aço e de chegada, todas juntas.',
     },
     {
       name: 'Ermo',

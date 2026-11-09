@@ -1,18 +1,18 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Signpost &amp; Gate</title>
+<title>Departure &amp; Arrival</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-/* A review page for the Signpost/Gate edge marks, same purpose as tile-metals.html served
+/* A review page for the Departure/Arrival edge marks, same purpose as tile-metals.html served
    for the original arrow tile (CANGUPA-69): a place to look at candidate designs on the
    game's own tile shapes before picking one to actually build into Board.tsx. Layout: a
    single reading column. Two mark designs, each shown as a gallery of the two tile kinds
    across all four directions, then one side-by-side strip of the moment that actually
-   matters — a hop landing on a Gate tile. */
+   matters — a hop landing on an Arrival tile. */
 :root{
   --bg:#0f1720; --surface:#17222c; --ink:#eef3f2; --muted:#8fa3ac;
   --rule:#273944;
-  --face-signpost:#2f9e44; --edge-signpost:#7cd48f;
-  --face-gate:#9d1057; --edge-gate:#ba5889;
+  --face-departure:#2f9e44; --edge-departure:#7cd48f;
+  --face-arrival:#9d1057; --edge-arrival:#ba5889;
   --mark:#ffffff;
   --face-common:#4cc9f0; --edge-common:#1f7a99;
   --ok:#5fd68a;
@@ -59,8 +59,8 @@ section:last-of-type{border-bottom:none;}
 .rule-line strong{color:var(--ink); font-weight:600;}
 .kindrow{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin:18px 0 10px;}
 .kindlabel{font-size:0.92rem; font-weight:600;}
-.kindlabel.signpost{color:var(--face-signpost);}
-.kindlabel.gate{color:var(--face-gate);}
+.kindlabel.departure{color:var(--face-departure);}
+.kindlabel.arrival{color:var(--face-arrival);}
 
 /* --- tile gallery --- */
 .gallery{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; min-width:0; margin-bottom:22px;}
@@ -116,7 +116,7 @@ footer a{color:var(--ink);}
 
   <header>
     <p class="kicker">Cangupa — tile mark comparison</p>
-    <h1>Signpost &amp; Gate</h1>
+    <h1>Departure &amp; Arrival</h1>
     <p class="lede">Two designs, same two tiles, same four directions: Option A is today's
       shipped triangle. Option B is the actual exit/enter pictogram — a bracket open toward
       the edge, with a real arrow threaded through it, drawn large and centred on the tile
@@ -126,35 +126,35 @@ footer a{color:var(--ink);}
   <section>
     <p class="optionkicker">Option A — shipped today</p>
     <h2>Pointing triangle</h2>
-    <p class="rule-line">Signpost's triangle points <strong>out</strong>, through the edge
-      it leaves by. Gate's points <strong>in</strong>, toward the centre, through the edge it
+    <p class="rule-line">Departure's triangle points <strong>out</strong>, through the edge
+      it leaves by. Arrival's points <strong>in</strong>, toward the centre, through the edge it
       enters by.</p>
-    <div class="kindrow"><span class="kindlabel signpost">Signpost — leaves this way</span></div>
-    <div class="gallery" id="gallery-today-signpost"></div>
-    <div class="kindrow"><span class="kindlabel gate">Gate — enters this way</span></div>
-    <div class="gallery" id="gallery-today-gate"></div>
+    <div class="kindrow"><span class="kindlabel departure">Departure — leaves this way</span></div>
+    <div class="gallery" id="gallery-today-departure"></div>
+    <div class="kindrow"><span class="kindlabel arrival">Arrival — enters this way</span></div>
+    <div class="gallery" id="gallery-today-arrival"></div>
   </section>
 
   <section>
     <p class="optionkicker">Option B</p>
     <h2>Doorway bracket</h2>
     <p class="rule-line">The actual exit/enter pictogram, threaded onto the tile's edge: a
-      bracket open on the side facing the seam, shut on the other three. Signpost's arrow
+      bracket open on the side facing the seam, shut on the other three. Departure's arrow
       starts inside the bracket and threads all the way out through the opening, tip past the
-      edge. Gate's starts outside, at the edge, and threads in through the same opening, tip
+      edge. Arrival's starts outside, at the edge, and threads in through the same opening, tip
       arriving near the bracket's closed back wall — pulled back a little so there's daylight
       between the arrow and the wall, not touching it. Drawn large and recentred on the tile,
       with equal padding on all four sides, rather than tucked against its edge.</p>
-    <div class="kindrow"><span class="kindlabel signpost">Signpost</span></div>
-    <div class="gallery" id="gallery-bracket-signpost"></div>
-    <div class="kindrow"><span class="kindlabel gate">Gate</span></div>
-    <div class="gallery" id="gallery-bracket-gate"></div>
+    <div class="kindrow"><span class="kindlabel departure">Departure</span></div>
+    <div class="gallery" id="gallery-bracket-departure"></div>
+    <div class="kindrow"><span class="kindlabel arrival">Arrival</span></div>
+    <div class="gallery" id="gallery-bracket-arrival"></div>
   </section>
 
   <section>
     <h2>Side by side: the moment it matters</h2>
-    <p class="strip-caption">Not the swatch — the actual decision, a hop about to land on a
-      Gate tile from its legal side. This is the frame a player glances at before tapping.</p>
+    <p class="strip-caption">Not the swatch — the actual decision, a hop about to land on an
+      Arrival tile from its legal side. This is the frame a player glances at before tapping.</p>
     <div class="compare-row">
       <span class="taglabel">A — triangle</span>
       <div class="strip" id="strip-compare-today"></div>
@@ -196,8 +196,8 @@ footer a{color:var(--ink);}
   }
   function fmtPt(p){ return p[0] + "," + p[1]; }
 
-  // Option A — today's shipped triangle. Signpost points out (apex away from centre);
-  // Gate's table mirrors each triangle across its own base so it points in instead.
+  // Option A — today's shipped triangle. Departure points out (apex away from centre);
+  // Arrival's table mirrors each triangle across its own base so it points in instead.
   var TRI_OUT = {
     right: "45,14.5 59.5,28.5 45,42.5",
     left:  "19,14.5 4.5,28.5 19,42.5",
@@ -295,13 +295,13 @@ footer a{color:var(--ink);}
     DIRS.forEach(function(d){ host.appendChild(tileCard(d, faceVar, markFn)); });
   }
 
-  fillGallery("gallery-today-signpost", "--face-signpost", function(d){ return triangleMark(d, false); });
-  fillGallery("gallery-today-gate",     "--face-gate",     function(d){ return triangleMark(d, true); });
-  fillGallery("gallery-bracket-signpost", "--face-signpost", function(d){ return bracketMark(d, false); });
-  fillGallery("gallery-bracket-gate",     "--face-gate",     function(d){ return bracketMark(d, true); });
+  fillGallery("gallery-today-departure", "--face-departure", function(d){ return triangleMark(d, false); });
+  fillGallery("gallery-today-arrival",   "--face-arrival",   function(d){ return triangleMark(d, true); });
+  fillGallery("gallery-bracket-departure", "--face-departure", function(d){ return bracketMark(d, false); });
+  fillGallery("gallery-bracket-arrival",   "--face-arrival",   function(d){ return bracketMark(d, true); });
 
   // --- "across the seam" compare strips, both for the same moment: a hop about to land on
-  // a Gate tile, legally, through its right edge.
+  // an Arrival tile, legally, through its right edge.
   function seamArrow(){
     return '<svg viewBox="0 0 46 76" preserveAspectRatio="none">' +
       '<line x1="4" y1="38" x2="34" y2="38" stroke="var(--ok)" stroke-width="3"/>' +
@@ -315,11 +315,11 @@ footer a{color:var(--ink);}
     el.innerHTML = '<span class="roo">🦘</span>';
     return el;
   }
-  function gateCell(markFn){
+  function arrivalCell(markFn){
     var el = document.createElement("div");
     el.className = "cell";
-    el.style.setProperty("--face", "var(--face-gate)");
-    el.style.setProperty("--edge", "var(--edge-gate)");
+    el.style.setProperty("--face", "var(--face-arrival)");
+    el.style.setProperty("--edge", "var(--edge-arrival)");
     el.innerHTML = markFn("right");
     return el;
   }
@@ -331,7 +331,7 @@ footer a{color:var(--ink);}
   }
   function buildCompareStrip(id, markFn){
     var host = document.getElementById(id);
-    [plainCell(), seam(), gateCell(markFn)].forEach(function(c){ host.appendChild(c); });
+    [plainCell(), seam(), arrivalCell(markFn)].forEach(function(c){ host.appendChild(c); });
   }
   buildCompareStrip("strip-compare-today", function(d){ return triangleMark(d, true); });
   buildCompareStrip("strip-compare-bracket", function(d){ return bracketMark(d, true); });

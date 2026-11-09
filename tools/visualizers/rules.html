@@ -6,10 +6,10 @@
      this page intentionally has one look, not a light/dark pair). Colours are copied verbatim
      from @joaorodr84/themes's DARK set (apps/app/src/theme/palette.ts reads these live for
      bg1/bg2/frame/pit/panel/panelBorder/ink/muted), not re-picked by eye. Tile colours, visit
-     strokes and the Signpost/Gate marks come from Board.tsx; the HUD icon paths come from
+     strokes and the Departure/Arrival marks come from Board.tsx; the HUD icon paths come from
      ControlIcon.tsx/BackArrow.tsx — all ported exactly, so this page can't silently drift from
      what the app actually renders.
-     Signpost/Gate mark: the doorway-bracket design chosen on tools/visualizers/tile-marks.html
+     Departure/Arrival mark: the doorway-bracket design chosen on tools/visualizers/tile-marks.html
      (Option B) to replace the plain triangle — a bracket open on the edge it leaves/enters by,
      with a real arrow threaded through that opening. */
   :root {
@@ -155,8 +155,8 @@
     common:   { c: '#4cc9f0', lip: '#1f7a99' },
     gold:     { c: '#ffc857', lip: '#a8741a', m: '#3b2a06' },
     steel:    { c: '#587790', lip: '#3c5162', m: '#ffffff' },
-    signpost: { c: '#2f9e44', lip: '#7cd48f', m: '#ffffff' },
-    gate:     { c: '#9d1057', lip: '#ba5889', m: '#ffffff' }
+    departure: { c: '#2f9e44', lip: '#7cd48f', m: '#ffffff' },
+    arrival:   { c: '#9d1057', lip: '#ba5889', m: '#ffffff' }
   };
 
   var ROO_SVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
@@ -187,10 +187,10 @@
     return frag;
   }
 
-  // The doorway-bracket Signpost/Gate mark chosen on tile-marks.html (Option B): a bracket
+  // The doorway-bracket Departure/Arrival mark chosen on tile-marks.html (Option B): a bracket
   // shut on three sides, open on the edge it leaves/enters by, with a real arrow threaded
-  // through that opening — tip past the edge for Signpost (leaves), tip at the bracket's back
-  // wall for Gate (enters). Ported verbatim from that page's AXIS/pt/bracketLines/
+  // through that opening — tip past the edge for Departure (leaves), tip at the bracket's back
+  // wall for Arrival (enters). Ported verbatim from that page's AXIS/pt/bracketLines/
   // threadedArrow/geometry/bracketMark functions, direction fixed to 'right' here.
   var AXIS = {
     right: { axis: 'x', sign: 1, edgeAt: 64, acrossCenter: 28.5 },
@@ -244,7 +244,7 @@
     return '<svg viewBox="0 0 64 57" preserveAspectRatio="none" class="mb-mark"><g transform="' + transform + '">' + inner + '</g></svg>';
   }
 
-  // spec: { kind, hl: 'solid'|'dashed', roo: bool, strokeCount, mark: 'arrow'|'gate' }
+  // spec: { kind, hl: 'solid'|'dashed', roo: bool, strokeCount, mark: 'arrow'|'arrival' }
   function mbCell(spec) {
     spec = spec || {};
     var c = el('div', 'mb-cell');
@@ -254,7 +254,7 @@
       face.style.setProperty('--c', t.c);
       face.style.setProperty('--lip', t.lip);
       if (spec.strokeCount) face.appendChild(strokes(spec.strokeCount, t.m));
-      if (spec.mark) face.insertAdjacentHTML('beforeend', bracketMark('right', spec.mark === 'gate'));
+      if (spec.mark) face.insertAdjacentHTML('beforeend', bracketMark('right', spec.mark === 'arrival'));
       c.appendChild(face);
     }
     if (spec.roo) {
@@ -299,8 +299,8 @@
     { kind: 'common', name: 'Common', visits: 1, rule: 'Disappears as soon as you leave it.' },
     { kind: 'gold', name: 'Gold', visits: 2, strokeCount: 2, rule: 'Cracks on the first visit, vanishes on the second. The strokes show how many visits are left.' },
     { kind: 'steel', name: 'Steel', visits: 3, strokeCount: 3, rule: 'Same idea as Gold, one visit tougher — it takes three to clear.' },
-    { kind: 'signpost', name: 'Signpost', visits: 1, mark: 'arrow', rule: 'Can be entered from any side, but left only through the edge the bracket opens on.' },
-    { kind: 'gate', name: 'Gate', visits: 1, mark: 'gate', rule: 'The mirror of Signpost: left freely, but entered only through the edge the bracket opens on — steps and jumps alike.' }
+    { kind: 'departure', name: 'Departure', visits: 1, mark: 'arrow', rule: 'Can be entered from any side, but left only through the edge the bracket opens on.' },
+    { kind: 'arrival', name: 'Arrival', visits: 1, mark: 'arrival', rule: 'The mirror of Departure: left freely, but entered only through the edge the bracket opens on — steps and jumps alike.' }
   ];
   var rows = document.getElementById('tile-rows');
   ROWS.forEach(function (r) {

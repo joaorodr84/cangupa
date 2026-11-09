@@ -75,36 +75,36 @@ assert.strictEqual(g.dir[0], 3);                     // ^ points up
 assert.ok(new Game(['S>1']).solve());                // a level with an arrow can still be cleared
 assert.strictEqual(new Game(['S>1']).start, 0);      // an arrow is never the start
 
-// a Gate tile (`R L D U`, CANGUPA-104): one visit, and it can only be ENTERED by moving the way
-// it names — the mirror of an arrow's exit restriction, checked on arrival instead of departure.
-// 'SL1': (1,0) is a Gate only enterable moving left (from the right); stepping onto it from the
-// start (moving right) must fail, but jumping past it to (2,0) and then stepping back (moving
+// an Arrival tile (`R L D U`, CANGUPA-104): one visit, and it can only be ENTERED by moving the
+// way it names — the mirror of an arrow's exit restriction, checked on arrival instead of departure.
+// 'SL1': (1,0) is an Arrival only enterable moving left (from the right); stepping onto it from
+// the start (moving right) must fail, but jumping past it to (2,0) and then stepping back (moving
 // left) must succeed.
 g = new Game(['SL1']);
 assert.strictEqual(g.max[1], 1);
-assert.strictEqual(g.gate[1], 1);                    // 1 is left
-assert.deepStrictEqual(to(g), [[2, 0]]);             // only the jump past the gate, not the step onto it
-g.play({ x: 2, y: 0 });                              // jump over the gate
-assert.deepStrictEqual(to(g), [[1, 0]]);             // now moving left: entering the gate is legal
-const gatePath = g.solve();
-assert.ok(gatePath);                                 // clearing still works once past the gate
-gatePath.forEach(m => g.play(m));
+assert.strictEqual(g.arrival[1], 1);                 // 1 is left
+assert.deepStrictEqual(to(g), [[2, 0]]);             // only the jump past it, not the step onto it
+g.play({ x: 2, y: 0 });                              // jump over the arrival tile
+assert.deepStrictEqual(to(g), [[1, 0]]);             // now moving left: entering it is legal
+const arrivalPath = g.solve();
+assert.ok(arrivalPath);                              // clearing still works once past it
+arrivalPath.forEach(m => g.play(m));
 assert.ok(g.won);
-assert.strictEqual(new Game(['SL1']).start, 0);      // a Gate is never the start
+assert.strictEqual(new Game(['SL1']).start, 0);      // an Arrival is never the start
 
-// the generator's own Gate support (CANGUPA-104): a walk that places Gate tiles must still
+// the generator's own Arrival support (CANGUPA-104): a walk that places Arrival tiles must still
 // produce a solvable level, the same guarantee arrows already have. Not shipped in any pack yet
 // (CANGUPA-88) -- this only proves the walk-marking logic itself is self-consistent.
 {
   const rand = makeRng(42);
-  let sawGate = 0;
+  let sawArrival = 0;
   for (let n = 0; n < 200; n++) {
-    const rows = randomWalk({ width: 5, height: 5, steps: 14, doubles: 0, jump: .3, gates: 2 }, rand);
+    const rows = randomWalk({ width: 5, height: 5, steps: 14, doubles: 0, jump: .3, arrivals: 2 }, rand);
     if (!rows) continue;
-    if (/[RLDU]/.test(rows.join(''))) sawGate++;
+    if (/[RLDU]/.test(rows.join(''))) sawArrival++;
     verifyLevel(rows); // throws if the walk's own path does not clear the level
   }
-  assert.ok(sawGate > 150, `expected most of 200 walks to place a Gate tile, saw ${sawGate}`);
+  assert.ok(sawArrival > 150, `expected most of 200 walks to place an Arrival tile, saw ${sawArrival}`);
 }
 
 // levels
@@ -143,25 +143,25 @@ if (fs.existsSync(packsFile)) {
     assert.ok(area > prevArea, `${label}: board area must grow (${area} after ${prevArea})`);
     prevArea = area;
     // the tile mix of each pack (CANGUPA-68, CANGUPA-69, CANGUPA-88, CANGUPA-112): Common only in
-    // pack 1, Gold added in pack 2, Steel without Gold in pack 3, both in pack 4, Signposts in
-    // pack 5, Signposts with Gold then Steel alternately in pack 6, Gates in pack 7, Gates with
-    // Gold then Steel alternately in pack 8, both metals and Gate together in pack 9, and every
-    // kind in the game together in pack 10. Packs 1-8 still cap at three tile kinds per level,
-    // Common included; packs 9 and 10 intentionally exceed it (CANGUPA-112 dropped that as an
-    // enforced rule — see pack-plan.js)
+    // pack 1, Gold added in pack 2, Steel without Gold in pack 3, both in pack 4, Departures in
+    // pack 5, Departures with Gold then Steel alternately in pack 6, Arrivals in pack 7, Arrivals
+    // with Gold then Steel alternately in pack 8, both metals and Arrival together in pack 9, and
+    // every kind in the game together in pack 10. Packs 1-8 still cap at three tile kinds per
+    // level, Common included; packs 9 and 10 intentionally exceed it (CANGUPA-112 dropped that as
+    // an enforced rule — see pack-plan.js)
     const MIX = [
-      { gold: false, steel: false, arrow: false, gate: false }, { gold: true, steel: false, arrow: false, gate: false },
-      { gold: false, steel: true, arrow: false, gate: false }, { gold: true, steel: true, arrow: false, gate: false },
-      { gold: false, steel: false, arrow: true, gate: false }, { gold: true, steel: true, arrow: true, gate: false },
-      { gold: false, steel: false, arrow: false, gate: true }, { gold: true, steel: true, arrow: false, gate: true },
-      { gold: true, steel: true, arrow: false, gate: true }, { gold: true, steel: true, arrow: true, gate: true },
+      { gold: false, steel: false, arrow: false, arrival: false }, { gold: true, steel: false, arrow: false, arrival: false },
+      { gold: false, steel: true, arrow: false, arrival: false }, { gold: true, steel: true, arrow: false, arrival: false },
+      { gold: false, steel: false, arrow: true, arrival: false }, { gold: true, steel: true, arrow: true, arrival: false },
+      { gold: false, steel: false, arrow: false, arrival: true }, { gold: true, steel: true, arrow: false, arrival: true },
+      { gold: true, steel: true, arrow: false, arrival: true }, { gold: true, steel: true, arrow: true, arrival: true },
     ];
     // Gold and Steel alternate (never together) in packs 6 and 8, so "nearly every level" below
     // would be wrong for them -- each dedicated alternation check further down covers those instead.
     const ALTERNATES = { 5: ['gold', 'steel'], 7: ['gold', 'steel'] };
     const mix = MIX[i];
-    const has = { gold: /[2s]/, steel: /[3T]/, arrow: /[><v^]/, gate: /[RLDU]/ };
-    const count = { gold: 0, steel: 0, arrow: 0, gate: 0 };
+    const has = { gold: /[2s]/, steel: /[3T]/, arrow: /[><v^]/, arrival: /[RLDU]/ };
+    const count = { gold: 0, steel: 0, arrow: 0, arrival: 0 };
     pack.levels.forEach((lv, j) => {
       const text = lv.rows.join('');
       for (const kind of Object.keys(has)) if (has[kind].test(text)) {
@@ -169,7 +169,7 @@ if (fs.existsSync(packsFile)) {
         assert.ok(mix[kind], `${label} level ${j + 1} has a ${kind} tile, which this pack does not allow`);
       }
       if (i === 5 || i === 7) {  // packs 6 and 8: a special tile and one metal, Gold on level 1, Steel on level 2, and so on
-        const special = i === 5 ? 'arrow' : 'gate';
+        const special = i === 5 ? 'arrow' : 'arrival';
         assert.ok(has[special].test(text), `${label} level ${j + 1} has no ${special} tile`);
         assert.ok(j % 2 === 0 ? has.gold.test(text) && !has.steel.test(text) : has.steel.test(text) && !has.gold.test(text),
           `${label} level ${j + 1} should have ${j % 2 === 0 ? 'Gold' : 'Steel'} and not the other`);

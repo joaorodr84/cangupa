@@ -1353,6 +1353,45 @@ against a real Mesa (pack 7) Gate level with no thrown errors;
 
 ---
 
+Era 40 closes here: Nov 9, one commit, CANGUPA-113 — the visualizer's
+Gate bracket points at the right edge.
+
+---
+
+## Era 41 — Nov 9 (continued): Signpost and Gate become Departure and Arrival
+
+CANGUPA-114 renamed the Signpost and Gate tiles to Departure and Arrival
+throughout, at the owner's request for more symmetrical, less jargon-y
+names. Their own suggestion, Exit/Entrance, was passed over since
+Departure/Arrival already matches `board.ts`'s own comment language —
+"checked on arrival instead of on departure" — and avoids colliding
+with the existing start-tile/win-state vocabulary that Entrance/Exit
+would read as.
+
+Renamed everywhere either name is spelled out as the tile concept,
+case-insensitively, across `apps/web-classic`, `apps/app` (engine, UI
+components, palette, and both English and Portuguese i18n strings),
+and `tools` (the pack generator, its plan and blurb text, `test.js`,
+and the `tools/visualizers` reference pages) — excluding generic
+English "gated by"/"this only gates that" verb usage and
+`docs/tile-ideas.md`'s unrelated, unimplemented idea #4 ("Switch and
+gate"), a different mechanic that happens to share the word.
+`tools/visualizers/level-difficulty.html` and `level-packs.html` were
+regenerated via `node tools/gen-visualizers.js` after editing
+`packs.json`'s blurb lines and the two `.template.html` legend lines,
+rather than hand-edited. Also updated `TASKS.md`'s two still-open rows
+(CANGUPA-72, CANGUPA-97) and the matching `TODO.md` backlog entries,
+since those describe ongoing work against today's code rather than a
+historical snapshot. Left `CHANGELOG.md`, `HISTORY.md`, and every
+existing Done row in `TASKS.md` untouched, as genuine history of what
+shipped under the old names at the time.
+
+One commit, no behaviour change. Verified: `node tools/test.js` green;
+`npx tsc --noEmit` clean in `apps/app`; full `apps/app` Jest suite
+green (810/810 tests, 29/29 suites).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
