@@ -21,6 +21,7 @@
 // pill radius rather than DigiSpin's 8pt corners. CANGUPA-103 added a fourth
 // button, Help, opening the rules screen mid-level — the group's own always-
 // available escape hatch, never disabled the way Hint is once the level is won.
+// CANGUPA-116 reordered the group to Hint, Undo, Restart, Help.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { type Status } from '../game/boardView';
@@ -58,6 +59,14 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
       </View>
       <View style={[styles.group, { backgroundColor: palette.panel }]}>
         <GroupButton
+          id="hint"
+          label={t.boardHud.hint}
+          palette={palette}
+          disabled={status.kind === 'won'}
+          onPress={onHint}
+        />
+        <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
+        <GroupButton
           id="undo"
           label={t.boardHud.undo}
           palette={palette}
@@ -66,14 +75,6 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
         />
         <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
         <GroupButton id="restart" label={t.boardHud.restart} palette={palette} onPress={onReset} />
-        <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
-        <GroupButton
-          id="hint"
-          label={t.boardHud.hint}
-          palette={palette}
-          disabled={status.kind === 'won'}
-          onPress={onHint}
-        />
         <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
         <GroupButton id="help" label={t.boardHud.help} palette={palette} onPress={onHelp} />
       </View>

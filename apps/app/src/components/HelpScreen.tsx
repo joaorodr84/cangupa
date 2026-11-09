@@ -113,9 +113,9 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
   // component, same as on the board screen itself.
   const buttons: readonly { readonly id: ControlIconId | 'back'; readonly name: string; readonly desc: string }[] = [
     { id: 'back', name: t.boardHud.back, desc: t.help.backDesc },
+    { id: 'hint', name: t.boardHud.hint, desc: t.help.hintDesc },
     { id: 'undo', name: t.boardHud.undo, desc: t.help.undoDesc },
     { id: 'restart', name: t.boardHud.restart, desc: t.help.restartDesc },
-    { id: 'hint', name: t.boardHud.hint, desc: t.help.hintDesc },
     { id: 'help', name: t.boardHud.help, desc: t.help.helpDesc },
   ];
 

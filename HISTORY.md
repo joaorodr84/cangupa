@@ -1432,6 +1432,27 @@ One commit, no behaviour change. Verified: `node tools/test.js` green
 (500 pack levels + rules); `npx tsc --noEmit` clean in `apps/app`; full
 `apps/app` Jest suite green (810/810 tests, 29/29 suites).
 
+Era 42 closes here: Nov 9, one commit, CANGUPA-115 — every pack blurb
+leads with its landscape.
+
+---
+
+## Era 43 — Nov 9 (continued): the board screen's control buttons reorder
+
+CANGUPA-116 reordered `apps/app`'s board-screen control group
+(`BoardHud.tsx`) from Undo, Restart, Hint, Help to Hint, Undo, Restart,
+Help, at the owner's request. The far-left leave-screen Back arrow sits
+outside this group and is untouched. `HelpScreen.tsx`'s matching
+Buttons-section list, which documents each control by name, is
+reordered to match: Back, Hint, Undo, Restart, Help.
+
+One commit, no behaviour change beyond button order. Verified:
+`apps/app`'s `BoardHud` and `HelpScreen` Jest suites green (17/17
+tests passing).
+
+Era 43 closes here: Nov 9, one commit, CANGUPA-116 — the board
+screen's control buttons reorder to Hint, Undo, Restart, Help.
+
 ---
 
 ## Patterns, and what's still open

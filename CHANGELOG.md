@@ -34,6 +34,10 @@ Open work is listed in [TODO.md](TODO.md).
   same tiles, colours, marks and rules as before. The Portuguese
   translation changes to match: "casas de sinalização" becomes "casas de
   partida", and "casas de portão" becomes "casas de chegada".
+- The board screen's control buttons are now ordered Hint, Undo, Restart,
+  Help, instead of Undo, Restart, Hint, Help — the Help screen's own
+  Buttons section, which lists and explains each one, is reordered to
+  match: Back, Hint, Undo, Restart, Help.
 
 ### Fixed
 
