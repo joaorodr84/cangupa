@@ -21,14 +21,6 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P2] `CANGUPA-80` — Review `apps/app`'s level packs
-  ([packs.ts](apps/app/src/game/packs.ts)): remove duplicate or
-  near-identical levels, remove levels that are too easy, and check every
-  Gold (2-visit) and Steel (3-visit) tile starts with its full strength.
-  `board.ts`'s `reset()` always does `cells[this.start] -= 1`, so a level
-  that starts the kangaroo on a Gold (`s`) or Steel (`T`) tile — instead of
-  a Common tile (`S`) — has already spent one of that tile's visits before
-  the player makes a single move.
 - [P2] `CANGUPA-72` — The hint solver (`Game.solve`) can run out of memory or
   take many seconds on some big levels turned for a portrait screen, so
   pressing Hint could hang the app. Originally found on packs 8 to 10 while
