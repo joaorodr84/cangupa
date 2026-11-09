@@ -6,7 +6,7 @@ export type Pack = { name: string; blurb: string; width: number; height: number;
 export const PACKS: readonly Pack[] = [
   {
     name: "Meadow",
-    blurb: "Hop from tile to tile and visit each one once.",
+    blurb: "Open grass everywhere underfoot. Walk the whole meadow without leaving a blade untouched.",
     width: 3,
     height: 3,
     levels: [
@@ -64,7 +64,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Creek",
-    blurb: "Jump over a missing tile. Gold tiles need two visits.",
+    blurb: "A streambed of golden stones, slick till you've stood on them twice, and one washed clean through.",
     width: 4,
     height: 3,
     levels: [
@@ -122,7 +122,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Gully",
-    blurb: "Steel tiles hold on for three visits.",
+    blurb: "Steel grey scree that only lets go after three footfalls.",
     width: 4,
     height: 4,
     levels: [
@@ -180,7 +180,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Outcrop",
-    blurb: "Gold and steel tiles share the board.",
+    blurb: "Weathered rock, part gold veined, part steel grey, exposed side by side.",
     width: 5,
     height: 4,
     levels: [
@@ -238,7 +238,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Billabong",
-    blurb: "Departure tiles can only be left the way they point.",
+    blurb: "Still water that only drains one way, however it pooled in.",
     width: 5,
     height: 5,
     levels: [
@@ -296,7 +296,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Ridge",
-    blurb: "Departures and metals, gold on one level and steel on the next.",
+    blurb: "A spine of rock that turns from gold to steel grey as you walk it, always leading on in a single direction.",
     width: 6,
     height: 5,
     levels: [
@@ -354,7 +354,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Mesa",
-    blurb: "Arrival tiles can only be entered from one side.",
+    blurb: "Sheer on every side but one; the only way up is the one true face.",
     width: 6,
     height: 6,
     levels: [
@@ -412,7 +412,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Gorge",
-    blurb: "Arrivals and metals, gold on one level and steel on the next.",
+    blurb: "Narrow walls shifting from gold to steel grey as you descend, with just one way through at each turn.",
     width: 7,
     height: 6,
     levels: [
@@ -470,7 +470,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Plateau",
-    blurb: "Gold, steel and arrival tiles, all together.",
+    blurb: "Tableland where gold ground, steel ground and narrow one way crossings all meet.",
     width: 7,
     height: 7,
     levels: [
@@ -528,7 +528,7 @@ export const PACKS: readonly Pack[] = [
   },
   {
     name: "Outback",
-    blurb: "The biggest board, with every tile kind in the game together.",
+    blurb: "Wild country holding a bit of everything the game has crossed, together at last, on its widest stretch.",
     width: 8,
     height: 7,
     levels: [

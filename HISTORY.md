@@ -1392,6 +1392,48 @@ green (810/810 tests, 29/29 suites).
 
 ---
 
+Era 41 closes here: Nov 9, one commit, CANGUPA-114 — Signpost and Gate
+become Departure and Arrival throughout.
+
+---
+
+## Era 42 — Nov 9 (continued): every pack blurb leads with its landscape
+
+CANGUPA-115 rewrote all 10 level-pack blurbs, in English and Portuguese,
+at the owner's request. Drafted in chat over several rounds: a first
+pass stated each pack's mechanic plainly with a landscape clause tacked
+on, then the owner asked for the mechanic to be blended into the
+landscape imagery rather than stated outright, and for no dashes. The
+final text leads with each pack's own landscape — Meadow's open grass,
+Creek's slick stepping stones and one washed-out gap, Gully's scree that
+only lets go after three steps, Outcrop's two rock types side by side,
+Billabong's one-way drain, Ridge's colour-changing spine, Mesa's one
+climbable face, Gorge's colour-changing narrow walls, Plateau's
+tableland where every ground meets, Outback's wild country holding it
+all — and lets the tile rule (visit counts, one-way departure/arrival,
+alternating gold/steel) come through via colour and texture words
+instead of naming the tile kind. The Portuguese versions are fresh
+sentences built the way Portuguese would say it, not clause-by-clause
+translations — Mesa's especially, redone from scratch at the owner's
+request rather than mirrored off the English. Pack names are
+unchanged (the owner explicitly kept "Mesa" over the geomorphology
+terms "chapada"/"monte testemunho" also discussed).
+
+Touched `tools/pack-plan.js` (the source of truth), hand-edited
+`tools/packs.json` and `apps/app/src/game/packs.ts` to match (a
+text-only change, not level data, the same shortcut as CANGUPA-114),
+`apps/app/src/i18n/strings/en.ts` (which must equal `packs.ts` exactly,
+per `packText.test.ts`) and `pt.ts` (free Portuguese text), regenerated
+`tools/visualizers/{level-packs,level-difficulty}.html` via
+`node tools/gen-visualizers.js`, and fixed one stale hardcoded blurb
+assertion in `LevelsScreen.test.tsx`.
+
+One commit, no behaviour change. Verified: `node tools/test.js` green
+(500 pack levels + rules); `npx tsc --noEmit` clean in `apps/app`; full
+`apps/app` Jest suite green (810/810 tests, 29/29 suites).
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

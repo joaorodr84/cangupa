@@ -98,43 +98,43 @@ export const en: Strings = {
   packs: [
     {
       name: 'Meadow',
-      blurb: 'Hop from tile to tile and visit each one once.',
+      blurb: 'Open grass everywhere underfoot. Walk the whole meadow without leaving a blade untouched.',
     },
     {
       name: 'Creek',
-      blurb: 'Jump over a missing tile. Gold tiles need two visits.',
+      blurb: "A streambed of golden stones, slick till you've stood on them twice, and one washed clean through.",
     },
     {
       name: 'Gully',
-      blurb: 'Steel tiles hold on for three visits.',
+      blurb: 'Steel grey scree that only lets go after three footfalls.',
     },
     {
       name: 'Outcrop',
-      blurb: 'Gold and steel tiles share the board.',
+      blurb: 'Weathered rock, part gold veined, part steel grey, exposed side by side.',
     },
     {
       name: 'Billabong',
-      blurb: 'Departure tiles can only be left the way they point.',
+      blurb: 'Still water that only drains one way, however it pooled in.',
     },
     {
       name: 'Ridge',
-      blurb: 'Departures and metals, gold on one level and steel on the next.',
+      blurb: 'A spine of rock that turns from gold to steel grey as you walk it, always leading on in a single direction.',
     },
     {
       name: 'Mesa',
-      blurb: 'Arrival tiles can only be entered from one side.',
+      blurb: 'Sheer on every side but one; the only way up is the one true face.',
     },
     {
       name: 'Gorge',
-      blurb: 'Arrivals and metals, gold on one level and steel on the next.',
+      blurb: 'Narrow walls shifting from gold to steel grey as you descend, with just one way through at each turn.',
     },
     {
       name: 'Plateau',
-      blurb: 'Gold, steel and arrival tiles, all together.',
+      blurb: 'Tableland where gold ground, steel ground and narrow one way crossings all meet.',
     },
     {
       name: 'Outback',
-      blurb: 'The biggest board, with every tile kind in the game together.',
+      blurb: 'Wild country holding a bit of everything the game has crossed, together at last, on its widest stretch.',
     },
   ],
   packRange: (first, last, solved, total) => `Levels ${first}–${last} · ${solved}/${total} solved`,

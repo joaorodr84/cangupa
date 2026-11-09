@@ -11,6 +11,11 @@ Open work is listed in [TODO.md](TODO.md).
 
 ### Changed
 
+- Every level pack's blurb, in English and Portuguese, is rewritten to
+  evoke its own landscape (a creek's slick stepping stones, a mesa's one
+  climbable face, a billabong that only drains one way...) instead of
+  stating its tile rule plainly, while the rule itself still comes through.
+  Pack names are unchanged.
 - The app's Plateau pack (9, 7×7) now combines Gold, Steel and Gate tiles
   together on every level, instead of just Gold and Steel — its blurb
   changes from "A bigger board with gold and steel tiles throughout." to

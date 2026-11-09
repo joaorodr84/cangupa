@@ -191,7 +191,9 @@ test("shows the pack's own name, in its own colour, and its blurb in its header"
   const name = screen.getByText('Creek');
   expect(name).toBeTruthy();
   expect([name.props.style].flat().some((s) => s?.color === PACK_COLORS[1])).toBe(true);
-  expect(screen.getByText('Jump over a missing tile. Gold tiles need two visits.')).toBeTruthy();
+  expect(
+    screen.getByText("A streambed of golden stones, slick till you've stood on them twice, and one washed clean through."),
+  ).toBeTruthy();
 });
 
 test('the back button in the header calls onBack', async () => {

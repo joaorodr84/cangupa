@@ -95,43 +95,43 @@ export const pt: Strings = {
   packs: [
     {
       name: 'Prado',
-      blurb: 'Salta de casa em casa e pisa cada uma só uma vez.',
+      blurb: 'Erva aberta por todo o lado. Percorre o prado inteiro sem deixar um só fio por pisar.',
     },
     {
       name: 'Ribeiro',
-      blurb: 'Salta por cima de uma casa em falta. As casas de ouro pedem duas visitas.',
+      blurb: 'Um leito de pedras doiradas, escorregadias até serem pisadas duas vezes, com uma levada pela corrente.',
     },
     {
       name: 'Barranco',
-      blurb: 'As casas de aço aguentam três visitas.',
+      blurb: 'Cascalho cor de aço que só se solta depois de três pisadas.',
     },
     {
       name: 'Afloramento',
-      blurb: 'Casas de ouro e de aço no mesmo tabuleiro.',
+      blurb: 'Rocha desgastada pelo tempo, por vezes veada a ouro, por vezes cor de aço, lado a lado.',
     },
     {
       name: 'Lagoa',
-      blurb: 'As casas de partida só se deixam no sentido para onde apontam.',
+      blurb: 'Água quieta que só escoa num sentido, seja qual for o caminho por onde chegou.',
     },
     {
       name: 'Crista',
-      blurb: 'Partida e metais, ouro num nível e aço no seguinte.',
+      blurb: 'Uma crista de rocha que muda de ouro para cor de aço à medida que se avança, sempre a apontar numa só direção.',
     },
     {
       name: 'Mesa',
-      blurb: 'As casas de chegada só podem ser pisadas a partir de um lado.',
+      blurb: 'Rodeada de paredes a pique, com uma só abertura. É por essa face que se sobe, e só por ela.',
     },
     {
       name: 'Desfiladeiro',
-      blurb: 'Chegadas e metais, ouro num nível e aço no seguinte.',
+      blurb: 'Paredes estreitas que mudam de ouro para cor de aço à medida que se desce, com uma só passagem em cada curva.',
     },
     {
       name: 'Planalto',
-      blurb: 'Casas de ouro, de aço e de chegada, todas juntas.',
+      blurb: 'Um planalto onde se encontram o chão de ouro, o chão de aço e as passagens de sentido único.',
     },
     {
       name: 'Ermo',
-      blurb: 'O maior tabuleiro, com todas as casas do jogo juntas.',
+      blurb: 'Terra brava que junta um pouco de tudo o que o jogo já atravessou, finalmente reunido na sua maior extensão.',
     },
   ],
   packRange: (first, last, solved, total) => `Níveis ${first}–${last} · ${solved}/${total} resolvidos`,
