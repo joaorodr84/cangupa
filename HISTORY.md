@@ -1216,6 +1216,41 @@ Both tasks landed in one commit, since CANGUPA-109 could not have reused
 the bracket mark before CANGUPA-107 shipped it. Verified: `npx tsc
 --noEmit` clean, full `apps/app` Jest suite green (810 tests).
 
+Era 37 closes here: Nov 8, one commit, CANGUPA-107 and CANGUPA-109 — the
+doorway-bracket mark ships to the live board and the `HelpScreen` rules
+page gets live diagrams.
+
+---
+
+## Era 38 — Nov 9: the pack/difficulty visualizer catches up on Signpost and Gate
+
+CANGUPA-110 found `tools/visualizers/tiles.js` (shared by
+`level-packs.html` and `level-difficulty.html`) stale while checking
+that CANGUPA-88's packs 7/8 Gate levels actually render — it hadn't been
+touched since CANGUPA-81 moved it here, so it missed both CANGUPA-87's
+Signpost recolour and CANGUPA-88's new Gate tile. `ARROW`'s Signpost
+colour was still the pre-CANGUPA-87 raspberry (`#9d1057`/`#ba5889`)
+instead of green (`#2f9e44`/`#7cd48f`); renamed to `SIGNPOST` and
+recoloured to match `apps/app/src/theme/palette.ts`. Gate tiles
+(`R`/`L`/`D`/`U`) had no entry in `TILES`/`EDGE` at all, so
+`sketch()`'s `if (!t) continue;` silently skipped them — packs 7/8
+would show blank gaps where a Gate tile sits. Added a `GATE` colour
+(raspberry, freed by the Signpost recolour) and four new `EDGE`
+triangles (`R`/`L`/`D`/`U`), each the same depth as the matching
+Signpost arrow but pointing inward instead of outward, mirroring
+`Game.gate`'s entry-side semantics (`apps/web-classic/js/game.js`)
+and `boardView.ts`'s `ARROW_DIRECTIONS[game.gate[i] ^ 1]` convention.
+No generator/template change was needed — `tiles.js` is loaded live by
+both pages, not inlined at generation time.
+
+One commit. Verified: `node tools/test.js` green (unaffected,
+`tiles.js` is browser-only); no browser-automation tool was available
+in this environment, so checked by evaluating `sketch()` under a
+minimal Node DOM stub against a real Gate level (pack 7) and a real
+Signpost level (pack 5) from `tools/packs.json`, confirming the
+expected fill colours (raspberry/green) and polygon count appear,
+rather than a live screenshot.
+
 ---
 
 ## Patterns, and what's still open

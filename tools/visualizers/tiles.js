@@ -8,11 +8,18 @@ const TILES = {
   '3': { face: '#587790', lip: '#3c5162', mark: '#ffffff', visits: 3 },
 };
 const START_OF = { S: '1', s: '2', T: '3' };
-const ARROW = { face: '#9d1057', lip: '#ba5889', mark: '#ffffff' };
-// Edge triangles in the app's 64x57 face coordinates, one per direction the tile can be left.
+// Signpost was raspberry until CANGUPA-87 recoloured it green and freed raspberry for the new
+// Gate tile (CANGUPA-88) — see apps/app/src/theme/palette.ts.
+const SIGNPOST = { face: '#2f9e44', lip: '#7cd48f', mark: '#ffffff' };
+const GATE = { face: '#9d1057', lip: '#ba5889', mark: '#ffffff' };
+// Edge triangles in the app's 64x57 face coordinates. Signpost's (>, <, ^, v) point out through
+// the edge the tile is LEFT by; Gate's (R, L, D, U) point in through the edge it is ENTERED by
+// — same depth, opposite tip, mirroring apps/app/src/components/Board.tsx's ArrowMark.
 const EDGE = {
   '>': [[45, 14.5], [59.5, 28.5], [45, 42.5]], '<': [[19, 14.5], [4.5, 28.5], [19, 42.5]],
   '^': [[18, 19], [32, 4.5], [46, 19]], 'v': [[18, 38], [32, 52.5], [46, 38]],
+  R: [[4.5, 14.5], [19, 28.5], [4.5, 42.5]], L: [[59.5, 14.5], [45, 28.5], [59.5, 42.5]],
+  D: [[18, 4.5], [32, 19], [46, 4.5]], U: [[18, 52.5], [32, 38], [46, 52.5]],
 };
 const BOARD = { page: '#0c0d10', pit: '#1c1f26' };
 // The kangaroo's own colours (apps/app/src/components/Kangaroo.tsx): body fur for the fill,
@@ -42,7 +49,7 @@ function sketch(rows, width, label, box = 120) {
       const c = row[x] || '.';
       if (c === '.') continue;
       const kind = START_OF[c] || c;
-      const t = ARROW_KEYS.includes(c) ? ARROW : TILES[kind];
+      const t = ARROW_KEYS.includes(c) ? SIGNPOST : GATE_KEYS.includes(c) ? GATE : TILES[kind];
       if (!t) continue;
       const fx = pad + x * cell + gap / 2, fy = pad + y * cell + gap / 2;
       const fw = cell - gap, fh = cell - gap - lip, rx = Math.max(1, cell / 6);
@@ -70,3 +77,4 @@ function sketch(rows, width, label, box = 120) {
   return svg;
 }
 const ARROW_KEYS = ['>', '<', '^', 'v'];
+const GATE_KEYS = ['R', 'L', 'D', 'U'];
