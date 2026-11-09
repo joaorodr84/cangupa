@@ -1455,6 +1455,28 @@ screen's control buttons reorder to Hint, Undo, Restart, Help.
 
 ---
 
+## Era 44 — Nov 9 (continued): the Help icon becomes a question mark
+
+CANGUPA-117 swapped the Help icon in `apps/app`'s board-screen control group
+(`ControlIcon.tsx`) from a hand-drawn SVG path (Lucide's "help-circle" glyph,
+minus the circle, matching the group's other bare-glyph icons) to a plain
+Unicode "?" character, rendered in a `<Text>` element (bold, sized to
+roughly match the stroke weight of the other icons) instead of an `Svg`/
+`Path`. `ControlIcon`'s `help` branch is now an early return before the
+`Svg` return, at the owner's request for a simpler, plainer glyph.
+
+One commit, no behaviour change — decoration only, the button's
+accessibility label is untouched. Verified by running the Expo web build in
+a headless browser and screenshotting the board screen's control group,
+confirming the glyph renders correctly next to the lightbulb/undo/restart
+icons. The regular Jest/`tsc` suite was skipped for this change at the
+owner's explicit request.
+
+Era 44 closes here: Nov 9, one commit, CANGUPA-117 — the Help icon becomes
+a plain question mark.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

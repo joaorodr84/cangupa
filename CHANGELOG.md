@@ -38,6 +38,8 @@ Open work is listed in [TODO.md](TODO.md).
   Help, instead of Undo, Restart, Hint, Help — the Help screen's own
   Buttons section, which lists and explains each one, is reordered to
   match: Back, Hint, Undo, Restart, Help.
+- The Help button's icon on the board screen is now a plain bold "?",
+  instead of a hand-drawn question-mark glyph.
 
 ### Fixed
 
