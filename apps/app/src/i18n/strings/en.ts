@@ -47,7 +47,7 @@ export const en: Strings = {
     undoDesc: "Takes back your last move. Greyed out until you've made at least one.",
     restartDesc: 'Resets the level to its starting position, no confirmation needed.',
     hintDesc: "Highlights the solver's suggested next move. Greyed out once the level is won.",
-    helpDesc: 'Opens this screen without leaving the level — always available, even after winning.',
+    helpDesc: 'Opens a quick help popup without leaving the level — always available, even after winning.',
   },
   stats: {
     levelsCleared: 'Levels cleared',

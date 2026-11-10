@@ -61,6 +61,10 @@ const styles = StyleSheet.create({
     minWidth: 280,
     minHeight: 220,
     maxWidth: '86%',
+    // Bounds the card so a popup with more content than WinPopup's short
+    // text (HelpPopup.tsx's Moves/Tiles sections) has a fixed height to
+    // scroll inside, instead of just growing past the screen.
+    maxHeight: '82%',
     borderRadius: 18,
     borderWidth: 1,
     paddingHorizontal: 28,

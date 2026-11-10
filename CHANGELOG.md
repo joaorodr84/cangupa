@@ -27,6 +27,11 @@ Open work is listed in [TODO.md](TODO.md).
   is" — wording left over from before the triangle mark was replaced with
   a doorway bracket. It now says "through the edge the bracket opens on"
   in English and "pelo lado onde a marca abre" in Portuguese.
+- Pressing Help on the app's board screen no longer restarts the level.
+  It now opens a reference popup with the Moves and Tiles sections right
+  over the board, instead of leaving for the full Help screen, so the
+  level's progress is kept. The home screen's own Rules button still opens
+  the full Help screen as before.
 
 ## 2026-11-09
 

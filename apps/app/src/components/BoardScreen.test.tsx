@@ -36,7 +36,6 @@ function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { l
     hasNext: true,
     onBack: noop,
     onNext: noop,
-    onHelp: noop,
     ...overrides,
   };
 }
@@ -73,13 +72,24 @@ test('pressing the back arrow calls onBack', async () => {
   expect(onBack).toHaveBeenCalledTimes(1);
 });
 
-test('pressing Help calls onHelp (CANGUPA-103)', async () => {
-  const onHelp = jest.fn();
+// Regression test for CANGUPA-121: pressing Help used to navigate to the
+// full HelpScreen, which unmounted BoardScreen (useBoard.ts's Game lives in
+// local state) and so silently restarted the level. It's a popup now, so
+// the board underneath must survive the round trip untouched.
+test('pressing Help opens a popup without resetting the board (CANGUPA-121)', async () => {
+  await renderScreen({ level: ['S11'] });
 
-  await renderScreen({ level: ['S1.'], onHelp });
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  expect(screen.getByText('Moves 1')).toBeTruthy();
 
   await fireEvent.press(screen.getByLabelText('Help'));
-  expect(onHelp).toHaveBeenCalledTimes(1);
+  expect(screen.getByText('Moves')).toBeTruthy();
+  expect(screen.getByText('Tiles')).toBeTruthy();
+  expect(screen.queryByText('Buttons')).toBeNull();
+
+  await fireEvent.press(screen.getByText('✕'));
+  expect(screen.queryByText('Tiles')).toBeNull();
+  expect(screen.getByText('Moves 1')).toBeTruthy();
 });
 
 test('undo, reset and hint operate on the same board the HUD reflects', async () => {

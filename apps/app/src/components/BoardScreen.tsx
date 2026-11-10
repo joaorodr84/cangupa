@@ -13,6 +13,7 @@ import { orientLevel } from '../game/orient';
 import { useBoard } from '../game/useBoard';
 import { type Palette } from '../theme/palette';
 import BoardHud from './BoardHud';
+import HelpPopup from './HelpPopup';
 import PlayableBoard from './PlayableBoard';
 import WinPopup from './WinPopup';
 
@@ -29,8 +30,6 @@ interface BoardScreenProps {
   readonly hasNext: boolean;
   readonly onBack: () => void;
   readonly onNext: () => void;
-  // Opens the rules screen mid-level (CANGUPA-103's Help button on BoardHud).
-  readonly onHelp: () => void;
   // Fired once per win (not again until a reset is followed by another win),
   // the moment ui.js's move() would have added the level to progress.done —
   // with the move count it was cleared in, for CANGUPA-30's per-level best.
@@ -48,7 +47,6 @@ export default function BoardScreen({
   hasNext,
   onBack,
   onNext,
-  onHelp,
   onLevelComplete,
 }: BoardScreenProps) {
   // A rectangular level is turned once, to the orientation the device is in when
@@ -83,6 +81,11 @@ export default function BoardScreen({
     }
   }, [status.kind]);
 
+  // The board screen's own Help popup (CANGUPA-121) — purely local, unlike
+  // the old `onHelp` prop this replaced: there's no navigation involved, so
+  // nothing above this component needs to know it's open.
+  const [helpOpen, setHelpOpen] = useState(false);
+
   // The space left for the board once BoardHud has taken its own height
   // (CANGUPA-33) — measured rather than computed from constants, since it
   // already varies with the safe-area insets and with which HUD lines are
@@ -100,7 +103,7 @@ export default function BoardScreen({
         onUndo={undo}
         onReset={reset}
         onHint={hint}
-        onHelp={onHelp}
+        onHelp={() => setHelpOpen(true)}
       />
       <View
         style={styles.boardArea}
@@ -126,6 +129,7 @@ export default function BoardScreen({
             onClose={() => setPopupClosed(true)}
           />
         )}
+        {helpOpen && <HelpPopup palette={palette} onClose={() => setHelpOpen(false)} />}
       </View>
     </View>
   );

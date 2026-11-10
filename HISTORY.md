@@ -1524,6 +1524,39 @@ and triangle wording drop from the Rules screen's Tiles copy.
 
 ---
 
+## Era 47 — Nov 10 (continued): the board screen's Help button becomes a popup
+
+CANGUPA-121 fixed a real bug, not a copy edit: the board screen's Help
+button (`BoardHud.tsx`) used to navigate to the full `HelpScreen`, which
+unmounted `BoardScreen` — since `useBoard.ts` owns its `Game` instance in
+local state, that remount silently restarted the level, losing the
+player's moves, the exact opposite of what `helpDesc`'s copy had always
+promised ("without leaving the level"). Found by the owner while
+reviewing the Help button's own behaviour.
+
+Fixed by replacing that navigation with `HelpPopup.tsx`, a popup rendered
+on top of the board the same way `WinPopup.tsx` already does, so
+`BoardScreen` never unmounts. The popup shows the Moves and Tiles
+sections only — the Buttons section is left out, since it would be
+redundant with the real HUD visible underneath the popup. Those two
+sections were factored out of `HelpScreen.tsx` into a new shared
+`HelpSections.tsx` (`MovesSection`/`TilesSection`), so the full Rules page
+and the popup render identical content instead of two copies that could
+drift apart. `Popup.tsx` gained a `maxHeight: '82%'` bound on its card,
+since `HelpPopup`'s content runs longer than `WinPopup`'s short text.
+Home's Rules button is unaffected and still opens the full `HelpScreen`.
+
+One commit, with a regression test. Verified: `npx tsc --noEmit` clean,
+full `apps/app` Jest suite green (30/30 suites, 814/814 tests), including
+a new test (`BoardScreen.test.tsx`, `App.test.tsx`) that plays a move,
+opens Help, and confirms the move count survives closing the popup — the
+exact bug this fixes.
+
+Era 47 closes here: Nov 10, one commit, CANGUPA-121 — the board screen's
+Help button becomes a popup instead of a level-restarting navigation.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

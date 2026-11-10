@@ -44,7 +44,7 @@ export const pt: Strings = {
     undoDesc: 'Desfaz a tua última jogada. Fica cinzento até fazeres pelo menos uma.',
     restartDesc: 'Reinicia o nível para a posição inicial, sem pedir confirmação.',
     hintDesc: 'Destaca a próxima jogada sugerida pelo solucionador. Fica cinzento quando o nível está ganho.',
-    helpDesc: 'Abre este ecrã sem saíres do nível — está sempre disponível, mesmo depois de ganhar.',
+    helpDesc: 'Abre um pop-up de ajuda rápido sem saíres do nível — está sempre disponível, mesmo depois de ganhar.',
   },
   stats: {
     levelsCleared: 'Níveis limpos',

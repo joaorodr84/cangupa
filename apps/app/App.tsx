@@ -26,9 +26,10 @@ import { DARK, paletteFor, type ThemeMode } from './src/theme/palette';
 type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
 
 // Which panels FooterNav covers (CANGUPA-31) — 'board' (reworked chrome-free
-// in CANGUPA-32) and 'help' (reachable from the home screen's Rules button,
-// CANGUPA-29, and from CANGUPA-103's BoardHud Help button) are deliberately
-// left out.
+// in CANGUPA-32) and 'help' (reachable only from the home screen's Rules
+// button, CANGUPA-29 — CANGUPA-121 replaced BoardHud's own Help button with
+// a popup instead of a navigation, so it no longer reaches this panel) are
+// deliberately left out.
 function isFooterTab(panel: Panel): panel is FooterTab {
   return panel === 'home' || panel === 'levels' || panel === 'stats' || panel === 'settings';
 }
@@ -37,13 +38,14 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // panel was active, not peers in a general-purpose history stack (CANGUPA-86)
 // — Board has two real entry points (Home's Play button, Levels'
 // onSelectLevel), so a hardcoded "back always goes home" stranded a level
-// opened from Levels on the wrong tab, and (CANGUPA-103) Help now also opens
-// from Board itself, not just Home. `returnTo` remembers whichever single
+// opened from Levels on the wrong tab. `returnTo` remembers whichever single
 // panel launched the current Board/Help, the same way `openPack` already
 // does for the Levels tab's own pack-grid/pack-list depth, instead of a full
 // stack — which would risk a confusing bounce (Home → Board → Help → Board →
 // …) for screens that are never more than one level deep from whatever's
-// right behind them.
+// right behind them. Help's own `returnTo` is always 'home' in practice now
+// (CANGUPA-121), since Home's Rules button is its only remaining entry point,
+// but this stays general rather than hardcoding that.
 
 // The app root. Settings and progress are read before anything is shown, so
 // no panel flashes the wrong theme or the wrong level while they load —
@@ -140,9 +142,8 @@ function Shell({
   const playLevel = firstUnsolvedLevel(progress, LEVELS.length);
 
   // Opens Board or Help, remembering whichever panel is active right now so
-  // its own Back returns to exactly that — a footer tab in most cases, or
-  // 'board' when Help is opened from BoardHud's own Help button (CANGUPA-103)
-  // mid-level, rather than from the home screen's Rules button.
+  // its own Back returns to exactly that — a footer tab in Board's case;
+  // Help is only ever opened from Home's Rules button since CANGUPA-121.
   const goTo = (target: 'board' | 'help') => {
     setReturnTo(panel);
     setPanel(target);
@@ -225,7 +226,6 @@ function Shell({
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
         onBack={() => setPanel(returnTo)}
         onNext={() => onChangeLevel(currentLevel + 1)}
-        onHelp={() => goTo('help')}
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
       />
     );
