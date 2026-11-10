@@ -1477,6 +1477,30 @@ a plain question mark.
 
 ---
 
+## Era 45 — Nov 10: the Help screen's Buttons list drops Back
+
+CANGUPA-118 removed the "Back" row from the Help screen's Buttons
+reference section (`HelpScreen.tsx`), which lists each board-screen
+control with its icon, name and description — Hint, Undo, Restart and
+Help remain. The owner asked for this after a clarifying exchange that
+distinguished it from the Help screen's *own* floating back-navigation
+arrow (`App.tsx`, `panel === 'help'`), the only way to leave the Help
+screen itself — explicitly not the one to touch. Nothing about navigation
+changed; this is a trim to reference content only. The `BackArrow` import
+and the now-fully-unused `help.backDesc` string (both locales) went with
+it, along with the matching row in `HelpScreen.test.tsx`'s button-id
+assertion.
+
+One commit, no behaviour change. Verified by `npx tsc --noEmit` and the
+`HelpScreen`/strings Jest suites (11/11 passing), run before the commit
+agent was invoked; the commit agent itself skipped tests at the owner's
+request.
+
+Era 45 closes here: Nov 10, one commit, CANGUPA-118 — the Help screen's
+Buttons list drops Back.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

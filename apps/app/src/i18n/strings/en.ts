@@ -46,7 +46,6 @@ export const en: Strings = {
     jumpGapCaption: 'Dashed outline, over a gap: the middle tile is already gone.',
     jumpTileCaption: 'Dashed outline, over a tile: the middle tile is untouched.',
     buttonsSection: 'Buttons',
-    backDesc: 'Leaves the board and returns to wherever you came from.',
     undoDesc: "Takes back your last move. Greyed out until you've made at least one.",
     restartDesc: 'Resets the level to its starting position, no confirmation needed.',
     hintDesc: "Highlights the solver's suggested next move. Greyed out once the level is won.",

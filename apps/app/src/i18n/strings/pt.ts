@@ -43,7 +43,6 @@ export const pt: Strings = {
     jumpGapCaption: 'Contorno tracejado, por cima de um buraco: a casa do meio já desapareceu.',
     jumpTileCaption: 'Contorno tracejado, por cima de uma casa: a casa do meio fica intacta.',
     buttonsSection: 'Botões',
-    backDesc: 'Sai do tabuleiro e volta a onde estavas antes.',
     undoDesc: 'Desfaz a tua última jogada. Fica cinzento até fazeres pelo menos uma.',
     restartDesc: 'Reinicia o nível para a posição inicial, sem pedir confirmação.',
     hintDesc: 'Destaca a próxima jogada sugerida pelo solucionador. Fica cinzento quando o nível está ganho.',

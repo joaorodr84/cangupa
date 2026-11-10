@@ -24,7 +24,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Board, { TileSwatch, type SwatchTile } from './Board';
-import BackArrow from './BackArrow';
 import ControlIcon, { type ControlIconId } from './ControlIcon';
 import { type TileView } from '../game/boardView';
 import { useStrings } from '../i18n/useStrings';
@@ -108,11 +107,10 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
     { key: 'arrival', bold: t.help.arrivalBold, rest: t.help.arrivalRest, swatchTile: { x: 0, y: 3, kind: 1, left: 1, arrow: null, arrival: 'right' } },
   ];
 
-  // The board screen's five controls (BoardHud.tsx), each with the exact
-  // icon it uses there. 'back' isn't a ControlIconId — BackArrow is its own
-  // component, same as on the board screen itself.
-  const buttons: readonly { readonly id: ControlIconId | 'back'; readonly name: string; readonly desc: string }[] = [
-    { id: 'back', name: t.boardHud.back, desc: t.help.backDesc },
+  // BoardHud.tsx's control group. CANGUPA-109 had this list open with Back
+  // too (BoardHud's own leave-the-board arrow); CANGUPA-118 dropped that row
+  // at the owner's request, so this is Hint/Undo/Restart/Help only now.
+  const buttons: readonly { readonly id: ControlIconId; readonly name: string; readonly desc: string }[] = [
     { id: 'hint', name: t.boardHud.hint, desc: t.help.hintDesc },
     { id: 'undo', name: t.boardHud.undo, desc: t.help.undoDesc },
     { id: 'restart', name: t.boardHud.restart, desc: t.help.restartDesc },
@@ -176,7 +174,7 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
           {buttons.map((button) => (
             <View key={button.id} style={styles.tileRow}>
               <View testID={`help-button-${button.id}`} style={[styles.buttonIcon, { backgroundColor: palette.control }]}>
-                {button.id === 'back' ? <BackArrow color={palette.ink} /> : <ControlIcon id={button.id} color={palette.ink} />}
+                <ControlIcon id={button.id} color={palette.ink} />
               </View>
               <Text style={[styles.tileText, ink]}>
                 <Text style={styles.bold}>{button.name}</Text>

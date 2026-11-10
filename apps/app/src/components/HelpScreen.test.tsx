@@ -96,7 +96,7 @@ test('groups the board screen controls into a Buttons section with their real ic
   await render(<HelpScreen palette={DARK} />);
 
   expect(screen.getByText('Buttons')).toBeTruthy();
-  for (const id of ['back', 'undo', 'restart', 'hint', 'help']) {
+  for (const id of ['undo', 'restart', 'hint', 'help']) {
     expect(screen.getByTestId(`help-button-${id}`)).toBeTruthy();
   }
   expect(screen.getByText(/Greyed out until you've made at least one/)).toBeTruthy();

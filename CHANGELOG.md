@@ -7,6 +7,15 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-10
+
+### Changed
+
+- The Help screen's Buttons section no longer lists Back among the board
+  screen's controls — it now explains Hint, Undo, Restart and Help only.
+  The screen's own floating back arrow, used to leave the Help screen
+  itself, is unaffected and still works the same.
+
 ## 2026-11-09
 
 ### Changed

@@ -54,10 +54,10 @@ export interface Strings {
     readonly jumpGapCaption: string;
     readonly jumpTileCaption: string;
     // The board screen's own controls (CANGUPA-109), explained here with
-    // their real icons — boardHud.back/undo/restart/hint/help already name
-    // them, these are just what each one does and when it's disabled.
+    // their real icons — boardHud.undo/restart/hint/help already name them,
+    // these are just what each one does and when it's disabled. Back
+    // (CANGUPA-118 dropped it from this list) isn't one of them.
     readonly buttonsSection: string;
-    readonly backDesc: string;
     readonly undoDesc: string;
     readonly restartDesc: string;
     readonly hintDesc: string;
