@@ -73,6 +73,25 @@ The priority can change at any time; the ID never does.
   ([levels.ts](apps/app/src/game/levels.ts)). Dropped: a shortest-path
   solver alongside `solve()` — moot, since `solve()`'s DFS result is
   already optimal-length by construction.
+- [P2] `CANGUPA-124` — Add a third hint-balance replenishment path to
+  `apps/app`, alongside `CANGUPA-78`'s reward-video one and `CANGUPA-79`'s
+  in-app-purchase one: earn one hint, uncapped, every time a level is
+  cleared for the first time. Builds on `CANGUPA-54`'s balance plumbing
+  (`remaining()`/spend in [board.ts](apps/app/src/game/board.ts), the badge
+  display), so blocked on that landing first.
+- [P2] `CANGUPA-125` — Bring a hint-balance system to `apps/web-classic`,
+  which has none today — `hint()` in
+  [ui.js](apps/web-classic/js/ui.js) is free and unlimited, gated only by
+  the unrelated `settings.hints` toggle that shows/hides the legal-move
+  outlines. Starting balance of 3, same as `apps/app`'s `CANGUPA-54`,
+  replenished solely by earning one hint, uncapped, per first-time level
+  clear — no reward-video/IAP path on web, per `CANGUPA-78`'s own note that
+  the web has no rewarded-video SDK. Needs its own save-data field (today's
+  web-classic progress/settings live in `localStorage`, shape TBD by
+  whoever picks this up) and a balance display near the `#hint` control.
+  The "next move" visual itself needs no design work — `.tip`'s pulsing
+  yellow outline ([style.css](apps/web-classic/style.css)) already shows
+  it, distinct from the plain white `.hint` outline for legal moves.
 - [P4] `CANGUPA-78` — Let players earn an extra hint by watching a reward
   video, building on `CANGUPA-54`'s hint balance. Unscoped: which ad
   network/SDK, platform availability (the web has no rewarded-video SDK),

@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-124`**
+**Next ID to assign: `CANGUPA-126`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -39,6 +39,8 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-99 | P3 | Analyze auditory accessibility/impairments. `apps/web-classic`'s `sound.js` has three effects (`jump`, `win`, `fall`), all gated by a `settings.sound` toggle that can mute them entirely, and `fall()`'s tone is already timed to a `.falling` CSS animation rather than standing alone — so the baseline (nothing is sound-only) looks likely already met, given sound can already be switched off completely in both apps. Verify that's actually true for every cue in both apps (confirm `apps/app`'s sound settings behave the same), rather than assuming it from the toggle existing | open | — |
 | CANGUPA-100 | P3 | Investigate which other disability types are worth a dedicated accessibility analysis, beyond the visual (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones already opened. Candidates to consider: cognitive/learning load (the game already has no timer or fail state, which likely helps by default — confirm), photosensitivity/seizure risk (check board/tile animations for flashing or strobing), and situational constraints (one-handed use, glare/bright-sunlight contrast — may already be covered by `CANGUPA-97`). Scoping only — decide which deserve their own task | open | — |
 | CANGUPA-106 | P3 | Build the actual pack-purchase entitlement flow `CANGUPA-96`'s investigation scaffolded but deliberately didn't build: a single "unlock all remaining packs" one-time purchase (its recommended structure, over per-pack SKUs), an `Entitlements` record alongside `Progress`/`Settings` in AsyncStorage (`state/storage.ts`'s existing pattern), `isUnlocked` (`state/progress.ts`) gated on it past the free packs, restore-purchase handling, and the store UI itself. Blocked on `CANGUPA-79` picking an in-app-purchase SDK (now serving both hints and this) and on the owner confirming the free/paid pack cut and pricing `CANGUPA-96` left open. Not blocking `CANGUPA-92`'s first submission — ship with every pack free first, add this as a fast-follow once the SDK is chosen | open | — |
+| CANGUPA-124 | P2 | Add a third hint-balance replenishment path to `apps/app`, alongside `CANGUPA-78`'s reward-video and `CANGUPA-79`'s in-app-purchase ones: earn one hint, uncapped, every time a level is cleared for the first time. Builds on `CANGUPA-54`'s balance plumbing (`remaining()`/spend in `board.ts`, the badge display), so blocked on that landing first | open | — |
+| CANGUPA-125 | P2 | Bring a hint-balance system to `apps/web-classic`, which has none today (`hint()` in `ui.js` is free and unlimited) — starting balance of 3, same as `apps/app`'s `CANGUPA-54`, replenished solely by earning one hint, uncapped, per first-time level clear (no reward-video/IAP path on web, per `CANGUPA-78`'s own note). Needs its own save-data field (today's web-classic progress/settings live in `localStorage`, shape TBD by whoever picks this up) and a balance display near the hint button/`#hint` control | open | — |
 ## Done
 
 | ID | Pri | Task | Status | Date | Commit |
