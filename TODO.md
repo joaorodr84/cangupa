@@ -45,22 +45,6 @@ The priority can change at any time; the ID never does.
   exercising it, so the ~15/50 figure above is stale again and needs
   re-measuring against the new content whenever this is actually picked
   up.
-- [P2] `CANGUPA-54` — Add a hint-balance system to `apps/app`: the game
-  starts with a fixed balance of 3 hints, shown as a badge on the hint
-  control ([ControlIcon.tsx](apps/app/src/components/ControlIcon.tsx) /
-  [BoardHud.tsx](apps/app/src/components/BoardHud.tsx), CANGUPA-53 —
-  DigiSpin already has this badge, Cangupa doesn't), spent each time the
-  hint button is used. Scoped to just that starting balance, its display
-  and its spend — replenishing it (earning by watching a reward video,
-  buying in a store) is split out as `CANGUPA-78`/`CANGUPA-79`. Every move
-  always consumes exactly one unit of `remaining()` regardless of which
-  legal target is chosen (`play()` in
-  [board.ts](apps/app/src/game/board.ts)), so every winning sequence has
-  the same move length — `CANGUPA-55`'s note on why that count can't vary
-  refers to this. The hint itself doesn't change —
-  [useBoard.ts](apps/app/src/game/useBoard.ts)'s `hint()` / `game.solve()`
-  already reveals a next step via the tip highlight; this only gates that
-  behind a balance instead of it being free and unlimited.
 - [P2] `CANGUPA-55` — Guarantee every level has more than one solution
   (distinct paths through the same fixed move count — see `CANGUPA-54`'s
   note on why that count can't vary). Today the level generator

@@ -13,6 +13,7 @@ function noop() {
 function renderHud(overrides: Partial<Parameters<typeof BoardHud>[0]> & { status: Status }) {
   const props = {
     canUndo: true,
+    hintBalance: 3,
     palette,
     onBack: noop,
     onUndo: noop,
@@ -56,6 +57,22 @@ test('disables hint once won', async () => {
 
   await fireEvent.press(screen.getByLabelText('Hint'));
   expect(onHint).not.toHaveBeenCalled();
+});
+
+test('disables hint once the balance hits 0, even mid-level', async () => {
+  const status: Status = { kind: 'playing', levelNumber: 1, totalLevels: 50, moves: 2, remaining: 1 };
+  const onHint = jest.fn();
+  await renderHud({ status, hintBalance: 0, onHint });
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+  expect(onHint).not.toHaveBeenCalled();
+});
+
+test('shows the hint balance as a badge on the hint icon', async () => {
+  const status: Status = { kind: 'playing', levelNumber: 1, totalLevels: 50, moves: 0, remaining: 3 };
+  await renderHud({ status, hintBalance: 2 });
+
+  expect(screen.getByText('2')).toBeTruthy();
 });
 
 test('pressing the back arrow calls onBack', async () => {

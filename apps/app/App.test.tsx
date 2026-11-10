@@ -124,6 +124,18 @@ test("the board screen's Help button opens a popup over the board, not the rules
   expect(screen.getByText('Level 1')).toBeTruthy();
 });
 
+test('pressing Hint spends one from the balance, persisted to storage (CANGUPA-54)', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByText('Play'));
+  expect(await screen.findByText('Level 1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+
+  const saved = await AsyncStorage.getItem(PROGRESS_KEY);
+  expect(JSON.parse(saved ?? '{}').hints).toBe(2);
+});
+
 test('opening a level from the Levels tab and pressing Back returns there, not home (CANGUPA-86)', async () => {
   await render(<App />);
 

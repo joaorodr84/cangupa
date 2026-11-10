@@ -48,7 +48,7 @@ test('only the first level is unlocked with no progress', async () => {
 });
 
 test('a level unlocks once the one before it is cleared', async () => {
-  const progress: Progress = { done: [0], level: 0, bestMoves: {} };
+  const progress: Progress = { done: [0], level: 0, bestMoves: {}, hints: 3 };
   const onSelectLevel = jest.fn();
   await render(
     <LevelsScreen
@@ -67,7 +67,7 @@ test('a level unlocks once the one before it is cleared', async () => {
 });
 
 test('a cleared level is marked done in the pack colour, with a contrast-safe number', async () => {
-  const progress: Progress = { done: [0], level: 1, bestMoves: {} };
+  const progress: Progress = { done: [0], level: 1, bestMoves: {}, hints: 3 };
   await render(
     <LevelsScreen
       packIndex={0}
@@ -107,7 +107,7 @@ test('a locked level has a solid background and dimmed text, not a faded cell', 
 });
 
 test('the current level is outlined in the theme ink colour', async () => {
-  const progress: Progress = { done: [0], level: 1, bestMoves: {} };
+  const progress: Progress = { done: [0], level: 1, bestMoves: {}, hints: 3 };
   await render(
     <LevelsScreen
       packIndex={0}
@@ -174,7 +174,7 @@ test("a pack's first level is unlocked with no progress at all (CANGUPA-77)", as
 });
 
 test("shows the pack's own name, in its own colour, and its blurb in its header", async () => {
-  const progress: Progress = { done: [2], level: 0, bestMoves: {} };
+  const progress: Progress = { done: [2], level: 0, bestMoves: {}, hints: 3 };
   await render(
     <LevelsScreen
       packIndex={1}

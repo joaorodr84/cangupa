@@ -6,6 +6,8 @@ import {
   NO_PROGRESS,
   parseProgress,
   loadProgress,
+  spendHint,
+  STARTING_HINTS,
   type Progress,
   saveProgress,
   PROGRESS_KEY,
@@ -20,12 +22,12 @@ describe('isDone', () => {
   });
 
   it('is true for a level in done', () => {
-    expect(isDone({ done: [2], level: 0, bestMoves: {} }, 2)).toBe(true);
+    expect(isDone({ done: [2], level: 0, bestMoves: {}, hints: 3 }, 2)).toBe(true);
   });
 });
 
 describe('isUnlocked', () => {
-  const progress: Progress = { done: [0, 1], level: 2, bestMoves: {} };
+  const progress: Progress = { done: [0, 1], level: 2, bestMoves: {}, hints: 3 };
 
   it('the first level of a pack is always unlocked', () => {
     expect(isUnlocked(NO_PROGRESS, 0, 0)).toBe(true);
@@ -48,7 +50,7 @@ describe('isUnlocked', () => {
   });
 
   it('a later level in a pack stays locked by that pack alone, not by an earlier pack', () => {
-    const otherPackDone: Progress = { done: [0, 1, 2], level: 2, bestMoves: {} };
+    const otherPackDone: Progress = { done: [0, 1, 2], level: 2, bestMoves: {}, hints: 3 };
     expect(isUnlocked(otherPackDone, 51, 50)).toBe(false);
   });
 });
@@ -59,17 +61,17 @@ describe('firstUnsolvedLevel', () => {
   });
 
   it('is the first level not in done, regardless of which pack it falls in', () => {
-    const progress: Progress = { done: [0, 1, 50, 51], level: 51, bestMoves: {} };
+    const progress: Progress = { done: [0, 1, 50, 51], level: 51, bestMoves: {}, hints: 3 };
     expect(firstUnsolvedLevel(progress, 100)).toBe(2);
   });
 
   it('skips past an already-done level even mid-sequence', () => {
-    const progress: Progress = { done: [0, 2], level: 2, bestMoves: {} };
+    const progress: Progress = { done: [0, 2], level: 2, bestMoves: {}, hints: 3 };
     expect(firstUnsolvedLevel(progress, 100)).toBe(1);
   });
 
   it('falls back to the last level once every level is done', () => {
-    const progress: Progress = { done: [0, 1, 2], level: 2, bestMoves: {} };
+    const progress: Progress = { done: [0, 1, 2], level: 2, bestMoves: {}, hints: 3 };
     expect(firstUnsolvedLevel(progress, 3)).toBe(2);
   });
 });
@@ -89,13 +91,13 @@ describe('markDone', () => {
   });
 
   it('returns the same record for a level already done with no better move count', () => {
-    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 } };
+    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 }, hints: 3 };
     expect(markDone(progress, 1, 4)).toBe(progress);
     expect(markDone(progress, 1, 6)).toBe(progress);
   });
 
   it('updates the best when a replay beats it, without duplicating done', () => {
-    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 } };
+    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 }, hints: 3 };
     const next = markDone(progress, 1, 2);
     expect(next.done).toEqual([1]);
     expect(next.bestMoves).toEqual({ 1: 2 });
@@ -108,8 +110,25 @@ describe('withLevel', () => {
   });
 
   it('returns the same record when the level is unchanged', () => {
-    const progress: Progress = { done: [], level: 5, bestMoves: {} };
+    const progress: Progress = { done: [], level: 5, bestMoves: {}, hints: 3 };
     expect(withLevel(progress, 5)).toBe(progress);
+  });
+});
+
+describe('spendHint', () => {
+  it('takes one off the balance', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 3 };
+    expect(spendHint(progress).hints).toBe(2);
+  });
+
+  it('floors at 0 rather than going negative', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 0 };
+    expect(spendHint(progress).hints).toBe(0);
+  });
+
+  it('returns the same record once already at 0, so a spend that changes nothing never fires a save', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 0 };
+    expect(spendHint(progress)).toBe(progress);
   });
 });
 
@@ -119,7 +138,7 @@ describe('totalBestMoves', () => {
   });
 
   it('sums every level\'s best move count', () => {
-    const progress: Progress = { done: [0, 1, 2], level: 2, bestMoves: { 0: 3, 1: 5, 2: 2 } };
+    const progress: Progress = { done: [0, 1, 2], level: 2, bestMoves: { 0: 3, 1: 5, 2: 2 }, hints: 3 };
     expect(totalBestMoves(progress)).toBe(10);
   });
 });
@@ -129,11 +148,12 @@ describe('parseProgress', () => {
     expect(parseProgress(null)).toEqual(NO_PROGRESS);
   });
 
-  it('reads saved done levels, the resume level and best moves', () => {
-    expect(parseProgress('{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1}}')).toEqual({
+  it('reads saved done levels, the resume level, best moves and hint balance', () => {
+    expect(parseProgress('{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1},"hints":1}')).toEqual({
       done: [0, 2],
       level: 3,
       bestMoves: { 0: 4, 2: 1 },
+      hints: 1,
     });
   });
 
@@ -165,6 +185,20 @@ describe('parseProgress', () => {
     expect(parseProgress('{"bestMoves":{"0":3,"-1":2,"1.5":2,"2":0,"3":-1,"4":"x"}}').bestMoves).toEqual({ 0: 3 });
   });
 
+  it('falls back to the starting balance when hints is missing — a save from before CANGUPA-54 has not spent any', () => {
+    expect(parseProgress('{"done":[0],"level":0}').hints).toBe(STARTING_HINTS);
+  });
+
+  it('falls back to the starting balance when hints is not a non-negative integer', () => {
+    expect(parseProgress('{"hints":-1}').hints).toBe(STARTING_HINTS);
+    expect(parseProgress('{"hints":1.5}').hints).toBe(STARTING_HINTS);
+    expect(parseProgress('{"hints":"2"}').hints).toBe(STARTING_HINTS);
+  });
+
+  it('reads a hint balance of 0 as-is, not as missing', () => {
+    expect(parseProgress('{"hints":0}').hints).toBe(0);
+  });
+
   it.each(CORRUPT_RECORDS)('reads %s as no progress', (_name, raw) => {
     expect(parseProgress(raw)).toEqual(NO_PROGRESS);
   });
@@ -173,7 +207,7 @@ describe('parseProgress', () => {
 describe('saving and loading', () => {
   it('round-trips progress through the store', async () => {
     const storage = memoryStorage();
-    const progress: Progress = { done: [0, 1, 4], level: 4, bestMoves: { 0: 3, 1: 6, 4: 2 } };
+    const progress: Progress = { done: [0, 1, 4], level: 4, bestMoves: { 0: 3, 1: 6, 4: 2 }, hints: 2 };
 
     await saveProgress(storage, progress);
 
@@ -183,9 +217,9 @@ describe('saving and loading', () => {
   it('writes under the expected key', async () => {
     const storage = memoryStorage();
 
-    await saveProgress(storage, { done: [0], level: 1, bestMoves: { 0: 5 } });
+    await saveProgress(storage, { done: [0], level: 1, bestMoves: { 0: 5 }, hints: 2 });
 
-    expect(await storage.getItem(PROGRESS_KEY)).toBe('{"done":[0],"level":1,"bestMoves":{"0":5}}');
+    expect(await storage.getItem(PROGRESS_KEY)).toBe('{"done":[0],"level":1,"bestMoves":{"0":5},"hints":2}');
   });
 
   it('starts from no progress when nothing was saved', async () => {

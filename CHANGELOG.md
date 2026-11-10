@@ -9,6 +9,17 @@ Open work is listed in [TODO.md](TODO.md).
 
 ## 2026-11-10
 
+### Added
+
+- The app's board screen now gives each save a balance of 3 hints, shown as
+  a small badge on the Hint button. Pressing Hint spends one from the
+  balance, but only when the solver actually finds a move to show — a
+  dead end reveals nothing and costs nothing. Once the balance reaches 0,
+  the Hint button greys out the same way it already does once the level is
+  won; the Help popup's description of the button was updated to match in
+  English and Portuguese. Earning more hints back isn't possible yet, and
+  the web version of the game has no hint balance at all for now.
+
 ### Changed
 
 - The Help screen's Buttons section no longer lists Back among the board

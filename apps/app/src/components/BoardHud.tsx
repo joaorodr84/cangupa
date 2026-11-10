@@ -34,6 +34,9 @@ import ControlIcon, { type ControlIconId } from './ControlIcon';
 interface BoardHudProps {
   readonly status: Status;
   readonly canUndo: boolean;
+  // Hints left to spend (CANGUPA-54) — disables Hint once it hits 0, same as
+  // winning does, and shows as a small badge on the Hint icon.
+  readonly hintBalance: number;
   readonly palette: Palette;
   readonly onBack: () => void;
   readonly onUndo: () => void;
@@ -42,7 +45,17 @@ interface BoardHudProps {
   readonly onHelp: () => void;
 }
 
-export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onReset, onHint, onHelp }: BoardHudProps) {
+export default function BoardHud({
+  status,
+  canUndo,
+  hintBalance,
+  palette,
+  onBack,
+  onUndo,
+  onReset,
+  onHint,
+  onHelp,
+}: BoardHudProps) {
   const t = useStrings();
   return (
     <View style={styles.wrap}>
@@ -62,7 +75,8 @@ export default function BoardHud({ status, canUndo, palette, onBack, onUndo, onR
           id="hint"
           label={t.boardHud.hint}
           palette={palette}
-          disabled={status.kind === 'won'}
+          disabled={status.kind === 'won' || hintBalance <= 0}
+          badge={hintBalance}
           onPress={onHint}
         />
         <View style={[styles.groupDivider, { backgroundColor: palette.panelBorder }]} />
@@ -133,9 +147,13 @@ interface GroupButtonProps {
   readonly palette: Palette;
   readonly onPress: () => void;
   readonly disabled?: boolean;
+  // A small count badge on the icon's corner (CANGUPA-54's hint balance) —
+  // omitted entirely rather than shown as 0 would be ambiguous with "no
+  // badge at all", and 0 is exactly the balance that matters most to show.
+  readonly badge?: number;
 }
 
-function GroupButton({ id, label, palette, onPress, disabled = false }: GroupButtonProps) {
+function GroupButton({ id, label, palette, onPress, disabled = false, badge }: GroupButtonProps) {
   return (
     <Pressable
       disabled={disabled}
@@ -145,6 +163,15 @@ function GroupButton({ id, label, palette, onPress, disabled = false }: GroupBut
       style={[styles.groupButton, disabled && styles.buttonDisabled]}
     >
       <ControlIcon id={id} color={palette.ink} />
+      {badge !== undefined && (
+        // ink/bg2 swapped (rather than a fixed accent colour) so the badge
+        // reads against either theme: a light chip with dark text on the
+        // dark theme, a dark chip with light text on the light one — the
+        // same contrast pairing the rest of the UI's text already relies on.
+        <View style={[styles.badge, { backgroundColor: palette.ink }]}>
+          <Text style={[styles.badgeText, { color: palette.bg2 }]}>{badge}</Text>
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -204,5 +231,22 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.4,
+  },
+  // A small count badge on a control icon's corner (CANGUPA-54), sized to
+  // read a one- or two-digit number without the circle growing past it.
+  badge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    minWidth: 15,
+    height: 15,
+    borderRadius: 999,
+    paddingHorizontal: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

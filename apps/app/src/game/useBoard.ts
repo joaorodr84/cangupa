@@ -49,13 +49,16 @@ export function useBoard(level: Level, hints: boolean) {
   }, [game]);
 
   // Highlights the solver's first suggested move, or reports a dead end
-  // (hintFailed) when none exists — ported from ui.js's hint().
-  const hint = useCallback(() => {
-    if (game.won) return;
+  // (hintFailed) when none exists — ported from ui.js's hint(). Returns
+  // whether a move was actually found, so a caller gating this behind a
+  // hint balance (CANGUPA-54) only spends one on a hint that found something.
+  const hint = useCallback((): boolean => {
+    if (game.won) return false;
     const path = game.solve();
     setTip(path ? path[0] : null);
     setHintFailed(!path);
     setTick((t) => t + 1);
+    return path !== null;
   }, [game]);
 
   return {

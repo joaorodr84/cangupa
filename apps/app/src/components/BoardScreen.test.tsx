@@ -28,6 +28,7 @@ function noop() {
 function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { level: Level }) {
   return {
     hints: true,
+    hintBalance: 3,
     anim: false,
     fall: false,
     palette,
@@ -106,6 +107,31 @@ test('undo, reset and hint operate on the same board the HUD reflects', async ()
 
   await fireEvent.press(screen.getByLabelText('Restart'));
   expect(screen.getByText('Moves 0')).toBeTruthy();
+});
+
+test('pressing Hint spends one, via onHintUsed, only when it actually finds a move', async () => {
+  const onHintUsed = jest.fn();
+  await renderScreen({ level: ['S11'], onHintUsed });
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+  expect(onHintUsed).toHaveBeenCalledTimes(1);
+});
+
+test('a dead-end hint does not call onHintUsed', async () => {
+  // S..1: the remaining tile sits three tiles away, past jump range, so solve() fails.
+  const onHintUsed = jest.fn();
+  await renderScreen({ level: ['S..1'], onHintUsed });
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+  expect(onHintUsed).not.toHaveBeenCalled();
+});
+
+test('Hint is disabled once the balance hits 0, even mid-level', async () => {
+  const onHintUsed = jest.fn();
+  await renderScreen({ level: ['S11'], hintBalance: 0, onHintUsed });
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+  expect(onHintUsed).not.toHaveBeenCalled();
 });
 
 test('pressing the win popup\'s next-level button calls onNext', async () => {

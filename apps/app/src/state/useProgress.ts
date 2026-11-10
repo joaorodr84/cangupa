@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { deviceStorage } from './deviceStorage';
-import { loadProgress, markDone, NO_PROGRESS, type Progress, saveProgress, withLevel } from './progress';
+import { loadProgress, markDone, NO_PROGRESS, type Progress, saveProgress, spendHint, withLevel } from './progress';
 import { type Storage } from './storage';
 
 // The saved progress, loaded once and saved on each change. `progress` is
@@ -54,7 +54,8 @@ export function useProgress(storage: Storage = deviceStorage) {
     [persist],
   );
   const recordLevel = useCallback((levelIndex: number) => persist(withLevel(latest.current, levelIndex)), [persist]);
+  const recordHintUsed = useCallback(() => persist(spendHint(latest.current)), [persist]);
   const clearProgress = useCallback(() => persist(NO_PROGRESS), [persist]);
 
-  return { progress, recordDone, recordLevel, clearProgress };
+  return { progress, recordDone, recordLevel, recordHintUsed, clearProgress };
 }

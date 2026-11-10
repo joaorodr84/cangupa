@@ -16,7 +16,7 @@ test('shows the summary panel when nothing is cleared yet', async () => {
 });
 
 test('shows the cleared count and total moves, with no per-level breakdown', async () => {
-  const progress: Progress = { done: [0, 2], level: 2, bestMoves: { 0: 3, 2: 7 } };
+  const progress: Progress = { done: [0, 2], level: 2, bestMoves: { 0: 3, 2: 7 }, hints: 3 };
   await render(<StatsScreen totalLevels={50} progress={progress} palette={palette} />);
 
   expect(screen.getByText('Levels cleared')).toBeTruthy();

@@ -5,6 +5,12 @@
 // recorded best yet, so it is not a breaking change to the saved shape.
 import { type Storage } from './storage';
 
+// The hint balance a save starts with, and what a save written before
+// CANGUPA-54 (no `hints` field at all) is treated as having — the same
+// starting point a brand-new player gets, not zero, since nothing has
+// actually been spent yet by a player who simply predates this field.
+export const STARTING_HINTS = 3;
+
 export interface Progress {
   // Indices (0-based) of cleared levels.
   readonly done: readonly number[];
@@ -13,9 +19,13 @@ export interface Progress {
   // The fewest moves a cleared level has ever been solved in, by level
   // index. A level only gets an entry once it's been cleared at least once.
   readonly bestMoves: Readonly<Record<number, number>>;
+  // Hints left to spend (CANGUPA-54). Replenishment beyond the starting
+  // balance is out of this field's scope — see CANGUPA-124 (apps/app) and
+  // CANGUPA-125 (apps/web-classic).
+  readonly hints: number;
 }
 
-export const NO_PROGRESS: Progress = { done: [], level: 0, bestMoves: {} };
+export const NO_PROGRESS: Progress = { done: [], level: 0, bestMoves: {}, hints: STARTING_HINTS };
 
 // A level's index is its place in the packs' play order (CANGUPA-56), which is
 // not where it was in the old flat list of 50 levels: a record saved under the
@@ -59,6 +69,14 @@ export function markDone(progress: Progress, levelIndex: number, moves: number):
     done: alreadyDone ? progress.done : [...progress.done, levelIndex].sort((a, b) => a - b),
     bestMoves: improves ? { ...progress.bestMoves, [levelIndex]: moves } : progress.bestMoves,
   };
+}
+
+// Spends one hint. Floored at 0 rather than going negative, and returns the
+// same record once already there — the same "no-op when nothing changes"
+// shape as markDone/withLevel, so a press that can't actually spend anything
+// never fires a save.
+export function spendHint(progress: Progress): Progress {
+  return progress.hints <= 0 ? progress : { ...progress, hints: progress.hints - 1 };
 }
 
 // Where the home screen's Play button should go: the first level, in play
@@ -135,7 +153,11 @@ export function parseProgress(raw: string | null): Progress {
     const level =
       typeof record.level === 'number' && Number.isInteger(record.level) && record.level >= 0 ? record.level : 0;
     const bestMoves = sanitizeBestMoves(record.bestMoves);
-    return { done, level, bestMoves };
+    const hints =
+      typeof record.hints === 'number' && Number.isInteger(record.hints) && record.hints >= 0
+        ? record.hints
+        : STARTING_HINTS;
+    return { done, level, bestMoves, hints };
   } catch {
     return NO_PROGRESS;
   }

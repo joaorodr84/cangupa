@@ -1620,6 +1620,44 @@ content instead.
 
 ---
 
+## Era 50 — Nov 10 (continued): the hint button spends from a balance instead of being free and unlimited
+
+CANGUPA-54 added the hint-balance system `apps/app` had been without since
+the Hint button first appeared (CANGUPA-32/53): a save now starts with 3
+hints (`STARTING_HINTS` in `state/progress.ts`), and a save written before
+this change — with no `hints` field at all — is treated as having that
+same starting balance rather than zero, since nothing has actually been
+spent by a player who simply predates the field.
+
+The balance shows as a small round badge on the Hint icon's corner
+(`BoardHud.tsx`'s new `GroupButton` `badge` prop), coloured with
+`palette.ink`/`palette.bg2` swapped rather than a fixed accent colour so it
+reads against either theme. `useBoard.ts`'s `hint()` now returns whether
+the solver actually found a move, so `BoardScreen.tsx`'s new `handleHint`
+only spends one — via `useProgress.ts`'s new `recordHintUsed` and
+`progress.ts`'s new `spendHint` — when a move was found, never on a dead
+end that reveals nothing. The Hint button disables once the balance hits
+0, the same as it already did on a won level. `spendHint` floors at 0 and
+is a no-op once there, the same "no save on a press that changes nothing"
+shape `markDone`/`withLevel` already use. The Help popup's description of
+the Hint button was updated in English and Portuguese to mention the new
+out-of-hints case.
+
+Replenishing the balance beyond its starting 3 is deliberately out of
+scope here — reward-video (`CANGUPA-78`) and in-app-purchase (`CANGUPA-79`)
+paths, and a third earn-on-clear path (`CANGUPA-124`), are split out as
+follow-ups, as is bringing an equivalent system to `apps/web-classic`
+(`CANGUPA-125`), which has no hint balance of any kind today.
+
+One commit, with new tests across `App.test.tsx`, `BoardHud.test.tsx`,
+`BoardScreen.test.tsx` and `progress.test.ts`. Verified: `npx tsc --noEmit`
+clean, full `apps/app` Jest suite green (30/30 suites, 830/830 tests).
+
+Era 50 closes here: Nov 10, one commit, CANGUPA-54 — the hint button stops
+being free and unlimited and starts spending from a balance.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

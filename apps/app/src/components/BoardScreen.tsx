@@ -20,6 +20,10 @@ import WinPopup from './WinPopup';
 interface BoardScreenProps {
   readonly level: Level;
   readonly hints: boolean;
+  // Hints left to spend (CANGUPA-54) — gates pressing Hint, independent of
+  // the `hints` display toggle above (whether legal moves are outlined at
+  // all, unrelated to the balance).
+  readonly hintBalance: number;
   readonly anim: boolean;
   // Rule option (CANGUPA-58, off by default): tapping the board where there
   // is no legal move falls instead of doing nothing.
@@ -34,11 +38,15 @@ interface BoardScreenProps {
   // the moment ui.js's move() would have added the level to progress.done —
   // with the move count it was cleared in, for CANGUPA-30's per-level best.
   readonly onLevelComplete?: (moves: number) => void;
+  // Fired once per hint that actually finds a move — not on a dead end,
+  // which reveals nothing and so shouldn't cost one (CANGUPA-54).
+  readonly onHintUsed?: () => void;
 }
 
 export default function BoardScreen({
   level,
   hints,
+  hintBalance,
   anim,
   fall,
   palette,
@@ -48,6 +56,7 @@ export default function BoardScreen({
   onBack,
   onNext,
   onLevelComplete,
+  onHintUsed,
 }: BoardScreenProps) {
   // A rectangular level is turned once, to the orientation the device is in when
   // the level opens (CANGUPA-56). Not tracked after that: turning the board while
@@ -68,6 +77,15 @@ export default function BoardScreen({
   }, [won, moves, onLevelComplete]);
 
   const status = statusFor({ levelNumber, totalLevels, moves, remaining }, { won, stuck, hintFailed, hasNext });
+
+  // Guards the spend here rather than trusting BoardHud's own disabled state
+  // alone (CANGUPA-54) — the balance is what actually decides whether a
+  // hint is allowed, the UI is only a reflection of it — and only spends one
+  // when the solver actually found a move, not on a dead end.
+  const handleHint = () => {
+    if (hintBalance <= 0) return;
+    if (hint()) onHintUsed?.();
+  };
 
   // Closing the popup (CANGUPA-32) only hides it — the board stays solved
   // underneath, reachable through BoardHud's corner (Undo to step back into
@@ -98,11 +116,12 @@ export default function BoardScreen({
       <BoardHud
         status={status}
         canUndo={canUndo}
+        hintBalance={hintBalance}
         palette={palette}
         onBack={onBack}
         onUndo={undo}
         onReset={reset}
-        onHint={hint}
+        onHint={handleHint}
         onHelp={() => setHelpOpen(true)}
       />
       <View

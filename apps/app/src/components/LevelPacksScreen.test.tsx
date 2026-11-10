@@ -20,7 +20,7 @@ test('shows the collection label and one row per pack, with its name', async () 
 });
 
 test('each pack shows its own level range and cleared count', async () => {
-  const progress: Progress = { done: [0, 2], level: 0, bestMoves: {} };
+  const progress: Progress = { done: [0, 2], level: 0, bestMoves: {}, hints: 3 };
   await render(<LevelPacksScreen packSizes={[2, 3]} progress={progress} palette={palette} onOpenPack={jest.fn()} />);
 
   // Pack 1 holds levels 1-2 (level 1 done), pack 2 holds levels 3-5 (level 3 done).
