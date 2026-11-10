@@ -57,12 +57,6 @@ The priority can change at any time; the ID never does.
   ([levels.ts](apps/app/src/game/levels.ts)). Dropped: a shortest-path
   solver alongside `solve()` — moot, since `solve()`'s DFS result is
   already optimal-length by construction.
-- [P2] `CANGUPA-124` — Add a third hint-balance replenishment path to
-  `apps/app`, alongside `CANGUPA-78`'s reward-video one and `CANGUPA-79`'s
-  in-app-purchase one: earn one hint, uncapped, every time a level is
-  cleared for the first time. Builds on `CANGUPA-54`'s balance plumbing
-  (`remaining()`/spend in [board.ts](apps/app/src/game/board.ts), the badge
-  display), so blocked on that landing first.
 - [P2] `CANGUPA-125` — Bring a hint-balance system to `apps/web-classic`,
   which has none today — `hint()` in
   [ui.js](apps/web-classic/js/ui.js) is free and unlimited, gated only by

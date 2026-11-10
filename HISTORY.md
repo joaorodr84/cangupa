@@ -1658,6 +1658,33 @@ being free and unlimited and starts spending from a balance.
 
 ---
 
+## Era 51 — Nov 10 (continued): the hint balance earns itself back on a first clear
+
+CANGUPA-124 is the first of the three replenishment paths CANGUPA-54 split
+out to land: `state/progress.ts`'s `markDone` now adds one hint, uncapped,
+whenever a level goes from not-done to done. A replay of an already-done
+level earns nothing — even one that beats the level's recorded best move
+count — because `markDone` already distinguishes a first clear from a
+replay to decide whether `done`/`bestMoves` change, and the hint piggybacks
+on that same `alreadyDone` check rather than a new one.
+
+No wiring was needed outside `progress.ts`: `useProgress.ts`'s `recordDone`
+already calls `markDone` with the live progress and persists whatever comes
+back, so the earned hint reaches `BoardHud.tsx`'s existing badge and
+`spendHint`'s existing floor for free. `CANGUPA-78`'s reward-video path and
+`CANGUPA-79`'s in-app-purchase path stay open, as does bringing an
+equivalent system to `apps/web-classic` (`CANGUPA-125`).
+
+One commit, with three new `progress.test.ts` cases: earns one hint on a
+first clear, keeps earning past the starting balance (uncapped), and earns
+nothing on a replay. Verified: `npx tsc --noEmit` clean, full `apps/app`
+Jest suite green (30/30 suites, 833/833 tests).
+
+Era 51 closes here: Nov 10, one commit, CANGUPA-124 — clearing a level for
+the first time earns back one hint.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

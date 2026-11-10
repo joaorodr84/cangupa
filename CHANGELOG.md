@@ -17,8 +17,11 @@ Open work is listed in [TODO.md](TODO.md).
   dead end reveals nothing and costs nothing. Once the balance reaches 0,
   the Hint button greys out the same way it already does once the level is
   won; the Help popup's description of the button was updated to match in
-  English and Portuguese. Earning more hints back isn't possible yet, and
-  the web version of the game has no hint balance at all for now.
+  English and Portuguese. Clearing a level for the first time earns one
+  hint back, uncapped — replaying an already-cleared level, even for a
+  better move count, doesn't. Buying or earning extra hints another way
+  isn't possible yet, and the web version of the game has no hint balance
+  at all for now.
 
 ### Changed
 

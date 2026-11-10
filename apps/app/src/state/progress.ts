@@ -19,9 +19,10 @@ export interface Progress {
   // The fewest moves a cleared level has ever been solved in, by level
   // index. A level only gets an entry once it's been cleared at least once.
   readonly bestMoves: Readonly<Record<number, number>>;
-  // Hints left to spend (CANGUPA-54). Replenishment beyond the starting
-  // balance is out of this field's scope — see CANGUPA-124 (apps/app) and
-  // CANGUPA-125 (apps/web-classic).
+  // Hints left to spend (CANGUPA-54), replenished one at a time by markDone
+  // on each level's first clear (CANGUPA-124, uncapped). CANGUPA-78/
+  // CANGUPA-79 add further replenishment paths here; apps/web-classic gets
+  // its own equivalent system as CANGUPA-125.
   readonly hints: number;
 }
 
@@ -53,10 +54,12 @@ export function isUnlocked(progress: Progress, levelIndex: number, packStart: nu
 }
 
 // Marks a level cleared, with how many moves it took, and keeps the fewest
-// moves it's ever been cleared in. Returns the same record when neither
-// changes anything — the level was already done and this clear didn't beat
-// its best — so a replay that doesn't improve on the record never fires a
-// save.
+// moves it's ever been cleared in. A first-time clear also earns one hint,
+// uncapped (CANGUPA-124) — a replay of an already-done level earns nothing,
+// win or not, since the player already banked that level's hint. Returns
+// the same record when neither changes anything — the level was already
+// done and this clear didn't beat its best — so a replay that doesn't
+// improve on the record never fires a save.
 export function markDone(progress: Progress, levelIndex: number, moves: number): Progress {
   const alreadyDone = isDone(progress, levelIndex);
   const best = progress.bestMoves[levelIndex];
@@ -68,6 +71,7 @@ export function markDone(progress: Progress, levelIndex: number, moves: number):
     ...progress,
     done: alreadyDone ? progress.done : [...progress.done, levelIndex].sort((a, b) => a - b),
     bestMoves: improves ? { ...progress.bestMoves, [levelIndex]: moves } : progress.bestMoves,
+    hints: alreadyDone ? progress.hints : progress.hints + 1,
   };
 }
 

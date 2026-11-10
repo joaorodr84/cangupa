@@ -102,6 +102,21 @@ describe('markDone', () => {
     expect(next.done).toEqual([1]);
     expect(next.bestMoves).toEqual({ 1: 2 });
   });
+
+  it('earns one hint on a first-time clear', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 3 };
+    expect(markDone(progress, 3, 5).hints).toBe(4);
+  });
+
+  it('earns a hint uncapped, past the starting balance', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 20 };
+    expect(markDone(progress, 3, 5).hints).toBe(21);
+  });
+
+  it('earns no hint on a replay that beats the best of an already-done level', () => {
+    const progress: Progress = { done: [1], level: 0, bestMoves: { 1: 4 }, hints: 3 };
+    expect(markDone(progress, 1, 2).hints).toBe(3);
+  });
 });
 
 describe('withLevel', () => {
