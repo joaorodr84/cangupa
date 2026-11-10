@@ -164,11 +164,6 @@ export default function HelpScreen({ palette }: HelpScreenProps) {
       </View>
 
       <View style={card}>
-        <Text style={[styles.sectionLabel, muted]}>{t.help.stuckSection}</Text>
-        <Text style={ink}>{t.help.outOfMoves}</Text>
-      </View>
-
-      <View style={card}>
         <Text style={[styles.sectionLabel, muted]}>{t.help.buttonsSection}</Text>
         <View style={styles.list}>
           {buttons.map((button) => (

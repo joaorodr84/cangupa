@@ -23,19 +23,25 @@ test('groups the rules into a Moves section and a Tiles section (CANGUPA-101)', 
 });
 
 // CANGUPA-109: a bordered rectangle per section, matching rules.html's panel
-// layout and this app's own StatsScreen.tsx pattern — and "When you're
-// stuck" promoted to its own section rather than a bullet folded into Moves.
-test('wraps each section in its own bordered card, including a new "When you\'re stuck" section (CANGUPA-109)', async () => {
+// layout and this app's own StatsScreen.tsx pattern.
+test('wraps each section in its own bordered card (CANGUPA-109)', async () => {
   await render(<HelpScreen palette={DARK} />);
 
-  expect(screen.getByText("When you're stuck")).toBeTruthy();
-  expect(screen.getByText(/undo or restart/)).toBeTruthy();
-
-  for (const heading of ['Moves', 'Tiles', "When you're stuck", 'Buttons']) {
+  for (const heading of ['Moves', 'Tiles', 'Buttons']) {
     const card = screen.getByText(heading).parent;
     const style = [card?.props.style].flat();
     expect(style.some((s) => s?.borderWidth === 1 && s?.borderRadius === 12)).toBe(true);
   }
+});
+
+// CANGUPA-120: dropped at the owner's request — its only content ("undo or
+// restart") was already fully covered by the Buttons section's own Undo/
+// Restart descriptions below, added later by CANGUPA-109 itself.
+test('drops the "When you\'re stuck" section (CANGUPA-120)', async () => {
+  await render(<HelpScreen palette={DARK} />);
+
+  expect(screen.queryByText("When you're stuck")).toBeNull();
+  expect(screen.queryByText(/undo or restart/)).toBeNull();
 });
 
 test('each tile kind shows a colour swatch taken from the live palette', async () => {

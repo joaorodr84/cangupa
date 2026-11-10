@@ -42,10 +42,6 @@ export interface Strings {
     readonly departureRest: string;
     readonly arrivalBold: string;
     readonly arrivalRest: string;
-    // "When you're stuck" (CANGUPA-109): its own section/card, matching
-    // rules.html's layout, rather than a bullet folded into Moves.
-    readonly stuckSection: string;
-    readonly outOfMoves: string;
     readonly note: string;
     // Captions under the Step/Jump mini-boards (CANGUPA-109) — built from the
     // board's own Tile rendering rather than described in stepRest/jumpRest
