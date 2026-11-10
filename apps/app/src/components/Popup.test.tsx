@@ -47,3 +47,23 @@ test('omits the actions area when no actions are given', async () => {
 
   expect(screen.queryByText('Do it')).toBeNull();
 });
+
+// CANGUPA-122: the overlay used to be pointerEvents="box-none", so a tap
+// anywhere outside the card passed straight through to whatever the popup
+// was covering (a board tile behind WinPopup/HelpPopup, another settings row
+// behind the clear-progress confirmation). A dimmed, opaque-to-touches
+// overlay makes "covered" and "unavailable" mean the same thing again.
+test('dims the backdrop it covers', async () => {
+  await render(<Popup palette={palette} heading="A heading" />);
+
+  const flat = [screen.getByTestId('popup-overlay').props.style].flat();
+  expect(flat.some((s) => s?.backgroundColor === 'rgba(0, 0, 0, 0.5)')).toBe(true);
+});
+
+test('does not let touches outside the card pass through to what it covers', async () => {
+  await render(<Popup palette={palette} heading="A heading" />);
+
+  // Default (auto) pointerEvents, not "box-none" — the overlay itself
+  // absorbs touches instead of letting them reach what's behind it.
+  expect(screen.getByTestId('popup-overlay').props.pointerEvents).toBeUndefined();
+});

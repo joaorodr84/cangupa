@@ -1,9 +1,11 @@
 // The centered-card overlay WinPopup introduced (CANGUPA-32), factored out
 // so any screen that needs to cover its content with a confirmation or a
 // celebration — not just the board's win popup — can share the same frame:
-// a backdrop that still lets touches outside the card through
-// (pointerEvents="box-none"), a rounded panel, an optional ✕ close button
-// and an optional heading, with the caller's own text as children.
+// a dimmed backdrop that blocks touches to whatever is behind it
+// (CANGUPA-122 — a plain View at default pointerEvents already absorbs
+// touches rather than passing them through, so no Pressable/onPress is
+// needed just to block), a rounded panel, an optional ✕ close button and an
+// optional heading, with the caller's own text as children.
 //
 // `actions` (CANGUPA-52) is a separate slot from `children`, not just more
 // content: it gets a fixed-height strip pinned to the card's bottom, while
@@ -30,7 +32,7 @@ export default function Popup({ palette, heading, onClose, children, actions }: 
   const ink = { color: palette.ink };
 
   return (
-    <View style={styles.overlay} pointerEvents="box-none">
+    <View style={styles.overlay} testID="popup-overlay">
       <View style={[styles.card, { backgroundColor: palette.bg2, borderColor: palette.panelBorder }]}>
         {onClose && (
           <Pressable style={styles.close} onPress={onClose}>
@@ -56,6 +58,9 @@ const styles = StyleSheet.create({
     left: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    // Dims whatever the popup covers, independent of palette (light or
+    // dark), so it reads as "unavailable" the same way in both themes.
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   card: {
     minWidth: 280,

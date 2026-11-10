@@ -1557,6 +1557,33 @@ Help button becomes a popup instead of a level-restarting navigation.
 
 ---
 
+## Era 48 — Nov 10 (continued): the shared popup backdrop actually blocks what it covers
+
+CANGUPA-122 fixed a different bug in the same `Popup.tsx` shared overlay
+Era 47 had just touched: its backdrop had `pointerEvents="box-none"`, so a
+tap anywhere outside the card passed straight through to whatever the
+popup was supposed to be covering — a board tile behind `WinPopup`/
+`HelpPopup`, or another settings row behind the clear-progress
+confirmation dialog.
+
+Fixed by dropping `box-none`: a plain View at default `pointerEvents`
+already absorbs touches rather than passing them through, so no
+`Pressable`/`onPress` was needed just to block them. The backdrop is also
+now dimmed (`backgroundColor: 'rgba(0, 0, 0, 0.5)'`), independent of
+palette, so it reads as "covered"/"unavailable" the same way in light and
+dark themes. `Popup.tsx` gained a `testID="popup-overlay"` so the new
+tests can target the backdrop directly.
+
+One commit, with two new tests in `Popup.test.tsx` asserting the dim
+backdrop colour and that `pointerEvents` is no longer `box-none`.
+Verified: `npx tsc --noEmit` clean, full `apps/app` Jest suite green
+(30/30 suites, 816/816 tests).
+
+Era 48 closes here: Nov 10, one commit, CANGUPA-122 — the shared popup
+backdrop stops letting touches through to what it covers.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

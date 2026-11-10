@@ -32,6 +32,10 @@ Open work is listed in [TODO.md](TODO.md).
   over the board, instead of leaving for the full Help screen, so the
   level's progress is kept. The home screen's own Rules button still opens
   the full Help screen as before.
+- The area behind the win popup, the help popup and the clear-progress
+  confirmation is now dimmed and no longer passes taps through to
+  whatever it's covering — a board tile, or another settings row — while
+  the popup is open.
 
 ## 2026-11-09
 
