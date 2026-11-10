@@ -3,7 +3,7 @@
 Every task carries an ID of the form `CANGUPA-<n>`. IDs are assigned
 once, never reused, and never renumbered.
 
-**Next ID to assign: `CANGUPA-126`**
+**Next ID to assign: `CANGUPA-127`**
 
 Tasks opened while the project was still called Tile Jumper keep their
 original `TILE-JUMPER-<n>` ID — the counter continues under the new prefix
@@ -40,6 +40,7 @@ kangaroo sprite) predate the task-ID system and carry no ID; see `git log`.
 | CANGUPA-100 | P3 | Investigate which other disability types are worth a dedicated accessibility analysis, beyond the visual (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones already opened. Candidates to consider: cognitive/learning load (the game already has no timer or fail state, which likely helps by default — confirm), photosensitivity/seizure risk (check board/tile animations for flashing or strobing), and situational constraints (one-handed use, glare/bright-sunlight contrast — may already be covered by `CANGUPA-97`). Scoping only — decide which deserve their own task | open | — |
 | CANGUPA-106 | P3 | Build the actual pack-purchase entitlement flow `CANGUPA-96`'s investigation scaffolded but deliberately didn't build: a single "unlock all remaining packs" one-time purchase (its recommended structure, over per-pack SKUs), an `Entitlements` record alongside `Progress`/`Settings` in AsyncStorage (`state/storage.ts`'s existing pattern), `isUnlocked` (`state/progress.ts`) gated on it past the free packs, restore-purchase handling, and the store UI itself. Blocked on `CANGUPA-79` picking an in-app-purchase SDK (now serving both hints and this) and on the owner confirming the free/paid pack cut and pricing `CANGUPA-96` left open. Not blocking `CANGUPA-92`'s first submission — ship with every pack free first, add this as a fast-follow once the SDK is chosen | open | — |
 | CANGUPA-125 | P2 | Bring a hint-balance system to `apps/web-classic`, which has none today (`hint()` in `ui.js` is free and unlimited) — starting balance of 3, same as `apps/app`'s `CANGUPA-54`, replenished solely by earning one hint, uncapped, per first-time level clear (no reward-video/IAP path on web, per `CANGUPA-78`'s own note). Needs its own save-data field (today's web-classic progress/settings live in `localStorage`, shape TBD by whoever picks this up) and a balance display near the hint button/`#hint` control | open | — |
+| CANGUPA-126 | P3 | Build a new tile-outline review visualizer under `tools/visualizers/` (same hand-authored static-page pattern as `tile-marks.html`, served via `tools/serve-visualizer.js`), showing every combination of: the game's 5 tile kinds (Common, Gold, Steel, Departure, Arrival), both themes (light/dark, `theme/palette.ts`), a legal-move outline (solid white for a step, dashed white for a jump — `Board.tsx`'s current `tile.hint`/`tile.jump` styling), and a hint outline (solid yellow, plus a dashed-yellow variant for side-by-side comparison — `Board.tsx` today always renders a hint's border solid regardless of jump, so the dashed-hint swatch doesn't reflect any live game state, it's a design comparison only). 5 × 2 × 2 × 2 = 40 swatches, laid out as a gallery | open | — |
 ## Done
 
 | ID | Pri | Task | Status | Date | Commit |
