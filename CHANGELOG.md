@@ -15,6 +15,18 @@ Open work is listed in [TODO.md](TODO.md).
   screen's controls — it now explains Hint, Undo, Restart and Help only.
   The screen's own floating back arrow, used to leave the Help screen
   itself, is unaffected and still works the same.
+- The app's Rules screen no longer names the colour in parentheses after
+  Gold, Steel, Departure and Arrival tiles — each line already shows a
+  colour swatch for that exact colour, so spelling it out again was
+  redundant. Applies to both English and Portuguese.
+
+### Fixed
+
+- The app's Rules screen no longer tells players that Departure and
+  Arrival tiles are left or entered "through the edge where the triangle
+  is" — wording left over from before the triangle mark was replaced with
+  a doorway bracket. It now says "through the edge the bracket opens on"
+  in English and "pelo lado onde a marca abre" in Portuguese.
 
 ## 2026-11-09
 

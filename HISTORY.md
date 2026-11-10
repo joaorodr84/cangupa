@@ -1501,6 +1501,29 @@ Buttons list drops Back.
 
 ---
 
+## Era 46 — Nov 10 (continued): stale colour parens and triangle wording drop from Tiles copy
+
+CANGUPA-119 cleaned up two stale bits of the Rules screen's Tiles-section
+copy (`HelpScreen.tsx`), at the owner's request. The " (yellow)"/
+" (grey-blue)"/" (green)"/" (raspberry)" colour-name parenthetical came off
+the Gold, Steel, Departure and Arrival tile lines in both `en.ts` and
+`pt.ts` — redundant now that each line already shows a real colour
+swatch for that exact colour, added back in CANGUPA-109. Departure and
+Arrival's own rule sentence, which still read "through the edge where the
+triangle is" — stale since CANGUPA-107 replaced the plain triangle mark
+with a doorway-bracket mark — was rewritten to "through the edge the
+bracket opens on" (English) and "pelo lado onde a marca abre"
+(Portuguese), matching the wording `tools/visualizers/rules.html` already
+used for the same rule.
+
+One commit, text-only, no behaviour change. Verified: `npx tsc --noEmit`
+clean, `HelpScreen`/strings Jest suites green (11/11 passing).
+
+Era 46 closes here: Nov 10, one commit, CANGUPA-119 — stale colour parens
+and triangle wording drop from the Rules screen's Tiles copy.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
