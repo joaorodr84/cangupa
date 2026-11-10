@@ -35,3 +35,16 @@ test('pressing close calls onClose', async () => {
   await fireEvent.press(screen.getByText('✕'));
   expect(onClose).toHaveBeenCalledTimes(1);
 });
+
+// CANGUPA-123: Popup's shared content wrapper used to be flex: 1, which
+// this scroll view leant on to fill the card — but removing that (it was
+// also making every Popup balloon to the card's full maxHeight, not just
+// this one) left this scroll view with nothing of its own to size itself
+// by. An explicit height, not a cap, gives it a real, concrete box.
+test('the scroll view has an explicit, positive height', async () => {
+  await render(<HelpPopup palette={DARK} onClose={noop} />);
+
+  const flat = [screen.getByTestId('help-popup-scroll').props.style].flat();
+  const height = flat.find((s) => typeof s?.height === 'number')?.height;
+  expect(height).toBeGreaterThan(0);
+});

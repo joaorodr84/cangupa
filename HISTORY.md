@@ -1584,6 +1584,42 @@ backdrop stops letting touches through to what it covers.
 
 ---
 
+## Era 49 — Nov 10 (continued): popups size themselves to their content, not a fixed 82%
+
+CANGUPA-123 fixed a third bug in the same `Popup.tsx` shared card Era 47
+and 48 had just touched: it had both `minHeight: 220` and `maxHeight:
+'82%'`, with its content wrapper carrying `flex: 1`. That combination
+doesn't auto-size to content and clamp between the two bounds the way it
+looks like it should — it snaps to whichever single bound is still in
+play instead. The result was every popup (`WinPopup`, `HelpPopup`, the
+clear-progress confirmation), not just `HelpPopup`, rendering at ~82% of
+the screen regardless of how little content it actually had, confirmed
+on-device.
+
+Fixed by dropping content's `flex: 1`, so the card goes back to being an
+ordinary auto-sized box clamped between its min and max bounds, plus
+`justifyContent: 'center'` on the card itself so short content
+(`WinPopup`'s heading, text and actions) still centres in the slack
+instead of stacking from the top and leaving a single gap below. With
+that `flex: 1` gone, `HelpPopup.tsx`'s internal `ScrollView` — which used
+to lean on it to fill the card — needed a size of its own: it now gets an
+explicit height (half the window height, via `useWindowDimensions`)
+rather than a cap, since a cap only limits a size a view would otherwise
+grow to on its own, and this one no longer grows on its own at all.
+`testID`s (`popup-card`, `popup-content`, `help-popup-scroll`) were added
+so the new tests could target each node directly.
+
+One commit, with new tests in `Popup.test.tsx` (card auto-sizes, content
+carries no flex) and `HelpPopup.test.tsx` (the scroll view has an
+explicit, positive height). Verified: `npx tsc --noEmit` clean, full
+`apps/app` Jest suite green (30/30 suites, 818/818 tests).
+
+Era 49 closes here: Nov 10, one commit, CANGUPA-123 — popups stop
+rendering at a fixed ~82% of the screen and size themselves to their own
+content instead.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

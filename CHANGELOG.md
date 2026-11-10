@@ -36,6 +36,12 @@ Open work is listed in [TODO.md](TODO.md).
   confirmation is now dimmed and no longer passes taps through to
   whatever it's covering — a board tile, or another settings row — while
   the popup is open.
+- The app's win popup, Help popup and clear-progress confirmation dialog
+  now size themselves to how much they actually have to say, instead of
+  all rendering at the same tall height regardless of content — a
+  one-line confirmation no longer takes up as much of the screen as the
+  much longer Help popup. Each still stops growing at the same height
+  limit as before.
 
 ## 2026-11-09
 

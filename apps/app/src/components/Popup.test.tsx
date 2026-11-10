@@ -67,3 +67,28 @@ test('does not let touches outside the card pass through to what it covers', asy
   // absorbs touches instead of letting them reach what's behind it.
   expect(screen.getByTestId('popup-overlay').props.pointerEvents).toBeUndefined();
 });
+
+// CANGUPA-123: content used to be flex: 1, so it (and whatever a consumer
+// nested inside it, like HelpPopup's ScrollView) could claim space card's
+// min/max bounds left available. But a node carrying both a min and a max
+// height, with a flex: 1 descendant inside it, is a known native layout
+// footgun: instead of auto-sizing to content and clamping between the two,
+// it just snapped to whichever single bound was still in play — first
+// minHeight (when both were on card), then maxHeight once content's own
+// flex: 1 was the only constraint left (every Popup, not just HelpPopup,
+// then rendered at ~82% of the screen, confirmed on-device both times).
+// content carries no flex now, so card is an ordinary auto-sized box again.
+test('content has no flex, so card auto-sizes between its min and max height', async () => {
+  await render(
+    <Popup palette={palette} heading="A heading">
+      <Text>Some content</Text>
+    </Popup>,
+  );
+
+  const cardStyle = [screen.getByTestId('popup-card').props.style].flat();
+  expect(cardStyle.some((s) => s?.minHeight === 220)).toBe(true);
+  expect(cardStyle.some((s) => s?.maxHeight !== undefined)).toBe(true);
+
+  const contentStyle = [screen.getByTestId('popup-content').props.style].flat();
+  expect(contentStyle.some((s) => s?.flex !== undefined)).toBe(false);
+});
