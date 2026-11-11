@@ -30,6 +30,15 @@ Open work is listed in [TODO.md](TODO.md).
   updated to match, now reading "Same outline" instead of "Dashed
   outline".
 
+### Fixed
+
+- The joey riding in the kangaroo's pouch, in the side-facing sprite used
+  in both apps, no longer faces straight out of the screen with two
+  symmetric eyes while its parent is drawn in profile — its ears, head,
+  eye and nose now turn together to face the same direction as the
+  parent. The parent's own forearm, which rests on the joey, no longer
+  appears to start inside the joey's head.
+
 ## 2026-11-10
 
 ### Added

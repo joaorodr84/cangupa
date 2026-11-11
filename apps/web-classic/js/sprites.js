@@ -14,19 +14,26 @@ const ROO = {
     <ellipse cx="62.5" cy="15" rx="1.8" ry="7" transform="rotate(10 62 14)" fill="#f3b9a0" stroke="none"/>
     <path d="M32 66 C26 78 34 90 44 88 C56 86 60 78 54 72 C48 66 38 62 32 66 Z" fill="#c98b4a"/>
     <path d="M40 88 L74 90 C80 90 80 96 74 96 L36 96 C32 96 32 90 40 88 Z" fill="#b57535"/>
-    <g stroke="#5a3515" stroke-width="1.5">
-      <ellipse cx="56.5" cy="48" rx="2.8" ry="5.8" transform="rotate(-16 56.5 48)" fill="#e8a467"/>
-      <ellipse cx="63" cy="47.5" rx="2.8" ry="5.8" transform="rotate(12 63 47.5)" fill="#e8a467"/>
-      <circle cx="60" cy="55" r="6.2" fill="#dfa05a"/>
+    <!-- The joey: ears, head, eye and nose rotated together as one rigid cluster so a
+         tilt can't throw the face out of alignment with its own skull (CANGUPA-128). The
+         eye and nose need stroke="none" — without it they inherit this group's own
+         stroke/stroke-width and render as oversized blobs instead of small dots. -->
+    <g transform="rotate(12 59 60.5)">
+      <g stroke="#5a3515" stroke-width="1.5">
+        <ellipse cx="55.5" cy="53.5" rx="2.8" ry="5.8" transform="rotate(-16 55.5 53.5)" fill="#e8a467"/>
+        <ellipse cx="62" cy="53" rx="2.8" ry="5.8" transform="rotate(12 62 53)" fill="#e8a467"/>
+        <circle cx="59" cy="60.5" r="6.2" fill="#dfa05a"/>
+      </g>
+      <circle cx="58" cy="59" r="1" fill="#3b2410" stroke="none"/>
+      <ellipse cx="63" cy="61.5" rx="1.3" ry="0.9" fill="#a9733a" stroke="none"/>
     </g>
-    <path d="M62 52 C70 54 74 58 76 62" fill="none" stroke-width="4.5"/>
+    <!-- The parent's forearm, resting on the joey and passing over its ears — starts
+         clear of the joey's head circle (cx 59, cy 60.5, r 6.2) rather than inside it. -->
+    <path d="M53.5 49 C62 48, 75 52, 76.5 56" fill="none" stroke-width="4.5"/>
   </g>
   <circle cx="68" cy="29" r="2.6" fill="#fff" stroke="#5a3515" stroke-width="1"/>
   <circle cx="69" cy="29.5" r="1.3" fill="#111"/>
   <ellipse cx="83.5" cy="35" rx="2.4" ry="1.8" fill="#3b2410"/>
-  <circle cx="57.8" cy="54.5" r="1" fill="#3b2410"/>
-  <circle cx="62.2" cy="54.5" r="1" fill="#3b2410"/>
-  <ellipse cx="60" cy="57.3" rx="1.3" ry=".9" fill="#a9733a"/>
 </svg>`,
 
   front: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

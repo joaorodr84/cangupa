@@ -1,0 +1,415 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cangupa Joey Arm Tuner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* A tuning page for the parent kangaroo's forearm in SideSprite (Kangaroo.tsx / sprites.js's
+     `side` SVG). CANGUPA-128 first fixed the joey's face (it was drawn facing the viewer instead
+     of in profile like the parent); this page is for the follow-up the owner found once that
+     landed: the arm's own path ("M62 52 C70 54 74 58 76 62") starts inside the joey's head
+     circle (cx 60, cy 55, r 6.2 — distance from (62,52) is ~3.6, well under the radius), so it
+     reads as sprouting out of the baby's skull rather than resting near it. Pixel-pushing a
+     bezier blind and re-checking in the Expo app each time is slow; this renders both sprites
+     live from the same markup the components use, so the numbers can be nailed down here first
+     and copied back into Kangaroo.tsx and sprites.js afterwards. Not loaded by the app itself. */
+  :root {
+    --bg: #f3f5f4;
+    --surface: #ffffff;
+    --fg: #17252a;
+    --muted: #5d6d72;
+    --line: #d9e0de;
+    --accent: #0e6b68;
+    --tile-blue: #3fa6c9;
+    --tile-blue-shadow: #2d7c99;
+    --font-display: "Figtree", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --accent: #4fc3bb;
+      --tile-blue: #2f88a8; --tile-blue-shadow: #1f5e76; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --accent: #4fc3bb;
+    --tile-blue: #2f88a8; --tile-blue-shadow: #1f5e76; color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-display);
+    padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 1040px; margin: 0 auto; display: grid; gap: 22px; }
+  main > * { min-width: 0; }
+  h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
+  h2 { font-size: 1.1rem; margin: 0 0 4px; }
+  h3 { font-size: 0.78rem; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .lede { margin: 6px 0 0; color: var(--muted); max-width: 72ch; line-height: 1.5; font-size: .95rem; }
+  .lede code { font-family: var(--font-data); font-size: .86em; background: var(--surface); padding: .12em .4em; border-radius: 5px; }
+
+  .layout { display: flex; gap: 22px; align-items: flex-start; flex-wrap: wrap; }
+  .col-preview { flex: 1 1 380px; min-width: 0; }
+  .col-controls { flex: 1 1 400px; min-width: 0; display: grid; gap: 16px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px;
+  }
+  .tile-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .tile-block { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .tile {
+    width: 180px; height: 180px; border-radius: 18px; background: var(--tile-blue);
+    box-shadow: 0 6px 0 var(--tile-blue-shadow); display: flex; align-items: center; justify-content: center;
+  }
+  .tile svg { width: 86%; height: 86%; }
+  .tile-caption { font-size: .78rem; color: var(--muted); }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 14px;
+    font-size: .85rem; color: var(--muted);
+  }
+  .toggle-row input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+  .field-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .field-row:last-child { margin-bottom: 0; }
+  .field-row label { flex: 0 0 112px; font-size: .85rem; }
+  .field-row input[type="range"] { flex: 1; accent-color: var(--accent); min-width: 0; }
+  .field-row input[type="number"] {
+    width: 60px; font-family: var(--font-data); font-size: .82rem; background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px;
+  }
+
+  .coord-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 10px; }
+  .coord-grid > div { display: flex; flex-direction: column; gap: 3px; }
+  .coord-grid label { font-size: .68rem; color: var(--muted); font-family: var(--font-data); }
+  .coord-grid input {
+    font-family: var(--font-data); font-size: .82rem; background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; width: 100%; min-width: 0;
+  }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  button {
+    font-family: var(--font-display); font-size: .8rem; font-weight: 600; padding: 7px 12px;
+    border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer;
+  }
+  button.primary { background: var(--accent); color: #fff; border-color: transparent; }
+  button:active { transform: translateY(1px); }
+
+  textarea {
+    width: 100%; font-family: var(--font-data); font-size: .74rem; line-height: 1.5;
+    background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; resize: vertical; min-height: 80px;
+  }
+  .copy-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .copy-row span { font-size: .78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .copy-row button { font-size: .72rem; padding: 4px 9px; }
+  .status { font-size: .72rem; color: var(--accent); min-height: 1.4em; }
+</style>
+
+<main>
+  <header>
+    <h1>Joey arm tuner</h1>
+    <p class="lede">Live-adjusts the parent kangaroo's forearm and the joey's forward lean in the
+      side-facing sprite, so the arm stops starting inside the baby's head. Drag the controls,
+      compare against the original on the left, then copy the result into
+      <code>Kangaroo.tsx</code> and <code>sprites.js</code>.</p>
+  </header>
+
+  <div class="layout">
+    <div class="col-preview">
+      <div class="card">
+        <h3>Preview</h3>
+        <div class="tile-row">
+          <div class="tile-block">
+            <div class="tile"><svg id="svgCurrent" viewBox="0 0 100 100"></svg></div>
+            <span class="tile-caption">current (shipped)</span>
+          </div>
+          <div class="tile-block">
+            <div class="tile"><svg id="svgTuned" viewBox="0 0 100 100"></svg></div>
+            <span class="tile-caption">tuned</span>
+          </div>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="showGuide">
+          show the joey's head outline (reference only — not part of the art)
+        </label>
+      </div>
+    </div>
+
+    <div class="col-controls">
+      <div class="card">
+        <h3>Joey position</h3>
+        <div class="field-row">
+          <label for="joeyOffset">Lean forward</label>
+          <input type="range" id="joeyOffset" min="-4" max="6" step="0.5" value="-1">
+          <input type="number" id="joeyOffsetNum" min="-4" max="6" step="0.5" value="-1">
+        </div>
+        <div class="field-row">
+          <label for="joeyOffsetY">Shift up/down</label>
+          <input type="range" id="joeyOffsetY" min="-8" max="8" step="0.5" value="5.5">
+          <input type="number" id="joeyOffsetYNum" min="-8" max="8" step="0.5" value="5.5">
+        </div>
+        <div class="field-row">
+          <label for="joeyRotate">Tilt (deg)</label>
+          <input type="range" id="joeyRotate" min="-45" max="45" step="1" value="12">
+          <input type="number" id="joeyRotateNum" min="-45" max="45" step="1" value="12">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Parent's arm — cubic Bézier points</h3>
+        <div class="coord-grid">
+          <div><label>start x</label><input type="number" id="sx" value="54" step="0.5"></div>
+          <div><label>start y</label><input type="number" id="sy" value="46" step="0.5"></div>
+          <div><label>ctrl1 x</label><input type="number" id="c1x" value="66" step="0.5"></div>
+          <div><label>ctrl1 y</label><input type="number" id="c1y" value="44" step="0.5"></div>
+          <div><label>ctrl2 x</label><input type="number" id="c2x" value="76" step="0.5"></div>
+          <div><label>ctrl2 y</label><input type="number" id="c2y" value="50" step="0.5"></div>
+          <div><label>end x</label><input type="number" id="ex" value="80" step="0.5"></div>
+          <div><label>end y</label><input type="number" id="ey" value="58" step="0.5"></div>
+        </div>
+        <div class="btn-row">
+          <button id="resetOriginal">Reset to current (shipped)</button>
+          <button id="resetCandidate" class="primary">Reset to suggested fix</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="copy-row"><span>React Native (Kangaroo.tsx)</span><button id="copyRN">Copy</button></div>
+        <textarea id="outRN" readonly spellcheck="false"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="copy-row"><span>Plain SVG (sprites.js)</span><button id="copyWeb">Copy</button></div>
+        <textarea id="outWeb" readonly spellcheck="false"></textarea>
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // The arm as it ships today — starts at (62,52), inside the joey's head circle
+  // (cx 60, cy 55, r 6.2; distance from the arm's start is ~3.6, under the radius).
+  var SHIPPED_ARM = { sx: 62, sy: 52, c1x: 70, c1y: 54, c2x: 74, c2y: 58, ex: 76, ey: 62 };
+  var SHIPPED_OFFSET = 0;
+  // The fix as tuned and confirmed by the owner: joey shifted back (-1) and down (+5.5),
+  // head tilted 12° so it leans into the parent's arm, which now passes over its ears.
+  var CANDIDATE_ARM = { sx: 54, sy: 47.5, c1x: 64, c1y: 47.5, c2x: 76, c2y: 50, ex: 80, ey: 58 };
+  var CANDIDATE_OFFSET = -1;
+  var CANDIDATE_OFFSET_Y = 5.5;
+  var CANDIDATE_ROTATE = 12;
+
+  // Everything in the sprite that never moves: body, legs, tail, ears, head, the parent's own
+  // eye and nose. Copied verbatim from sprites.js's `side` entry.
+  var STATIC_BODY =
+    '<g stroke="#5a3515" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">' +
+    '<path d="M30 70 C16 74 8 84 4 94 C14 92 28 86 38 80 Z" fill="#c98b4a"/>' +
+    '<ellipse cx="55" cy="12" rx="4.5" ry="11" transform="rotate(-12 55 12)" fill="#b57535"/>' +
+    '<path d="M34 78 C26 60 34 40 50 36 C62 34 68 46 66 60 C64 72 56 82 44 84 Z" fill="#d9954f"/>' +
+    '<path d="M56 46 C64 52 63 68 54 78 C50 68 50 54 56 46 Z" fill="#f3d6a6" stroke="none"/>' +
+    '<path d="M52 64 C56 70 62 68 63 63" fill="none" stroke="#a9733a" stroke-width="1.8"/>' +
+    '<path d="M50 38 C48 26 56 18 66 20 C74 22 82 30 84 36 C82 40 74 40 70 42 C62 46 54 46 50 38 Z" fill="#d9954f"/>' +
+    '<ellipse cx="62" cy="14" rx="4.5" ry="11" transform="rotate(10 62 14)" fill="#d9954f"/>' +
+    '<ellipse cx="62.5" cy="15" rx="1.8" ry="7" transform="rotate(10 62 14)" fill="#f3b9a0" stroke="none"/>' +
+    '<path d="M32 66 C26 78 34 90 44 88 C56 86 60 78 54 72 C48 66 38 62 32 66 Z" fill="#c98b4a"/>' +
+    '<path d="M40 88 L74 90 C80 90 80 96 74 96 L36 96 C32 96 32 90 40 88 Z" fill="#b57535"/>';
+
+  var PARENT_FACE =
+    '<circle cx="68" cy="29" r="2.6" fill="#fff" stroke="#5a3515" stroke-width="1"/>' +
+    '<circle cx="69" cy="29.5" r="1.3" fill="#111"/>' +
+    '<ellipse cx="83.5" cy="35" rx="2.4" ry="1.8" fill="#3b2410"/>';
+
+  // Exactly what sprites.js's `side` entry draws today, z-order included: the joey's ears
+  // and head are painted *before* the arm (so the arm's stroke currently paints over the
+  // top of the head where the two overlap — part of why it reads as sprouting from the
+  // skull), and its eye/nose are separate, unrotated elements painted last of all. The
+  // tuned builder below reorders and groups all of that for rotation, so this fixed string
+  // is the only honest "as shipped" reference left once it does.
+  var SHIPPED_SVG = STATIC_BODY +
+    '<g stroke="#5a3515" stroke-width="1.5">' +
+    '<ellipse cx="56.5" cy="48" rx="2.8" ry="5.8" transform="rotate(-16 56.5 48)" fill="#e8a467"/>' +
+    '<ellipse cx="63" cy="47.5" rx="2.8" ry="5.8" transform="rotate(12 63 47.5)" fill="#e8a467"/>' +
+    '<circle cx="60" cy="55" r="6.2" fill="#dfa05a"/>' +
+    '</g>' +
+    '<path d="' + 'M62 52 C70 54, 74 58, 76 62' + '" fill="none" stroke-width="4.5"/>' +
+    '</g>' + PARENT_FACE +
+    '<circle cx="59" cy="53.5" r="1" fill="#3b2410"/>' +
+    '<ellipse cx="64" cy="56" rx="1.3" ry="0.9" fill="#a9733a"/>';
+
+  function armPath(a) {
+    return 'M' + a.sx + ' ' + a.sy + ' C' + a.c1x + ' ' + a.c1y + ', ' + a.c2x + ' ' + a.c2y + ', ' + a.ex + ' ' + a.ey;
+  }
+
+  function ear1Cx(offsetX) { return 56.5 + offsetX; }
+  function ear2Cx(offsetX) { return 63 + offsetX; }
+  function ear1Cy(offsetY) { return 48 + offsetY; }
+  function ear2Cy(offsetY) { return 47.5 + offsetY; }
+
+  // All five joey parts (two ears, head, eye, nose) are defined at their unrotated
+  // position, then the whole cluster is wrapped in one `rotate(deg, headCx, headCy)` so
+  // tilting the head can't throw its face out of alignment with its own skull.
+  function joeyGeometry(offsetX, offsetY, rotate) {
+    return {
+      headCx: 60 + offsetX, headCy: 55 + offsetY,
+      ear1Cx: ear1Cx(offsetX), ear1Cy: ear1Cy(offsetY),
+      ear2Cx: ear2Cx(offsetX), ear2Cy: ear2Cy(offsetY),
+      eyeCx: 59 + offsetX, eyeCy: 53.5 + offsetY,
+      noseCx: 64 + offsetX, noseCy: 56 + offsetY,
+      rotate: rotate
+    };
+  }
+
+  function joeyMarkup(g, guide) {
+    var inner =
+      '<g stroke="#5a3515" stroke-width="1.5">' +
+      '<ellipse cx="' + g.ear1Cx + '" cy="' + g.ear1Cy + '" rx="2.8" ry="5.8" transform="rotate(-16 ' + g.ear1Cx + ' ' + g.ear1Cy + ')" fill="#e8a467"/>' +
+      '<ellipse cx="' + g.ear2Cx + '" cy="' + g.ear2Cy + '" rx="2.8" ry="5.8" transform="rotate(12 ' + g.ear2Cx + ' ' + g.ear2Cy + ')" fill="#e8a467"/>' +
+      '<circle cx="' + g.headCx + '" cy="' + g.headCy + '" r="6.2" fill="#dfa05a"/>' +
+      '</g>';
+    if (guide) {
+      inner += '<circle cx="' + g.headCx + '" cy="' + g.headCy + '" r="6.2" fill="none" stroke="#ff5a7a" stroke-width="0.5" stroke-dasharray="1.5,1"/>';
+    }
+    // stroke="none" matters here: without it these inherit the ancestor g's stroke/
+    // stroke-width and render as oversized blobs instead of small dots.
+    inner += '<circle cx="' + g.eyeCx + '" cy="' + g.eyeCy + '" r="1" fill="#3b2410" stroke="none"/>' +
+      '<ellipse cx="' + g.noseCx + '" cy="' + g.noseCy + '" rx="1.3" ry="0.9" fill="#a9733a" stroke="none"/>';
+    return '<g transform="rotate(' + g.rotate + ' ' + g.headCx + ' ' + g.headCy + ')">' + inner + '</g>';
+  }
+
+  // Joey drawn before the arm, so the arm paints over the ears where the tuned curve
+  // grazes their tips — the opposite of the shipped order, where the joey (ears/head)
+  // sits on top of the arm instead.
+  function buildSvgInner(offsetX, offsetY, rotate, arm, guide) {
+    var g = joeyGeometry(offsetX, offsetY, rotate);
+    return STATIC_BODY +
+      joeyMarkup(g, guide) +
+      '<path d="' + armPath(arm) + '" fill="none" stroke-width="4.5"/>' +
+      '</g>' + PARENT_FACE;
+  }
+
+  var els = {
+    svgCurrent: document.getElementById('svgCurrent'),
+    svgTuned: document.getElementById('svgTuned'),
+    showGuide: document.getElementById('showGuide'),
+    joeyOffset: document.getElementById('joeyOffset'),
+    joeyOffsetNum: document.getElementById('joeyOffsetNum'),
+    joeyOffsetY: document.getElementById('joeyOffsetY'),
+    joeyOffsetYNum: document.getElementById('joeyOffsetYNum'),
+    joeyRotate: document.getElementById('joeyRotate'),
+    joeyRotateNum: document.getElementById('joeyRotateNum'),
+    outRN: document.getElementById('outRN'),
+    outWeb: document.getElementById('outWeb'),
+    status: document.getElementById('status')
+  };
+  var armFields = ['sx', 'sy', 'c1x', 'c1y', 'c2x', 'c2y', 'ex', 'ey'].reduce(function (acc, k) {
+    acc[k] = document.getElementById(k);
+    return acc;
+  }, {});
+
+  function currentArm() {
+    var a = {};
+    Object.keys(armFields).forEach(function (k) { a[k] = parseFloat(armFields[k].value) || 0; });
+    return a;
+  }
+
+  function render() {
+    var offsetX = parseFloat(els.joeyOffset.value) || 0;
+    var offsetY = parseFloat(els.joeyOffsetY.value) || 0;
+    var rotate = parseFloat(els.joeyRotate.value) || 0;
+    var arm = currentArm();
+    var guide = els.showGuide.checked;
+
+    els.svgCurrent.innerHTML = SHIPPED_SVG;
+    els.svgTuned.innerHTML = buildSvgInner(offsetX, offsetY, rotate, arm, guide);
+    els.joeyOffsetNum.value = offsetX;
+    els.joeyOffsetYNum.value = offsetY;
+    els.joeyRotateNum.value = rotate;
+
+    var g = joeyGeometry(offsetX, offsetY, rotate);
+    var armD = armPath(arm);
+    var rot = 'rotate(' + rotate + ' ' + g.headCx + ' ' + g.headCy + ')';
+
+    els.outRN.value =
+      '<G transform="' + rot + '">\n' +
+      '  <G stroke="#5a3515" strokeWidth={1.5}>\n' +
+      '    <Ellipse cx={' + g.ear1Cx + '} cy={' + g.ear1Cy + '} rx={2.8} ry={5.8} transform="rotate(-16 ' + g.ear1Cx + ' ' + g.ear1Cy + ')" fill="#e8a467" />\n' +
+      '    <Ellipse cx={' + g.ear2Cx + '} cy={' + g.ear2Cy + '} rx={2.8} ry={5.8} transform="rotate(12 ' + g.ear2Cx + ' ' + g.ear2Cy + ')" fill="#e8a467" />\n' +
+      '    <Circle cx={' + g.headCx + '} cy={' + g.headCy + '} r={6.2} fill="#dfa05a" />\n' +
+      '  </G>\n' +
+      '  <Circle cx={' + g.eyeCx + '} cy={' + g.eyeCy + '} r={1} fill="#3b2410" stroke="none" />\n' +
+      '  <Ellipse cx={' + g.noseCx + '} cy={' + g.noseCy + '} rx={1.3} ry={0.9} fill="#a9733a" stroke="none" />\n' +
+      '</G>\n' +
+      '<Path d="' + armD + '" fill="none" strokeWidth={4.5} />';
+
+    els.outWeb.value =
+      '<g transform="' + rot + '">\n' +
+      '  <g stroke="#5a3515" stroke-width="1.5">\n' +
+      '    <ellipse cx="' + g.ear1Cx + '" cy="' + g.ear1Cy + '" rx="2.8" ry="5.8" transform="rotate(-16 ' + g.ear1Cx + ' ' + g.ear1Cy + ')" fill="#e8a467"/>\n' +
+      '    <ellipse cx="' + g.ear2Cx + '" cy="' + g.ear2Cy + '" rx="2.8" ry="5.8" transform="rotate(12 ' + g.ear2Cx + ' ' + g.ear2Cy + ')" fill="#e8a467"/>\n' +
+      '    <circle cx="' + g.headCx + '" cy="' + g.headCy + '" r="6.2" fill="#dfa05a"/>\n' +
+      '  </g>\n' +
+      '  <circle cx="' + g.eyeCx + '" cy="' + g.eyeCy + '" r="1" fill="#3b2410" stroke="none"/>\n' +
+      '  <ellipse cx="' + g.noseCx + '" cy="' + g.noseCy + '" rx="1.3" ry=".9" fill="#a9733a" stroke="none"/>\n' +
+      '</g>\n' +
+      '<path d="' + armD + '" fill="none" stroke-width="4.5"/>';
+  }
+
+  function wireInputs(rangeEl, numEl) {
+    rangeEl.addEventListener('input', function () { numEl.value = rangeEl.value; render(); });
+    numEl.addEventListener('input', function () { rangeEl.value = numEl.value; render(); });
+  }
+  wireInputs(els.joeyOffset, els.joeyOffsetNum);
+  wireInputs(els.joeyOffsetY, els.joeyOffsetYNum);
+  wireInputs(els.joeyRotate, els.joeyRotateNum);
+  Object.keys(armFields).forEach(function (k) { armFields[k].addEventListener('input', render); });
+  els.showGuide.addEventListener('change', render);
+
+  function applyArm(a) {
+    Object.keys(armFields).forEach(function (k) { armFields[k].value = a[k]; });
+  }
+  document.getElementById('resetOriginal').addEventListener('click', function () {
+    applyArm(SHIPPED_ARM);
+    els.joeyOffset.value = SHIPPED_OFFSET;
+    els.joeyOffsetY.value = 0;
+    els.joeyRotate.value = 0;
+    render();
+  });
+  document.getElementById('resetCandidate').addEventListener('click', function () {
+    applyArm(CANDIDATE_ARM);
+    els.joeyOffset.value = CANDIDATE_OFFSET;
+    els.joeyOffsetY.value = CANDIDATE_OFFSET_Y;
+    els.joeyRotate.value = CANDIDATE_ROTATE;
+    render();
+  });
+
+  function fallbackCopy(textarea) {
+    textarea.removeAttribute('readonly');
+    textarea.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    textarea.setAttribute('readonly', 'true');
+  }
+  function copy(textarea) {
+    var done = function () {
+      els.status.textContent = 'Copied to clipboard.';
+      setTimeout(function () { els.status.textContent = ''; }, 1800);
+    };
+    try {
+      navigator.clipboard.writeText(textarea.value).then(done, function () { fallbackCopy(textarea); done(); });
+    } catch (e) {
+      fallbackCopy(textarea); done();
+    }
+  }
+  document.getElementById('copyRN').addEventListener('click', function () { copy(els.outRN); });
+  document.getElementById('copyWeb').addEventListener('click', function () { copy(els.outWeb); });
+
+  applyArm(CANDIDATE_ARM);
+  els.joeyOffset.value = CANDIDATE_OFFSET;
+  els.joeyOffsetY.value = CANDIDATE_OFFSET_Y;
+  els.joeyRotate.value = CANDIDATE_ROTATE;
+  render();
+})();
+</script>
+</body></html>

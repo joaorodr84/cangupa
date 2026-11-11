@@ -1766,6 +1766,41 @@ review visualizer's design lands in the real app.
 
 ---
 
+## Era 54 — Nov 11 (continued): the joey finally faces the same way as its parent
+
+CANGUPA-128 fixed the joey riding in the kangaroo's pouch in the
+side-facing sprite, shared by `apps/web-classic` (`js/sprites.js`) and
+`apps/app` (`Kangaroo.tsx`): it used to be drawn facing the viewer, two
+symmetric eyes and a centered nose, even though the whole sprite is a side
+profile — so the baby read as staring straight out of the screen while
+its parent looks sideways. The fix rotates the joey's ears, head, eye and
+nose together as one rigid group, then redraws the face itself as a
+profile: one eye, and the nose offset to the same side as the parent's own
+nose sits relative to its eye, so the joey now faces the same direction as
+the parent.
+
+While there, the parent's forearm path was found to start inside the
+joey's own head circle — about 3.6 units from a center with radius 6.2 —
+making the arm look like it sprouted out of the baby's skull rather than
+resting near it; moved to start clear of the head instead. Dialing in both
+the rotated face and the arm's path by hand against the rendered SVG was
+slow, so `tools/visualizers/kangaroo-joey-arm.html` was built alongside
+the fix: a live-tuning page with sliders for the forearm and the joey's
+own lean, rendering the same markup both apps use, so the numbers could be
+nailed down there first and copied back into `Kangaroo.tsx`/`sprites.js`
+afterwards. It's linked from `tools/visualizers/index.html`'s hub, same
+as `CANGUPA-126`'s own tile-outline visualizer.
+
+One commit, with a new `Kangaroo.test.tsx` case asserting the joey's
+nose-to-eye offset direction matches the parent's own. Verified: `npx tsc
+--noEmit` clean, full `apps/app` Jest suite green (30/30 suites, 836/836
+tests).
+
+Era 54 closes here: Nov 11, one commit, CANGUPA-128 — the joey's face and
+its parent's arm both get fixed in the side-facing sprite.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
