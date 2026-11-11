@@ -1,0 +1,8 @@
+{
+  "name": "cangupa",
+  "private": true,
+  "description": "Repo-root tooling for Cangupa — scripts that span tools/, not scoped to either app's own package.json (apps/web-classic, apps/app).",
+  "scripts": {
+    "visualizer": "node tools/serve-visualizer.js 4230 index.html"
+  }
+}

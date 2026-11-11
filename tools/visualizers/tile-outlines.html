@@ -1,0 +1,253 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cangupa Tile Outlines</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* A review page for a theme-aware alternative to the two outline treatments Board.tsx draws
+     on a tile — today both the white legal-move outline and the yellow hint/tip outline are
+     one fixed colour regardless of theme. This page explores giving each a light-theme and a
+     dark-theme variant instead, across the game's 5 tile kinds. Tile face/edge/mark colours
+     are this game's own and don't change between themes (apps/app/src/theme/palette.ts); only
+     the board the tile sits on (frame, pit) does, which is exactly what this page holds fixed
+     per column so each outline colour can be judged against the board it would actually sit
+     on. Layout: one row per outline treatment, a light-board patch and a dark-board patch side
+     by side, five tile swatches in each. CANGUPA-126. */
+  :root {
+    --bg: #f3f5f4;
+    --surface: #ffffff;
+    --fg: #17252a;
+    --muted: #5d6d72;
+    --line: #d9e0de;
+    --font-display: "Figtree", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+    /* The game's own board colours (apps/app/src/theme/palette.ts: frame = surface, pit =
+       wellBody, read live from @joaorodr84/themes's LIGHT/DARK). Fixed on purpose: they do not
+       follow this page's own theme. */
+    --frame-light: #ffffff; --pit-light: #d9dee6;
+    --frame-dark: #15171c;  --pit-dark: #1c1f26;
+    /* Both outlines use the same theme-aware ink colour (@joaorodr84/themes's own
+       LIGHT.text/DARK.text) — near-black on the light board, near-white on the dark one.
+       No single fixed colour reads against all 5 tiles' own face/lip colours: a search across
+       hue/saturation/lightness for the best worst case still topped out at 1.4:1 against
+       Steel's lip and Arrival's face, nowhere near legible, so colour can't be what tells the
+       two outlines apart. Width and border-style do that instead — see TREATMENTS below. */
+    --ink-light: #1d1d1f; --ink-dark: #e6e8ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-display);
+    padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 980px; margin: 0 auto; display: grid; gap: 24px; }
+  main > * { min-width: 0; }
+  h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
+  h2 { font-size: 1.1rem; margin: 0; }
+  h3 { font-size: 0.78rem; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .lede { margin: 6px 0 0; color: var(--muted); max-width: 70ch; line-height: 1.5; font-size: .95rem; }
+  .lede code { font-family: var(--font-data); font-size: .86em; background: var(--surface); padding: .12em .4em; border-radius: 5px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 22px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; font-size: .85rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend .swatch { width: 28px; height: 0; display: inline-block; border-top-color: var(--muted); }
+
+  .treatment { display: grid; gap: 12px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  .treatment .desc { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.55; max-width: 72ch; }
+  .themerow { display: flex; gap: 18px; flex-wrap: wrap; }
+  .themegroup { flex: 1 1 320px; min-width: 0; }
+  .patch { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding: 16px; border-radius: 8px; }
+  .patch.light { background: var(--pit-light); }
+  .patch.dark { background: var(--pit-dark); }
+
+  .tilecard { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 0 0 auto; }
+  .tile {
+    --c: #888; --lip: #555;
+    width: clamp(40px, 15vw, 76px); aspect-ratio: 64 / 57; border-radius: 14px; position: relative;
+    background: var(--c); box-shadow: 0 5px 0 var(--lip); box-sizing: border-box;
+  }
+  .tile svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .tilecard figcaption { font-family: var(--font-data); font-size: .68rem; color: var(--muted); text-align: center; }
+  .patch.dark .tilecard figcaption { color: #9aa0a4; }
+
+  /* the visits-left tally: short diagonal strokes, top right to bottom left, same geometry
+     as Board.tsx's Strokes (top 25%, height 50%, width 7.5% of the tile, rotated 24deg,
+     spaced 22% apart) */
+  .stroke { position: absolute; top: 25%; height: 50%; width: 7.5%; border-radius: 99px; background: var(--m); transform: rotate(24deg); }
+</style>
+
+<main>
+  <header>
+    <h1>Cangupa tile outlines</h1>
+    <p class="lede">Every combination of the game's 5 tile kinds, both themes, and 2 outline
+      treatments. Both now use the same <strong>theme-aware ink colour</strong> (near-black on
+      the light board, near-white on the dark one) — no single fixed colour reads against every
+      tile's own face and lip, so colour can't be what tells a legal move from a hint. Width and
+      style do that instead: legal move is a solid 2px border, hint a dashed 4px one — distinct
+      from each other on sight, and still backed by the live app's own pulse animation on the
+      hinted tile, which this static page can't show. 20 swatches total. Tile face, edge and
+      mark colours don't change between themes; only the board underneath does, so each row
+      holds the outline fixed and varies the board it has to read against.</p>
+  </header>
+
+  <div class="legend" id="legend"></div>
+
+  <div id="treatments"></div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  var TILES = [
+    { id: 'common', label: 'Common', face: '#4cc9f0', lip: '#1f7a99' },
+    { id: 'gold', label: 'Gold', face: '#ffc857', lip: '#a8741a', mark: '#3b2a06', visits: 2 },
+    { id: 'steel', label: 'Steel', face: '#587790', lip: '#3c5162', mark: '#ffffff', visits: 3 },
+    { id: 'departure', label: 'Departure', face: '#2f9e44', lip: '#7cd48f', mark: '#ffffff', arrowKind: 'arrow', direction: 'right' },
+    { id: 'arrival', label: 'Arrival', face: '#9d1057', lip: '#ba5889', mark: '#ffffff', arrowKind: 'arrival', direction: 'left' },
+  ];
+
+  var THEMES = [
+    { id: 'light', label: 'Light' },
+    { id: 'dark', label: 'Dark' },
+  ];
+
+  // Both treatments share the same theme-aware ink colour (--ink-light/--ink-dark) — no
+  // separate per-treatment colour survived: a search for one fixed hint colour that reads
+  // against all 5 tiles' own face/lip colours topped out at a 1.4:1 worst case, nowhere near
+  // legible. So legal move and hint are told apart by border width and style instead, not
+  // colour: legal is thin and solid, hint is thick and dashed. The live app also pulses the
+  // hinted tile (Board.tsx's useAnimatedTip), a cue this static page can't reproduce, so the
+  // border difference carries the whole signal here even though it's not alone in the app.
+  var TREATMENTS = [
+    { id: 'legal', label: 'Legal move', color: { light: 'var(--ink-light)', dark: 'var(--ink-dark)' },
+      borderWidth: '2px', borderStyle: 'solid',
+      desc: '<code>tile.hint</code>: a legal destination tile. Solid, 2px, the theme’s own ink colour — near-black on the light board, near-white on the dark one.' },
+    { id: 'hint', label: 'Hint', color: { light: 'var(--ink-light)', dark: 'var(--ink-dark)' },
+      borderWidth: '4px', borderStyle: 'dashed',
+      desc: '<code>tile.tip</code>, the solver’s suggested next move. Dashed, 4px, the same ink colour as legal move — width and style are what set it apart here, not colour.' },
+  ];
+
+  // Doorway-bracket mark (CANGUPA-107), ported verbatim from tile-marks.html's Option B /
+  // Board.tsx's ArrowMark: a bracket shut on three sides, open on the edge the tile is
+  // left/entered by, with an arrow threaded through that opening.
+  var AXIS = {
+    right: { axis: "x", sign: 1,  edgeAt: 64, acrossCenter: 28.5 },
+    left:  { axis: "x", sign: -1, edgeAt: 0,  acrossCenter: 28.5 },
+    up:    { axis: "y", sign: -1, edgeAt: 0,  acrossCenter: 32   },
+    down:  { axis: "y", sign: 1,  edgeAt: 57, acrossCenter: 32   }
+  };
+  function pt(direction, k, c){
+    var a = AXIS[direction];
+    var depth = a.edgeAt - a.sign * k;
+    return a.axis === "x" ? [depth, a.acrossCenter + c] : [a.acrossCenter + c, depth];
+  }
+  function fmtPt(p){ return p[0] + "," + p[1]; }
+  var BRACKET_SCALE = 2, BRACKET_BASE_K = 12, BRACKET_PADDING = 10, BRACKET_OPEN_K = 6,
+    BRACKET_SHALLOW_K = 4, BRACKET_ARROW_GAP = 8;
+  function axisExtents(direction){
+    var a = AXIS[direction];
+    return a.axis === "x" ? { depth: 64, across: 57 } : { depth: 57, across: 64 };
+  }
+  function geometry(direction){
+    var ext = axisExtents(direction);
+    var capK = BRACKET_BASE_K + (ext.depth / 2 - BRACKET_PADDING) / BRACKET_SCALE;
+    var w = (ext.across / 2 - BRACKET_PADDING) / BRACKET_SCALE;
+    return { capK: capK, w: w, openK: BRACKET_OPEN_K, deepK: capK - BRACKET_ARROW_GAP, shallowK: BRACKET_SHALLOW_K };
+  }
+  function bracketMarkup(direction, isEnter, color){
+    var g = geometry(direction);
+    var cap = [pt(direction, g.capK, -g.w), pt(direction, g.capK, g.w)];
+    var railA = [pt(direction, g.capK, -g.w), pt(direction, g.openK, -g.w)];
+    var railB = [pt(direction, g.capK, g.w), pt(direction, g.openK, g.w)];
+    var lines = [cap, railA, railB].map(function(seg){
+      return '<line x1="' + seg[0][0] + '" y1="' + seg[0][1] + '" x2="' + seg[1][0] + '" y2="' + seg[1][1] +
+        '" stroke="' + color + '" stroke-width="1.5" stroke-linecap="round"/>';
+    }).join("");
+    var outward = !isEnter;
+    var headLen = 6;
+    var tailK = outward ? g.deepK : g.shallowK;
+    var headK = outward ? g.shallowK : g.deepK;
+    var baseK = outward ? headK + headLen : headK - headLen;
+    var tail = pt(direction, tailK, 0);
+    var base = pt(direction, baseK, 0);
+    var baseA = pt(direction, baseK, -5);
+    var baseB = pt(direction, baseK, 5);
+    var tip = pt(direction, headK, 0);
+    var arrow = '<line x1="' + tail[0] + '" y1="' + tail[1] + '" x2="' + base[0] + '" y2="' + base[1] +
+        '" stroke="' + color + '" stroke-width="3" stroke-linecap="round"/>' +
+      '<polygon points="' + fmtPt(baseA) + ' ' + fmtPt(tip) + ' ' + fmtPt(baseB) + '" fill="' + color + '"/>';
+    var localCenter = pt(direction, BRACKET_BASE_K, 0);
+    var transform = "translate(32,28.5) scale(" + BRACKET_SCALE + ") translate(" +
+      (-localCenter[0]) + "," + (-localCenter[1]) + ")";
+    return '<svg viewBox="0 0 64 57" preserveAspectRatio="none"><g transform="' + transform + '">' + lines + arrow + '</g></svg>';
+  }
+
+  function tileInner(def){
+    if (def.arrowKind) return bracketMarkup(def.direction, def.arrowKind === 'arrival', def.mark);
+    if (def.mark && def.visits) {
+      var marks = "";
+      for (var i = 0; i < def.visits; i++) {
+        var left = 50 + (i - (def.visits - 1) / 2) * 22;
+        marks += '<span class="stroke" style="left:' + left + '%;background:' + def.mark + '"></span>';
+      }
+      return marks;
+    }
+    return "";
+  }
+
+  function tileCard(def, outlineColor, borderWidth, borderStyle){
+    var el = document.createElement("figure");
+    el.className = "tilecard";
+    el.innerHTML =
+      '<span class="tile" style="--c:' + def.face + ';--lip:' + def.lip +
+        ';border:' + borderWidth + ' ' + borderStyle + ' ' + outlineColor + '">' + tileInner(def) + '</span>' +
+      '<figcaption>' + def.label + '</figcaption>';
+    return el;
+  }
+
+  function patch(themeId, treatment){
+    var el = document.createElement("div");
+    el.className = "patch " + themeId;
+    TILES.forEach(function(t){ el.appendChild(tileCard(t, treatment.color[themeId], treatment.borderWidth, treatment.borderStyle)); });
+    return el;
+  }
+
+  // One line swatch per treatment, showing its width and style rather than a colour — both now
+  // use the same ink, so width/style is the thing worth previewing here.
+  var legend = document.getElementById("legend");
+  TREATMENTS.forEach(function(treatment){
+    var span = document.createElement("span");
+    span.innerHTML = '<span class="swatch" style="border-top:' + treatment.borderWidth + ' ' + treatment.borderStyle + ' var(--muted)"></span>' +
+      treatment.label + ' — ' + treatment.borderStyle + ', ' + treatment.borderWidth;
+    legend.appendChild(span);
+  });
+
+  var host = document.getElementById("treatments");
+  TREATMENTS.forEach(function(treatment){
+    var article = document.createElement("article");
+    article.className = "treatment";
+    var header = document.createElement("div");
+    header.innerHTML = '<h2>' + treatment.label + '</h2><p class="desc">' + treatment.desc + '</p>';
+    var row = document.createElement("div");
+    row.className = "themerow";
+    THEMES.forEach(function(theme){
+      var group = document.createElement("div");
+      group.className = "themegroup";
+      group.innerHTML = '<h3>' + theme.label + '</h3>';
+      group.appendChild(patch(theme.id, treatment));
+      row.appendChild(group);
+    });
+    article.appendChild(header);
+    article.appendChild(row);
+    host.appendChild(article);
+  });
+})();
+</script>
+</body></html>

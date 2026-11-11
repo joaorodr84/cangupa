@@ -1685,6 +1685,45 @@ the first time earns back one hint.
 
 ---
 
+## Era 52 — Nov 11: a review visualizer for the legal-move and hint tile outlines
+
+CANGUPA-126 built `tools/visualizers/tile-outlines.html`, a hand-authored
+static page in the same pattern as `tile-marks.html`/`tile-metals.html`,
+served via `tools/serve-visualizer.js` rather than generated. It went
+through several rounds before settling: started at 40 swatches (5 tile
+kinds × 2 themes × legal-move step/jump × hint solid/hypothetical-dashed),
+then the scope narrowed to just 2 outline treatments — legal move and
+hint, both solid — dropping the jump-dashed and hypothetical-dashed-hint
+variants outright.
+
+A few colour schemes were tried for the two treatments (theme-aware pairs,
+a single fixed hint colour reused from the Gold tile's own lip, then a
+searched-for replacement burnt orange), but each one collided, at the
+colour or luminance level, with at least one of the 5 tiles' own face/lip
+colours — a systematic search across hue/saturation/lightness confirmed no
+single colour clears even a 1.5:1 worst-case contrast against all 5 tiles'
+own face/lip colours (best found: 1.4:1). The final design drops colour as
+the differentiator entirely: both outlines use the same theme-aware ink
+colour (`@joaorodr84/themes`'s own `LIGHT.text`/`DARK.text`, near-black on
+light, near-white on dark) and are told apart by border width and style
+instead — legal move solid 2px, hint dashed 4px — with the live app's own
+pulse animation on the hinted tile (`Board.tsx`'s `useAnimatedTip`) left as
+a cue this static page can't reproduce.
+
+Along the way also built `tools/visualizers/index.html`, a hub linking
+every page under `tools/visualizers/`, served via a new root-level
+`package.json`'s `visualizer` script (port 4230) rather than either app's
+own `package.json`.
+
+One commit, 20 swatches total (5 × 2 × 2). Verified the page's generation
+script against a minimal DOM stub (`node -e`) at each stage; not opened in
+an actual browser, no browser tool available in this environment.
+
+Era 52 closes here: Nov 11, one commit, CANGUPA-126 — a review visualizer
+for the legal-move and hint tile outlines.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

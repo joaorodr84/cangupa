@@ -259,24 +259,3 @@ The priority can change at any time; the ID never does.
   (one-handed use, glare/bright-sunlight contrast — may already be
   covered by `CANGUPA-97`). Scoping only — decide which deserve their
   own task.
-- [P3] `CANGUPA-126` — Build a new tile-outline review visualizer under
-  [tools/visualizers/](tools/visualizers/), the same hand-authored
-  static-page pattern as
-  [tile-marks.html](tools/visualizers/tile-marks.html) (served via
-  [serve-visualizer.js](tools/serve-visualizer.js), not generated —
-  `gen-visualizers.js`'s own `PAGES` list only covers `level-packs`/
-  `level-difficulty`). Show every combination of:
-  - The game's 5 tile kinds: Common, Gold, Steel, Departure, Arrival.
-  - Both themes (light/dark, [palette.ts](apps/app/src/theme/palette.ts)).
-  - A legal-move outline: solid white for a step, dashed white for a
-    jump — [Board.tsx](apps/app/src/components/Board.tsx)'s current
-    `tile.hint`/`tile.jump` styling.
-  - A hint outline: solid yellow, plus a dashed-yellow variant shown
-    for side-by-side comparison only — `Board.tsx` today always draws
-    a hint's border solid regardless of jump (`tile.jump && !tile.tip
-    ? 'dashed' : 'solid'` explicitly excludes the tip), so the
-    dashed-hint swatch doesn't correspond to any state the live game
-    actually produces yet.
-
-  5 tiles × 2 themes × 2 legal-move styles × 2 hint styles = 40
-  swatches, laid out as a gallery for visual review.

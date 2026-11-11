@@ -1,0 +1,98 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cangupa Visualizers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* An index for everything under tools/visualizers/ — plain links, no generated content of
+     its own. Served the same way as any other page here (node tools/serve-visualizer.js <port>
+     index.html, or the "visualizer" npm script in apps/web-classic/package.json): one server,
+     one port, every page in this directory reachable at <port>/<file> regardless of which file
+     was named as the default — this page just makes those paths discoverable instead of having
+     to know the filenames up front. */
+  :root {
+    --bg: #f3f5f4;
+    --surface: #ffffff;
+    --fg: #17252a;
+    --muted: #5d6d72;
+    --line: #d9e0de;
+    --accent: #0e6b68;
+    --font-display: "Figtree", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --accent: #4fc3bb; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a1c; --surface: #162326; --fg: #e3ecea; --muted: #8fa3a4; --line: #27393c; --accent: #4fc3bb; color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-display);
+    padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 760px; margin: 0 auto; display: grid; gap: 28px; }
+  h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; }
+  h2 { font-size: .8rem; margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+  .lede { margin: 6px 0 0; color: var(--muted); max-width: 65ch; line-height: 1.5; font-size: .95rem; }
+  .lede code { font-family: var(--font-data); font-size: .86em; background: var(--surface); padding: .12em .4em; border-radius: 5px; }
+  section { display: grid; gap: 10px; }
+  .list { display: grid; gap: 10px; }
+  a.page {
+    display: block; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; text-decoration: none; color: inherit;
+  }
+  a.page:hover { border-color: var(--accent); }
+  a.page .name { font-weight: 600; font-size: 1rem; }
+  a.page .name code { font-family: var(--font-data); font-size: .8rem; color: var(--muted); font-weight: 400; margin-left: 8px; }
+  a.page .desc { display: block; margin-top: 3px; color: var(--muted); font-size: .85rem; line-height: 1.45; }
+</style>
+
+<main>
+  <header>
+    <h1>Cangupa visualizers</h1>
+    <p class="lede">Every page under <code>tools/visualizers/</code>. Hand-authored review pages
+      are design comparisons, built to look at before a change lands in <code>Board.tsx</code>
+      or <code>palette.ts</code> — nothing here is loaded by the app itself. The generated pages
+      are a straight rendering of <code>tools/packs.json</code>, rebuilt by
+      <code>gen-visualizers.js</code> whenever that file or its own template changes.</p>
+  </header>
+
+  <section>
+    <h2>Design reviews</h2>
+    <div class="list">
+      <a class="page" href="tile-outlines.html">
+        <span class="name">Tile outlines <code>tile-outlines.html</code></span>
+        <span class="desc">Legal-move vs. hint outline, across all 5 tile kinds and both themes — width and border-style, not colour, tell the two apart (<code>CANGUPA-126</code>).</span>
+      </a>
+      <a class="page" href="tile-marks.html">
+        <span class="name">Tile marks <code>tile-marks.html</code></span>
+        <span class="desc">Departure/Arrival edge-mark design comparison: the shipped triangle against the doorway-bracket alternative, across all 4 directions.</span>
+      </a>
+      <a class="page" href="tile-metals.html">
+        <span class="name">Tile metals <code>tile-metals.html</code></span>
+        <span class="desc">Tile colour and visit-mark design comparison (bars, numbers, dice dots, diagonal strokes), plus a board mock with colour-vision and low-vision filters.</span>
+      </a>
+      <a class="page" href="rules.html">
+        <span class="name">Rules <code>rules.html</code></span>
+        <span class="desc">A rules reference for <code>apps/app</code>: step, jump, every tile kind and every board button, rendered with the game's real pieces and icons.</span>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Generated data</h2>
+    <div class="list">
+      <a class="page" href="level-packs.html">
+        <span class="name">Level packs <code>level-packs.html</code></span>
+        <span class="desc">A difficulty ramp across every level, then a sketch of every level in every pack.</span>
+      </a>
+      <a class="page" href="level-difficulty.html">
+        <span class="name">Level difficulty <code>level-difficulty.html</code></span>
+        <span class="desc">One sortable table, a level per row: sketch, headline score, and the supporting solve-search metrics behind it.</span>
+      </a>
+    </div>
+  </section>
+</main>
+</body></html>
