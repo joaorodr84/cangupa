@@ -28,8 +28,9 @@ function rooTile(x: number, y: number): TileView {
 function plainTile(x: number, y: number): TileView {
   return { x, y, ...COMMON, left: 1, worn: false, gone: false, hint: false, jump: false };
 }
-// The legal destination: Board.tsx's own hint outline, solid for a step and
-// dashed for a jump — the same convention a real playthrough's hints use.
+// The legal destination: Board.tsx's own hint outline — solid, the same for a step or a jump
+// since CANGUPA-127 retired the dashed jump treatment. `jump` only sets the TileView field
+// faithfully; it no longer changes how the diagram renders.
 function targetTile(x: number, y: number, jump: boolean): TileView {
   return { x, y, ...COMMON, left: 1, worn: false, gone: false, hint: true, jump };
 }

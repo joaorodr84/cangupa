@@ -28,9 +28,70 @@ test('a legal destination is outlined as a hint', async () => {
     <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
   );
 
-  const hinted = screen.getByTestId('tile-1-0');
+  const hinted = screen.getByTestId('tile-face-1-0');
   const flat = [hinted.props.style].flat();
-  expect(flat.some((s) => s?.borderWidth === 3)).toBe(true);
+  expect(flat.some((s) => s?.borderWidth === 2 && s?.borderColor === palette.ink && s?.borderStyle === 'solid')).toBe(
+    true,
+  );
+});
+
+test('the solver tip keeps its legal-move outline and gains a muted bordered halo outside the tile', async () => {
+  // CANGUPA-127: at the owner's request, the tip's outline is a plain bordered View (not SVG) —
+  // solid + borderRadius is a combination React Native's native border renderer always handles
+  // fine (unlike borderStyle: 'dashed' + borderRadius, confirmed missing entirely on Android),
+  // so there's no need to route around the native border system here the way the legal-move
+  // outline's own styles.face border doesn't need to either. It's a halo a few percent outside
+  // the tile's own footprint (a sibling of the tile, not a child of it, so its percentage
+  // geometry is relative to the full cell, not the smaller lip/face boxes) rather than on the
+  // tile, so it only ever has to read against the board's one pit colour, never any of the 5
+  // tiles' own colours. It uses palette.muted rather than the legal-move outline's own
+  // palette.ink — same theme-aware dark-in-light/light-in-dark idea, at a softer shade, so the
+  // two outlines read as distinct from each other, not just from the board. The face's own
+  // legal-move border no longer turns off for the tip (also at the owner's request): a tip is
+  // always a legal move too, and hiding that border used to be a leftover of the border/halo
+  // sharing one slot pre-CANGUPA-127, not a deliberate choice — now that the halo is its own
+  // element, both can and do show at once.
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true, tip: { x: 1, y: 0, jump: false } });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  const tipped = screen.getByTestId('tile-face-1-0');
+  const flat = [tipped.props.style].flat();
+  expect(flat.some((s) => s?.borderWidth === 2 && s?.borderColor === palette.ink && s?.borderStyle === 'solid')).toBe(
+    true,
+  );
+
+  const halo = screen.getByTestId('tile-tip-outline-1-0');
+  // borderColor is set in a separate inline style object from the rest (styles.tipHalo), so
+  // merge the array before asserting rather than checking each object individually.
+  const haloStyle = Object.assign({}, ...[halo.props.style].flat());
+  // top/right/left/bottom: TILE_INSET_SIDE(10)/BOTTOM(14) minus TIP_HALO_GAP(7) = 3/3/3/7.
+  expect(haloStyle).toMatchObject({
+    borderWidth: 2,
+    borderColor: palette.muted,
+    borderRadius: 8,
+    backgroundColor: 'transparent',
+    top: '3%',
+    right: '3%',
+    bottom: '7%',
+    left: '3%',
+  });
+});
+
+test('a jump destination outlines the same as a step, no dashed treatment', async () => {
+  const g = new Game(['S.1']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+  );
+
+  const hinted = screen.getByTestId('tile-face-2-0');
+  const flat = [hinted.props.style].flat();
+  expect(flat.some((s) => s?.borderWidth === 2 && s?.borderStyle === 'solid')).toBe(true);
 });
 
 test('a used tile left behind is faded out', async () => {

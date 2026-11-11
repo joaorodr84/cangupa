@@ -232,6 +232,47 @@ interface TileProps {
 // The width of one visit-left stroke, in percent of the tile.
 const STROKE_WIDTH = 7.5;
 
+// The tile's own margin within its cell (CANGUPA-127), in percent — how much of the cell's own
+// width/height is the gap the pit background shows through, before the lip/face box begins.
+// Bumped from the original 7/11 (a plain visual-spacing choice, nothing to do with the halo) so
+// the halo below has more room to sit in without its stroke crowding the next tile over.
+const TILE_INSET_SIDE = 10;
+const TILE_INSET_BOTTOM = 14;
+
+// The solver tip's outline (CANGUPA-127), drawn as a halo a few percent outside the tile's own
+// footprint rather than on it, so it only ever has to read against the board's one pit colour,
+// never against any of the 5 tiles' own face/lip colours (CANGUPA-126's colour search never
+// found one that did). TIP_HALO_GAP is that halo's own width, in percent of the cell — subtracted
+// from TILE_INSET_SIDE/BOTTOM above, so the halo sits just outside the lip without reaching into
+// the next cell over (which starts at this same TILE_INSET_SIDE, so any gap under that is
+// guaranteed to stay inside this tile's own cell). A plain bordered styles.tipHalo View, not an
+// SVG stroke — solid + borderRadius (unlike borderStyle: 'dashed' + borderRadius, which doesn't
+// reliably render on-device, confirmed missing entirely on Android) is one of the combinations
+// React Native's native border renderer always handles fine, so there was no need for SVG here at
+// all once the design settled on solid rather than dashed.
+const TIP_HALO_GAP = 7;
+const TIP_HALO_TOP = TILE_INSET_SIDE - TIP_HALO_GAP;
+const TIP_HALO_SIDE = TILE_INSET_SIDE - TIP_HALO_GAP;
+const TIP_HALO_BOTTOM = TILE_INSET_BOTTOM - TIP_HALO_GAP;
+// Solid, 2px, palette.muted — not palette.ink (set inline in styles.tipHalo's own spot below,
+// not here, since it needs palette, a render-time prop, not a module-level constant). ink is
+// already the legal-move outline's own colour; muted is the same theme-aware dark-in-light/
+// light-in-dark idea at a softer shade, so the two outlines read as distinct from each other,
+// not just distinct from the board. CANGUPA-126's reason a fixed colour couldn't read against
+// all 5 tiles' own face/lip colours doesn't apply here: this halo sits outside the tile
+// altogether, so it only ever has to read against the board's one pit colour, not any tile's own.
+const TIP_STROKE_WIDTH = 2;
+// Shared by styles.lip/styles.face/styles.tipHalo below, so all three stay visually consistent.
+const TIP_RADIUS = 8;
+// The lip's visible height (CANGUPA-127): the tile used to be one box with a borderBottomWidth
+// of this same value standing in for the lip, which meant the legal-move/tip outline's own
+// borderWidth — applied to that same box — ran down the lip's sides too, not just the face's.
+// Splitting the lip into its own box underneath (styles.lip) and inner-positioning the face on
+// top of it (styles.face, stopping this many px above the lip's own bottom edge) means the
+// outline, applied to the face only, never reaches the lip at all — the same trick
+// tile-outlines.html gets for free from box-shadow, which has no solid-border equivalent in RN.
+const LIP_HEIGHT = 4;
+
 // The face and the lip of a tile: a Departure tile is green and an Arrival tile (CANGUPA-104)
 // raspberry whatever its visits, otherwise the kind sets it. Typed on just the three fields
 // either one reads, not the full TileView, so TileSwatch below can call them without the fields
@@ -399,32 +440,47 @@ export function TileSwatch({
 function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
-  useAnimatedTip(pulse, tile.tip && anim);
+  // Paused for now (CANGUPA-127) while debugging the halo's missing bottom edge, so a moving
+  // target isn't also in play — restore `tile.tip && anim` once that's sorted.
+  useAnimatedTip(pulse, false);
 
-  const outlineColor = tile.tip ? 'rgba(255,214,90,0.95)' : 'rgba(255,255,255,0.7)';
   const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] });
 
   const content = (
+    // The lip (CANGUPA-127): the whole tile's own footprint, filled with the edge colour and
+    // never bordered — worn/gone and the tip's pulse apply here so the face moves as one rigid
+    // unit with it, the same as when both were a single box.
     <Animated.View
       testID={`tile-${tile.x}-${tile.y}`}
       style={[
-        styles.tile,
-        { backgroundColor: faceColor(tile, palette), borderBottomColor: edgeColor(tile, palette) },
-        (tile.hint || tile.tip) && {
-          borderWidth: 3,
-          borderColor: outlineColor,
-          borderStyle: tile.jump && !tile.tip ? 'dashed' : 'solid',
-        },
+        styles.lip,
+        { backgroundColor: edgeColor(tile, palette) },
         tile.worn && styles.worn,
         tile.gone && styles.gone,
         tile.tip && { transform: [{ scale }] },
       ]}
     >
-      {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
-      {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
-      {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
-        <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
-      )}
+      {/* The face: inset LIP_HEIGHT above the lip's own bottom edge, so the lip always
+          peeks out below it — see LIP_HEIGHT's comment for why the outline lives here. */}
+      <View
+        testID={`tile-face-${tile.x}-${tile.y}`}
+        style={[
+          styles.face,
+          { backgroundColor: faceColor(tile, palette) },
+          // No single fixed colour read against all 5 tiles' own face/lip colours (CANGUPA-126's
+          // search topped out at 1.4:1 worst case), so the legal-move outline uses the theme's
+          // own ink colour instead. Shown even when the tile is also the tip (CANGUPA-127) — a
+          // tip is always a legal move too, so hiding this would hide real information, now that
+          // the tip's own halo is a separate element and no longer needs this border's own slot.
+          tile.hint && { borderWidth: 2, borderColor: palette.ink, borderStyle: 'solid' },
+        ]}
+      >
+        {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
+        {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
+        {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
+          <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
+        )}
+      </View>
     </Animated.View>
   );
 
@@ -462,6 +518,20 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
       ) : (
         content
       )}
+      {/* The tip's halo (CANGUPA-127): a sibling of the tile itself, not a child of it, so its
+          percentage geometry is relative to the full cell, not the (smaller, clipping) lip/face
+          boxes — the only way for it to actually sit outside the tile rather than on it. A plain
+          bordered View, not SVG (at the owner's request) — solid + borderRadius is one of the
+          combinations that's always rendered fine natively (see TILE_INSET_SIDE's comment and
+          styles.face's own solid legal-move border); only borderStyle: 'dashed' + borderRadius
+          was ever the broken combination this tip's outline needed to avoid. */}
+      {tile.tip && (
+        <Animated.View
+          testID={`tile-tip-outline-${tile.x}-${tile.y}`}
+          pointerEvents="none"
+          style={[styles.tipHalo, { borderColor: palette.muted, transform: [{ scale }] }]}
+        />
+      )}
     </View>
   );
 }
@@ -497,14 +567,38 @@ const styles = StyleSheet.create({
   pressable: {
     flex: 1,
   },
-  tile: {
+  lip: {
     position: 'absolute',
-    top: '7%',
-    right: '7%',
-    bottom: '11%',
-    left: '7%',
-    borderRadius: 8,
-    borderBottomWidth: 4,
+    top: `${TILE_INSET_SIDE}%`,
+    right: `${TILE_INSET_SIDE}%`,
+    bottom: `${TILE_INSET_BOTTOM}%`,
+    left: `${TILE_INSET_SIDE}%`,
+    borderRadius: TIP_RADIUS,
+  },
+  // Positioned within styles.lip, not the cell — LIP_HEIGHT is this layer's own bottom inset,
+  // not a percentage, since the lip it must stay clear of is a fixed pixel height too.
+  face: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: LIP_HEIGHT,
+    left: 0,
+    borderRadius: TIP_RADIUS,
+  },
+  // The solver tip's halo (CANGUPA-127) — positioned within the cell (a sibling of styles.lip,
+  // not nested inside it), a few percent outside the tile's own footprint. See TIP_HALO_GAP's
+  // comment for why it's out here rather than a border on styles.face like the legal-move one.
+  tipHalo: {
+    position: 'absolute',
+    top: `${TIP_HALO_TOP}%`,
+    right: `${TIP_HALO_SIDE}%`,
+    bottom: `${TIP_HALO_BOTTOM}%`,
+    left: `${TIP_HALO_SIDE}%`,
+    borderRadius: TIP_RADIUS,
+    borderWidth: TIP_STROKE_WIDTH,
+    // borderColor is set inline where this style is used, not here — it needs palette.ink, a
+    // render-time prop this static StyleSheet object has no access to.
+    backgroundColor: 'transparent',
   },
   // One visit-left stroke: a bar a quarter of the way down, half the tile tall, turned 24 degrees so its top
   // leans right. Narrower than it looks (7.5% of the tile) and spaced 22% apart, so four fit on a tile.

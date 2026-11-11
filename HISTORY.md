@@ -1728,6 +1728,44 @@ commit, CANGUPA-124; this commit only opened Era 52.)
 
 ---
 
+## Era 53 — Nov 11 (continued): CANGUPA-126's outline design lands in the real app
+
+CANGUPA-127 wired the visualizer's findings into `apps/app`'s own
+`Board.tsx` `Tile`, departing from the visualizer's own shared-ink-colour
+plan where on-device testing demanded it. The tile was split into its own
+lip (edge colour, full footprint, never bordered) and face (inset
+`LIP_HEIGHT` above the lip's own bottom edge) boxes, so the legal-move
+outline — now solid 2px `palette.ink` for both a step and a jump, retiring
+`tile.jump`'s dashed case entirely — only ever borders the face, never
+bleeding onto the lip's sides.
+
+The solver tip's own outline moved off the tile altogether: a sibling halo
+a few percent outside the tile's own footprint, solid 2px `palette.muted`,
+so it only ever reads against the board's one pit colour rather than any
+of the 5 tiles' own face/lip colours — `CANGUPA-126`'s colour search never
+found one that did. It's a plain bordered View rather than SVG, since
+solid + `borderRadius` is one of the combinations React Native's native
+border renderer always handles fine, unlike `borderStyle: 'dashed'` +
+`borderRadius`, confirmed missing entirely on Android. The face's own
+legal-move border no longer turns off when the tile is also the tip, since
+a tip is always a legal move too. `HelpSections.tsx`'s jump-outline
+diagram and both locales' help copy (`jumpGapCaption`/`jumpTileCaption`)
+were updated to match the single, non-dashed outline convention.
+
+The tip's pulse animation (`useAnimatedTip`) is paused for now, left
+disabled with a comment to restore once a separate halo-missing-bottom-edge
+rendering bug found along the way is sorted — scoped out of this task
+rather than blocking it.
+
+One commit, with two new `Board.test.tsx` cases (the halo, and no-dashed-jump
+outline). Verified: `npx tsc --noEmit` clean, full `apps/app` Jest suite
+green (30/30 suites, 835/835 tests).
+
+Era 53 closes here: Nov 11, one commit, CANGUPA-127 — the tile-outline
+review visualizer's design lands in the real app.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

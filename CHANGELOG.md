@@ -7,6 +7,29 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-11
+
+### Added
+
+- The app's solver hint now gets a second, separate outline on top of the
+  usual one — a soft halo drawn just outside the tile itself, in a muted
+  theme colour — so a hinted tile is visually distinguishable from an
+  ordinary legal-move outline at a glance. The hinted tile's usual gentle
+  pulsing is temporarily turned off while a rendering issue with the new
+  halo is tracked down, so hints currently show as a static outline rather
+  than pulsing.
+
+### Changed
+
+- The app's legal-move outline — shown when "legal moves" highlighting is
+  on, and on a solver hint — is now a solid outline in the theme's own ink
+  colour for both a one-step move and a jump, instead of a jump's
+  destination being shown dashed and the outline always being a fixed
+  white regardless of light or dark theme. The Help screen's Rules diagram
+  and its English and Portuguese captions for jump destinations are
+  updated to match, now reading "Same outline" instead of "Dashed
+  outline".
+
 ## 2026-11-10
 
 ### Added
