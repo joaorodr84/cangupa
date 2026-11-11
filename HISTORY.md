@@ -1722,6 +1722,10 @@ an actual browser, no browser tool available in this environment.
 Era 52 closes here: Nov 11, one commit, CANGUPA-126 — a review visualizer
 for the legal-move and hint tile outlines.
 
+(Correction: the CANGUPA-126 commit message's bookkeeping note said it
+"closed Era 51 and opened Era 52" — Era 51 had already closed in the prior
+commit, CANGUPA-124; this commit only opened Era 52.)
+
 ---
 
 ## Patterns, and what's still open
