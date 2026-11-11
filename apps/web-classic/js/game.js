@@ -96,6 +96,39 @@ class Game {
     return d >= 1 && d <= 2;
   }
 
+  // Classifies an attempted move to (x, y), for a caller (ui.js's fall
+  // setting, CANGUPA-129) that needs to tell "nothing to land on" apart from
+  // "an arrow forbids this" — legalMoves() itself doesn't, by design: both are
+  // equally "not a legal move" to the solver and to move()/play(). Before
+  // CANGUPA-129, the fall setting (CANGUPA-58) only ever asked inMoveShape(),
+  // inheriting that merged signal, so stepping a Departure tile the wrong way
+  // onto a perfectly live tile sank the level exactly like stepping onto a
+  // missing one.
+  //   'none'              not even in the step/jump shape — never a move attempt.
+  //   'blocked-departure' in shape, but leaving the current Departure tile this way is
+  //                       forbidden — regardless of what's at the target (a live tile, a gone
+  //                       one, or nothing at all) — never falls.
+  //   'blocked-arrival'   in shape, not a Departure violation, but entering a live Arrival tile
+  //                       this way is forbidden — never falls either. The two are split apart
+  //                       (CANGUPA-129, a bug-fix follow-up) rather than one shared 'blocked', so
+  //                       a caller that explains *why* (ui.js's on-screen warning) doesn't have
+  //                       to re-derive which rule tripped.
+  //   'empty'             in shape, no arrow forbids it, but there's nothing to land on (no tile,
+  //                       or a used-up one) — falls, same as always.
+  //   'legal'             a real legalMoves() destination (only reachable here if the caller
+  //                       never routed a legal tap through this in the first place; never falls
+  //                       either).
+  moveKind(x, y, pos = this.pos) {
+    if (!this.inMoveShape(x, y, pos)) return 'none';
+    const px = pos % this.w, py = (pos / this.w) | 0;
+    const dx = Math.sign(x - px), dy = Math.sign(y - py);
+    const k = DIRS.findIndex(([ddx, ddy]) => ddx === dx && ddy === dy);
+    const i = y * this.w + x;
+    if (this.dir[pos] >= 0 && k !== this.dir[pos]) return 'blocked-departure';
+    if (this.arrival[i] >= 0 && this.cells[i] > 0 && k !== this.arrival[i]) return 'blocked-arrival';
+    return this.cells[i] > 0 ? 'legal' : 'empty';
+  }
+
   // Play a move from legalMoves().
   play(move) {
     this.history.push({ pos: this.pos, cells: Uint8Array.from(this.cells) });

@@ -48,4 +48,9 @@ const Sound = {
 
   // A descending glide, timed to the `.falling` CSS animation (ui.js's fall()).
   fall() { this.tone(300, 0.45, { type: 'sawtooth', gain: 0.14, glideTo: 70 }); },
+
+  // A short, flat double-beep "no" cue for a blocked move (CANGUPA-129): an arrow forbids it
+  // outright, so nothing is falling or sliding — distinct from both win()'s rising arpeggio and
+  // fall()'s single descending glide.
+  blocked() { this.melody([220, 196], { step: 0.11, duration: 0.09, type: 'sine', gain: 0.16 }); },
 };

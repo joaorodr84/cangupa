@@ -54,6 +54,10 @@ export interface Palette {
   readonly mark3: string;
   readonly markDeparture: string;
   readonly markArrival: string;
+  // A blocked-move flash (CANGUPA-129): an arrow forbids the attempted move outright. Like
+  // tile/tile2/edge/edge2 above, this is a fixed warning colour, not derived from either theme —
+  // a "no" cue needs to read the same whether the board is light or dark.
+  readonly blocked: string;
   readonly ink: string;
   readonly muted: string;
   readonly panel: string;
@@ -95,6 +99,7 @@ export const DARK: Palette = {
   mark3: '#ffffff',
   markDeparture: '#ffffff',
   markArrival: '#ffffff',
+  blocked: '#ff5640',
   ink: THEMES_DARK.text,
   muted: THEMES_DARK.textMuted,
   panel: THEMES_DARK.panel,
@@ -122,6 +127,7 @@ export const LIGHT: Palette = {
   mark3: '#ffffff',
   markDeparture: '#ffffff',
   markArrival: '#ffffff',
+  blocked: '#ff5640',
   ink: THEMES_LIGHT.text,
   muted: THEMES_LIGHT.textMuted,
   panel: THEMES_LIGHT.panel,

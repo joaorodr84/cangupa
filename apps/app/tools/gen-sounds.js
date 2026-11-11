@@ -86,12 +86,13 @@ function writeWav(file, samples) {
   fs.writeFileSync(path.join(OUT_DIR, file), Buffer.concat([header, pcm]));
 }
 
-// Parameters match apps/web-classic/js/sound.js's jump()/win()/fall() exactly.
+// Parameters match apps/web-classic/js/sound.js's jump()/win()/fall()/blocked() exactly.
 writeWav('jump.wav', renderSingle(0.12, { freq: 440, glideTo: 660, type: 'triangle', gain: 0.18 }));
 writeWav(
   'win.wav',
   renderMelody(3 * 0.09 + 0.14, [523.25, 659.25, 783.99, 1046.5], { step: 0.09, duration: 0.14, type: 'triangle', gain: 0.16 }),
 );
 writeWav('fall.wav', renderSingle(0.45, { freq: 300, glideTo: 70, type: 'sawtooth', gain: 0.14 }));
+writeWav('blocked.wav', renderMelody(0.11 + 0.09, [220, 196], { step: 0.11, duration: 0.09, type: 'sine', gain: 0.16 }));
 
-console.log(`wrote ${OUT_DIR}\\{jump,win,fall}.wav`);
+console.log(`wrote ${OUT_DIR}\\{jump,win,fall,blocked}.wav`);

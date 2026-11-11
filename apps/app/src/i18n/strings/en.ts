@@ -74,6 +74,10 @@ export const en: Strings = {
     stuck: 'No moves left.',
     undoOrRestart: 'Undo or restart.',
   },
+  board: {
+    blockedDeparture: "You can't leave that way — only through the edge the bracket opens on.",
+    blockedArrival: "You can't enter that way — only through the edge the bracket opens on.",
+  },
   settings: {
     appearance: 'Appearance',
     light: 'Light',

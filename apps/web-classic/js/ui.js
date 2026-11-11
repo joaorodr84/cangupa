@@ -1,5 +1,6 @@
 const $ = id => document.getElementById(id);
 const boardEl = $('board');
+const blockedMsgEl = $('blocked-msg');
 let settings = Settings.load();
 Sound.enabled = settings.sound;
 let progress = Progress.load();
@@ -51,6 +52,11 @@ function build() {
 function render(hop = true) {
   document.body.dataset.theme = settings.theme;
   boardEl.classList.toggle('no-anim', !settings.anim);
+  // Hides the blocked-move explanation (CANGUPA-129) on anything that actually changes the
+  // board — a move, undo, reset, or hint — the same way it's never shown again once hintFailed's
+  // own message is replaced. blocked() itself never calls render(), so the text survives exactly
+  // until the player's next real action, not a fixed timeout — long enough to actually read.
+  blockedMsgEl.hidden = true;
   const moves = game.legalMoves();
   const targets = new Map(moves.map(m => [m.y * game.w + m.x, m]));
   const tipI = tip ? tip.y * game.w + tip.x : -1;
@@ -150,12 +156,19 @@ boardEl.addEventListener('click', e => {
   if (!c) return;
   const dest = game.legalMoves().find(mv => mv.x === c.x && mv.y === c.y);
   if (dest) { move(dest); return; }
-  // A step or jump away in one of the four directions (CANGUPA-65) is a
-  // real move attempt, tile or no tile there (CANGUPA-66) — jump to it
-  // before falling. inMoveShape() is false for game.x/game.y themselves
-  // (distance 0), so tapping the kangaroo's own cell is a no-op, same as
-  // anything off that shape (diagonal, too far).
-  if (settings.fall && game.inMoveShape(c.x, c.y)) fall(c);
+  if (!settings.fall) return;
+  // A step or jump away in one of the four directions (CANGUPA-65) is a real
+  // move attempt, tile or no tile there (CANGUPA-66) — moveKind() (CANGUPA-129)
+  // tells which: 'blocked' (a Departure/Arrival arrow forbids this one
+  // outright, live tile or not — the fix for a bug report where stepping out
+  // of a Departure the wrong way sank the level instead of just refusing) only
+  // ever shakes in place, never falls; 'empty' falls, as it always has.
+  // moveKind() is false-ish ('none') for game.x/game.y themselves (distance
+  // 0), so tapping the kangaroo's own cell stays a no-op, same as anything
+  // else off that shape (diagonal, too far).
+  const kind = game.moveKind(c.x, c.y);
+  if (kind === 'blocked-departure' || kind === 'blocked-arrival') blocked(kind, c);
+  else if (kind === 'empty') fall(c);
 });
 
 // Peek (CANGUPA-70): holding on the kangaroo's own cell fades it to 20%
@@ -223,6 +236,38 @@ function fall(target) {
     }, 500);
   }, jumpMs);
 }
+// The on-screen explanation for a blocked move (CANGUPA-129), one per moveKind() reason — phrased
+// to match help's own "pelo lado onde a marca abre" wording for the same rule, so the warning
+// doesn't introduce a second way of naming the same thing.
+const BLOCKED_MESSAGES = {
+  'blocked-departure': 'Não podes saír por aí — só pelo lado onde a marca abre.',
+  'blocked-arrival': 'Não podes entrar por aí — só pelo lado onde a marca abre.',
+};
+
+// A blocked move (opt-in, settings.fall, CANGUPA-129): an arrow forbids this one outright, so it
+// must never fall through to fall() — unlike fall()'s own restart, this is a dead-end-free,
+// in-place "no": the kangaroo shakes, the target tile's own outline flashes red, and a short
+// explanation (`kind`-specific — "blocked-departure" and "blocked-arrival" read differently,
+// since one is about leaving and the other about entering) appears just below the board, read on
+// at the player's own pace since render() — not a timeout — is what clears it (see render()'s own
+// comment). The shake/flash still clear themselves on a short timeout: unlike the text, they're
+// a reflex cue, not something meant to be read for long.
+function blocked(kind, target) {
+  if (game.won || falling) return;
+  Sound.blocked();
+  blockedMsgEl.textContent = BLOCKED_MESSAGES[kind];
+  blockedMsgEl.hidden = false;
+  roo.classList.add('blocked');
+  setTimeout(() => roo.classList.remove('blocked'), 320);
+  if (target) {
+    const el = cellEls[target.y * game.w + target.x];
+    if (el) {
+      el.classList.add('blocked-flash');
+      setTimeout(() => el.classList.remove('blocked-flash'), 320);
+    }
+  }
+}
+
 function hint() {
   if (game.won) return;
   const path = game.solve();
@@ -244,11 +289,17 @@ document.addEventListener('keydown', e => {
     const m = e.shiftKey ? at(2) : at(1) || at(2);
     if (m) move(m);
     else if (settings.fall) {
-      // The cell one step in the pressed direction, if it's inside the
-      // board's bounding box — a target for fall() to jump toward, same as
-      // a tapped cell. Past the edge, there's nothing there to jump to.
+      // The cell one step in the pressed direction — a target for fall() or
+      // blocked() to jump toward, same as a tapped cell, even past the
+      // board's edge (moveKind() doesn't need a tile to exist at (tx, ty) to
+      // tell a Departure's own arrow rule applies — see its own comment).
+      // Only inside the board's bounding box is there an actual cell to show
+      // the jump/flash against, though, so target stays undefined past it.
       const tx = game.x + d[0], ty = game.y + d[1];
-      fall(tx >= 0 && tx < game.w && ty >= 0 && ty < game.h ? { x: tx, y: ty } : undefined);
+      const target = tx >= 0 && tx < game.w && ty >= 0 && ty < game.h ? { x: tx, y: ty } : undefined;
+      const kind = game.moveKind(tx, ty);
+      if (kind === 'blocked-departure' || kind === 'blocked-arrival') blocked(kind, target);
+      else fall(target);
     }
   } else if (k === 'z' || k === 'Backspace') undo();
   else if (k === 'r') reset();

@@ -40,6 +40,30 @@ assert.ok(!g.inMoveShape(2, 2));                     // diagonal: not a straight
 assert.ok(!g.inMoveShape(3, 0));                     // in line, but past jump range
 assert.ok(!g.inMoveShape(0, 0));                     // standing still
 
+// moveKind (CANGUPA-129): fall() used to ask only inMoveShape(), which can't tell "nothing to
+// land on" apart from "an arrow forbids this" — so stepping a Departure the wrong way onto a
+// live tile sank the level exactly like stepping onto a missing one. 'S>1' / '.1.': the
+// Departure sits at (1,0), pointing right; stepping onto a Departure is unrestricted, only
+// leaving it is, so play onto it first.
+g = new Game(['S>1', '.1.']);
+g.play({ x: 1, y: 0 });
+assert.strictEqual(g.moveKind(2, 1), 'none');        // diagonal from (1,0): never a move attempt
+assert.ok(g.at(1, 1) > 0);                           // a perfectly live tile sits below
+assert.strictEqual(g.moveKind(1, 1), 'blocked-departure'); // down is forbidden anyway — the reported bug
+assert.strictEqual(g.moveKind(2, 0), 'legal');       // right, the way it points, onto a live tile
+assert.strictEqual(new Game(['S..']).moveKind(2, 0), 'empty'); // in shape, no arrow, but no tile
+
+// moveKind on an Arrival: blocked while live regardless of direction mismatch, but once a tile
+// is used up the rule has nothing left to forbid — moveKind's explicit `pos` checks a used-up
+// tile's classification without needing an actual legal way back to it.
+g = new Game(['SL1']);
+assert.strictEqual(g.moveKind(1, 0), 'blocked-arrival'); // moving right onto a live, left-only Arrival
+g.play({ x: 2, y: 0 });                              // jump past it
+g.play({ x: 1, y: 0 });                              // enter moving left: legal, uses it up
+assert.strictEqual(g.at(1, 0), 0);                   // used up
+assert.strictEqual(g.moveKind(1, 0, 2), 'empty');    // correct direction, but nothing there now
+assert.strictEqual(g.moveKind(1, 0, 0), 'empty');    // wrong direction too — still just empty
+
 // a tile needing three visits (a Steel tile): `T` starts on one, `3` is one in the level
 g = new Game(['1T1']);
 assert.strictEqual(g.max[1], 3);

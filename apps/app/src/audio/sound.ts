@@ -10,6 +10,7 @@ import { createAudioPlayer } from 'expo-audio';
 const jumpSource = require('../../assets/sounds/jump.wav');
 const winSource = require('../../assets/sounds/win.wav');
 const fallSource = require('../../assets/sounds/fall.wav');
+const blockedSource = require('../../assets/sounds/blocked.wav');
 
 let enabled = true;
 
@@ -23,6 +24,7 @@ export function setEnabled(value: boolean): void {
 const jumpPlayer = createAudioPlayer(jumpSource);
 const winPlayer = createAudioPlayer(winSource);
 const fallPlayer = createAudioPlayer(fallSource);
+const blockedPlayer = createAudioPlayer(blockedSource);
 
 function replay(player: ReturnType<typeof createAudioPlayer>): void {
   if (!enabled) return;
@@ -40,4 +42,8 @@ export function win(): void {
 
 export function fall(): void {
   replay(fallPlayer);
+}
+
+export function blocked(): void {
+  replay(blockedPlayer);
 }

@@ -38,6 +38,13 @@ Open work is listed in [TODO.md](TODO.md).
   eye and nose now turn together to face the same direction as the
   parent. The parent's own forearm, which rests on the joey, no longer
   appears to start inside the joey's head.
+- Stepping out of a Departure tile the wrong way, or into an Arrival tile
+  from the wrong side, with the "fall" setting on, no longer sinks the
+  level as if the destination tile were missing. The move is simply
+  blocked instead: the kangaroo shakes in place, the offending tile's
+  outline flashes a warning colour, a short double-beep plays, and a
+  brief message below the board names which rule blocked the move,
+  staying up until the next action.
 
 ## 2026-11-10
 

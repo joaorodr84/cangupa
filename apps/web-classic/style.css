@@ -33,6 +33,12 @@ h1 { margin: 0; font: 600 2.2rem Georgia, serif; letter-spacing: .12em; text-tra
 #board { position: relative; width: 100%; aspect-ratio: var(--w) / var(--h); border-radius: 6px; user-select: none;
   background: var(--pit); box-shadow: inset 0 0 30px rgba(0,0,0,.5); }
 
+/* The blocked-move explanation (CANGUPA-129), just below the board rather than in #status above
+   it — shown by blocked() (ui.js) and hidden again by render() once the player's next action
+   replaces it, not on a timeout, so there's time to actually read it. [hidden] already removes
+   it from layout, so no height is reserved for it while there's nothing to say. */
+#blocked-msg { margin: 8px 0 0; text-align: center; font-size: .95rem; color: rgba(255,120,104,.95); }
+
 .cell { position: absolute; width: calc(100% / var(--w)); height: calc(100% / var(--h)); }
 .tile { position: absolute; inset: 7% 7% 11%; border-radius: 14%; background: var(--tile);
   box-shadow: 0 5px 0 var(--edge), 0 9px 12px rgba(0,0,0,.35);
@@ -74,6 +80,15 @@ h1 { margin: 0; font: 600 2.2rem Georgia, serif; letter-spacing: .12em; text-tra
    position and drag it back toward (0,0) mid-fall. */
 .falling .hopper { animation: fall-through .5s ease-in forwards; }
 @keyframes fall-through { to { transform: translateY(60%) scale(.5); opacity: 0; } }
+
+/* A blocked move (CANGUPA-129): an arrow forbids it, so nothing falls — the kangaroo shakes in
+   place and the offending tile flashes red, instead of silently doing nothing or sinking
+   through the tile the way the fall setting used to. Not gated by .no-anim: like .falling, this
+   is feedback about what happened, not a cosmetic transition to skip. */
+#roo.blocked .hopper { animation: shake .32s ease-in-out; }
+@keyframes shake { 20% { transform: translateX(-10%); } 40% { transform: translateX(8%); } 60% { transform: translateX(-6%); } 80% { transform: translateX(3%); } }
+.cell.blocked-flash .tile { animation: blocked-flash .32s ease-out; }
+@keyframes blocked-flash { 0% { outline: 3px solid rgba(255,86,64,.95); outline-offset: 2px; } 100% { outline: 3px solid rgba(255,86,64,0); outline-offset: 2px; } }
 
 .toolbar { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 button, select { font: inherit; color: var(--ink); }

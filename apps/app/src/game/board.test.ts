@@ -47,6 +47,43 @@ test('inMoveShape accepts only a straight step or jump within range', () => {
   expect(g.inMoveShape(0, 0)).toBe(false); // standing still
 });
 
+// CANGUPA-129: before this, the fall setting (CANGUPA-58) only asked
+// inMoveShape(), which can't tell "nothing to land on" apart from "an arrow
+// forbids this" — so stepping a Departure the wrong way onto a live tile
+// sank the level exactly like stepping onto a missing one.
+test('moveKind tells a geometry-invalid tap, an arrow-blocked one, an empty one, and a legal one apart', () => {
+  // S>1 / .1.: the Departure sits at (1,0), pointing right. Step onto it first — entering a
+  // Departure is unrestricted, only leaving it is — so pos becomes (1,0) for the checks below.
+  const g = new Game(['S>1', '.1.']);
+  g.play({ x: 1, y: 0 });
+  expect(g.moveKind(2, 1)).toBe('none'); // diagonal from (1,0): never a move attempt at all
+  // Down (1,1) is forbidden — the Departure only opens right — even though a perfectly live
+  // tile sits there: this is the reported bug (a blocked move used to fall through it instead).
+  expect(g.at(1, 1)).toBeGreaterThan(0);
+  expect(g.moveKind(1, 1)).toBe('blocked-departure');
+  expect(g.moveKind(2, 0)).toBe('legal'); // right, the way it points, onto a live tile
+  const empty = new Game(['S..']);
+  expect(empty.moveKind(2, 0)).toBe('empty'); // in shape, no arrow, but no tile there
+});
+
+test('moveKind blocks entering a live Arrival the wrong way, by rule, from the correct direction too once it is used up', () => {
+  // SL1: (1,0) is an Arrival only enterable moving left (approached from (2,0)).
+  const g = new Game(['SL1']);
+  // From the start (0,0), moving right onto it (k=0, "right") mismatches the Arrival's own
+  // required direction (k=1, "left") — blocked, live tile or not.
+  expect(g.moveKind(1, 0)).toBe('blocked-arrival');
+  g.play({ x: 2, y: 0 }); // jump past it
+  g.play({ x: 1, y: 0 }); // now approaching moving left: a legal entry, uses it up
+  expect(g.at(1, 0)).toBe(0); // used up
+  // moveKind takes an explicit `pos` so a used-up tile's classification can be checked without
+  // actually having a legal way back to it. From (2,0), the correct direction (left) onto the
+  // now-empty tile is just 'empty', not 'legal' — nothing is there to land on any more.
+  expect(g.moveKind(1, 0, 2)).toBe('empty');
+  // From (0,0), the *wrong* direction (right) onto that same used-up tile is also 'empty', not
+  // 'blocked-arrival' — once a tile is gone, the arrow rule has nothing left to forbid.
+  expect(g.moveKind(1, 0, 0)).toBe('empty');
+});
+
 test('a Steel tile needs three visits, and T starts on one', () => {
   const g = new Game(['1T1']);
   expect(g.max[1]).toBe(3);

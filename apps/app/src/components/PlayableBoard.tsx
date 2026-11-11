@@ -5,14 +5,15 @@
 // belongs to the screen that owns useBoard and also renders this
 // (BoardScreen.tsx), so that screen and this component share one Game
 // rather than each calling useBoard and getting their own.
-import { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
 import { facingFor, type Facing } from '../game/boardView';
 import { type UseBoardResult } from '../game/useBoard';
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
-import Board, { HOP_MS, type BoardHandle } from './Board';
+import Board, { HOP_MS, SHAKE_MS, type BoardHandle } from './Board';
 import { fitBoardWidth } from './boardLayout';
 
 // styles.frame's own padding, subtracted before fitting the board to the
@@ -41,7 +42,8 @@ interface PlayableBoardProps {
 }
 
 export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps) {
-  const { game, tiles, facing, move, won, reset } = board;
+  const { game, tiles, facing, move, won, reset, tick } = board;
+  const t = useStrings();
   const boardRef = useRef<BoardHandle>(null);
   // Mid fall-and-restart animation (CANGUPA-58): input is ignored until it
   // settles, the same guard ui.js's `falling` module-level flag gives the
@@ -54,6 +56,19 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // Cleared by `reset()`'s own re-render once the fall completes.
   const [fallTarget, setFallTarget] = useState<{ x: number; y: number } | null>(null);
   const [fallFacing, setFallFacing] = useState<Facing | null>(null);
+  // The tile a blocked move (CANGUPA-129) just targeted, so Board can flash it — cleared on its
+  // own timeout, matching Board's shake() duration, since (unlike a fall) nothing else about a
+  // blocked move changes state to clear it for us.
+  const [blockedTarget, setBlockedTarget] = useState<{ x: number; y: number } | null>(null);
+  // Which arrow rule the last blocked move broke, so the warning text below the board
+  // (CANGUPA-129) can explain it — unlike blockedTarget above (cleared on a short timeout, for
+  // the shake/flash reflex cue), this persists until `tick` next changes, i.e. until the
+  // player's next real action (a move, undo, reset, or hint), the same "stays up till replaced"
+  // convention boardHud's own stuck/dead-end messages already use, so there's time to read it.
+  const [blockedReason, setBlockedReason] = useState<'blocked-departure' | 'blocked-arrival' | null>(null);
+  useEffect(() => {
+    setBlockedReason(null);
+  }, [tick]);
 
   const handlePressTile = (x: number, y: number) => {
     if (falling) return;
@@ -79,12 +94,29 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // background too, not just on an existing tile). A target off that
   // step/jump shape (CANGUPA-65 — a tile not on the same row/column, too
   // far — or CANGUPA-66's own position, distance zero) was never a move
-  // attempt at all, so it does nothing. `target` is undefined only before
-  // Board's first layout, when it can't yet say which cell a tap on
-  // background landed on — falls in place then, same as it always has.
+  // attempt at all, so it does nothing — moveKind() (CANGUPA-129) returns
+  // 'none' for exactly that case. A target in shape but forbidden by a
+  // Departure/Arrival arrow rule ('blocked-departure'/'blocked-arrival')
+  // shakes in place instead of falling, live tile or not at the target —
+  // the fix for a bug report where stepping out of a Departure the wrong
+  // way sank the level, same as stepping onto a missing tile, instead of
+  // just refusing — and shows which rule it was just below the board. Only
+  // 'empty' (nothing there to land on) still falls. `target` is undefined
+  // only before Board's first layout, when it can't yet say which cell a
+  // tap on background landed on — falls in place then, same as it always
+  // has, since there's no cell to classify.
   const handlePressEmpty = (target?: { x: number; y: number }) => {
     if (falling || won) return;
-    if (target && !game.inMoveShape(target.x, target.y)) return;
+    const kind = target ? game.moveKind(target.x, target.y) : 'empty';
+    if (kind === 'none') return;
+    if (kind === 'blocked-departure' || kind === 'blocked-arrival') {
+      setBlockedTarget(target ?? null);
+      setBlockedReason(kind);
+      boardRef.current?.shake();
+      Sound.blocked();
+      setTimeout(() => setBlockedTarget(null), SHAKE_MS);
+      return;
+    }
     setFalling(true);
     if (target) {
       setFallFacing(facingFor(target.x - game.x, target.y - game.y));
@@ -123,15 +155,15 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
       ? tiles.map((t) => (t.x === game.x && t.y === game.y ? { ...t, worn: false, gone: true } : t))
       : tiles;
 
-  return (
-    // ports style.css's #board-wrap: the padded card the board itself (the
-    // "pit") sits in — found missing in the CANGUPA-24 parity pass, where
-    // the board rendered edge-to-edge with no frame around it. It stretches
-    // to the full width by default (as it always did) and only shrinks to
-    // hug a narrower, height-capped board (CANGUPA-33) once one is known —
-    // alignSelf:'center' opts out of that default stretch, so this must stay
-    // conditional or the frame (and the width:'100%' Board falls back to
-    // before the first layout) would have no definite width to resolve.
+  // ports style.css's #board-wrap: the padded card the board itself (the
+  // "pit") sits in — found missing in the CANGUPA-24 parity pass, where the
+  // board rendered edge-to-edge with no frame around it. It stretches to the
+  // full width by default (as it always did) and only shrinks to hug a
+  // narrower, height-capped board (CANGUPA-33) once one is known —
+  // alignSelf:'center' opts out of that default stretch, so this must stay
+  // conditional or the frame (and the width:'100%' Board falls back to
+  // before the first layout) would have no definite width to resolve.
+  const frame = (
     <View style={[styles.frame, { backgroundColor: palette.frame }, boardWidth !== undefined && styles.frameFit]}>
       <Board
         ref={boardRef}
@@ -142,6 +174,8 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
         rooY={fallTarget?.y ?? game.y}
         face={fallFacing?.face ?? facing.face}
         flip={fallFacing?.flip ?? facing.flip}
+        blockedX={blockedTarget?.x}
+        blockedY={blockedTarget?.y}
         palette={palette}
         anim={anim}
         width={boardWidth}
@@ -149,6 +183,20 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
         onPressEmpty={fall ? handlePressEmpty : undefined}
       />
     </View>
+  );
+
+  // The blocked-move explanation (CANGUPA-129) — a sibling below the frame above, not folded
+  // into BoardHud's own status line above the board, matching where the owner asked for it. Only
+  // rendered while blockedReason is set, so it reserves no space the rest of the time.
+  return (
+    <>
+      {frame}
+      {blockedReason && (
+        <Text testID="blocked-message" style={[styles.blockedMsg, { color: palette.blocked }]}>
+          {blockedReason === 'blocked-departure' ? t.board.blockedDeparture : t.board.blockedArrival}
+        </Text>
+      )}
+    </>
   );
 }
 
@@ -159,5 +207,10 @@ const styles = StyleSheet.create({
   },
   frameFit: {
     alignSelf: 'center',
+  },
+  blockedMsg: {
+    marginTop: 8,
+    textAlign: 'center',
+    fontSize: 14,
   },
 });

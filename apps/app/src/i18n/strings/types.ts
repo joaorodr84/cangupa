@@ -88,6 +88,16 @@ export interface Strings {
     readonly stuck: string;
     readonly undoOrRestart: string;
   };
+  readonly board: {
+    // Shown just below the board (CANGUPA-129), not in boardHud's own status
+    // line above it, when a tapped move is blocked by a Departure/Arrival
+    // arrow rule rather than falling — the fall setting's own fall-through
+    // only applies when there's genuinely nothing to land on. Phrasing
+    // matches help.departureRest/arrivalRest's "the edge the bracket opens
+    // on", the same term the Rules screen already uses for this.
+    readonly blockedDeparture: string;
+    readonly blockedArrival: string;
+  };
   readonly settings: {
     // The light/dark/system choice (CANGUPA-40), matching DigiSpin's own
     // naming for the same three-way appearance setting.

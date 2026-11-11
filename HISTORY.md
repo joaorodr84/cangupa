@@ -1801,6 +1801,65 @@ its parent's arm both get fixed in the side-facing sprite.
 
 ---
 
+## Era 55 — Nov 11 (continued): a blocked arrow move no longer sinks the level
+
+CANGUPA-129 fixed a reported bug: with the fall setting on (`CANGUPA-58`),
+stepping out of a Departure tile the wrong way — or into an Arrival tile
+from the wrong side — sank the level exactly like stepping onto a missing
+tile, even when a perfectly live tile sat at the target. The fall
+setting's fall-trigger check only ever asked `inMoveShape()` (pure
+step/jump geometry), inheriting a signal `legalMoves()` had already merged
+for its own purposes — "an arrow forbids this" and "nothing to land on"
+were indistinguishable once `legalMoves()` excluded both, and nothing had
+needed to tell them apart until the fall setting came along.
+
+The fix adds `Game.moveKind()` (`apps/app/src/game/board.ts`, mirrored in
+`apps/web-classic/js/game.js`), classifying an attempted move as `'none'`
+(not even in the step/jump shape), `'blocked-departure'`/`'blocked-arrival'`
+(an arrow forbids it outright, live tile or not — never falls; split into
+two reasons rather than one shared `'blocked'` so a caller can explain
+*which* rule tripped), `'empty'` (nothing to land on — falls, as before),
+or `'legal'` (defensive; never reached through this path). It's wired into
+both apps' fall triggers (`PlayableBoard.tsx`'s `handlePressEmpty`; `ui.js`'s
+click and keydown handlers), replacing the bare `inMoveShape()` check. A
+blocked attempt shakes the kangaroo in place, flashes the offending tile's
+outline (a new fixed `palette.blocked` in `apps/app`, a fixed
+`rgba(255,86,64,…)` keyframe in `web-classic`'s CSS), and plays a short
+double-beep "no" cue (`Sound.blocked()`, ported to both apps —
+`apps/app`'s rendered via `tools/gen-sounds.js` to `assets/sounds/blocked.wav`)
+— never resets the level.
+
+At the owner's follow-up request, a text explanation was added too: a new
+line just below the board (`apps/app`'s `PlayableBoard.tsx`, a new
+`#blocked-msg` element in `web-classic`'s `index.html`) names which rule
+blocked the move, in two new `board.blockedDeparture`/`board.blockedArrival`
+strings (`en.ts`/`pt.ts`, phrased to match `help.departureRest`/`arrivalRest`'s
+existing "edge the bracket opens on" wording) for `apps/app`, and two
+hardcoded Portuguese sentences for `web-classic` (which has no i18n
+layer). Unlike the shake/flash's own short timeout, the text persists
+until the player's next real action — `apps/app` clears it on `useBoard`'s
+`tick` changing (the same signal `hintFailed`'s own message rides),
+`web-classic` clears it at the top of `render()` — rather than fading on a
+fixed delay, so there's time to actually read it.
+
+One commit, with `moveKind()` rules assertions added to `board.test.ts`/
+`tools/test.js` (asserting the specific `'blocked-departure'`/`'blocked-arrival'`
+reason), Board's new `shake()`/blocked-tile-flash added to `Board.tsx`,
+and `PlayableBoard.test.tsx` cases reproducing the exact reported scenario
+(a Departure pointing right, stepping down onto a live tile), a distinct
+Arrival-blocked case, and one confirming the warning outlives the
+shake/flash's own timeout and clears on the next real move. Verified:
+`node tools/test.js` green, `npx tsc --noEmit` clean, full `apps/app` Jest
+suite green (30/30 suites, 841/841 tests). `apps/web-classic`'s
+`ui.js`/`style.css`/`index.html` changes were not opened in an actual
+browser — no browser automation tool available in this environment (same
+limitation `CANGUPA-126` hit) — reviewed by hand instead.
+
+Era 55 closes here: Nov 11, one commit, CANGUPA-129 — a blocked arrow move
+shakes and explains itself instead of sinking the level.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

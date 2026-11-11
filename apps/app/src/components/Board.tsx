@@ -35,6 +35,13 @@ export const HOP_MS = HOP_LEG_MS * 2;
 const FALL_DROP = 30;
 const FALL_MS = 500;
 
+// style.css's `shake`/`blocked-flash` keyframes (CANGUPA-129), ported as one fixed duration for
+// both the kangaroo's shake and the blocked tile's flash, so they read as one event. Exported so
+// PlayableBoard can clear its own `blockedTarget` state after the same span, the same way it
+// already reads HOP_MS to time a fall's lead-in jump.
+export const SHAKE_MS = 320;
+const SHAKE_X = 10;
+
 interface BoardProps {
   readonly w: number;
   readonly h: number;
@@ -45,6 +52,11 @@ interface BoardProps {
   readonly flip: boolean;
   readonly palette: Palette;
   readonly anim: boolean;
+  // The cell a blocked move (CANGUPA-129) just targeted, so its tile can flash — undefined most
+  // of the time. Cleared by PlayableBoard once the flash's timeout elapses; Board itself has no
+  // timer of its own, the same split fallTarget/fallFacing already use there.
+  readonly blockedX?: number;
+  readonly blockedY?: number;
   // Caps the board at this many px wide (CANGUPA-33), overriding the default
   // width:'100%' — set by PlayableBoard once it knows the height available
   // isn't the looser constraint. Omitted: falls back to 100% of the
@@ -77,14 +89,19 @@ export interface BoardHandle {
   // setting, matching the web version's `.falling` keyframe, which isn't
   // gated by `.no-anim` either.
   fall(onComplete: () => void): void;
+  // Shakes the kangaroo in place (CANGUPA-129): a move was blocked by a Departure/Arrival arrow
+  // rule, not by there being nothing to land on, so there is nothing to fall through and nowhere
+  // to move to — this is the whole of the feedback, no onComplete to chain into a reset.
+  shake(): void;
 }
 
 const Board = forwardRef<BoardHandle, BoardProps>(function Board(
-  { w, h, tiles, rooX, rooY, face, flip, palette, anim, width, onPressTile, onPressEmpty }: BoardProps,
+  { w, h, tiles, rooX, rooY, face, flip, palette, anim, blockedX, blockedY, width, onPressTile, onPressEmpty }: BoardProps,
   ref,
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
   const fallAnim = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
   // Peek (CANGUPA-71, ported from web-classic's CANGUPA-70): holding on the
   // kangaroo's own tile fades it so a special tile underneath — easy to miss
   // when it's cracked or a double tile hidden by the sprite — shows through.
@@ -153,8 +170,24 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           onComplete();
         });
       },
+      shake() {
+        // Always animates regardless of the `anim` setting, like fall() above and unlike hop() —
+        // this is the one and only signal a blocked move gets; with `anim` off there would
+        // otherwise be no visible feedback for it at all, only the sound and the tile flash.
+        shakeAnim.setValue(0);
+        Animated.sequence(
+          [-1, 0.8, -0.6, 0.3, 0].map((toValue) =>
+            Animated.timing(shakeAnim, {
+              toValue: toValue * SHAKE_X,
+              duration: SHAKE_MS / 5,
+              easing: Easing.inOut(Easing.quad),
+              useNativeDriver: true,
+            }),
+          ),
+        ).start();
+      },
     }),
-    [anim, hopAnim, fallAnim],
+    [anim, hopAnim, fallAnim, shakeAnim],
   );
 
   const fallTranslateY = fallAnim.interpolate({ inputRange: [0, 1], outputRange: [0, FALL_DROP] });
@@ -178,6 +211,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           anim={anim}
           onPress={onPressTile}
           onPressEmpty={onPressEmpty}
+          blocked={tile.x === blockedX && tile.y === blockedY}
           isRoo={tile.x === rooX && tile.y === rooY}
           onPeekStart={() => setPeeking(true)}
           onPeekEnd={() => setPeeking(false)}
@@ -196,7 +230,11 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           style={{
             flex: 1,
             opacity: fallOpacity,
-            transform: [{ translateY: Animated.add(hopAnim, fallTranslateY) }, { scale: fallScale }],
+            transform: [
+              { translateY: Animated.add(hopAnim, fallTranslateY) },
+              { scale: fallScale },
+              { translateX: shakeAnim },
+            ],
           }}
         >
           <Kangaroo face={face} flip={flip} />
@@ -220,6 +258,11 @@ interface TileProps {
   // of falling through to the board's blanket onPress, which has no cell to
   // give.
   readonly onPressEmpty?: (target?: { x: number; y: number }) => void;
+  // This tile was just the target of a blocked move (CANGUPA-129) — flashes briefly, same
+  // duration as the kangaroo's shake (Board's own shake(), triggered alongside this by
+  // PlayableBoard), so the one tile the arrow rule stopped reads as the reason, not just "nothing
+  // happened".
+  readonly blocked?: boolean;
   // Whether this is the cell the kangaroo is currently rendered on (CANGUPA-71)
   // — its own cell is never a legal move (distance 0) and, with the fall
   // setting off, has no Pressable at all otherwise, so peeking needs its own
@@ -437,7 +480,7 @@ export function TileSwatch({
   );
 }
 
-function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
+function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, blocked = false, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
   // Paused for now (CANGUPA-127) while debugging the halo's missing bottom edge, so a moving
@@ -530,6 +573,17 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, isRoo = false,
           testID={`tile-tip-outline-${tile.x}-${tile.y}`}
           pointerEvents="none"
           style={[styles.tipHalo, { borderColor: palette.muted, transform: [{ scale }] }]}
+        />
+      )}
+      {/* The blocked-move flash (CANGUPA-129) — a sibling halo, the same shape as the tip's own
+          above, just a fixed warning colour instead of a themed one: a plain mount/unmount, not
+          an Animated fade, since PlayableBoard already clears `blocked` on its own timeout
+          (matching Board's shake() duration) and a flash reads fine as an instant on/off. */}
+      {blocked && (
+        <View
+          testID={`tile-blocked-outline-${tile.x}-${tile.y}`}
+          pointerEvents="none"
+          style={[styles.tipHalo, { borderColor: palette.blocked }]}
         />
       )}
     </View>

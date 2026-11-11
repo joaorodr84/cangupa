@@ -71,6 +71,10 @@ export const pt: Strings = {
     stuck: 'Sem jogadas.',
     undoOrRestart: 'Desfaz ou reinicia.',
   },
+  board: {
+    blockedDeparture: 'Não podes saír por aí — só pelo lado onde a marca abre.',
+    blockedArrival: 'Não podes entrar por aí — só pelo lado onde a marca abre.',
+  },
   settings: {
     appearance: 'Aparência',
     light: 'Claro',
