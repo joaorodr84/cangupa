@@ -2135,6 +2135,39 @@ remaining accessibility candidates and found none needed a new task.
 
 ---
 
+## Era 64 — Nov 12 (continued): auditing apps/app end to end
+
+CANGUPA-89 was the deliberately broad "full audit of apps/app for bugs,
+improvements, and performance issues" placeholder, run now that
+tsc --noEmit and the Jest suite already cover correctness — the audit
+targeted what those don't catch: real-device performance, startup
+behaviour, AsyncStorage save patterns, accessibility gaps, dependency
+bloat, and dead code.
+
+Much of it checked out clean and stays unopened: every package.json
+dependency is used, every image and sound asset is small (images
+20-32KB, sounds 108KB total), progress.ts's parseProgress/
+sanitizeBestMoves already handle corrupt or missing save data
+defensively, no stray TODO/FIXME/XXX comments exist in src/,
+LevelsScreen's ~50-item ScrollView is fine unvirtualized at that size,
+and Board.tsx's per-tile rendering isn't memoized but doesn't matter
+yet at the current max board size (8x7 = 56 tiles).
+
+Four real issues did surface, and — per the task's own expectation,
+the way CANGUPA-54 was split into CANGUPA-78/CANGUPA-79 — each became
+its own scoped task rather than a fix bundled into this one:
+CANGUPA-137 (the shared Popup.tsx close button has no accessibility
+label), CANGUPA-138 (a possible splash-to-content flash on startup,
+especially in dark mode), CANGUPA-139 (a theoretical AsyncStorage
+write-ordering race in useProgress/useSettings, parked), and
+CANGUPA-140 (board tiles have no screen-reader semantics at all,
+parked as a substantial design problem).
+
+Era 64 closes here: Nov 12, one commit, CANGUPA-89 — audited apps/app
+end to end and split what it found into four scoped follow-ups.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

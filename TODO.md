@@ -127,18 +127,49 @@ The priority can change at any time; the ID never does.
   repo, not this one — `CANGUPA-86`'s own note flagged it as worth
   checking once a fix landed here, but doing it is out of this
   session's scope.
-- [P4] `CANGUPA-89` — Full audit of `apps/app` (the Expo/React Native
-  app) for bugs, improvements, and performance issues. Deliberately
-  broad and unscoped: the existing Jest suite (796 tests) and `tsc
-  --noEmit` already cover correctness of what's tested, so this is
-  about what those don't catch — real-device performance (board
-  render/animation cost on a big board, like packs 7-10's, bundle size,
-  startup time), UX rough edges, and anything else that isn't already
-  covered by a narrower, existing task. Should not duplicate `CANGUPA-72`
-  (hint-solver hangs on big levels) or `CANGUPA-80` (level-pack content
-  review) — those stay their own tasks. Expect this to get split into
-  concrete, scoped follow-ups once it actually runs, the way `CANGUPA-54`
-  was split into `CANGUPA-78`/`CANGUPA-79`.
+- [P2] `CANGUPA-137` — Add an accessibility label to `apps/app`'s shared
+  `Popup.tsx` close button (the "✕" `Pressable`, ~lines 38-40), used by
+  `WinPopup`, `HelpPopup`, and the clear-progress confirmation — every
+  popup in the app shares this one component, so it's a single fix.
+  Today it has no `accessibilityLabel`/`accessibilityRole`, so a screen
+  reader announces it by the glyph rather than "Close." Needs a new
+  i18n string (`en`/`pt`) plus `accessibilityRole="button"`. Surfaced
+  by `CANGUPA-89`'s audit.
+- [P2] `CANGUPA-138` — Investigate, and likely fix, a possible
+  splash-to-content flash on `apps/app` startup, most visible in dark
+  mode. `App.tsx`'s loading view (rendered while `useSettings`/
+  `useProgress` await their first AsyncStorage read) has no
+  `backgroundColor`, and no `SplashScreen.preventAutoHideAsync()` call
+  exists anywhere in the app, so Expo's splash auto-hides on first
+  paint — a transparent/white frame can show before the first themed
+  paint. `useColorScheme()` is already imported and used later in the
+  same file; a candidate fix is giving the loading view a background
+  approximated from the OS scheme before `settings` resolves. Surfaced
+  by `CANGUPA-89`'s audit but not confirmed on a real device — verify
+  the flash actually happens before fixing it blind.
+- [P4] `CANGUPA-139` — Theoretical save-write race in `apps/app`'s
+  `useProgress`/`useSettings` (`state/useProgress.ts`,
+  `state/useSettings.ts`): both hooks fire-and-forget
+  `AsyncStorage.setItem` on every change with no write queue, so two
+  rapid updates to the same key could, if their promises resolve out of
+  order, let a stale write land last and silently clobber a newer
+  value. Low real-world likelihood — AsyncStorage calls on the same key
+  are typically processed in call order, though that's not a
+  documented guarantee. Surfaced by `CANGUPA-89`'s audit; parked since
+  no concrete failure has been observed — revisit if a lost-setting or
+  lost-progress report ever comes in.
+- [P4] `CANGUPA-140` — Give `apps/app`'s board tiles real screen-reader
+  semantics (position, legality, tile kind). Today's board
+  (`Board.tsx`) has no `accessibilityLabel` per tile, so a screen-reader
+  user gets no information about the board at all — distinct from
+  `CANGUPA-97`'s visual/contrast concerns (which don't help a blind
+  user) and `CANGUPA-98`'s motor/control-scheme ones. Surfaced by
+  `CANGUPA-89`'s audit as a real gap, but flagged there as a
+  substantial design problem — what each tile should announce
+  (coordinates? direction? legal-move state?) and how a move is
+  actually performed via a screen reader, given the input model is
+  tapping the exact destination tile — rather than a quick fix, so
+  parked rather than scoped yet.
 - [P4] `CANGUPA-90` — Add achievements. Nothing like this exists yet —
   no engine or UI support, no tracked data beyond `apps/app`'s
   `Progress` (`done`, `level`, `bestMoves` in
