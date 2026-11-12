@@ -24,9 +24,23 @@ export interface Progress {
   // CANGUPA-79 add further replenishment paths here; apps/web-classic gets
   // its own equivalent system as CANGUPA-125.
   readonly hints: number;
+  // Lifetime count of hints actually spent (CANGUPA-142), for the stats
+  // screen — unlike `hints`, this only ever grows, so it stays meaningful
+  // after `hints` itself is replenished.
+  readonly hintsUsed: number;
+  // Lifetime count of undos actually taken (CANGUPA-145), for the stats
+  // screen.
+  readonly undosUsed: number;
 }
 
-export const NO_PROGRESS: Progress = { done: [], level: 0, bestMoves: {}, hints: STARTING_HINTS };
+export const NO_PROGRESS: Progress = {
+  done: [],
+  level: 0,
+  bestMoves: {},
+  hints: STARTING_HINTS,
+  hintsUsed: 0,
+  undosUsed: 0,
+};
 
 // A level's index is its place in the packs' play order (CANGUPA-56), which is
 // not where it was in the old flat list of 50 levels: a record saved under the
@@ -78,9 +92,19 @@ export function markDone(progress: Progress, levelIndex: number, moves: number):
 // Spends one hint. Floored at 0 rather than going negative, and returns the
 // same record once already there — the same "no-op when nothing changes"
 // shape as markDone/withLevel, so a press that can't actually spend anything
-// never fires a save.
+// never fires a save. hintsUsed only grows here, never floored or reset, so
+// it stays a lifetime count rather than mirroring the balance.
 export function spendHint(progress: Progress): Progress {
-  return progress.hints <= 0 ? progress : { ...progress, hints: progress.hints - 1 };
+  return progress.hints <= 0
+    ? progress
+    : { ...progress, hints: progress.hints - 1, hintsUsed: progress.hintsUsed + 1 };
+}
+
+// Counts one undo for the stats screen (CANGUPA-145). Called only when
+// useBoard's undo actually took back a move — unlike spendHint, there is no
+// balance to floor against, so every call here is a real change.
+export function recordUndo(progress: Progress): Progress {
+  return { ...progress, undosUsed: progress.undosUsed + 1 };
 }
 
 // Where the home screen's Play button should go: the first level, in play
@@ -107,6 +131,12 @@ export function withLevel(progress: Progress, levelIndex: number): Progress {
 // "Jogadas totais" line.
 export function totalBestMoves(progress: Progress): number {
   return Object.values(progress.bestMoves).reduce((sum, moves) => sum + moves, 0);
+}
+
+// Shared by hints/hintsUsed/undosUsed, each a plain non-negative integer
+// counter with its own fallback for a missing or corrupt value.
+function nonNegativeIntegerOr(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : fallback;
 }
 
 function uniqueLevelIndices(items: readonly unknown[]): number[] {
@@ -157,11 +187,13 @@ export function parseProgress(raw: string | null): Progress {
     const level =
       typeof record.level === 'number' && Number.isInteger(record.level) && record.level >= 0 ? record.level : 0;
     const bestMoves = sanitizeBestMoves(record.bestMoves);
-    const hints =
-      typeof record.hints === 'number' && Number.isInteger(record.hints) && record.hints >= 0
-        ? record.hints
-        : STARTING_HINTS;
-    return { done, level, bestMoves, hints };
+    const hints = nonNegativeIntegerOr(record.hints, STARTING_HINTS);
+    // A save from before CANGUPA-142/CANGUPA-145 has neither field at all —
+    // treated as zero spent, the same "nothing banked yet" fallback bestMoves
+    // got when it was added, not a breaking change to the saved shape.
+    const hintsUsed = nonNegativeIntegerOr(record.hintsUsed, 0);
+    const undosUsed = nonNegativeIntegerOr(record.undosUsed, 0);
+    return { done, level, bestMoves, hints, hintsUsed, undosUsed };
   } catch {
     return NO_PROGRESS;
   }

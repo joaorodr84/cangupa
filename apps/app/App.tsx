@@ -53,7 +53,7 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
   const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
-  const { progress, recordDone, recordLevel, recordHintUsed, clearProgress } = useProgress();
+  const { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, clearProgress } = useProgress();
 
   // Kept in sync here rather than read fresh on every Sound.jump() call,
   // the same split as the web version's `Sound.enabled` (ui.js sets it,
@@ -83,6 +83,7 @@ export default function App() {
           onLevelDone={recordDone}
           onChangeLevel={recordLevel}
           onHintUsed={recordHintUsed}
+          onUndoUsed={recordUndoUsed}
           onClearProgress={clearProgress}
         />
       </LanguageContext.Provider>
@@ -102,6 +103,7 @@ interface ShellProps {
   readonly onLevelDone: (levelIndex: number, moves: number) => void;
   readonly onChangeLevel: (levelIndex: number) => void;
   readonly onHintUsed: () => void;
+  readonly onUndoUsed: () => void;
   readonly onClearProgress: () => void;
 }
 
@@ -117,6 +119,7 @@ function Shell({
   onLevelDone,
   onChangeLevel,
   onHintUsed,
+  onUndoUsed,
   onClearProgress,
 }: ShellProps) {
   const insets = useSafeAreaInsets();
@@ -255,6 +258,7 @@ function Shell({
         onNext={() => onChangeLevel(currentLevel + 1)}
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
         onHintUsed={onHintUsed}
+        onUndoUsed={onUndoUsed}
       />
     );
   }

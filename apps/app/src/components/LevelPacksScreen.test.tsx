@@ -23,7 +23,7 @@ test('shows the collection label and one row per pack, with its name', async () 
 });
 
 test('each pack shows its own level range and cleared count', async () => {
-  const progress: Progress = { done: [0, 2], level: 0, bestMoves: {}, hints: 3 };
+  const progress: Progress = { done: [0, 2], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
   await render(<LevelPacksScreen packSizes={[2, 3]} progress={progress} palette={palette} {...open} onOpenPack={jest.fn()} />);
 
   // Pack 1 holds levels 1-2 (level 1 done), pack 2 holds levels 3-5 (level 3 done).
@@ -70,7 +70,7 @@ test('every pack row draws its own icon, not the same one for all', async () => 
 });
 
 test("the collection's header shows how many levels are solved across all of its packs", async () => {
-  const progress: Progress = { done: [0, 2, 3], level: 0, bestMoves: {}, hints: 3 };
+  const progress: Progress = { done: [0, 2, 3], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
   await render(
     <LevelPacksScreen packSizes={[2, 3]} progress={progress} palette={palette} {...open} onOpenPack={jest.fn()} />,
   );
@@ -80,7 +80,7 @@ test("the collection's header shows how many levels are solved across all of its
 });
 
 test('a collapsed collection keeps its header and hides every pack row', async () => {
-  const progress: Progress = { done: [0], level: 0, bestMoves: {}, hints: 3 };
+  const progress: Progress = { done: [0], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
   await render(
     <LevelPacksScreen
       packSizes={[2, 3]}

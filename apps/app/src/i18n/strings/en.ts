@@ -54,6 +54,10 @@ export const en: Strings = {
     levelsClearedValue: (cleared, total) => `${cleared}/${total}`,
     totalMoves: 'Total moves',
     totalMovesValue: (moves) => `${moves}`,
+    hintsUsed: 'Hints used',
+    hintsUsedValue: (hints) => `${hints}`,
+    undosUsed: 'Undos used',
+    undosUsedValue: (undos) => `${undos}`,
   },
   winPopup: {
     levelComplete: 'Level complete!',

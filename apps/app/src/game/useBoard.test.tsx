@@ -82,6 +82,26 @@ test('undo restores the previous position and can undo reports false once exhaus
   expect(result.current.canUndo).toBe(false);
 });
 
+// CANGUPA-145: a caller counting undos for the stats screen needs to know
+// whether a move was actually taken back, the same shape hint() already has.
+test('undo returns whether a move was actually taken back', async () => {
+  const { result } = await renderHook(() => useBoard(['S11'], true));
+
+  let undid = true;
+  await act(async () => {
+    undid = result.current.undo();
+  });
+  expect(undid).toBe(false);
+
+  await act(async () => {
+    result.current.move(1, 0);
+  });
+  await act(async () => {
+    undid = result.current.undo();
+  });
+  expect(undid).toBe(true);
+});
+
 test('reset returns to the start with an empty history', async () => {
   const { result } = await renderHook(() => useBoard(['S11'], true));
 

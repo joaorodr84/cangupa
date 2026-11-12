@@ -171,6 +171,24 @@ test('Hint is disabled once the balance hits 0, even mid-level', async () => {
   expect(onHintUsed).not.toHaveBeenCalled();
 });
 
+test('pressing Undo after a move calls onUndoUsed (CANGUPA-145)', async () => {
+  const onUndoUsed = jest.fn();
+  await renderScreen({ level: ['S11'], onUndoUsed });
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  await fireEvent.press(screen.getByLabelText('Undo'));
+
+  expect(onUndoUsed).toHaveBeenCalledTimes(1);
+});
+
+test('pressing Undo with nothing to undo does not call onUndoUsed', async () => {
+  const onUndoUsed = jest.fn();
+  await renderScreen({ level: ['S11'], onUndoUsed });
+
+  await fireEvent.press(screen.getByLabelText('Undo'));
+  expect(onUndoUsed).not.toHaveBeenCalled();
+});
+
 test('pressing the win popup\'s next-level button calls onNext', async () => {
   const onNext = jest.fn();
 

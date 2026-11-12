@@ -33,12 +33,15 @@ export function useBoard(level: Level, hints: boolean) {
     [game],
   );
 
-  const undo = useCallback(() => {
-    if (game.undo()) {
-      setTip(null);
-      setHintFailed(false);
-      setTick((t) => t + 1);
-    }
+  // Returns whether a move was actually taken back, the same shape hint()
+  // already uses, so a caller counting undos for the stats screen
+  // (CANGUPA-145) doesn't count a press with nothing to undo.
+  const undo = useCallback((): boolean => {
+    if (!game.undo()) return false;
+    setTip(null);
+    setHintFailed(false);
+    setTick((t) => t + 1);
+    return true;
   }, [game]);
 
   const reset = useCallback(() => {

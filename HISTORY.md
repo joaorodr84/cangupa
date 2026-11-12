@@ -2168,6 +2168,77 @@ end to end and split what it found into four scoped follow-ups.
 
 ---
 
+## Era 65 — Nov 12 (continued): scoping the stats page's next rows
+
+CANGUPA-91 asked which of five candidate stats-page additions were
+worth tracking before adding fields to the saved Progress shape:
+hints used, undos used, time played, a per-pack breakdown, and a
+longest-day-streak. Each got checked against what's actually already
+there, rather than assumed.
+
+Per-pack breakdown turned out to need no new field at all — done/
+bestMoves plus the existing PACK_SIZES (levels.ts) already derive
+each pack's cleared count and summed best moves, so it split out as
+CANGUPA-141. Hints used is a cheap one-field addition that rides the
+save recordHintUsed already fires on every hint press, no new write
+frequency, split out as CANGUPA-142. Undos used needs its own new
+save call — unlike hints, undo had none before — split out as
+CANGUPA-145. The owner asked for both directly rather than leaving
+them merely scoped, so each lands its own implementation right behind
+this investigation, the same way CANGUPA-124 later closed a task
+CANGUPA-54 had only opened. Time played needs real new infrastructure
+rather than a field (session timing via AppState) and sits in tension
+with the no-timer/no-pressure design CANGUPA-100 already confirmed —
+the owner confirmed wanting it anyway, resolving that tension, so it
+split out as a properly scoped CANGUPA-143 rather than parked, with
+CANGUPA-146 queued behind it to bring the same stat to
+apps/web-classic. A longest-day-streak stat still needs a
+timezone-robust date-tracking scheme nobody has asked to build yet,
+so it stays parked as CANGUPA-144.
+
+Era 65 closes here: Nov 12, one commit, CANGUPA-91 — scoped the stats
+page's next five candidates, two going straight into their own
+implementation commits next.
+
+---
+
+## Era 66 — Nov 12 (continued): counting hints spent
+
+CANGUPA-142, opened by CANGUPA-91's investigation moments earlier and
+built immediately at the owner's request rather than left scoped: a
+new hintsUsed field on apps/app's Progress (state/progress.ts),
+incremented by spendHint every time it actually takes one off the
+balance, shown as a new "Hints used" row on StatsScreen.tsx. Rides
+the same recordHintUsed save useProgress.ts already fires on every
+hint press, so no new AsyncStorage write frequency. A save from
+before this field existed has none, the same non-breaking fallback
+bestMoves got when it was added.
+
+Era 66 closes here: Nov 12, one commit, CANGUPA-142 — added the
+hints-used stat.
+
+---
+
+## Era 67 — Nov 12 (continued): counting undos taken
+
+CANGUPA-145, opened and built the same way as CANGUPA-142 just
+before it: a new undosUsed field on Progress, incremented by a new
+recordUndo reducer, shown as a new "Undos used" row on
+StatsScreen.tsx. Undo had no save call to ride, unlike hints — so
+useBoard.ts's undo() now returns whether a move was actually taken
+back (the same shape hint() already had), and BoardScreen.tsx's new
+handleUndo, wired to a new onUndoUsed prop threaded through App.tsx,
+only counts a real undo, never a press with nothing to undo. This
+does add one new AsyncStorage write per undo that did not happen
+before, the exact cost CANGUPA-91's investigation had weighed against
+undo tracking — accepted here since the owner asked for the stat
+directly, outweighing that earlier caution.
+
+Era 67 closes here: Nov 12, one commit, CANGUPA-145 — added the
+undos-used stat.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

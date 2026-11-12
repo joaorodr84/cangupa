@@ -44,6 +44,9 @@ interface BoardScreenProps {
   // Fired once per hint that actually finds a move — not on a dead end,
   // which reveals nothing and so shouldn't cost one (CANGUPA-54).
   readonly onHintUsed?: () => void;
+  // Fired once per undo that actually takes back a move — not a press with
+  // nothing to undo, which does nothing (CANGUPA-145).
+  readonly onUndoUsed?: () => void;
 }
 
 export default function BoardScreen({
@@ -61,6 +64,7 @@ export default function BoardScreen({
   onNext,
   onLevelComplete,
   onHintUsed,
+  onUndoUsed,
 }: BoardScreenProps) {
   const t = useStrings();
   // A rectangular level is turned once, to the orientation the device is in when
@@ -90,6 +94,10 @@ export default function BoardScreen({
   const handleHint = () => {
     if (hintBalance <= 0) return;
     if (hint()) onHintUsed?.();
+  };
+
+  const handleUndo = () => {
+    if (undo()) onUndoUsed?.();
   };
 
   // Closing the popup (CANGUPA-32) only hides it — the board stays solved
@@ -124,7 +132,7 @@ export default function BoardScreen({
         hintBalance={hintBalance}
         palette={palette}
         onBack={onBack}
-        onUndo={undo}
+        onUndo={handleUndo}
         onReset={reset}
         onHint={handleHint}
         onHelp={() => setHelpOpen(true)}

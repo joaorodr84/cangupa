@@ -64,6 +64,10 @@ export interface Strings {
     readonly levelsClearedValue: (cleared: number, total: number) => string;
     readonly totalMoves: string;
     readonly totalMovesValue: (moves: number) => string;
+    readonly hintsUsed: string;
+    readonly hintsUsedValue: (hints: number) => string;
+    readonly undosUsed: string;
+    readonly undosUsedValue: (undos: number) => string;
   };
   readonly winPopup: {
     readonly levelComplete: string;

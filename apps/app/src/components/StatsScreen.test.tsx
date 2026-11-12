@@ -12,17 +12,30 @@ test('shows the summary panel when nothing is cleared yet', async () => {
   expect(screen.getByText('Levels cleared')).toBeTruthy();
   expect(screen.getByText('0/50')).toBeTruthy();
   expect(screen.getByText('Total moves')).toBeTruthy();
-  expect(screen.getByText('0')).toBeTruthy();
+  expect(screen.getByText('Hints used')).toBeTruthy();
+  expect(screen.getByText('Undos used')).toBeTruthy();
+  expect(screen.getAllByText('0')).toHaveLength(3);
 });
 
-test('shows the cleared count and total moves, with no per-level breakdown', async () => {
-  const progress: Progress = { done: [0, 2], level: 2, bestMoves: { 0: 3, 2: 7 }, hints: 3 };
+test('shows the cleared count, total moves, hints used and undos used, with no per-level breakdown', async () => {
+  const progress: Progress = {
+    done: [0, 2],
+    level: 2,
+    bestMoves: { 0: 3, 2: 7 },
+    hints: 3,
+    hintsUsed: 4,
+    undosUsed: 6,
+  };
   await render(<StatsScreen totalLevels={50} progress={progress} palette={palette} />);
 
   expect(screen.getByText('Levels cleared')).toBeTruthy();
   expect(screen.getByText('2/50')).toBeTruthy();
   expect(screen.getByText('Total moves')).toBeTruthy();
   expect(screen.getByText('10')).toBeTruthy();
+  expect(screen.getByText('Hints used')).toBeTruthy();
+  expect(screen.getByText('4')).toBeTruthy();
+  expect(screen.getByText('Undos used')).toBeTruthy();
+  expect(screen.getByText('6')).toBeTruthy();
   expect(screen.queryByText('Level 1')).toBeNull();
   expect(screen.queryByText('3 moves')).toBeNull();
 });

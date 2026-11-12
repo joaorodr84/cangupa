@@ -26,6 +26,8 @@ export default function StatsScreen({ totalLevels, progress, palette }: StatsScr
       <View style={[styles.panel, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}>
         <Row label={t.stats.levelsCleared} value={t.stats.levelsClearedValue(cleared, totalLevels)} palette={palette} />
         <Row label={t.stats.totalMoves} value={t.stats.totalMovesValue(totalBestMoves(progress))} palette={palette} />
+        <Row label={t.stats.hintsUsed} value={t.stats.hintsUsedValue(progress.hintsUsed)} palette={palette} />
+        <Row label={t.stats.undosUsed} value={t.stats.undosUsedValue(progress.undosUsed)} palette={palette} />
       </View>
     </ScrollView>
   );

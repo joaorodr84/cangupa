@@ -178,18 +178,37 @@ The priority can change at any time; the ID never does.
   move-count records?), whether it's in-app only or wired to platform
   services (Game Center on iOS, Google Play Games on Android), and
   whether `apps/web-classic` gets it too or this is app-only.
-- [P3] `CANGUPA-91` — Think about what additional statistics the stats
-  page could show. Today
-  [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx) shows
-  exactly two rows — levels cleared and total (best) moves — backed by
-  `Progress`'s `done`/`bestMoves`
-  ([progress.ts](apps/app/src/state/progress.ts)). Most other candidate
-  stats aren't tracked yet and would need new fields: hints used (ties
-  to the parked `CANGUPA-54` hint balance), undos used, time played,
-  per-pack breakdown (cleared/best per pack rather than one global
-  total), longest streak of days played. Investigation only — figure
-  out which are worth tracking before adding fields to the saved
-  `Progress` shape.
+- [P3] `CANGUPA-141` — Show a per-pack cleared/best-moves breakdown on
+  `apps/app`'s
+  [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx), alongside
+  today's two global rows. Needs no new saved field: `done`/`bestMoves`
+  ([progress.ts](apps/app/src/state/progress.ts)) plus the existing
+  `PACK_SIZES` ([levels.ts](apps/app/src/game/levels.ts)) already
+  derive each pack's cleared count and summed best moves. Surfaced by
+  `CANGUPA-91`'s investigation.
+- [P2] `CANGUPA-143` — Track total time played on `apps/app` (an
+  `AppState`-based session timer, accumulated into a new persisted
+  lifetime field) and show it on
+  [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx). Surfaced
+  by `CANGUPA-91`'s investigation as sitting in tension with the
+  deliberate no-timer/no-pressure design `CANGUPA-100` already
+  confirmed (no timer, countdown, or move-limit mechanic anywhere in
+  either app) — the owner confirmed wanting it anyway, so that tension
+  is resolved; what's left is the `AppState` plumbing itself, not a
+  decision. `CANGUPA-146` tracks the same stat for `apps/web-classic`
+  once this lands.
+- [P4] `CANGUPA-144` — Show a longest-streak-of-days-played stat on
+  `apps/app`'s `StatsScreen.tsx`. Needs a new, timezone-robust
+  date-tracking scheme (today nothing records *when* a level was
+  played, only *that* it was) and a decision on what counts as "a day
+  played" — any session, or a cleared level. Surfaced and parked by
+  `CANGUPA-91`'s investigation.
+- [P4] `CANGUPA-146` — Bring `CANGUPA-143`'s time-played stat to
+  `apps/web-classic`, which has no `AppState` equivalent — needs a
+  browser-side visibility/focus timer instead, and its own save-data
+  field (`localStorage`, shape TBD). Parked until `CANGUPA-143` lands
+  on `apps/app` first, the same relationship `CANGUPA-125` has to
+  `CANGUPA-54`'s hint balance.
 - [P1] `CANGUPA-92` — Set up App Store Connect submission for
   `apps/app`: register/confirm the `com.joaorodr84.cangupa` bundle ID,
   create the App Store Connect app record, and fill in
