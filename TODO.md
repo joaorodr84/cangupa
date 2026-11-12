@@ -21,6 +21,26 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
+- [P1] `CANGUPA-131` — Move `apps/app`'s blocked-departure/blocked-arrival
+  warning (`CANGUPA-129`) from the `#blocked-message` `Text` below the board
+  (`PlayableBoard.tsx`) into `BoardHud`'s own centre status line, the same
+  reserved, fixed-height two-line slot `CANGUPA-53`'s won/stuck/hintFailed
+  swap already uses above the board. Found while building `CANGUPA-130`:
+  `fitBoardWidth` (`boardLayout.ts`) sizes the board using the *entire*
+  measured `boardArea` height with nothing held back for a message below
+  it, so on a height-constrained board a below-board message can be pushed
+  past the visible screen area — a real risk for this warning too, not just
+  `CANGUPA-130`'s stuck message, which is why that task is being reverted to
+  rely on the HUD line instead rather than fixed in place. Likely needs
+  `boardView.ts`'s `Status`/`statusFor` to gain a `blocked` kind (carrying
+  which reason, departure or arrival) ranked above `stuck`/`playing` the
+  same way `hintFailed` already outranks them, `BoardHud.tsx`'s `CentreText`
+  to render it, and `PlayableBoard.tsx`'s blocked-flash/shake/sound to keep
+  firing while just handing the reason up instead of rendering its own text.
+  `PlayableBoard.test.tsx`'s existing CANGUPA-129 assertions (which check
+  for the warning text via `screen.getByText`, not tied to its current
+  below-board position) should mostly carry over unchanged once the text
+  renders in the HUD instead.
 - [P2] `CANGUPA-72` — The hint solver (`Game.solve`) can run out of memory or
   take many seconds on some big levels turned for a portrait screen, so
   pressing Hint could hang the app. Originally found on packs 8 to 10 while

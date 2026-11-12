@@ -1860,6 +1860,41 @@ shakes and explains itself instead of sinking the level.
 
 ---
 
+## Era 56 — Nov 12: a stuck board already had its invitation to retry
+
+CANGUPA-130 set out to add an invitation to retry once `apps/app`'s board
+is stuck (`useBoard`'s `stuck` flag true, no legal moves left, board not
+won). Two designs were tried and rejected in conversation with the owner.
+A `StuckPopup` modeled on `WinPopup` (`CANGUPA-32`) went first — rejected
+because `BoardHud`'s Undo/Restart live in their own corner, so a popup
+covering the board would sit in front of the very controls it's telling
+the player to use. A plain message below the board, reusing `CANGUPA-129`'s
+blocked-move-warning placement and persistence, went next — rejected once
+`boardLayout.ts`'s `fitBoardWidth` turned out to size the board using the
+*entire* measured `boardArea` height with nothing held back for a message
+below it, so that placement risks being pushed past the visible screen on
+a height-constrained board.
+
+`BoardHud.tsx` already shows "No moves left. Undo or restart." inline, in
+its own reserved, fixed-height status line (`CANGUPA-53`) — immune to that
+risk by construction, and already satisfying the task's own ask. Nothing
+further was built: both tried implementations were built, tested green,
+then fully reverted, leaving no app code in the closing commit.
+
+The same below-board-placement risk found here also applies to
+`CANGUPA-129`'s existing blocked-move warning, not just this task's own
+stuck message — moving it into the same HUD status line is split out as
+`CANGUPA-131`.
+
+One commit, bookkeeping only: `TASKS.md` closes CANGUPA-130 and bumps the
+next-ID counter to CANGUPA-132, `TODO.md` gains CANGUPA-131.
+
+Era 56 closes here: Nov 12, one commit, CANGUPA-130 — a stuck board's
+retry invitation turns out to already exist, and the search for a second
+one surfaces a shared placement risk worth its own task.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
