@@ -74,13 +74,6 @@ The priority can change at any time; the ID never does.
   video, building on `CANGUPA-54`'s hint balance. Unscoped: which ad
   network/SDK, platform availability (the web has no rewarded-video SDK),
   and app-store review requirements aren't decided yet.
-- [P4] `CANGUPA-79` — Let players buy hints in an in-app store, building
-  on `CANGUPA-54`'s hint balance. Unscoped: store listing, pricing, and
-  which in-app-purchase SDK (App Store/Play Store) to use aren't decided
-  yet. `CANGUPA-96`'s investigation flagged that this same SDK choice
-  should also serve the pack-unlock purchase it recommends
-  (`CANGUPA-106`), so decide it with both consumers in mind, not hints
-  alone.
 - [P4] `CANGUPA-84` — Let some levels be completed in more than one
   distinct, named way, instead of today's single solved/unsolved state —
   e.g. a level offering "finish using the spiral path" and "finish
@@ -240,11 +233,12 @@ The priority can change at any time; the ID never does.
   ([storage.ts](apps/app/src/state/storage.ts)'s existing pattern),
   `isUnlocked` ([progress.ts](apps/app/src/state/progress.ts)) gated on
   it past the free packs, restore-purchase handling, and the store UI
-  itself. Blocked on `CANGUPA-79` picking an in-app-purchase SDK (now
-  serving both hints and this) and on the owner confirming the
-  free/paid pack cut and pricing `CANGUPA-96` left open. Not blocking
-  `CANGUPA-92`'s first submission — ship with every pack free first,
-  add this as a fast-follow once the SDK is chosen.
+  itself. `CANGUPA-79` has now picked the SDK (react-native-iap, serving
+  both hints and this) and shows the shape to follow for the purchase
+  flow itself; still blocked on the owner confirming the free/paid pack
+  cut and pricing `CANGUPA-96` left open. Not blocking `CANGUPA-92`'s
+  first submission — ship with every pack free first, add this as a
+  fast-follow.
 - [P2] `CANGUPA-97` — Analyze visual accessibility. Concrete issue
   already found: `CANGUPA-87`'s proposed tile colours (Departure green,
   Arrival raspberry red) are exactly the pair hardest to tell apart under

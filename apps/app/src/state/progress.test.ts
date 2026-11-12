@@ -1,4 +1,5 @@
 import {
+  addHints,
   firstUnsolvedLevel,
   isDone,
   isUnlocked,
@@ -174,6 +175,24 @@ describe('recordUndo', () => {
   it('leaves every other field untouched', () => {
     const progress: Progress = { done: [1], level: 1, bestMoves: { 1: 4 }, hints: 2, hintsUsed: 1, undosUsed: 0 };
     expect(recordUndo(progress)).toEqual({ ...progress, undosUsed: 1 });
+  });
+});
+
+describe('addHints', () => {
+  it('adds the bought amount to the balance', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
+    expect(addHints(progress, 10).hints).toBe(13);
+  });
+
+  it('is uncapped, the same as markDone\'s per-clear hint', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 0, hintsUsed: 0, undosUsed: 0 };
+    expect(addHints(progress, 100).hints).toBe(100);
+  });
+
+  it('returns the same record for a zero or negative amount, so a malformed purchase never fires a save', () => {
+    const progress: Progress = { done: [], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
+    expect(addHints(progress, 0)).toBe(progress);
+    expect(addHints(progress, -5)).toBe(progress);
   });
 });
 

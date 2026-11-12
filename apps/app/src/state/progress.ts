@@ -20,9 +20,10 @@ export interface Progress {
   // index. A level only gets an entry once it's been cleared at least once.
   readonly bestMoves: Readonly<Record<number, number>>;
   // Hints left to spend (CANGUPA-54), replenished one at a time by markDone
-  // on each level's first clear (CANGUPA-124, uncapped). CANGUPA-78/
-  // CANGUPA-79 add further replenishment paths here; apps/web-classic gets
-  // its own equivalent system as CANGUPA-125.
+  // on each level's first clear (CANGUPA-124, uncapped) and in bulk by
+  // addHints below (CANGUPA-79's in-app purchase). CANGUPA-78 (reward video)
+  // would add a third path here; apps/web-classic gets its own equivalent
+  // system as CANGUPA-125.
   readonly hints: number;
   // Lifetime count of hints actually spent (CANGUPA-142), for the stats
   // screen — unlike `hints`, this only ever grows, so it stays meaningful
@@ -105,6 +106,15 @@ export function spendHint(progress: Progress): Progress {
 // balance to floor against, so every call here is a real change.
 export function recordUndo(progress: Progress): Progress {
   return { ...progress, undosUsed: progress.undosUsed + 1 };
+}
+
+// Adds hints bought from the in-app store (CANGUPA-79), uncapped — the same
+// no-ceiling balance CANGUPA-124's per-clear reward already keeps growing.
+// amount is always one of HINT_PRODUCTS' own counts in practice, but this
+// still guards <= 0 the same defensive way spendHint guards running negative,
+// so a malformed or duplicate purchase callback can't silently subtract.
+export function addHints(progress: Progress, amount: number): Progress {
+  return amount <= 0 ? progress : { ...progress, hints: progress.hints + amount };
 }
 
 // Where the home screen's Play button should go: the first level, in play

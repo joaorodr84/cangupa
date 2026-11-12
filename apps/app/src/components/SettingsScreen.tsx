@@ -54,6 +54,10 @@ interface SettingsScreenProps {
   readonly onChangeFall: (fall: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly onClearProgress: () => void;
+  // Opens the hint store popup (CANGUPA-79) — this row exists to stock up
+  // ahead of time, alongside the one BoardHud's own hint button already
+  // opens once the balance runs out mid-level.
+  readonly onOpenHintStore: () => void;
 }
 
 export default function SettingsScreen({
@@ -66,6 +70,7 @@ export default function SettingsScreen({
   onChangeFall,
   onChangeLanguage,
   onClearProgress,
+  onOpenHintStore,
 }: SettingsScreenProps) {
   const t = useStrings();
   const ink = { color: palette.ink };
@@ -136,6 +141,13 @@ export default function SettingsScreen({
           <ToggleRow testID="toggle-fall" label={t.settings.fall} value={settings.fall} onChange={onChangeFall} ink={ink} />
           <RowDivider palette={palette} />
           <ToggleRow testID="toggle-sound" label={t.settings.sound} value={settings.sound} onChange={onChangeSound} ink={ink} />
+        </View>
+
+        <Text style={[styles.sectionLabel, muted]}>{t.settings.hintStoreSection}</Text>
+        <View style={[styles.group, groupColours]}>
+          <Pressable style={styles.row} onPress={onOpenHintStore}>
+            <Text style={ink}>{t.settings.buyHints}</Text>
+          </Pressable>
         </View>
 
         <Text style={[styles.sectionLabel, muted]}>{t.settings.language}</Text>

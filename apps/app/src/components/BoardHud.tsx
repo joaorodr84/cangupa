@@ -34,8 +34,11 @@ import ControlIcon, { type ControlIconId } from './ControlIcon';
 interface BoardHudProps {
   readonly status: Status;
   readonly canUndo: boolean;
-  // Hints left to spend (CANGUPA-54) — disables Hint once it hits 0, same as
-  // winning does, and shows as a small badge on the Hint icon.
+  // Hints left to spend (CANGUPA-54), shown as a small badge on the Hint
+  // icon. Winning still disables the button outright, but hitting 0 no
+  // longer does (CANGUPA-79) — onHint itself now opens the hint store
+  // instead of spending one once the balance is out, so the button stays
+  // pressable either way; only its label and badge change.
   readonly hintBalance: number;
   readonly palette: Palette;
   readonly onBack: () => void;
@@ -73,9 +76,9 @@ export default function BoardHud({
       <View style={[styles.group, { backgroundColor: palette.panel }]}>
         <GroupButton
           id="hint"
-          label={t.boardHud.hint}
+          label={hintBalance > 0 ? t.boardHud.hint : t.boardHud.buyHints}
           palette={palette}
-          disabled={status.kind === 'won' || hintBalance <= 0}
+          disabled={status.kind === 'won'}
           badge={hintBalance}
           onPress={onHint}
         />

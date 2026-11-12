@@ -74,6 +74,7 @@ export const pt: Strings = {
     moves: (moves) => `Jogadas ${moves}`,
     previousLevel: 'Nível anterior',
     nextLevel: 'Próximo nível',
+    buyHints: 'Comprar dicas',
   },
   board: {
     blockedDeparture: 'Não podes saír por aí — só pelo lado aberto.',
@@ -96,6 +97,15 @@ export const pt: Strings = {
     yes: 'Sim',
     language: 'Idioma',
     followDevice: 'Seguir o dispositivo',
+    hintStoreSection: 'Dicas',
+    buyHints: 'Comprar dicas',
+  },
+  hintStore: {
+    heading: 'Comprar dicas',
+    connecting: 'A ligar à loja…',
+    buy: 'Comprar',
+    hintsLabel: (count) => `${count} dicas`,
+    error: 'Não foi possível concluir a compra. Tenta outra vez.',
   },
   collection: 'O Relevo',
   packs: [

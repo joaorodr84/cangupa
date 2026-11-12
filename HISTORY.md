@@ -2239,6 +2239,46 @@ undos-used stat.
 
 ---
 
+## Era 68 — Nov 12 (continued): an in-app store to buy hints
+
+CANGUPA-79 was the other half of CANGUPA-54's hint-balance split, the
+IAP side CANGUPA-78 (reward video) left for later — letting players
+buy hints with real money rather than only earn them.
+
+Three consumable packs went in (10/25/100 hints at $0.99/$1.99/$4.99,
+src/iap/hintProducts.ts's HINT_PRODUCTS), sold through react-native-iap
+(v17.3.6, its Nitro rewrite), chosen with the owner since CANGUPA-96's
+investigation had flagged that this same SDK choice should also serve
+CANGUPA-106's planned pack-unlock purchase, not hints alone.
+useHintStore.ts wraps react-native-iap's own useIAP hook down to
+exactly what the UI needs: the three products with their live store
+price, a buy(sku) call, and an idle/pending/error status, finishing
+every purchase (consumable, crediting nothing for a sku outside
+HINT_PRODUCTS) before crediting hints, since an unfinished consumable
+replays on iOS's next launch and auto-refunds on Android after three
+days.
+
+HintStorePopup.tsx is the store screen itself, reachable two ways:
+BoardHud's Hint button, which now stays pressable at a 0 balance
+instead of disabling — its onPress opens the store there instead of
+spending one — and a new "Hints" section in Settings for stocking up
+ahead of time. progress.ts gained addHints (uncapped, the same shape
+as CANGUPA-124's per-clear hint) and useProgress.ts a
+recordHintsPurchased to persist it.
+
+react-native-iap needs a native build, no Expo Go support, so a Jest
+manual mock (__mocks__/react-native-iap.ts) stands in for every other
+test that merely imports something importing it. Left for the owner,
+outside code: registering the three SKUs and prices in App Store
+Connect/Play Console, and an actual device/sandbox purchase test once
+a dev-client build exists.
+
+Era 68 closes here: Nov 12, one commit, CANGUPA-79 — built the in-app
+hint store on react-native-iap, reachable from the Hint button at 0
+balance and from a new Settings section.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

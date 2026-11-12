@@ -59,13 +59,13 @@ test('disables hint once won', async () => {
   expect(onHint).not.toHaveBeenCalled();
 });
 
-test('disables hint once the balance hits 0, even mid-level', async () => {
+test('hint stays pressable at 0 balance, mid-level — opens the store instead (CANGUPA-79)', async () => {
   const status: Status = { kind: 'playing', levelNumber: 1, totalLevels: 50, moves: 2, remaining: 1 };
   const onHint = jest.fn();
   await renderHud({ status, hintBalance: 0, onHint });
 
-  await fireEvent.press(screen.getByLabelText('Hint'));
-  expect(onHint).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByLabelText('Buy hints'));
+  expect(onHint).toHaveBeenCalledTimes(1);
 });
 
 test('shows the hint balance as a badge on the hint icon', async () => {

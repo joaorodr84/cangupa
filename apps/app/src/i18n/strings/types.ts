@@ -95,6 +95,11 @@ export interface Strings {
     // icon-only one.
     readonly previousLevel: string;
     readonly nextLevel: string;
+    // The hint button's own accessibility label once the balance is 0
+    // (CANGUPA-79): the icon itself doesn't change, only what pressing it
+    // does — opens the store instead of spending a hint — so a screen
+    // reader needs the label to say so.
+    readonly buyHints: string;
   };
   readonly board: {
     // Shown in the board's own reserved message area below it (CANGUPA-129,
@@ -130,6 +135,25 @@ export interface Strings {
     readonly yes: string;
     readonly language: string;
     readonly followDevice: string;
+    // The store entry point under its own section (CANGUPA-79), alongside
+    // the one already reachable from BoardHud's hint button at 0 balance —
+    // this one for stocking up ahead of time rather than only when stuck.
+    readonly hintStoreSection: string;
+    readonly buyHints: string;
+  };
+  // The hint-pack popup (CANGUPA-79), reachable from BoardHud's hint button
+  // once the balance is 0 and from its own Settings section.
+  readonly hintStore: {
+    readonly heading: string;
+    // Shown in place of the product rows until react-native-iap's
+    // connection comes up — on a device with no native IAP build (Expo Go)
+    // this never resolves, which is expected, not an error state.
+    readonly connecting: string;
+    readonly buy: string;
+    // Pluralised (CANGUPA-79 reuses winPopup.inMoves' "1 move"/"N moves"
+    // pattern) since the product list always shows a count, not just "Buy".
+    readonly hintsLabel: (count: number) => string;
+    readonly error: string;
   };
   // The level packs (CANGUPA-56), in play order: entry n is pack n + 1 in
   // src/game/packs.ts, whose own English name and blurb are the same text as

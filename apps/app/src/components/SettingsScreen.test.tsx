@@ -17,6 +17,7 @@ function renderScreen(overrides: Partial<Parameters<typeof SettingsScreen>[0]> =
     onChangeFall: jest.fn(),
     onChangeLanguage: jest.fn(),
     onClearProgress: jest.fn(),
+    onOpenHintStore: jest.fn(),
     ...overrides,
   };
   return { props, result: render(<SettingsScreen {...props} />) };
@@ -96,4 +97,13 @@ test('marks the current language choice as selected', async () => {
 
   expect(screen.getByTestId('language-pt').props.accessibilityState).toEqual({ checked: true });
   expect(screen.getByTestId('language-system').props.accessibilityState).toEqual({ checked: false });
+});
+
+test('tapping Buy hints opens the hint store (CANGUPA-79)', async () => {
+  const onOpenHintStore = jest.fn();
+  const { result } = renderScreen({ onOpenHintStore });
+  await result;
+
+  await fireEvent.press(screen.getByText('Buy hints'));
+  expect(onOpenHintStore).toHaveBeenCalledTimes(1);
 });

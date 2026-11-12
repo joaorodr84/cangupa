@@ -77,6 +77,7 @@ export const en: Strings = {
     moves: (moves) => `Moves ${moves}`,
     previousLevel: 'Previous level',
     nextLevel: 'Next level',
+    buyHints: 'Buy hints',
   },
   board: {
     blockedDeparture: "Can't leave that way — only through the open edge.",
@@ -99,6 +100,15 @@ export const en: Strings = {
     yes: 'Yes',
     language: 'Language',
     followDevice: 'Follow the device',
+    hintStoreSection: 'Hints',
+    buyHints: 'Buy hints',
+  },
+  hintStore: {
+    heading: 'Buy hints',
+    connecting: 'Connecting to the store…',
+    buy: 'Buy',
+    hintsLabel: (count) => `${count} ${count === 1 ? 'hint' : 'hints'}`,
+    error: "Couldn't complete the purchase. Try again.",
   },
   collection: 'Lay of the Land',
   packs: [

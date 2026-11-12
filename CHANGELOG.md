@@ -16,6 +16,14 @@ Open work is listed in [TODO.md](TODO.md).
   able to advance to the next level from inside the win popup after
   clearing one. The previous arrow is disabled on level 1; the next arrow
   stays disabled until the current level is solved.
+- The app now has an in-app hint store for buying hints with real money,
+  on top of earning them for free by watching a reward video. Three
+  consumable packs are on offer: 10 hints for $0.99, 25 hints for $1.99
+  and 100 hints for $4.99. The store opens either by tapping the Hint
+  button on the board screen when the balance is 0 — that button now
+  stays pressable at 0 and opens the store instead of just disabling
+  itself — or from a new "Hints" section on the Settings screen, for
+  stocking up ahead of time.
 
 ### Changed
 

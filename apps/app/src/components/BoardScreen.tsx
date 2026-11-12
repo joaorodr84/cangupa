@@ -47,6 +47,10 @@ interface BoardScreenProps {
   // Fired once per undo that actually takes back a move — not a press with
   // nothing to undo, which does nothing (CANGUPA-145).
   readonly onUndoUsed?: () => void;
+  // Opens the hint store (CANGUPA-79) — handleHint below calls this instead
+  // of spending a hint once the balance is out, rather than the dead end
+  // BoardHud's disabled state used to leave it at.
+  readonly onBuyHints?: () => void;
 }
 
 export default function BoardScreen({
@@ -65,6 +69,7 @@ export default function BoardScreen({
   onLevelComplete,
   onHintUsed,
   onUndoUsed,
+  onBuyHints,
 }: BoardScreenProps) {
   const t = useStrings();
   // A rectangular level is turned once, to the orientation the device is in when
@@ -90,9 +95,14 @@ export default function BoardScreen({
   // Guards the spend here rather than trusting BoardHud's own disabled state
   // alone (CANGUPA-54) — the balance is what actually decides whether a
   // hint is allowed, the UI is only a reflection of it — and only spends one
-  // when the solver actually found a move, not on a dead end.
+  // when the solver actually found a move, not on a dead end. Out of hints
+  // opens the store instead of doing nothing (CANGUPA-79), now that
+  // BoardHud's own button stays pressable at 0 rather than disabling.
   const handleHint = () => {
-    if (hintBalance <= 0) return;
+    if (hintBalance <= 0) {
+      onBuyHints?.();
+      return;
+    }
     if (hint()) onHintUsed?.();
   };
 

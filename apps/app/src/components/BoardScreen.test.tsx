@@ -163,12 +163,14 @@ test('a dead-end hint does not call onHintUsed', async () => {
   expect(onHintUsed).not.toHaveBeenCalled();
 });
 
-test('Hint is disabled once the balance hits 0, even mid-level', async () => {
+test('pressing Hint at 0 balance opens the hint store instead of spending one (CANGUPA-79)', async () => {
   const onHintUsed = jest.fn();
-  await renderScreen({ level: ['S11'], hintBalance: 0, onHintUsed });
+  const onBuyHints = jest.fn();
+  await renderScreen({ level: ['S11'], hintBalance: 0, onHintUsed, onBuyHints });
 
-  await fireEvent.press(screen.getByLabelText('Hint'));
+  await fireEvent.press(screen.getByLabelText('Buy hints'));
   expect(onHintUsed).not.toHaveBeenCalled();
+  expect(onBuyHints).toHaveBeenCalledTimes(1);
 });
 
 test('pressing Undo after a move calls onUndoUsed (CANGUPA-145)', async () => {

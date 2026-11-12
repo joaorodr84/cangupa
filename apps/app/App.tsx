@@ -8,6 +8,7 @@ import BackArrow from './src/components/BackArrow';
 import BoardScreen from './src/components/BoardScreen';
 import FooterNav, { type FooterTab } from './src/components/FooterNav';
 import HelpScreen from './src/components/HelpScreen';
+import HintStorePopup from './src/components/HintStorePopup';
 import HomeScreen from './src/components/HomeScreen';
 import LevelPacksScreen from './src/components/LevelPacksScreen';
 import LevelsScreen from './src/components/LevelsScreen';
@@ -53,7 +54,8 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
   const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
-  const { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, clearProgress } = useProgress();
+  const { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, recordHintsPurchased, clearProgress } =
+    useProgress();
 
   // Kept in sync here rather than read fresh on every Sound.jump() call,
   // the same split as the web version's `Sound.enabled` (ui.js sets it,
@@ -84,6 +86,7 @@ export default function App() {
           onChangeLevel={recordLevel}
           onHintUsed={recordHintUsed}
           onUndoUsed={recordUndoUsed}
+          onHintsPurchased={recordHintsPurchased}
           onClearProgress={clearProgress}
         />
       </LanguageContext.Provider>
@@ -104,6 +107,7 @@ interface ShellProps {
   readonly onChangeLevel: (levelIndex: number) => void;
   readonly onHintUsed: () => void;
   readonly onUndoUsed: () => void;
+  readonly onHintsPurchased: (hints: number) => void;
   readonly onClearProgress: () => void;
 }
 
@@ -120,6 +124,7 @@ function Shell({
   onChangeLevel,
   onHintUsed,
   onUndoUsed,
+  onHintsPurchased,
   onClearProgress,
 }: ShellProps) {
   const insets = useSafeAreaInsets();
@@ -154,6 +159,10 @@ function Shell({
   // is always one; Help can now also open from Board itself (CANGUPA-103's
   // BoardHud button), so this has to be a full `Panel`, not just a `FooterTab`.
   const [returnTo, setReturnTo] = useState<Panel>('home');
+  // Whether the hint store popup (CANGUPA-79) is open — kept here rather
+  // than in BoardScreen or SettingsScreen since both open it, the same
+  // reason packsCollapsed above lives in Shell rather than LevelPacksScreen.
+  const [hintStoreOpen, setHintStoreOpen] = useState(false);
   const palette = paletteFor(settings.themeMode, useColorScheme());
   const currentLevel = Math.max(0, Math.min(LEVELS.length - 1, progress.level));
   // Where Play opens into, not just progress.level (the last level played):
@@ -235,6 +244,7 @@ function Shell({
           onClearProgress();
           goTo('board');
         }}
+        onOpenHintStore={() => setHintStoreOpen(true)}
       />
     );
   } else {
@@ -259,6 +269,7 @@ function Shell({
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
         onHintUsed={onHintUsed}
         onUndoUsed={onUndoUsed}
+        onBuyHints={() => setHintStoreOpen(true)}
       />
     );
   }
@@ -296,6 +307,12 @@ function Shell({
           screen's full width and sits flush against the bottom edge, instead
           of inheriting content's horizontal padding and insets.bottom gap. */}
       {showFooter && <FooterNav active={panel} palette={palette} onSelect={selectFooterTab} insetBottom={insets.bottom} />}
+      {/* Covers the full screen including the footer (CANGUPA-79), the same
+          as any other Popup, but mounted here rather than inside Board or
+          Settings since both open it and neither should own its state. */}
+      {hintStoreOpen && (
+        <HintStorePopup palette={palette} onClose={() => setHintStoreOpen(false)} onPurchased={onHintsPurchased} />
+      )}
       {/* Light status-bar content reads against the dark palette's near-black
           bg2; the light palette needs the inverse (DigiSpin's App.tsx does
           the same identity check rather than going through resolvedThemeOf,

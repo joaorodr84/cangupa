@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { deviceStorage } from './deviceStorage';
 import {
+  addHints,
   loadProgress,
   markDone,
   NO_PROGRESS,
@@ -65,7 +66,11 @@ export function useProgress(storage: Storage = deviceStorage) {
   const recordLevel = useCallback((levelIndex: number) => persist(withLevel(latest.current, levelIndex)), [persist]);
   const recordHintUsed = useCallback(() => persist(spendHint(latest.current)), [persist]);
   const recordUndoUsed = useCallback(() => persist(recordUndo(latest.current)), [persist]);
+  const recordHintsPurchased = useCallback(
+    (amount: number) => persist(addHints(latest.current, amount)),
+    [persist],
+  );
   const clearProgress = useCallback(() => persist(NO_PROGRESS), [persist]);
 
-  return { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, clearProgress };
+  return { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, recordHintsPurchased, clearProgress };
 }
