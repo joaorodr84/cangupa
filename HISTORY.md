@@ -2057,8 +2057,10 @@ had stretched each `groupDivider` the full height of the row, touching
 the buttons' top and bottom edges flush. Added `marginVertical: 8` to
 the `groupDivider` style to inset them.
 
-Era 60 closes here: Nov 12, one commit, CANGUPA-135 — a small visual
-fix to the board HUD's divider lines.
+CANGUPA-136 carries the same treatment to the Settings screen, where each group becomes one rounded panel with a single outline and 1px dividers inset to the row text, replacing per-row borders.
+
+Era 60 closes here: Nov 12, two commits, CANGUPA-135 and CANGUPA-136 — small visual
+fixes to divider lines in the board HUD and the Settings screen.
 
 ---
 

@@ -2,18 +2,19 @@
 // settings wiring and clear-progress confirm(). The web version still has no
 // i18n layer (CANGUPA-38 only covers apps/app).
 //
-// Laid out in labelled sections of rounded rows (CANGUPA-37), matching
-// DigiSpin's SettingsScreen.tsx: an uppercase section label above a group of
-// full-width rows, each with a trailing mark for the selected choice. Rows
-// within a group sit flush against each other with only the group's first
-// and last corners rounded (CANGUPA-51), so the group reads as one block
-// rather than a stack of separate pills; a 1px border stands in for the gap
-// that used to separate the rows. The language section (CANGUPA-38) follows
-// DigiSpin's own language picker: 'system' listed first, each language shown
-// in its own name (an endonym), not translated — the same convention every
-// mainstream OS language picker follows, so "Português" still reads as
-// "Português" while the app is currently showing English. No on-screen title
-// (CANGUPA-49): the footer tab already names this screen "Settings".
+// Laid out in labelled sections (CANGUPA-37), matching DigiSpin's
+// SettingsScreen.tsx: an uppercase section label above a group of full-width
+// rows, each with a trailing mark for the selected choice. Each group is one
+// rounded panel with a 1px outline (CANGUPA-51), so it reads as a single
+// block rather than a stack of separate pills. Rows inside a group are split
+// by 1px dividers inset to the row text's margin (CANGUPA-136), so the
+// outline stays unbroken at the edges. The language section (CANGUPA-38)
+// follows DigiSpin's own language picker: 'system' listed first, each
+// language shown in its own name (an endonym), not translated — the same
+// convention every mainstream OS language picker follows, so "Português"
+// still reads as "Português" while the app is currently showing English. No
+// on-screen title (CANGUPA-49): the footer tab already names this screen
+// "Settings".
 //
 // Clearing progress sits under its own "Data" section (CANGUPA-52) and is
 // confirmed with Popup, the same screen-covering card WinPopup uses for the
@@ -21,19 +22,22 @@
 // confirm() inspired — matching the app's own visual language instead of
 // looking like a system dialog. The No button takes focus as soon as the
 // popup opens, since it's the safe default for a destructive confirmation.
-import { type ComponentRef, useEffect, useRef, useState } from 'react';
+import { type ComponentRef, Fragment, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { LOCALES, type LanguageSetting, type Locale } from '../i18n/locale';
 import { useStrings } from '../i18n/useStrings';
 import { type Settings } from '../state/settings';
 import { type Palette, type ThemeMode } from '../theme/palette';
-import { groupedRowCorners } from './groupedRow';
 import Popup from './Popup';
 
-// The radius each row group rounds its first and last row to (CANGUPA-51);
-// matches the plain rounded corners the rows used before they were grouped.
-const ROW_RADIUS = 12;
+// The corner radius of each group's outline (CANGUPA-51); matches the plain
+// rounded corners the rows used before they were grouped.
+const GROUP_RADIUS = 12;
+
+// Matches the row's paddingHorizontal, so dividers start and end where the
+// row text does.
+const DIVIDER_INSET = 16;
 
 const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = {
   en: 'English',
@@ -66,6 +70,7 @@ export default function SettingsScreen({
   const t = useStrings();
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
+  const groupColours = { backgroundColor: palette.panel, borderColor: palette.panelBorder };
   const [confirmVisible, setConfirmVisible] = useState(false);
   const noButtonRef = useRef<ComponentRef<typeof Pressable>>(null);
 
@@ -97,108 +102,74 @@ export default function SettingsScreen({
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.wrap}>
         <Text style={[styles.sectionLabel, muted]}>{t.settings.appearance}</Text>
-        <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.appearance}>
+        <View
+          accessibilityRole="radiogroup"
+          accessibilityLabel={t.settings.appearance}
+          style={[styles.group, groupColours]}
+        >
           {themeChoices.map((choice, index) => {
             const selected = choice.mode === settings.themeMode;
             return (
-              <Pressable
-                key={choice.mode}
-                testID={`theme-mode-${choice.mode}`}
-                onPress={() => onChangeThemeMode(choice.mode)}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: selected }}
-                style={[
-                  styles.row,
-                  { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-                  groupedRowCorners(index, themeChoices.length, ROW_RADIUS),
-                ]}
-              >
-                <Text style={ink}>{choice.label}</Text>
-                <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
-              </Pressable>
+              <Fragment key={choice.mode}>
+                {index > 0 && <RowDivider palette={palette} />}
+                <Pressable
+                  testID={`theme-mode-${choice.mode}`}
+                  onPress={() => onChangeThemeMode(choice.mode)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: selected }}
+                  style={styles.row}
+                >
+                  <Text style={ink}>{choice.label}</Text>
+                  <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
+                </Pressable>
+              </Fragment>
             );
           })}
         </View>
 
         <Text style={[styles.sectionLabel, muted]}>{t.settings.gameplay}</Text>
-        <View>
-          <ToggleRow
-            testID="toggle-hints"
-            label={t.settings.hints}
-            value={settings.hints}
-            onChange={onChangeHints}
-            ink={ink}
-            palette={palette}
-            index={0}
-            length={4}
-          />
-          <ToggleRow
-            testID="toggle-anim"
-            label={t.settings.anim}
-            value={settings.anim}
-            onChange={onChangeAnim}
-            ink={ink}
-            palette={palette}
-            index={1}
-            length={4}
-          />
-          <ToggleRow
-            testID="toggle-fall"
-            label={t.settings.fall}
-            value={settings.fall}
-            onChange={onChangeFall}
-            ink={ink}
-            palette={palette}
-            index={2}
-            length={4}
-          />
-          <ToggleRow
-            testID="toggle-sound"
-            label={t.settings.sound}
-            value={settings.sound}
-            onChange={onChangeSound}
-            ink={ink}
-            palette={palette}
-            index={3}
-            length={4}
-          />
+        <View style={[styles.group, groupColours]}>
+          <ToggleRow testID="toggle-hints" label={t.settings.hints} value={settings.hints} onChange={onChangeHints} ink={ink} />
+          <RowDivider palette={palette} />
+          <ToggleRow testID="toggle-anim" label={t.settings.anim} value={settings.anim} onChange={onChangeAnim} ink={ink} />
+          <RowDivider palette={palette} />
+          <ToggleRow testID="toggle-fall" label={t.settings.fall} value={settings.fall} onChange={onChangeFall} ink={ink} />
+          <RowDivider palette={palette} />
+          <ToggleRow testID="toggle-sound" label={t.settings.sound} value={settings.sound} onChange={onChangeSound} ink={ink} />
         </View>
 
         <Text style={[styles.sectionLabel, muted]}>{t.settings.language}</Text>
-        <View accessibilityRole="radiogroup" accessibilityLabel={t.settings.language}>
+        <View
+          accessibilityRole="radiogroup"
+          accessibilityLabel={t.settings.language}
+          style={[styles.group, groupColours]}
+        >
           {languageChoices.map((choice, index) => {
             const selected = choice.language === settings.language;
             return (
-              <Pressable
-                key={choice.language}
-                testID={`language-${choice.language}`}
-                onPress={() => onChangeLanguage(choice.language)}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: selected }}
-                style={[
-                  styles.row,
-                  { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-                  groupedRowCorners(index, languageChoices.length, ROW_RADIUS),
-                ]}
-              >
-                <Text style={ink}>{choice.label}</Text>
-                <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
-              </Pressable>
+              <Fragment key={choice.language}>
+                {index > 0 && <RowDivider palette={palette} />}
+                <Pressable
+                  testID={`language-${choice.language}`}
+                  onPress={() => onChangeLanguage(choice.language)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: selected }}
+                  style={styles.row}
+                >
+                  <Text style={ink}>{choice.label}</Text>
+                  <View style={[styles.mark, { borderColor: palette.muted }, selected && { backgroundColor: palette.ink }]} />
+                </Pressable>
+              </Fragment>
             );
           })}
         </View>
 
         <Text style={[styles.sectionLabel, muted]}>{t.settings.data}</Text>
-        <Pressable
-          style={[
-            styles.row,
-            { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-            groupedRowCorners(0, 1, ROW_RADIUS),
-          ]}
-          onPress={() => setConfirmVisible(true)}
-        >
-          <Text style={ink}>{t.settings.clearProgress}</Text>
-        </Pressable>
+        <View style={[styles.group, groupColours]}>
+          <Pressable style={styles.row} onPress={() => setConfirmVisible(true)}>
+            <Text style={ink}>{t.settings.clearProgress}</Text>
+          </Pressable>
+        </View>
       </ScrollView>
 
       {confirmVisible && (
@@ -232,24 +203,19 @@ interface ToggleRowProps {
   readonly value: boolean;
   readonly onChange: (value: boolean) => void;
   readonly ink: { color: string };
-  readonly palette: Palette;
-  readonly index: number;
-  readonly length: number;
 }
 
-function ToggleRow({ testID, label, value, onChange, ink, palette, index, length }: ToggleRowProps) {
+function ToggleRow({ testID, label, value, onChange, ink }: ToggleRowProps) {
   return (
-    <View
-      style={[
-        styles.row,
-        { backgroundColor: palette.panel, borderColor: palette.panelBorder },
-        groupedRowCorners(index, length, ROW_RADIUS),
-      ]}
-    >
+    <View style={styles.row}>
       <Text style={ink}>{label}</Text>
       <Switch testID={testID} value={value} onValueChange={onChange} />
     </View>
   );
+}
+
+function RowDivider({ palette }: { readonly palette: Palette }) {
+  return <View style={[styles.divider, { backgroundColor: palette.panelBorder }]} />;
 }
 
 const styles = StyleSheet.create({
@@ -267,17 +233,25 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 4,
   },
-  // Corner radius comes from groupedRowCorners instead of a fixed value here
-  // (CANGUPA-51): only a group's first and last row round, so the group
-  // reads as one block rather than a stack of separate pills.
+  // One rounded outline per group, so the rows inside never draw their own
+  // corners or edges (CANGUPA-51). Background and border colour come from
+  // the palette at render time, not here.
+  group: {
+    borderWidth: 1,
+    borderRadius: GROUP_RADIUS,
+    overflow: 'hidden',
+  },
   row: {
     minHeight: 52,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderWidth: 1,
+    paddingHorizontal: DIVIDER_INSET,
+  },
+  divider: {
+    height: 1,
+    marginHorizontal: DIVIDER_INSET,
   },
   mark: {
     width: 18,

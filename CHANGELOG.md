@@ -31,6 +31,12 @@ Open work is listed in [TODO.md](TODO.md).
   line's lack of room — not the status line — was the actual problem; the
   stuck message is now one line, "No moves left. Undo or restart." in
   English.
+- On the app's Settings screen, each group (Appearance, Gameplay,
+  Language and Data) is now a single rounded panel with one thin outline
+  around it, instead of rows that each drew their own borders. The lines
+  between rows are now 1px dividers inset from both sides to line up with
+  the row text, replacing the full-width separators that looked twice as
+  thick.
 
 ### Fixed
 
