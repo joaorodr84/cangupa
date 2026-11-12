@@ -251,6 +251,7 @@ function Shell({
         totalLevels={LEVELS.length}
         hasNext={currentLevel < LEVELS.length - 1 && isDone(progress, currentLevel)}
         onBack={() => setPanel(returnTo)}
+        onPrevious={() => onChangeLevel(currentLevel - 1)}
         onNext={() => onChangeLevel(currentLevel + 1)}
         onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
         onHintUsed={onHintUsed}

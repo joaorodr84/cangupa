@@ -85,6 +85,12 @@ export interface Strings {
     readonly undoSomeMoves: string;
     readonly level: (levelNumber: number) => string;
     readonly moves: (moves: number) => string;
+    // The small ‹/› arrows below the board (CANGUPA-85), porting
+    // apps/web-classic's own prev/next toolbar buttons — distinct from
+    // winPopup.nextLevel, which labels a full-width button rather than an
+    // icon-only one.
+    readonly previousLevel: string;
+    readonly nextLevel: string;
   };
   readonly board: {
     // Shown in the board's own reserved message area below it (CANGUPA-129,

@@ -5,12 +5,14 @@
 // CANGUPA-22 for the app shell that supplies those from the level list and
 // progress.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 import { type Level } from '../game/board';
 import { statusFor } from '../game/boardView';
 import { orientLevel } from '../game/orient';
 import { useBoard } from '../game/useBoard';
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 import BoardHud from './BoardHud';
 import HelpPopup from './HelpPopup';
@@ -33,6 +35,7 @@ interface BoardScreenProps {
   readonly totalLevels: number;
   readonly hasNext: boolean;
   readonly onBack: () => void;
+  readonly onPrevious: () => void;
   readonly onNext: () => void;
   // Fired once per win (not again until a reset is followed by another win),
   // the moment ui.js's move() would have added the level to progress.done —
@@ -54,10 +57,12 @@ export default function BoardScreen({
   totalLevels,
   hasNext,
   onBack,
+  onPrevious,
   onNext,
   onLevelComplete,
   onHintUsed,
 }: BoardScreenProps) {
+  const t = useStrings();
   // A rectangular level is turned once, to the orientation the device is in when
   // the level opens (CANGUPA-56). Not tracked after that: turning the board while
   // it is being played would mean rebuilding it, and fitBoardWidth already
@@ -150,7 +155,58 @@ export default function BoardScreen({
         )}
         {helpOpen && <HelpPopup palette={palette} onClose={() => setHelpOpen(false)} />}
       </View>
+      <View style={styles.levelNav}>
+        <LevelArrow
+          direction="previous"
+          palette={palette}
+          disabled={levelNumber <= 1}
+          label={t.boardHud.previousLevel}
+          onPress={onPrevious}
+        />
+        <LevelArrow
+          direction="next"
+          palette={palette}
+          disabled={!hasNext}
+          label={t.boardHud.nextLevel}
+          onPress={onNext}
+        />
+      </View>
     </View>
+  );
+}
+
+// The ‹/› level-navigation arrows apps/web-classic keeps in its toolbar
+// (index.html, ui.js), ported here as their own row below the board rather
+// than folded into BoardHud above it — BoardHud's own row lost these to
+// CANGUPA-35/CANGUPA-32 already, moving on from a plain port of the old
+// toolbar to something closer to DigiSpin's header. Disabled rather than
+// hidden at either end (ui.js's `prev.disabled`/`next.disabled`), so the row
+// never reflows: previous at level 1, next until the current level is done.
+function LevelArrow({
+  direction,
+  palette,
+  disabled,
+  label,
+  onPress,
+}: {
+  readonly direction: 'previous' | 'next';
+  readonly palette: Palette;
+  readonly disabled: boolean;
+  readonly label: string;
+  readonly onPress: () => void;
+}) {
+  return (
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={[styles.navButton, { backgroundColor: palette.panel }, disabled && styles.navButtonDisabled]}
+    >
+      <Svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={palette.ink} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <Path d={direction === 'previous' ? 'M15 6 L9 12 L15 18' : 'M9 6 L15 12 L9 18'} />
+      </Svg>
+    </Pressable>
   );
 }
 
@@ -172,5 +228,19 @@ const styles = StyleSheet.create({
   boardArea: {
     flex: 1,
     position: 'relative',
+  },
+  levelNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  navButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navButtonDisabled: {
+    opacity: 0.4,
   },
 });

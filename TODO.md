@@ -119,21 +119,6 @@ The priority can change at any time; the ID never does.
   feature — one shared level/variant per day, the same way `docs/tile-
   ideas.md`'s "Daily level" idea already imagines (seeded from the
   date).
-- [P3] `CANGUPA-85` — Add small previous/next level arrows below the
-  board on `apps/app`'s `BoardScreen`
-  ([BoardScreen.tsx](apps/app/src/components/BoardScreen.tsx)), porting
-  `apps/web-classic`'s existing `‹`/`›` toolbar buttons
-  ([index.html](apps/web-classic/index.html),
-  [ui.js](apps/web-classic/js/ui.js)). Previous is available except at
-  level 1; next is only available once the current level is done —
-  otherwise the next level is locked and the arrow is disabled or
-  hidden, same as web-classic's `next.disabled` check. `apps/app` already
-  has the lock logic (`isUnlocked`/`isDone` in
-  [progress.ts](apps/app/src/state/progress.ts)), used today only by
-  `LevelsScreen`'s grid; `BoardScreen` itself currently has no
-  "previous level" control at all, and "next" only appears inside the
-  win popup ([WinPopup.tsx](apps/app/src/components/WinPopup.tsx)) after
-  clearing the level, not as a persistent control.
 - [P3] `CANGUPA-105` — Check whether DigiSpin's own app shell has the
   same hardcoded-"back always goes home" inconsistency `CANGUPA-86`
   just fixed in `apps/app` (a screen reachable from more than one tab,

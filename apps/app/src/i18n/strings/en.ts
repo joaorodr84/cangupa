@@ -71,6 +71,8 @@ export const en: Strings = {
     undoSomeMoves: 'Undo a few moves.',
     level: (levelNumber) => `Level ${levelNumber}`,
     moves: (moves) => `Moves ${moves}`,
+    previousLevel: 'Previous level',
+    nextLevel: 'Next level',
   },
   board: {
     blockedDeparture: "Can't leave that way — only through the open edge.",

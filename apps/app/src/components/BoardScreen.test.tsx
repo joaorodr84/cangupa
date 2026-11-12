@@ -36,6 +36,7 @@ function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { l
     totalLevels: 50,
     hasNext: true,
     onBack: noop,
+    onPrevious: noop,
     onNext: noop,
     ...overrides,
   };
@@ -71,6 +72,42 @@ test('pressing the back arrow calls onBack', async () => {
 
   await fireEvent.press(screen.getByLabelText('Back'));
   expect(onBack).toHaveBeenCalledTimes(1);
+});
+
+test('pressing the previous-level arrow calls onPrevious (CANGUPA-85)', async () => {
+  const onPrevious = jest.fn();
+
+  await renderScreen({ level: ['S1.'], levelNumber: 5, onPrevious });
+
+  await fireEvent.press(screen.getByLabelText('Previous level'));
+  expect(onPrevious).toHaveBeenCalledTimes(1);
+});
+
+test('the previous-level arrow is disabled on level 1 (CANGUPA-85)', async () => {
+  const onPrevious = jest.fn();
+
+  await renderScreen({ level: ['S1.'], levelNumber: 1, onPrevious });
+
+  await fireEvent.press(screen.getByLabelText('Previous level'));
+  expect(onPrevious).not.toHaveBeenCalled();
+});
+
+test('pressing the next-level arrow calls onNext when a next level is unlocked (CANGUPA-85)', async () => {
+  const onNext = jest.fn();
+
+  await renderScreen({ level: ['S1.'], hasNext: true, onNext });
+
+  await fireEvent.press(screen.getByLabelText('Next level'));
+  expect(onNext).toHaveBeenCalledTimes(1);
+});
+
+test('the next-level arrow is disabled while hasNext is false (CANGUPA-85)', async () => {
+  const onNext = jest.fn();
+
+  await renderScreen({ level: ['S1.'], hasNext: false, onNext });
+
+  await fireEvent.press(screen.getByLabelText('Next level'));
+  expect(onNext).not.toHaveBeenCalled();
 });
 
 // Regression test for CANGUPA-121: pressing Help used to navigate to the

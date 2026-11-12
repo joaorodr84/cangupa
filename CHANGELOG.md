@@ -9,6 +9,14 @@ Open work is listed in [TODO.md](TODO.md).
 
 ## 2026-11-12
 
+### Added
+
+- The app's board screen now has a small row of `‹`/`›` arrow buttons below
+  the board for moving to the previous or next level, instead of only being
+  able to advance to the next level from inside the win popup after
+  clearing one. The previous arrow is disabled on level 1; the next arrow
+  stays disabled until the current level is solved.
+
 ### Changed
 
 - The app's Levels tab now wraps each pack collection in a single

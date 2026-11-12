@@ -68,6 +68,8 @@ export const pt: Strings = {
     undoSomeMoves: 'Desfaz algumas jogadas.',
     level: (levelNumber) => `Nível ${levelNumber}`,
     moves: (moves) => `Jogadas ${moves}`,
+    previousLevel: 'Nível anterior',
+    nextLevel: 'Próximo nível',
   },
   board: {
     blockedDeparture: 'Não podes saír por aí — só pelo lado aberto.',

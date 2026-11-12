@@ -2064,6 +2064,28 @@ fixes to divider lines in the board HUD and the Settings screen.
 
 ---
 
+## Era 61 — Nov 12 (continued): the board gets its own previous/next arrows
+
+CANGUPA-85 ports `apps/web-classic`'s existing `‹`/`›` prev/next toolbar
+buttons (`index.html`, `js/ui.js`) to `apps/app`'s `BoardScreen`
+(`BoardScreen.tsx`), which until now only offered a "next level" action
+inside the win popup after clearing a level, and no way back to a previous
+one at all. A new row of two circular arrow buttons sits below the board;
+the previous arrow is disabled only at level 1, and the next arrow stays
+disabled until `hasNext` (the same `isDone`/`isUnlocked`-derived flag
+`App.tsx` already computed for `LevelsScreen`'s grid) goes true, so the row
+never reflows at either end. `BoardScreen` gained a new required
+`onPrevious` prop, wired in `App.tsx` to `onChangeLevel(currentLevel - 1)`;
+the icons are plain chevrons drawn with `react-native-svg`, labelled by new
+`boardHud.previousLevel`/`boardHud.nextLevel` strings in English and
+European Portuguese for accessibility. Verified: `npx tsc --noEmit` clean,
+`apps/app`'s Jest suite green.
+
+Era 61 closes here: Nov 12, one commit, CANGUPA-85 — prev/next level arrows
+land on the board screen.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
