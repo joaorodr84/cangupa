@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { type Level } from '../game/board';
-import { statusFor, type BlockedReason } from '../game/boardView';
+import { statusFor } from '../game/boardView';
 import { orientLevel } from '../game/orient';
 import { useBoard } from '../game/useBoard';
 import { type Palette } from '../theme/palette';
@@ -66,7 +66,7 @@ export default function BoardScreen({
   const startedLandscape = useRef(windowWidth > windowHeight);
   const oriented = useMemo(() => orientLevel(level, startedLandscape.current), [level]);
   const board = useBoard(oriented, hints);
-  const { won, stuck, hintFailed, moves, remaining, canUndo, undo, reset, hint, tick } = board;
+  const { won, hintFailed, moves, remaining, canUndo, undo, reset, hint } = board;
 
   const wasWon = useRef(false);
   useEffect(() => {
@@ -76,19 +76,7 @@ export default function BoardScreen({
     wasWon.current = won;
   }, [won, moves, onLevelComplete]);
 
-  // Which arrow rule the last blocked tap broke (CANGUPA-129), for BoardHud's own status line
-  // (CANGUPA-131, moved up from PlayableBoard's own below-the-board text) — persists until `tick`
-  // next changes, i.e. until the player's next real action (a move, undo, reset, or hint), the
-  // same "stays up till replaced" convention the HUD's other swapped-in messages already use.
-  const [blockedReason, setBlockedReason] = useState<BlockedReason | null>(null);
-  useEffect(() => {
-    setBlockedReason(null);
-  }, [tick]);
-
-  const status = statusFor(
-    { levelNumber, totalLevels, moves, remaining },
-    { won, stuck, hintFailed, hasNext, blockedReason },
-  );
+  const status = statusFor({ levelNumber, totalLevels, moves, remaining }, { won, hintFailed, hasNext });
 
   // Guards the spend here rather than trusting BoardHud's own disabled state
   // alone (CANGUPA-54) — the balance is what actually decides whether a
@@ -150,7 +138,6 @@ export default function BoardScreen({
           palette={palette}
           maxWidth={boardArea.width}
           maxHeight={boardArea.height}
-          onBlocked={setBlockedReason}
         />
         {status.kind === 'won' && !popupClosed && (
           <WinPopup

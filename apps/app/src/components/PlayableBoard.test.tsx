@@ -3,7 +3,6 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import * as Sound from '../audio/sound';
 import PlayableBoard from './PlayableBoard';
 import { type Level } from '../game/board';
-import { type BlockedReason } from '../game/boardView';
 import { useBoard } from '../game/useBoard';
 import { DARK } from '../theme/palette';
 
@@ -18,14 +17,12 @@ function Harness({
   level,
   fall = false,
   onMoved,
-  onBlocked,
   maxWidth,
   maxHeight,
 }: {
   level: Level;
   fall?: boolean;
   onMoved?: () => void;
-  onBlocked?: (reason: BlockedReason) => void;
   maxWidth?: number;
   maxHeight?: number;
 }) {
@@ -37,7 +34,6 @@ function Harness({
       fall={fall}
       palette={palette}
       onMoved={onMoved}
-      onBlocked={onBlocked}
       maxWidth={maxWidth}
       maxHeight={maxHeight}
     />
@@ -163,8 +159,7 @@ test('a tile forbidden by a Departure arrow shakes in place instead of falling, 
   // but leaving the Departure downward is forbidden by its own arrow. Before this fix, the fall
   // setting couldn't tell that apart from "nothing to land on" and sank the level instead of
   // just refusing — the bug this test guards against.
-  const onBlocked = jest.fn();
-  await render(<Harness level={['S>1', '.1.']} fall onBlocked={onBlocked} />);
+  await render(<Harness level={['S>1', '.1.']} fall />);
   await fireEvent.press(screen.getByTestId('tile-press-1-0')); // step onto the Departure
 
   await act(async () => {
@@ -176,30 +171,56 @@ test('a tile forbidden by a Departure arrow shakes in place instead of falling, 
   // Not reset: the Departure's own exit, not the start's, is still the board's only legal move.
   expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();
   expect(screen.getByTestId('tile-blocked-outline-1-1')).toBeTruthy();
-  // Which rule tripped is handed up to the owning screen (CANGUPA-131), not rendered here —
-  // see BoardScreen.test.tsx for the HUD actually explaining it.
-  expect(onBlocked).toHaveBeenCalledTimes(1);
-  expect(onBlocked).toHaveBeenCalledWith('blocked-departure');
+  // The reserved message area below the board explains which rule tripped (CANGUPA-132).
+  expect(screen.getByText("Can't leave that way — only through the open edge.")).toBeTruthy();
 
-  // The flash clears on its own after Board's shake() duration, leaving no dangling timer.
+  // The flash clears on its own after Board's shake() duration, leaving no dangling timer — but
+  // the message is not on that same timer, and is still up well past it (see next test).
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 400));
   });
   expect(screen.queryByTestId('tile-blocked-outline-1-1')).toBeNull();
+  expect(screen.getByText("Can't leave that way — only through the open edge.")).toBeTruthy();
 });
 
-test('an Arrival blocked the wrong way hands up its own, different reason (CANGUPA-129)', async () => {
+test('an Arrival blocked the wrong way shows its own, different message (CANGUPA-129)', async () => {
   // 'SL1': the Arrival at (1,0) only opens to leftward entry; stepping onto it moving right is
-  // blocked, distinct from a Departure's own exit rule above — this checks the reason matches.
-  const onBlocked = jest.fn();
-  await render(<Harness level={['SL1']} fall onBlocked={onBlocked} />);
+  // blocked, distinct from a Departure's own exit rule above — this checks the message matches.
+  await render(<Harness level={['SL1']} fall />);
 
   await act(async () => {
     fireEvent.press(screen.getByTestId('tile-empty-1-0'));
   });
 
   expect(Sound.blocked).toHaveBeenCalledTimes(1);
-  expect(onBlocked).toHaveBeenCalledWith('blocked-arrival');
+  expect(screen.getByText("Can't enter that way — only through the open edge.")).toBeTruthy();
+});
+
+test('the blocked-move message stays up until the next real action, not on a timeout (CANGUPA-129)', async () => {
+  await render(<Harness level={['S>1', '.1.']} fall />);
+  await fireEvent.press(screen.getByTestId('tile-press-1-0')); // step onto the Departure
+
+  await act(async () => {
+    fireEvent.press(screen.getByTestId('tile-empty-1-1')); // blocked: wrong way off the Departure
+    await new Promise((resolve) => setTimeout(resolve, 400)); // past the shake/flash's own timeout
+  });
+  expect(screen.getByText("Can't leave that way — only through the open edge.")).toBeTruthy();
+
+  // A real move (the Departure's own legal exit) is the next action — the message clears with it.
+  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
+  expect(screen.queryByText("Can't leave that way — only through the open edge.")).toBeNull();
+});
+
+test('shows a message below the board once no legal moves remain', async () => {
+  // 'S1...1': the only move from the start is to x=1 (every other tile is either used, empty, or
+  // past jump range). From x=1, the remaining tile (x=5) is four tiles away — out of reach
+  // regardless of jumps — leaving a stuck board, not yet won.
+  await render(<Harness level={['S1...1']} />);
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+
+  expect(screen.getByTestId('board-message')).toBeTruthy();
+  expect(screen.getByText('No moves left. Undo or restart.')).toBeTruthy();
 });
 
 test('tapping a tile off the step/jump line does nothing, even with the fall setting on (CANGUPA-65)', async () => {
@@ -261,6 +282,24 @@ test('tapping empty space does nothing when the fall setting is off', async () =
   expect(Sound.fall).not.toHaveBeenCalled();
 });
 
+// CANGUPA-132: this area is always the same height, message or no message, which is the whole
+// point — the board above is already sized leaving room for it (see the next two tests), so a
+// message can never land past the visible screen the way one below an unreserved board could.
+test('reserves the same fixed height below the board whether or not a message is showing', async () => {
+  // 'S1...1': see the stuck-message test above — one move in, no legal move remains.
+  await render(<Harness level={['S1...1']} />);
+
+  const idle = [screen.getByTestId('message-area').props.style].flat();
+  expect(idle.some((s) => s?.height === 64)).toBe(true);
+  expect(screen.queryByTestId('board-message')).toBeNull();
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+
+  const stuck = [screen.getByTestId('message-area').props.style].flat();
+  expect(stuck.some((s) => s?.height === 64)).toBe(true);
+  expect(screen.getByTestId('board-message')).toBeTruthy();
+});
+
 test('without maxWidth/maxHeight the board falls back to 100% (CANGUPA-33)', async () => {
   await render(<Harness level={['S1.']} />);
 
@@ -269,10 +308,12 @@ test('without maxWidth/maxHeight the board falls back to 100% (CANGUPA-33)', asy
 });
 
 test('caps the board width when the height available is the tighter fit (landscape, CANGUPA-33)', async () => {
-  // ['S1.'] is a 3x1 board (w=3, h=1). 90px of height would let a 3x1 board
-  // be 270px wide, well past the 150px of width actually on offer, so width
-  // stays the binding constraint here — see the next test for the reverse.
-  await render(<Harness level={['S1.']} maxWidth={150} maxHeight={90} />);
+  // ['S1.'] is a 3x1 board (w=3, h=1). 200px of height, minus the frame's
+  // own padding and the reserved message area below it (CANGUPA-132), still
+  // leaves a 3x1 board room to be well past the 150px of width actually on
+  // offer, so width stays the binding constraint here — see the next test
+  // for the reverse.
+  await render(<Harness level={['S1.']} maxWidth={150} maxHeight={200} />);
 
   const flat = [screen.getByTestId('board').props.style].flat();
   // 150 width minus the frame's 12px padding on each side.
@@ -280,12 +321,14 @@ test('caps the board width when the height available is the tighter fit (landsca
 });
 
 test('caps the board width by the height available when that is the tighter fit', async () => {
-  // Same 3x1 board, but now a generous width and a tight height: a 3x1
-  // board as tall as 16px of height can only be 48px wide.
-  await render(<Harness level={['S1.']} maxWidth={400} maxHeight={40} />);
+  // Same 3x1 board, but now a generous width and a tight height: once the
+  // frame's own padding (24px) and the reserved message area (64px,
+  // CANGUPA-132) are both held back, 104px of height leaves only 16px for
+  // the board itself, so a 3x1 board can only be 48px wide.
+  await render(<Harness level={['S1.']} maxWidth={400} maxHeight={104} />);
 
   const flat = [screen.getByTestId('board').props.style].flat();
-  // (40 - 24) of height available * 3 (w/h) = 48px wide.
+  // (104 - 24 - 64) of height available * 3 (w/h) = 48px wide.
   expect(flat.some((s) => s?.width === 48)).toBe(true);
 });
 

@@ -1954,6 +1954,55 @@ found, and a new gap (fall off) is noted for later.
 
 ---
 
+## Era 58 — Nov 12 (continued): the blocked-move and stuck messages get their own reserved room
+
+CANGUPA-132 fixes the root cause CANGUPA-130's investigation found, rather
+than keep working around it the way CANGUPA-131 had: `boardLayout.ts`'s
+`fitBoardWidth` used to hand the board the *entire* measured `boardArea`
+height, holding nothing back for anything rendered below it.
+`PlayableBoard.tsx` now reserves a fixed `MESSAGE_AREA_HEIGHT` (64px, not
+one tile row — a row's actual height swings hugely by level, huge on a
+3-row pack and tiny on an 8-row one, so it would either waste space on a
+small grid or still not fit two lines of text on a tall one) always,
+whether or not a message is currently showing, subtracting it from the
+height `fitBoardWidth` sees and rendering a same-height `View` below the
+board frame to hold the message.
+
+With that room now existing, both the blocked-move warning (CANGUPA-131
+had moved it into BoardHud's status line) and the stuck message
+(BoardHud's own `boardHud.stuck`/`undoOrRestart` swap, predating both,
+from CANGUPA-53) move back out of the HUD and into the new area — the HUD
+detour was only ever needed because the space below the board didn't
+exist. `BoardHud.tsx`'s `CentreText` now only ever shows `hintFailed` or
+the ordinary "Moves N" line; `boardView.ts`'s `Status`/`statusFor` dropped
+the `blocked`/`stuck` kinds entirely, though it keeps exporting the
+shared `BlockedReason` type since `PlayableBoard` still needs it for its
+own local state. A new `board.noMovesLeft` string (`en.ts`/`pt.ts`/
+`types.ts`) replaces the removed `boardHud.stuck`/`undoOrRestart` pair,
+combining their wording into the one-sentence shape
+`board.blockedDeparture`/`blockedArrival` already used. Those two strings
+themselves got shortened too, at the owner's request, from "You can't
+leave/enter that way — only through the edge the bracket opens on." to
+"Can't leave/enter that way — only through the open edge." — they'd only
+needed to fit CANGUPA-131's narrower HUD column, and that constraint is
+gone now.
+
+`PlayableBoard.test.tsx` regained the original rendered-text assertions
+and the "stays up until the next real action" persistence case, both
+briefly moved out by CANGUPA-131, plus a new case for the stuck message
+and one asserting the message area holds a fixed 64px height whether idle
+or showing a message; `boardView.test.ts` and `BoardHud.test.tsx` dropped
+their now-invalid `blocked`/`stuck`-kind cases. Scoped to `apps/app`
+only — `apps/web-classic`'s board isn't height-fitted the same way, so it
+never carried this risk. Verified: `npx tsc --noEmit` clean, full
+`apps/app` Jest suite green (30/30 suites, 841/841 tests).
+
+Era 58 closes here: Nov 12, one commit, CANGUPA-132 — the blocked-move and
+stuck messages leave the HUD for a reserved area below the board, closing
+the loop CANGUPA-130 opened two eras ago.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

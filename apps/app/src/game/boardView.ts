@@ -100,47 +100,33 @@ export interface StatusProgress {
 }
 
 // A tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129) — the same union Game.moveKind()
-// (board.ts) returns two members of, now also PlayableBoard's own onBlocked payload and BoardHud's
-// status-line reason, so all three name it the same way instead of three independent inline unions.
+// (board.ts) returns two members of, and PlayableBoard's own local state's type.
 export type BlockedReason = 'blocked-departure' | 'blocked-arrival';
 
 // Ported from ui.js's render()'s status-line branches, plus hint()'s dead-end
-// message. `blocked` (CANGUPA-131, moved here from its own text below the
-// board — see BoardHud.tsx's CentreText for why) wins over everything else,
-// including hintFailed: both are a direct response to the player's last
-// action, but a blocked tap doesn't bump `tick` the way a move/undo/reset/
-// hint does, so a stale hintFailed can still be true underneath it — ranking
-// blocked first keeps the freshest action's message on screen either way.
-// It still carries StatusProgress so BoardHud's "Level N" line stays up even
-// then — only the second line swaps to the message.
+// message. `hintFailed` wins over won/playing: it is the direct response to
+// the button just pressed, the same way the web version's hint() replaces
+// the status outright. `stuck` and a blocked tap (CANGUPA-129) both used to
+// have their own kind here too (CANGUPA-53, CANGUPA-131), swapped in the same
+// way — moved back out to their own message area below the board instead
+// (CANGUPA-132), once that area reserved its own room, so BoardHud no longer
+// needs to represent either. It still carries StatusProgress (CANGUPA-53) so
+// BoardHud's "Level N" line stays up even on a dead end — only the second
+// line swaps to the message.
 export type Status =
-  | ({ readonly kind: 'blocked'; readonly reason: BlockedReason } & StatusProgress)
   | ({ readonly kind: 'hintFailed' } & StatusProgress)
   | { readonly kind: 'won'; readonly moves: number; readonly hasNext: boolean }
-  | ({ readonly kind: 'stuck' } & StatusProgress)
   | ({ readonly kind: 'playing' } & StatusProgress);
 
 export function statusFor(
   progress: StatusProgress,
-  state: {
-    readonly won: boolean;
-    readonly stuck: boolean;
-    readonly hintFailed: boolean;
-    readonly hasNext: boolean;
-    readonly blockedReason: BlockedReason | null;
-  },
+  state: { readonly won: boolean; readonly hintFailed: boolean; readonly hasNext: boolean },
 ): Status {
-  if (state.blockedReason) {
-    return { kind: 'blocked', reason: state.blockedReason, ...progress };
-  }
   if (state.hintFailed) {
     return { kind: 'hintFailed', ...progress };
   }
   if (state.won) {
     return { kind: 'won', moves: progress.moves, hasNext: state.hasNext };
-  }
-  if (state.stuck) {
-    return { kind: 'stuck', ...progress };
   }
   return { kind: 'playing', ...progress };
 }

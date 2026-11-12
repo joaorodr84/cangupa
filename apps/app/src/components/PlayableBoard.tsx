@@ -5,12 +5,13 @@
 // belongs to the screen that owns useBoard and also renders this
 // (BoardScreen.tsx), so that screen and this component share one Game
 // rather than each calling useBoard and getting their own.
-import { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
 import { facingFor, type BlockedReason, type Facing } from '../game/boardView';
 import { type UseBoardResult } from '../game/useBoard';
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 import Board, { HOP_MS, SHAKE_MS, type BoardHandle } from './Board';
 import { fitBoardWidth } from './boardLayout';
@@ -19,6 +20,16 @@ import { fitBoardWidth } from './boardLayout';
 // space BoardScreen measured for this component — that measurement is the
 // frame's outer box, not the board's.
 const FRAME_PADDING = 12;
+
+// Held back from the board's own fitBoardWidth call below, always — whether or not a message is
+// currently showing — so a blocked-move or stuck message never risks landing past the visible
+// screen on a height-constrained board (CANGUPA-130's finding: fitBoardWidth used to get the
+// *entire* measured boardArea height, with nothing reserved for anything rendered under the
+// board). A fixed pixel height rather than one tile row's worth (CANGUPA-132): a row's actual
+// height swings hugely by level — huge on a 3-row pack, tiny on an 8-row one — so it would either
+// waste space on a small grid or still not fit two lines of text on a tall one. Sized for roughly
+// 2-3 lines at styles.message's own font size.
+const MESSAGE_AREA_HEIGHT = 64;
 
 interface PlayableBoardProps {
   readonly board: UseBoardResult;
@@ -38,14 +49,11 @@ interface PlayableBoardProps {
   // legal destination), so the owning screen can save progress or show a
   // win state.
   readonly onMoved?: () => void;
-  // Called on a tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129), so the owning
-  // screen can show which rule tripped in BoardHud's own status line (CANGUPA-131) — this
-  // component still owns the shake/flash/sound reflex cue itself, only the explanation moved out.
-  readonly onBlocked?: (reason: BlockedReason) => void;
 }
 
-export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved, onBlocked }: PlayableBoardProps) {
-  const { game, tiles, facing, move, won, reset } = board;
+export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps) {
+  const { game, tiles, facing, move, won, stuck, reset, tick } = board;
+  const t = useStrings();
   const boardRef = useRef<BoardHandle>(null);
   // Mid fall-and-restart animation (CANGUPA-58): input is ignored until it
   // settles, the same guard ui.js's `falling` module-level flag gives the
@@ -62,6 +70,15 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // own timeout, matching Board's shake() duration, since (unlike a fall) nothing else about a
   // blocked move changes state to clear it for us.
   const [blockedTarget, setBlockedTarget] = useState<{ x: number; y: number } | null>(null);
+  // Which arrow rule the last blocked move broke, so the message area below the board
+  // (CANGUPA-129, moved back here from BoardHud by CANGUPA-132 now that the area reserves its
+  // own room) can explain it — unlike blockedTarget above (cleared on a short timeout, for the
+  // shake/flash reflex cue), this persists until `tick` next changes, i.e. until the player's
+  // next real action (a move, undo, reset, or hint), so there's time to actually read it.
+  const [blockedReason, setBlockedReason] = useState<BlockedReason | null>(null);
+  useEffect(() => {
+    setBlockedReason(null);
+  }, [tick]);
 
   const handlePressTile = (x: number, y: number) => {
     if (falling) return;
@@ -93,19 +110,18 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // shakes in place instead of falling, live tile or not at the target —
   // the fix for a bug report where stepping out of a Departure the wrong
   // way sank the level, same as stepping onto a missing tile, instead of
-  // just refusing — and hands the reason up to onBlocked (CANGUPA-131) so
-  // the owning screen can explain which rule tripped in its own HUD. Only
-  // 'empty' (nothing there to land on) still falls. `target` is undefined
-  // only before Board's first layout, when it can't yet say which cell a
-  // tap on background landed on — falls in place then, same as it always
-  // has, since there's no cell to classify.
+  // just refusing — and shows which rule it was in the message area below
+  // the board. Only 'empty' (nothing there to land on) still falls. `target`
+  // is undefined only before Board's first layout, when it can't yet say
+  // which cell a tap on background landed on — falls in place then, same as
+  // it always has, since there's no cell to classify.
   const handlePressEmpty = (target?: { x: number; y: number }) => {
     if (falling || won) return;
     const kind = target ? game.moveKind(target.x, target.y) : 'empty';
     if (kind === 'none') return;
     if (kind === 'blocked-departure' || kind === 'blocked-arrival') {
       setBlockedTarget(target ?? null);
-      onBlocked?.(kind);
+      setBlockedReason(kind);
       boardRef.current?.shake();
       Sound.blocked();
       setTimeout(() => setBlockedTarget(null), SHAKE_MS);
@@ -132,7 +148,7 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
 
   const boardWidth =
     maxWidth && maxHeight
-      ? fitBoardWidth(game.w, game.h, maxWidth - FRAME_PADDING * 2, maxHeight - FRAME_PADDING * 2)
+      ? fitBoardWidth(game.w, game.h, maxWidth - FRAME_PADDING * 2, maxHeight - FRAME_PADDING * 2 - MESSAGE_AREA_HEIGHT)
       : undefined;
 
   // The tile left behind, if it was already used up (CANGUPA-67): the
@@ -179,7 +195,31 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
     </View>
   );
 
-  return frame;
+  // The reserved message area (CANGUPA-132) — a sibling below the frame above, always taking
+  // MESSAGE_AREA_HEIGHT whether or not a message is showing, which is the whole point: the board
+  // above was already sized leaving room for it. blockedReason wins over stuck when both are true
+  // (it's the direct response to the tap that was just made) — a truly stuck board rarely has one
+  // set at all, since a blocked tap doesn't count as a legal move either way.
+  const message = blockedReason
+    ? blockedReason === 'blocked-departure'
+      ? t.board.blockedDeparture
+      : t.board.blockedArrival
+    : stuck
+      ? t.board.noMovesLeft
+      : null;
+
+  return (
+    <>
+      {frame}
+      <View testID="message-area" style={styles.messageArea}>
+        {message && (
+          <Text testID="board-message" style={[styles.message, { color: palette.ink }]}>
+            {message}
+          </Text>
+        )}
+      </View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -189,5 +229,15 @@ const styles = StyleSheet.create({
   },
   frameFit: {
     alignSelf: 'center',
+  },
+  messageArea: {
+    height: MESSAGE_AREA_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  message: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

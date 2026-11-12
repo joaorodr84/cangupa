@@ -17,6 +17,14 @@ Open work is listed in [TODO.md](TODO.md).
   board, so it can no longer end up pushed off-screen on a short device.
   The wording is also shorter, e.g. "Can't leave that way — only through
   the open edge." in English.
+- The board screen now always keeps a fixed-height strip below the board
+  reserved for messages, whether or not one is showing, so the board
+  itself is sized a little smaller to make room for it. The blocked-move
+  warning and the "No moves left" message move back down into that
+  reserved area instead of the status line above the board, since the
+  line's lack of room — not the status line — was the actual problem; the
+  stuck message is now one line, "No moves left. Undo or restart." in
+  English.
 
 ## 2026-11-11
 

@@ -68,12 +68,11 @@ export const pt: Strings = {
     undoSomeMoves: 'Desfaz algumas jogadas.',
     level: (levelNumber) => `Nível ${levelNumber}`,
     moves: (moves) => `Jogadas ${moves}`,
-    stuck: 'Sem jogadas.',
-    undoOrRestart: 'Desfaz ou reinicia.',
   },
   board: {
     blockedDeparture: 'Não podes saír por aí — só pelo lado aberto.',
     blockedArrival: 'Não podes entrar por aí — só pelo lado aberto.',
+    noMovesLeft: 'Sem jogadas. Desfaz ou reinicia.',
   },
   settings: {
     appearance: 'Aparência',

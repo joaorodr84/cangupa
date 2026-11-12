@@ -99,8 +99,12 @@ export default function BoardHud({
 // The level number stays up on every line but "won" (WinPopup takes over
 // then, same as before CANGUPA-53) — including hintFailed, which now carries
 // StatusProgress for exactly this. The second line is "Moves N" normally,
-// and swaps to the stuck/dead-end message when one applies, rather than
-// appending it, so the centred pair never grows past two short lines.
+// and swaps to the dead-end message when that applies, rather than
+// appending it, so the centred pair never grows past two short lines. The
+// stuck message and the blocked-move warning used to swap in here too
+// (CANGUPA-53, CANGUPA-131) — both moved to their own reserved message area
+// below the board instead (CANGUPA-132), so this only ever shows hintFailed
+// or the ordinary "Moves N" now.
 function CentreText({ status, palette, t }: { status: Status; palette: Palette; t: Strings }) {
   const ink = { color: palette.ink };
   const muted = { color: palette.muted };
@@ -111,37 +115,12 @@ function CentreText({ status, palette, t }: { status: Status; palette: Palette; 
 
   const level = <Text style={[styles.level, ink]}>{t.boardHud.level(status.levelNumber)}</Text>;
 
-  // CANGUPA-131: the same warning that used to render as its own Text below the board — moved
-  // here so it shares BoardHud's own reserved, fixed-height status line instead of a space the
-  // board's own layout (boardLayout.ts's fitBoardWidth) doesn't hold any room for.
-  if (status.kind === 'blocked') {
-    return (
-      <>
-        {level}
-        <Text style={[styles.moves, styles.bold, ink]}>
-          {status.reason === 'blocked-departure' ? t.board.blockedDeparture : t.board.blockedArrival}
-        </Text>
-      </>
-    );
-  }
-
   if (status.kind === 'hintFailed') {
     return (
       <>
         {level}
         <Text style={styles.moves}>
           <Text style={[styles.bold, ink]}>{t.boardHud.deadEnd}</Text> <Text style={muted}>{t.boardHud.undoSomeMoves}</Text>
-        </Text>
-      </>
-    );
-  }
-
-  if (status.kind === 'stuck') {
-    return (
-      <>
-        {level}
-        <Text style={styles.moves}>
-          <Text style={[styles.bold, ink]}>{t.boardHud.stuck}</Text> <Text style={muted}>{t.boardHud.undoOrRestart}</Text>
         </Text>
       </>
     );

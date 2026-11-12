@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useWindowDimensions } from 'react-native';
 
 import BoardScreen from './BoardScreen';
@@ -165,27 +165,6 @@ test('closing the win popup leaves the board reachable through Reset', async () 
 
   await fireEvent.press(screen.getByLabelText('Restart'));
   expect(screen.getByText('Moves 0')).toBeTruthy();
-});
-
-// CANGUPA-131: the blocked-move warning moved from its own Text below the board (CANGUPA-129)
-// into BoardHud's status line — this checks the full path, screen down to HUD, still explains
-// the right rule and still persists until the next real action, not a timeout.
-test('shows which arrow rule blocked a tap in the HUD, persisting until the next real move', async () => {
-  // 'S>1' / '.1.': the Departure at (1,0) points right; leaving it downward onto (1,1), a live
-  // tile, is forbidden by its own arrow — the fall setting could sink the level on this before
-  // CANGUPA-129, so it also triggers the blocked branch reliably with `fall` on.
-  await renderScreen({ level: ['S>1', '.1.'], fall: true });
-  await fireEvent.press(screen.getByTestId('tile-press-1-0')); // step onto the Departure
-
-  await act(async () => {
-    fireEvent.press(screen.getByTestId('tile-empty-1-1')); // attempt to leave it downward
-    await new Promise((resolve) => setTimeout(resolve, 400)); // past the shake/flash's own timeout
-  });
-  expect(screen.getByText("Can't leave that way — only through the open edge.")).toBeTruthy();
-
-  // A real move (the Departure's own legal exit) is the next action — the warning clears with it.
-  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
-  expect(screen.queryByText("Can't leave that way — only through the open edge.")).toBeNull();
 });
 
 test('turns a wide level tall when the screen is portrait', async () => {

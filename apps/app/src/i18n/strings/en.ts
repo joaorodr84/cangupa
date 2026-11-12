@@ -71,12 +71,11 @@ export const en: Strings = {
     undoSomeMoves: 'Undo a few moves.',
     level: (levelNumber) => `Level ${levelNumber}`,
     moves: (moves) => `Moves ${moves}`,
-    stuck: 'No moves left.',
-    undoOrRestart: 'Undo or restart.',
   },
   board: {
     blockedDeparture: "Can't leave that way — only through the open edge.",
     blockedArrival: "Can't enter that way — only through the open edge.",
+    noMovesLeft: 'No moves left. Undo or restart.',
   },
   settings: {
     appearance: 'Appearance',

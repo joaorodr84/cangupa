@@ -21,27 +21,6 @@ The priority can change at any time; the ID never does.
 
 ## Backlog
 
-- [P2] `CANGUPA-132` — Give `apps/app`'s board screen a reserved message area
-  below the board, fixing the root cause `CANGUPA-130`'s investigation found
-  rather than working around it the way `CANGUPA-131` did: `boardLayout.ts`'s
-  `fitBoardWidth` gives the board the *entire* measured `boardArea` height,
-  holding nothing back for text under it, which is why the blocked-move
-  warning (`CANGUPA-129`) got moved up into `BoardHud`'s own status line
-  instead. Reserve a **fixed pixel height** (not a tile row — a row's actual
-  height swings hugely by level, huge on a 3-row pack, tiny on an 8-row one,
-  so it would either waste space on small grids or still not fit text on
-  tall ones) sized for roughly 2-3 lines of text at the app's normal font
-  size — maybe 60-70px — subtracted from `maxHeight` in `BoardScreen.tsx`
-  before it reaches `PlayableBoard`'s own `fitBoardWidth` call, so the board
-  is always sized leaving that room whether or not a message is showing.
-  Once that space exists, move the blocked-move warning (`CANGUPA-131`) and
-  the stuck message (`BoardHud.tsx`'s own `boardHud.stuck`/`undoOrRestart`
-  swap, predating both) back out of the HUD and into it — the HUD detour was
-  only needed because the space didn't exist; the reserved area below the
-  board is also wider than the HUD's own centre column (squeezed between the
-  back arrow and the four-icon group), so it can comfortably hold a longer
-  message when one's needed. `apps/web-classic` has no such constraint (its
-  board isn't height-fitted the same way) and is out of scope here.
 - [P2] `CANGUPA-72` — The hint solver (`Game.solve`) can run out of memory or
   take many seconds on some big levels turned for a portrait screen, so
   pressing Hint could hang the app. Originally found on packs 8 to 10 while

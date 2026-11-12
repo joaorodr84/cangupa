@@ -85,18 +85,22 @@ export interface Strings {
     readonly undoSomeMoves: string;
     readonly level: (levelNumber: number) => string;
     readonly moves: (moves: number) => string;
-    readonly stuck: string;
-    readonly undoOrRestart: string;
   };
   readonly board: {
-    // Shown just below the board (CANGUPA-129), not in boardHud's own status
-    // line above it, when a tapped move is blocked by a Departure/Arrival
-    // arrow rule rather than falling — the fall setting's own fall-through
-    // only applies when there's genuinely nothing to land on. Phrasing
-    // matches help.departureRest/arrivalRest's "the edge the bracket opens
-    // on", the same term the Rules screen already uses for this.
+    // Shown in the board's own reserved message area below it (CANGUPA-129,
+    // CANGUPA-132), not in boardHud's own status line above it, when a
+    // tapped move is blocked by a Departure/Arrival arrow rule rather than
+    // falling — the fall setting's own fall-through only applies when
+    // there's genuinely nothing to land on. Phrasing matches
+    // help.departureRest/arrivalRest's "the edge the bracket opens on", the
+    // same term the Rules screen already uses for this.
     readonly blockedDeparture: string;
     readonly blockedArrival: string;
+    // Shown the same way (CANGUPA-130/132) once no legal moves remain at
+    // all — used to swap in above the board, in BoardHud's own status line
+    // (CANGUPA-53), as boardHud.stuck/undoOrRestart; moved down here once
+    // the message area below the board reserved its own room.
+    readonly noMovesLeft: string;
   };
   readonly settings: {
     // The light/dark/system choice (CANGUPA-40), matching DigiSpin's own
