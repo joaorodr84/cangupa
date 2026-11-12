@@ -212,7 +212,13 @@ The priority can change at any time; the ID never does.
   `Board.tsx` draws the same triangle mark on both Departure and Arrival
   tiles that Gold/Steel already get from their dot-count overlay, so
   neither depends on colour alone. The contrast and dynamic-type
-  questions are still open.
+  questions are still open. `CANGUPA-100`'s scoping pass folded its
+  "glare/bright-sunlight contrast" situational candidate in here rather
+  than opening a new task: it's the same per-theme contrast question
+  this task already owns, just under harsher outdoor lighting rather
+  than indoor viewing — no separate investigation needed, just test
+  outdoors (or with the screen brightness lowered to approximate it)
+  when this is picked up.
 - [P3] `CANGUPA-98` — Analyze motor accessibility — maybe add multiple
   ways of controlling the kangaroo. `apps/web-classic` already has two
   input modes (tap/click a tile, and keyboard — `WASD`/arrow keys,
@@ -224,17 +230,11 @@ The priority can change at any time; the ID never does.
   Investigate: a directional-pad control scheme (pick a direction, let
   it resolve via `legalMoves` rather than requiring a precise tap),
   external keyboard/MFi controller support on iOS, and adjustable
-  tap-target size.
-- [P3] `CANGUPA-100` — Investigate which other disability types are
-  worth a dedicated accessibility analysis, beyond the visual
-  (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones
-  already opened. Candidates to consider: cognitive/learning load (the
-  game already has no timer or fail state, which likely helps by
-  default — confirm), photosensitivity/seizure risk (check board/tile
-  animations for flashing or strobing), and situational constraints
-  (one-handed use, glare/bright-sunlight contrast — may already be
-  covered by `CANGUPA-97`). Scoping only — decide which deserve their
-  own task.
+  tap-target size. `CANGUPA-100`'s scoping pass folded its "one-handed
+  use" situational candidate in here rather than opening a new task:
+  a directional-pad scheme (already on this list) would be the same
+  fix for both one-handed reachability and precise-tap difficulty, so
+  it doesn't need separate investigation.
 - [P4] `CANGUPA-134` — Add a cleared/mastered indicator icon to each pack
   row and the collection header on `apps/app`'s Levels tab
   ([LevelPacksScreen.tsx](apps/app/src/components/LevelPacksScreen.tsx),

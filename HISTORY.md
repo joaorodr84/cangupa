@@ -2110,6 +2110,31 @@ fully muted and no cue is sound-only in either app.
 
 ---
 
+## Era 63 — Nov 12 (continued): scoping what accessibility still needs
+
+CANGUPA-100 closes with no code change and no new task opened: it asks
+which disability types, beyond the visual, motor, and auditory ones
+already opened (CANGUPA-97/98/99), deserve their own dedicated
+accessibility task. Cognitive/learning load and photosensitivity/seizure
+risk both check out clean — searching both apps for a timer, countdown,
+score, life, or move-limit mechanic finds none, confirming the suspected
+no-fail-state/no-timer baseline outright rather than leaving it assumed;
+reviewing every animation in `apps/web-classic/style.css` and
+`apps/app/src/components/Board.tsx` finds the only repeating one (the
+hint-tip pulse, disabled per CANGUPA-127) at ~1.1Hz, well under WCAG's
+3Hz flash threshold, with everything else a one-shot transition rather
+than a strobe. Situational constraints — one-handed use and
+glare/bright-sunlight contrast — are folded into the two tasks that
+already cover the same ground instead of spun into a new one: glare
+added to CANGUPA-97's per-theme contrast work, one-handed use added to
+CANGUPA-98's directional-pad-control investigation, since that same
+control scheme would help both.
+
+Era 63 closes here: Nov 12, one commit, CANGUPA-100 — scoped the
+remaining accessibility candidates and found none needed a new task.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
