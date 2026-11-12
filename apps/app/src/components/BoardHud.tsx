@@ -111,6 +111,20 @@ function CentreText({ status, palette, t }: { status: Status; palette: Palette; 
 
   const level = <Text style={[styles.level, ink]}>{t.boardHud.level(status.levelNumber)}</Text>;
 
+  // CANGUPA-131: the same warning that used to render as its own Text below the board — moved
+  // here so it shares BoardHud's own reserved, fixed-height status line instead of a space the
+  // board's own layout (boardLayout.ts's fitBoardWidth) doesn't hold any room for.
+  if (status.kind === 'blocked') {
+    return (
+      <>
+        {level}
+        <Text style={[styles.moves, styles.bold, ink]}>
+          {status.reason === 'blocked-departure' ? t.board.blockedDeparture : t.board.blockedArrival}
+        </Text>
+      </>
+    );
+  }
+
   if (status.kind === 'hintFailed') {
     return (
       <>

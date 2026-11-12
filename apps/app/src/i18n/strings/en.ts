@@ -75,8 +75,8 @@ export const en: Strings = {
     undoOrRestart: 'Undo or restart.',
   },
   board: {
-    blockedDeparture: "You can't leave that way — only through the edge the bracket opens on.",
-    blockedArrival: "You can't enter that way — only through the edge the bracket opens on.",
+    blockedDeparture: "Can't leave that way — only through the open edge.",
+    blockedArrival: "Can't enter that way — only through the open edge.",
   },
   settings: {
     appearance: 'Appearance',

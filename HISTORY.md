@@ -1895,6 +1895,65 @@ one surfaces a shared placement risk worth its own task.
 
 ---
 
+## Era 57 — Nov 12 (continued): the blocked-move warning moves into the HUD
+
+CANGUPA-131 acted on the placement risk CANGUPA-130's investigation
+surfaced: `apps/app`'s blocked-departure/blocked-arrival warning
+(CANGUPA-129) used to render as its own `Text` below the board in
+`PlayableBoard.tsx`, a spot `boardLayout.ts`'s `fitBoardWidth` never held
+any room for — it sizes the board using the entire measured `boardArea`
+height. The fix moves the warning into `BoardHud`'s own centre status
+line instead, the same reserved, fixed-height slot CANGUPA-53's
+won/stuck/hintFailed swap already uses above the board, immune to the
+same risk by construction.
+
+`boardView.ts`'s `Status` gained a `blocked` kind, carrying a new shared
+`BlockedReason` type, ranked *above* `hintFailed` rather than just above
+`stuck`/`playing`: a blocked tap doesn't bump `useBoard`'s `tick`, so a
+stale `hintFailed` can still be true underneath it, and `blocked` is the
+fresher of the two. `BoardHud.tsx`'s `CentreText` renders it, reusing the
+existing `board.blockedDeparture`/`blockedArrival` strings. `PlayableBoard.tsx`
+keeps owning the shake/flash/sound reflex cue, but now calls a new
+`onBlocked` prop instead of holding its own text state and rendering
+below the board; `BoardScreen.tsx` holds that state instead, clearing it
+on `tick` the same way `PlayableBoard` used to.
+
+Three `PlayableBoard.test.tsx` cases moved: the two shake/flash/sound ones
+now assert `onBlocked` was called instead of checking for rendered text,
+and the "stays up until the next real action" persistence case moved to
+`BoardScreen.test.tsx`, the HUD-level behaviour it actually tests now
+that persistence depends on `BoardScreen`'s own tick-clearing effect. Two
+new `BoardHud.test.tsx` cases render the `blocked` kind directly, and two
+new `boardView.test.ts` cases cover the new priority ordering (blocked
+over a stale hintFailed, blocked over won/stuck).
+
+While reviewing the diff, the owner also asked to shorten
+`board.blockedDeparture`/`blockedArrival` in `en.ts`/`pt.ts` — the
+original sentence ("You can't leave that way — only through the edge the
+bracket opens on.") didn't fit comfortably once it had to live in the
+HUD's narrower centre column, so it became "Can't leave that way — only
+through the open edge." (and the Portuguese equivalent), with the
+affected test expectations updated to match.
+
+Scoped to `apps/app` only, matching CANGUPA-130's own scope note —
+`apps/web-classic` has no HUD-swap mechanism to move this into. Verified:
+`npx tsc --noEmit` clean, full `apps/app` Jest suite green (30/30 suites,
+845/845 tests).
+
+A separate, pre-existing bug surfaced while testing this (inherited from
+CANGUPA-129, not introduced here, and not fixed in this commit): the
+blocked-move check only ever runs through `PlayableBoard`'s
+`onPressEmpty` handler, which is only wired up when the fall setting is
+on, so with fall off, tapping a tile that's shape-legal but arrow-blocked
+does nothing at all — no shake, no message. Left as a candidate for a
+future task, not yet registered with an ID.
+
+Era 57 closes here: Nov 12, one commit, CANGUPA-131 — the blocked-move
+warning moves into the HUD, closing the placement risk CANGUPA-130
+found, and a new gap (fall off) is noted for later.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

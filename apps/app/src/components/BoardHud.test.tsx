@@ -118,3 +118,22 @@ test('shows the level and the dead-end hint message in place of the move count',
   expect(screen.getByText('Level 2')).toBeTruthy();
   expect(screen.getByText('Dead end.')).toBeTruthy();
 });
+
+// CANGUPA-131: this warning used to be its own Text below the board (CANGUPA-129) — moved here,
+// into BoardHud's own reserved status line, so it can't end up pushed past the visible screen
+// the way a message below a height-constrained board could (boardLayout.ts's fitBoardWidth sizes
+// the board off the full space available, with nothing held back for a message under it).
+test('shows the level and which arrow rule blocked the last tap, in place of the move count', async () => {
+  const status: Status = { kind: 'blocked', reason: 'blocked-departure', levelNumber: 2, totalLevels: 50, moves: 3, remaining: 1 };
+  await renderHud({ status });
+
+  expect(screen.getByText('Level 2')).toBeTruthy();
+  expect(screen.getByText("Can't leave that way — only through the open edge.")).toBeTruthy();
+});
+
+test('shows the Arrival-blocked message instead when that is the reason', async () => {
+  const status: Status = { kind: 'blocked', reason: 'blocked-arrival', levelNumber: 2, totalLevels: 50, moves: 3, remaining: 1 };
+  await renderHud({ status });
+
+  expect(screen.getByText("Can't enter that way — only through the open edge.")).toBeTruthy();
+});

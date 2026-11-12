@@ -7,6 +7,17 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-12
+
+### Changed
+
+- The app's warning message for a blocked Departure/Arrival move now shows
+  in the status line above the board — the same line that otherwise shows
+  "Level N" or the move count — instead of as its own line below the
+  board, so it can no longer end up pushed off-screen on a short device.
+  The wording is also shorter, e.g. "Can't leave that way — only through
+  the open edge." in English.
+
 ## 2026-11-11
 
 ### Added

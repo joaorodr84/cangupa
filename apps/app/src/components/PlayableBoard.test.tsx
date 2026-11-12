@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import * as Sound from '../audio/sound';
 import PlayableBoard from './PlayableBoard';
 import { type Level } from '../game/board';
+import { type BlockedReason } from '../game/boardView';
 import { useBoard } from '../game/useBoard';
 import { DARK } from '../theme/palette';
 
@@ -17,12 +18,14 @@ function Harness({
   level,
   fall = false,
   onMoved,
+  onBlocked,
   maxWidth,
   maxHeight,
 }: {
   level: Level;
   fall?: boolean;
   onMoved?: () => void;
+  onBlocked?: (reason: BlockedReason) => void;
   maxWidth?: number;
   maxHeight?: number;
 }) {
@@ -34,6 +37,7 @@ function Harness({
       fall={fall}
       palette={palette}
       onMoved={onMoved}
+      onBlocked={onBlocked}
       maxWidth={maxWidth}
       maxHeight={maxHeight}
     />
@@ -159,7 +163,8 @@ test('a tile forbidden by a Departure arrow shakes in place instead of falling, 
   // but leaving the Departure downward is forbidden by its own arrow. Before this fix, the fall
   // setting couldn't tell that apart from "nothing to land on" and sank the level instead of
   // just refusing — the bug this test guards against.
-  await render(<Harness level={['S>1', '.1.']} fall />);
+  const onBlocked = jest.fn();
+  await render(<Harness level={['S>1', '.1.']} fall onBlocked={onBlocked} />);
   await fireEvent.press(screen.getByTestId('tile-press-1-0')); // step onto the Departure
 
   await act(async () => {
@@ -171,44 +176,30 @@ test('a tile forbidden by a Departure arrow shakes in place instead of falling, 
   // Not reset: the Departure's own exit, not the start's, is still the board's only legal move.
   expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();
   expect(screen.getByTestId('tile-blocked-outline-1-1')).toBeTruthy();
-  // The warning below the board explains which rule tripped (CANGUPA-129's follow-up request).
-  expect(screen.getByText("You can't leave that way — only through the edge the bracket opens on.")).toBeTruthy();
+  // Which rule tripped is handed up to the owning screen (CANGUPA-131), not rendered here —
+  // see BoardScreen.test.tsx for the HUD actually explaining it.
+  expect(onBlocked).toHaveBeenCalledTimes(1);
+  expect(onBlocked).toHaveBeenCalledWith('blocked-departure');
 
-  // The flash clears on its own after Board's shake() duration, leaving no dangling timer — but
-  // the warning text is not on that same timer, and is still up well past it (see next test).
+  // The flash clears on its own after Board's shake() duration, leaving no dangling timer.
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 400));
   });
   expect(screen.queryByTestId('tile-blocked-outline-1-1')).toBeNull();
-  expect(screen.getByText("You can't leave that way — only through the edge the bracket opens on.")).toBeTruthy();
 });
 
-test('an Arrival blocked the wrong way shows its own, different warning below the board (CANGUPA-129)', async () => {
+test('an Arrival blocked the wrong way hands up its own, different reason (CANGUPA-129)', async () => {
   // 'SL1': the Arrival at (1,0) only opens to leftward entry; stepping onto it moving right is
-  // blocked, distinct from a Departure's own exit rule above — this checks the message matches.
-  await render(<Harness level={['SL1']} fall />);
+  // blocked, distinct from a Departure's own exit rule above — this checks the reason matches.
+  const onBlocked = jest.fn();
+  await render(<Harness level={['SL1']} fall onBlocked={onBlocked} />);
 
   await act(async () => {
     fireEvent.press(screen.getByTestId('tile-empty-1-0'));
   });
 
   expect(Sound.blocked).toHaveBeenCalledTimes(1);
-  expect(screen.getByText("You can't enter that way — only through the edge the bracket opens on.")).toBeTruthy();
-});
-
-test('the blocked-move warning stays up until the next real action, not on a timeout (CANGUPA-129)', async () => {
-  await render(<Harness level={['S>1', '.1.']} fall />);
-  await fireEvent.press(screen.getByTestId('tile-press-1-0')); // step onto the Departure
-
-  await act(async () => {
-    fireEvent.press(screen.getByTestId('tile-empty-1-1')); // blocked: wrong way off the Departure
-    await new Promise((resolve) => setTimeout(resolve, 400)); // past the shake/flash's own timeout
-  });
-  expect(screen.getByText("You can't leave that way — only through the edge the bracket opens on.")).toBeTruthy();
-
-  // A real move (the Departure's own legal exit) is the next action — the warning clears with it.
-  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
-  expect(screen.queryByText("You can't leave that way — only through the edge the bracket opens on.")).toBeNull();
+  expect(onBlocked).toHaveBeenCalledWith('blocked-arrival');
 });
 
 test('tapping a tile off the step/jump line does nothing, even with the fall setting on (CANGUPA-65)', async () => {

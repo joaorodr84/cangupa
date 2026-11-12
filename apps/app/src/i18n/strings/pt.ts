@@ -72,8 +72,8 @@ export const pt: Strings = {
     undoOrRestart: 'Desfaz ou reinicia.',
   },
   board: {
-    blockedDeparture: 'Não podes saír por aí — só pelo lado onde a marca abre.',
-    blockedArrival: 'Não podes entrar por aí — só pelo lado onde a marca abre.',
+    blockedDeparture: 'Não podes saír por aí — só pelo lado aberto.',
+    blockedArrival: 'Não podes entrar por aí — só pelo lado aberto.',
   },
   settings: {
     appearance: 'Aparência',

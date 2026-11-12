@@ -122,37 +122,57 @@ describe('facingFor', () => {
 
 describe('statusFor', () => {
   const progress = { levelNumber: 3, totalLevels: 50, moves: 4, remaining: 2 };
+  const none = { won: false, stuck: false, hintFailed: false, hasNext: true, blockedReason: null } as const;
 
   it('reports playing by default', () => {
-    expect(statusFor(progress, { won: false, stuck: false, hintFailed: false, hasNext: true })).toEqual({
+    expect(statusFor(progress, none)).toEqual({
       kind: 'playing',
       ...progress,
     });
   });
 
   it('reports stuck over playing', () => {
-    expect(statusFor(progress, { won: false, stuck: true, hintFailed: false, hasNext: true })).toEqual({
+    expect(statusFor(progress, { ...none, stuck: true })).toEqual({
       kind: 'stuck',
       ...progress,
     });
   });
 
   it('reports won over stuck, with whether there is a next level', () => {
-    expect(statusFor(progress, { won: true, stuck: false, hintFailed: false, hasNext: true })).toEqual({
+    expect(statusFor(progress, { ...none, won: true })).toEqual({
       kind: 'won',
       moves: progress.moves,
       hasNext: true,
     });
-    expect(statusFor(progress, { won: true, stuck: false, hintFailed: false, hasNext: false })).toEqual({
+    expect(statusFor(progress, { ...none, won: true, hasNext: false })).toEqual({
       kind: 'won',
       moves: progress.moves,
       hasNext: false,
     });
   });
 
-  it('reports a dead-end hint over everything else, still carrying the progress', () => {
-    expect(statusFor(progress, { won: true, stuck: true, hintFailed: true, hasNext: true })).toEqual({
+  it('reports a dead-end hint over everything else but a blocked tap, still carrying the progress', () => {
+    expect(statusFor(progress, { ...none, won: true, stuck: true, hintFailed: true })).toEqual({
       kind: 'hintFailed',
+      ...progress,
+    });
+  });
+
+  // CANGUPA-131: a blocked tap doesn't bump `tick` the way a move/undo/reset/hint does, so a
+  // stale hintFailed can still be true underneath it (BoardScreen.tsx's own blockedReason clears
+  // only on `tick`) — ranking blocked first keeps the freshest action's message on screen.
+  it('reports a blocked tap over a stale dead-end hint too, carrying which rule tripped', () => {
+    expect(statusFor(progress, { ...none, hintFailed: true, blockedReason: 'blocked-departure' })).toEqual({
+      kind: 'blocked',
+      reason: 'blocked-departure',
+      ...progress,
+    });
+  });
+
+  it('reports a blocked tap over won/stuck as well', () => {
+    expect(statusFor(progress, { ...none, won: true, stuck: true, blockedReason: 'blocked-arrival' })).toEqual({
+      kind: 'blocked',
+      reason: 'blocked-arrival',
       ...progress,
     });
   });

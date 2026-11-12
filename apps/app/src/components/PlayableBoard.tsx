@@ -5,13 +5,12 @@
 // belongs to the screen that owns useBoard and also renders this
 // (BoardScreen.tsx), so that screen and this component share one Game
 // rather than each calling useBoard and getting their own.
-import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
-import { facingFor, type Facing } from '../game/boardView';
+import { facingFor, type BlockedReason, type Facing } from '../game/boardView';
 import { type UseBoardResult } from '../game/useBoard';
-import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 import Board, { HOP_MS, SHAKE_MS, type BoardHandle } from './Board';
 import { fitBoardWidth } from './boardLayout';
@@ -39,11 +38,14 @@ interface PlayableBoardProps {
   // legal destination), so the owning screen can save progress or show a
   // win state.
   readonly onMoved?: () => void;
+  // Called on a tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129), so the owning
+  // screen can show which rule tripped in BoardHud's own status line (CANGUPA-131) — this
+  // component still owns the shake/flash/sound reflex cue itself, only the explanation moved out.
+  readonly onBlocked?: (reason: BlockedReason) => void;
 }
 
-export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps) {
-  const { game, tiles, facing, move, won, reset, tick } = board;
-  const t = useStrings();
+export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved, onBlocked }: PlayableBoardProps) {
+  const { game, tiles, facing, move, won, reset } = board;
   const boardRef = useRef<BoardHandle>(null);
   // Mid fall-and-restart animation (CANGUPA-58): input is ignored until it
   // settles, the same guard ui.js's `falling` module-level flag gives the
@@ -60,15 +62,6 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // own timeout, matching Board's shake() duration, since (unlike a fall) nothing else about a
   // blocked move changes state to clear it for us.
   const [blockedTarget, setBlockedTarget] = useState<{ x: number; y: number } | null>(null);
-  // Which arrow rule the last blocked move broke, so the warning text below the board
-  // (CANGUPA-129) can explain it — unlike blockedTarget above (cleared on a short timeout, for
-  // the shake/flash reflex cue), this persists until `tick` next changes, i.e. until the
-  // player's next real action (a move, undo, reset, or hint), the same "stays up till replaced"
-  // convention boardHud's own stuck/dead-end messages already use, so there's time to read it.
-  const [blockedReason, setBlockedReason] = useState<'blocked-departure' | 'blocked-arrival' | null>(null);
-  useEffect(() => {
-    setBlockedReason(null);
-  }, [tick]);
 
   const handlePressTile = (x: number, y: number) => {
     if (falling) return;
@@ -100,7 +93,8 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
   // shakes in place instead of falling, live tile or not at the target —
   // the fix for a bug report where stepping out of a Departure the wrong
   // way sank the level, same as stepping onto a missing tile, instead of
-  // just refusing — and shows which rule it was just below the board. Only
+  // just refusing — and hands the reason up to onBlocked (CANGUPA-131) so
+  // the owning screen can explain which rule tripped in its own HUD. Only
   // 'empty' (nothing there to land on) still falls. `target` is undefined
   // only before Board's first layout, when it can't yet say which cell a
   // tap on background landed on — falls in place then, same as it always
@@ -111,7 +105,7 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
     if (kind === 'none') return;
     if (kind === 'blocked-departure' || kind === 'blocked-arrival') {
       setBlockedTarget(target ?? null);
-      setBlockedReason(kind);
+      onBlocked?.(kind);
       boardRef.current?.shake();
       Sound.blocked();
       setTimeout(() => setBlockedTarget(null), SHAKE_MS);
@@ -185,19 +179,7 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
     </View>
   );
 
-  // The blocked-move explanation (CANGUPA-129) — a sibling below the frame above, not folded
-  // into BoardHud's own status line above the board, matching where the owner asked for it. Only
-  // rendered while blockedReason is set, so it reserves no space the rest of the time.
-  return (
-    <>
-      {frame}
-      {blockedReason && (
-        <Text testID="blocked-message" style={[styles.blockedMsg, { color: palette.blocked }]}>
-          {blockedReason === 'blocked-departure' ? t.board.blockedDeparture : t.board.blockedArrival}
-        </Text>
-      )}
-    </>
-  );
+  return frame;
 }
 
 const styles = StyleSheet.create({
@@ -207,10 +189,5 @@ const styles = StyleSheet.create({
   },
   frameFit: {
     alignSelf: 'center',
-  },
-  blockedMsg: {
-    marginTop: 8,
-    textAlign: 'center',
-    fontSize: 14,
   },
 });
