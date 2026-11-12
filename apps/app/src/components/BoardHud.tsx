@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   },
   groupDivider: {
     width: StyleSheet.hairlineWidth,
+    marginVertical: 8,
   },
   groupButton: {
     width: 38,

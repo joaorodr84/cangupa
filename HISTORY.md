@@ -2047,6 +2047,21 @@ parked idea for a cleared/mastered icon in the new count's slot.
 
 ---
 
+## Era 60 — Nov 12: a small margin on the HUD's dividers
+
+CANGUPA-135 gives the thin vertical divider lines between the
+Hint/Undo/Restart/Help icon buttons in `apps/app`'s board HUD
+(`BoardHud.tsx`) a small margin above and below instead of running
+edge-to-edge: the button group's row uses `alignItems: 'stretch'`, which
+had stretched each `groupDivider` the full height of the row, touching
+the buttons' top and bottom edges flush. Added `marginVertical: 8` to
+the `groupDivider` style to inset them.
+
+Era 60 closes here: Nov 12, one commit, CANGUPA-135 — a small visual
+fix to the board HUD's divider lines.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

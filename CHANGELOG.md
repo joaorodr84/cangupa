@@ -32,6 +32,13 @@ Open work is listed in [TODO.md](TODO.md).
   stuck message is now one line, "No moves left. Undo or restart." in
   English.
 
+### Fixed
+
+- The thin divider lines between the Hint, Undo, Restart and Help buttons
+  on the app's board screen HUD no longer stretch the full height of the
+  button row and touch its top and bottom edges; they now sit inset with
+  a small margin above and below.
+
 ## 2026-11-11
 
 ### Added
