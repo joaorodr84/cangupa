@@ -298,3 +298,26 @@ The priority can change at any time; the ID never does.
   marks a cleared cell in that colour. Parked: no mastery concept exists
   yet to drive the star, and a check mark for "fully cleared" alone may
   not be worth it either — revisit once one of those becomes real.
+- [P2] `CANGUPA-147` — Build a single Store screen for `apps/app`, instead
+  of hints and (eventually) packs each getting their own separate entry
+  point. Adds a fifth tab to
+  [FooterNav.tsx](apps/app/src/components/FooterNav.tsx), placed in the
+  *middle* of the tray — Home, Levels, Store, Stats, Settings — alongside
+  a new `TabIcon` case: a line-drawn shopping bag (trapezoid body, two
+  short arc handles), matching the existing hand-drawn `react-native-svg`
+  glyphs (house outline, three bars, two sliders with dot-knobs) and kept
+  visually distinct from all four. Needs `FooterTab`
+  ([FooterNav.tsx](apps/app/src/components/FooterNav.tsx)) and `Panel`
+  ([App.tsx](apps/app/App.tsx), plus `isFooterTab`) extended with
+  `'store'`, a new `tabs.store` string in `en.ts`/`pt.ts`/`types.ts`
+  ([src/i18n/strings/](apps/app/src/i18n/strings/)), and a new
+  `StoreScreen.tsx` wired into `App.tsx`'s panel switch.
+  Content: a Hints section reusing `CANGUPA-79`'s existing IAP plumbing
+  (`src/iap/hintProducts.ts`, `useHintStore.ts`) — whether
+  `HintStorePopup.tsx`'s content moves into the new screen outright or
+  the popup stays as a shortcut that opens it is unscoped — and a Packs
+  section for `CANGUPA-106`'s not-yet-built pack-unlock purchase, with
+  room left for other bundles later. `CANGUPA-106` is still blocked on
+  the owner's free/paid pack cut and pricing, so this task's Packs
+  section is blocked on the same decision; ship the screen with Hints
+  only first, add Packs once that lands.
