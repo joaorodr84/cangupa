@@ -2086,6 +2086,30 @@ land on the board screen.
 
 ---
 
+## Era 62 — Nov 12 (continued): confirming the sound-mute baseline
+
+CANGUPA-99 closes with no code change: it asks whether sound can be fully
+muted in both apps and whether any game cue is sound-only, something its
+own backlog note had suspected but not confirmed. The investigation finds
+the baseline already holds. `apps/web-classic`'s `sound.js` now has four
+effects (`jump`, `win`, `fall`, and `blocked`, added since by CANGUPA-129),
+all routed through `tone()`, which returns immediately once
+`Sound.enabled` is false; `ui.js` sets `Sound.enabled = settings.sound` at
+startup and on every toggle change. `apps/app`'s `src/audio/sound.ts`
+mirrors this exactly — all four exports go through a shared `replay()`
+gated on a module-level `enabled` flag set via `setEnabled()`, which
+`App.tsx` keeps in sync with the Settings screen's toggle through a
+`useEffect` keyed on `settings`. No other audio call site exists in either
+app, and every one of the four cues already pairs with a visual signal
+(`jump`'s tile move, `win`'s `WinPopup`, `fall`'s falling animation,
+`blocked`'s shake-and-flash from CANGUPA-129), so nothing conveys
+information through sound alone.
+
+Era 62 closes here: Nov 12, one commit, CANGUPA-99 — verified sound can be
+fully muted and no cue is sound-only in either app.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

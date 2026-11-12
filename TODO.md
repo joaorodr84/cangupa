@@ -225,15 +225,6 @@ The priority can change at any time; the ID never does.
   it resolve via `legalMoves` rather than requiring a precise tap),
   external keyboard/MFi controller support on iOS, and adjustable
   tap-target size.
-- [P3] `CANGUPA-99` — Analyze auditory accessibility/impairments.
-  [sound.js](apps/web-classic/js/sound.js) has three effects (`jump`,
-  `win`, `fall`), all gated by a `settings.sound` toggle that can mute
-  them entirely, and `fall()`'s tone is already timed to a `.falling`
-  CSS animation rather than standing alone — so the baseline (nothing
-  is sound-only) looks likely already met, given sound can already be
-  switched off completely in both apps. Verify that's actually true for
-  every cue in both apps (confirm `apps/app`'s sound settings behave
-  the same), rather than assuming it from the toggle existing.
 - [P3] `CANGUPA-100` — Investigate which other disability types are
   worth a dedicated accessibility analysis, beyond the visual
   (`CANGUPA-97`), motor (`CANGUPA-98`), and auditory (`CANGUPA-99`) ones
