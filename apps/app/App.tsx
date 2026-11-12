@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
+import { LayoutAnimation, Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
@@ -129,6 +129,21 @@ function Shell({
   // list without using its own back arrow is tapping the Levels tab again
   // while already on it.
   const [openPack, setOpenPack] = useState<number | null>(null);
+  // Whether the pack list's collection card is folded away (CANGUPA-133).
+  // Held here rather than in LevelPacksScreen, which unmounts whenever a
+  // pack is open, so the card is found as it was left on the way back.
+  // Session-only on purpose — not saved with settings: with one collection,
+  // a card that stayed collapsed across launches would open the Levels tab
+  // onto an empty-looking screen. Revisit when a second collection exists.
+  const [packsCollapsed, setPacksCollapsed] = useState(false);
+  const togglePacksCollapsed = () => {
+    // Eases the card's height change instead of snapping it; skipped when
+    // the player has turned animations off.
+    if (settings.anim) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    }
+    setPacksCollapsed((collapsed) => !collapsed);
+  };
   // Which panel Board/Help should return to (CANGUPA-86, widened by
   // CANGUPA-103) — set by `goTo` every time either opens, defaulting to
   // 'home' since that's the first screen there is anything to return from at
@@ -179,7 +194,14 @@ function Shell({
   } else if (panel === 'levels') {
     content =
       openPack === null ? (
-        <LevelPacksScreen packSizes={PACK_SIZES} progress={progress} palette={palette} onOpenPack={setOpenPack} />
+        <LevelPacksScreen
+          packSizes={PACK_SIZES}
+          progress={progress}
+          palette={palette}
+          collapsed={packsCollapsed}
+          onToggleCollapsed={togglePacksCollapsed}
+          onOpenPack={setOpenPack}
+        />
       ) : (
         <LevelsScreen
           packIndex={openPack}

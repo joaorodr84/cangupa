@@ -2003,6 +2003,50 @@ the loop CANGUPA-130 opened two eras ago.
 
 ---
 
+## Era 59 — Nov 12 (continued): the pack list becomes a collapsible card
+
+CANGUPA-133 reshapes the Levels tab's pack list ("Lay of the Land") in
+`apps/app`: `LevelPacksScreen.tsx` now wraps every pack inside one
+collapsible card instead of a flat pill plus a list of rows. The
+collection's name becomes the card's header, with a chevron that
+collapses and expands the pack rows below it on tap; pack rows sit inset
+equally on both sides inside the card (an owner choice over a left-only
+indent), now on the palette's `control` colour since the card itself
+took over `panel`.
+
+Progress display changed along with the shape: the translated "N/M
+solved" wording is gone everywhere, replaced by a bare "N/M" shown on the
+right-hand side of each item — the collection header and every pack row
+alike — vertically centred against the full item height. The
+collection's count is smaller (16pt) than its 22pt title; a pack's count
+matches its 16pt name. Left deliberately bare, not "N/M levels", so a
+future done/mastered icon (CANGUPA-134, opened in this same commit as a
+parked backlog idea, not implemented) has a slot to sit in just left of
+the count without the count itself moving. `packRange` (`en.ts`/`pt.ts`)
+dropped its solved/total params to match, now just the bare "Levels X–Y"
+range text.
+
+Collapsed/expanded state lives in `App.tsx` (`useState` plus a
+`LayoutAnimation` easing, skipped when the player's Animations setting is
+off), not in `LevelPacksScreen` itself — opening a pack unmounts that
+screen entirely (`App.tsx` swaps it for `LevelsScreen`), so state held in
+the screen would reset to expanded on every return from a pack. It starts
+expanded and is session-only, not persisted to AsyncStorage: with a
+single collection today, a card that stayed collapsed across app launches
+would open the Levels tab onto an apparently empty screen.
+
+Verified: `npx tsc --noEmit` clean, full `apps/app` Jest suite green
+(845/845 tests, including new coverage for the collapse toggle, the bare
+counts, and the card persisting its collapsed state across a tab switch),
+and checked visually via a headless-Chromium screenshot of the Expo web
+build in both light and dark mode.
+
+Era 59 closes here: Nov 12, one commit, CANGUPA-133 — the pack list
+becomes a collapsible card, with CANGUPA-134 opened alongside it as a
+parked idea for a cleared/mastered icon in the new count's slot.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

@@ -11,6 +11,12 @@ Open work is listed in [TODO.md](TODO.md).
 
 ### Changed
 
+- The app's Levels tab now wraps each pack collection in a single
+  collapsible card instead of a flat pill with a list of pack rows below
+  it. Tapping the collection's name, now the card's header with a
+  chevron, collapses or expands its packs. The "N/M solved" wording for
+  progress is gone throughout the tab — both the collection header and
+  each pack row now show the count as a bare "N/M" on the right.
 - The app's warning message for a blocked Departure/Arrival move now shows
   in the status line above the board — the same line that otherwise shows
   "Level N" or the move count — instead of as its own line below the

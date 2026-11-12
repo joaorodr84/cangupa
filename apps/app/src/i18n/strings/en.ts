@@ -137,5 +137,5 @@ export const en: Strings = {
       blurb: 'Wild country holding a bit of everything the game has crossed, together at last, on its widest stretch.',
     },
   ],
-  packRange: (first, last, solved, total) => `Levels ${first}–${last} · ${solved}/${total} solved`,
+  packRange: (first, last) => `Levels ${first}–${last}`,
 };

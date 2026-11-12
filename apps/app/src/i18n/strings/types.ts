@@ -134,7 +134,9 @@ export interface Strings {
     readonly name: string;
     readonly blurb: string;
   }[];
-  // The pack row's own range/progress line on LevelPacksScreen (CANGUPA-73),
-  // matching DigiSpin's own packs.range wording: "Levels 1–25 · 5/25 solved".
-  readonly packRange: (first: number, last: number, solved: number, total: number) => string;
+  // The pack row's own range line on LevelPacksScreen (CANGUPA-73): "Levels
+  // 1–25". It carried the progress too ("· 5/25 solved", DigiSpin's own
+  // packs.range wording) until CANGUPA-133 moved that to a bare "5/25" on
+  // the row's right-hand side, which needs no translated word at all.
+  readonly packRange: (first: number, last: number) => string;
 }

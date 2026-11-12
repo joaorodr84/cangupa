@@ -76,6 +76,24 @@ test('the pack list has no back button of its own, unlike a pack\'s own level gr
   expect(screen.getByLabelText('Back to the list')).toBeTruthy();
 });
 
+test('the collection card collapses and expands, and reopening the Levels tab finds it as it was left', async () => {
+  await render(<App />);
+
+  await fireEvent.press(await screen.findByTestId('footer-levels'));
+  expect(screen.getByTestId('pack-1')).toBeTruthy();
+
+  await fireEvent.press(screen.getByTestId('collection-toggle'));
+  expect(screen.queryByTestId('pack-1')).toBeNull();
+
+  // Held in App, not in the pack list itself, so leaving the tab keeps it.
+  await fireEvent.press(screen.getByTestId('footer-home'));
+  await fireEvent.press(screen.getByTestId('footer-levels'));
+  expect(screen.queryByTestId('pack-1')).toBeNull();
+
+  await fireEvent.press(screen.getByTestId('collection-toggle'));
+  expect(screen.getByTestId('pack-1')).toBeTruthy();
+});
+
 test("a pack's own back arrow returns to the pack list, and reopening the Levels tab closes it the same way", async () => {
   await render(<App />);
 

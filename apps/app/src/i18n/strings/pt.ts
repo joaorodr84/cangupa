@@ -134,5 +134,5 @@ export const pt: Strings = {
       blurb: 'Terra brava que junta um pouco de tudo o que o jogo já atravessou, finalmente reunido na sua maior extensão.',
     },
   ],
-  packRange: (first, last, solved, total) => `Níveis ${first}–${last} · ${solved}/${total} resolvidos`,
+  packRange: (first, last) => `Níveis ${first}–${last}`,
 };

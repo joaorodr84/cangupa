@@ -259,3 +259,22 @@ The priority can change at any time; the ID never does.
   (one-handed use, glare/bright-sunlight contrast — may already be
   covered by `CANGUPA-97`). Scoping only — decide which deserve their
   own task.
+- [P4] `CANGUPA-134` — Add a cleared/mastered indicator icon to each pack
+  row and the collection header on `apps/app`'s Levels tab
+  ([LevelPacksScreen.tsx](apps/app/src/components/LevelPacksScreen.tsx),
+  `CANGUPA-133`): a check mark once every level in the item is solved,
+  and — if level mastery is ever built (`CANGUPA-84`'s multi-variant
+  idea is one possible source of what "mastered" would mean) — a star
+  in that same slot instead of the check, not alongside it, so one icon
+  always answers "is this done, and is it done the best way" without a
+  second slot crowding a count as wide as "500/500". Sits to the *left*
+  of the x/y count, not the right: the count already sits flush against
+  the item's own right edge (the chevron, for the collection header),
+  and an icon there would either leave an empty gap in every unfinished
+  row or walk the count toward the middle as packs clear — left of the
+  count keeps every count in one column regardless of which rows have
+  earned an icon yet. Draw it in the item's own accent colour (the
+  pack's swatch colour), matching how `LevelsScreen`'s grid already
+  marks a cleared cell in that colour. Parked: no mastery concept exists
+  yet to drive the star, and a check mark for "fully cleared" alone may
+  not be worth it either — revisit once one of those becomes real.
