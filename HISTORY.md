@@ -2565,6 +2565,50 @@ theoretical save-write race in apps/app's useProgress/useSettings.
 
 ---
 
+## Era 77 — Nov 13 (continued): a longest-streak stat
+
+CANGUPA-144 added a longest-streak-of-days-played stat to `apps/app`'s
+`StatsScreen.tsx`. The task had left open what counts as "a day played" —
+any session, or a cleared level; the owner's call was a cleared level,
+not merely opening the app, the same standard every other lifetime
+counter here already ties to an actual clear. `Progress`
+(`state/progress.ts`) gained three fields: `lastPlayedDate` (a local, not
+UTC, "YYYY-MM-DD" string, via a new exported `localDateString(date = new
+Date())` helper — the timezone-robustness the task asked for, since
+`Date#toISOString()` converts to UTC first and can land on the wrong
+calendar day near local midnight depending on the device's offset),
+`playStreak` (the live consecutive-day run), and `bestPlayStreak` (the
+high-water mark, the same "survives once the live streak later breaks"
+shape `bestPerfectStreak` already uses for perfect clears). `markDone`
+gained a new `today: string = localDateString()` parameter (the same
+default-argument shape `useSessionTimer`'s own `now` parameter takes, so
+a test can drive it directly) and now also computes the day-streak via a
+new private `nextPlayStreak`/`daysBetween` helper pair: unchanged if a
+level was already cleared today, +1 if today is the very next calendar
+day after `lastPlayedDate`, reset to 1 after any gap of more than a day
+(including the edge case of the device clock somehow moving backward).
+The existing "return the same record when nothing changed" early-return
+in `markDone` was extended with a same-day check, since a date rollover
+now counts as a real change even when every other field would otherwise
+be a no-op. Shown on `StatsScreen.tsx` as a new "Longest streak" row via
+new `stats.longestStreak`/`longestStreakValue` i18n strings (en
+pluralises "day"/"days" the same way `winPopup.inMoves` already
+pluralises "move"/"moves"; pt stays bare, matching how pt handles every
+other count in this file). `parseProgress` falls back to null/0 for a
+save from before this field existed, the same non-breaking pattern every
+other lifetime counter here already uses, and additionally validates
+`lastPlayedDate` against the exact "YYYY-MM-DD" shape before trusting it,
+not just checking it's a string, so a hand-edited or otherwise malformed
+value can't reach the date-math helpers. Surfaced and parked by
+`CANGUPA-91`'s investigation. Verified: `npx tsc --noEmit` clean in
+`apps/app`, full `apps/app` Jest suite green (38/38 suites, 988/988
+tests).
+
+Era 77 closes here: Nov 13, one commit, CANGUPA-144 — added a
+longest-streak stat to apps/app's Stats screen.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

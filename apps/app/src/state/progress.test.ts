@@ -9,6 +9,7 @@ import {
   parseProgress,
   loadProgress,
   perPackStats,
+  localDateString,
   playTimeParts,
   recordUndo,
   spendHint,
@@ -33,6 +34,9 @@ function progress(overrides: Partial<Progress> = {}): Progress {
     perfectStreak: 0,
     bestPerfectStreak: 0,
     timePlayedMs: 0,
+    lastPlayedDate: null,
+    playStreak: 0,
+    bestPlayStreak: 0,
     ...overrides,
   };
 }
@@ -109,9 +113,9 @@ describe('markDone', () => {
   });
 
   it('returns the same record for a non-perfect replay of an already-done level with no better move count', () => {
-    const done = progress({ done: [1], bestMoves: { 1: 4 } });
-    expect(markDone(done, 1, 4, false)).toBe(done);
-    expect(markDone(done, 1, 6, false)).toBe(done);
+    const done = progress({ done: [1], bestMoves: { 1: 4 }, lastPlayedDate: '2026-03-05' });
+    expect(markDone(done, 1, 4, false, '2026-03-05')).toBe(done);
+    expect(markDone(done, 1, 6, false, '2026-03-05')).toBe(done);
   });
 
   it('updates the best when a replay beats it, without duplicating done', () => {
@@ -172,13 +176,73 @@ describe('markDone', () => {
   });
 
   it('returns the same record when a non-perfect replay breaks nothing — the streak was already 0', () => {
-    const done = progress({ done: [1], bestMoves: { 1: 4 } });
-    expect(markDone(done, 1, 4, false)).toBe(done);
+    const done = progress({ done: [1], bestMoves: { 1: 4 }, lastPlayedDate: '2026-03-05' });
+    expect(markDone(done, 1, 4, false, '2026-03-05')).toBe(done);
   });
 
   it('does not return the same record when a non-perfect clear breaks a live streak, even with no better move count', () => {
-    const done = progress({ done: [1], bestMoves: { 1: 4 }, perfectStreak: 3, bestPerfectStreak: 3 });
-    expect(markDone(done, 1, 4, false)).not.toBe(done);
+    const done = progress({
+      done: [1],
+      bestMoves: { 1: 4 },
+      perfectStreak: 3,
+      bestPerfectStreak: 3,
+      lastPlayedDate: '2026-03-05',
+    });
+    expect(markDone(done, 1, 4, false, '2026-03-05')).not.toBe(done);
+  });
+
+  it('does not return the same record on a same-day replay that breaks nothing else but today is a new day', () => {
+    const done = progress({ done: [1], bestMoves: { 1: 4 }, lastPlayedDate: '2026-03-04' });
+    expect(markDone(done, 1, 4, false, '2026-03-05')).not.toBe(done);
+  });
+
+  // CANGUPA-144: the day-played streak, tracked here rather than derived
+  // elsewhere since markDone is the one place that already knows "a clear
+  // just happened".
+  describe('day-played streak', () => {
+    it('starts the streak at 1 on the very first clear ever', () => {
+      const first = markDone(NO_PROGRESS, 3, 5, false, '2026-03-05');
+      expect(first.lastPlayedDate).toBe('2026-03-05');
+      expect(first.playStreak).toBe(1);
+      expect(first.bestPlayStreak).toBe(1);
+    });
+
+    it('leaves the streak unchanged on a second clear the same day', () => {
+      const today = progress({ lastPlayedDate: '2026-03-05', playStreak: 3, bestPlayStreak: 3 });
+      const again = markDone(today, 4, 5, false, '2026-03-05');
+      expect(again.lastPlayedDate).toBe('2026-03-05');
+      expect(again.playStreak).toBe(3);
+    });
+
+    it('extends the streak by one on the very next calendar day', () => {
+      const yesterday = progress({ lastPlayedDate: '2026-03-05', playStreak: 3, bestPlayStreak: 3 });
+      const next = markDone(yesterday, 4, 5, false, '2026-03-06');
+      expect(next.lastPlayedDate).toBe('2026-03-06');
+      expect(next.playStreak).toBe(4);
+      expect(next.bestPlayStreak).toBe(4);
+    });
+
+    it('restarts the streak at 1 after a gap of a day or more', () => {
+      const gapped = progress({ lastPlayedDate: '2026-03-05', playStreak: 3, bestPlayStreak: 3 });
+      const after = markDone(gapped, 4, 5, false, '2026-03-07');
+      expect(after.playStreak).toBe(1);
+      // The earlier high-water mark survives a broken streak, the same
+      // shape bestPerfectStreak already uses.
+      expect(after.bestPlayStreak).toBe(3);
+    });
+
+    it("restarts the streak at 1 if today is somehow before lastPlayedDate (e.g. the device clock moved back)", () => {
+      const future = progress({ lastPlayedDate: '2026-03-10', playStreak: 5, bestPlayStreak: 5 });
+      const earlier = markDone(future, 4, 5, false, '2026-03-05');
+      expect(earlier.playStreak).toBe(1);
+      expect(earlier.bestPlayStreak).toBe(5);
+    });
+
+    it('raises bestPlayStreak once the current streak passes it', () => {
+      const atPeak = progress({ lastPlayedDate: '2026-03-05', playStreak: 3, bestPlayStreak: 3 });
+      const next = markDone(atPeak, 4, 5, false, '2026-03-06');
+      expect(next.bestPlayStreak).toBe(4);
+    });
   });
 });
 
@@ -265,6 +329,28 @@ describe('playTimeParts', () => {
   });
 });
 
+describe('localDateString', () => {
+  it('formats a date as zero-padded YYYY-MM-DD', () => {
+    expect(localDateString(new Date(2026, 2, 5))).toBe('2026-03-05'); // month 2 = March
+  });
+
+  it('zero-pads a single-digit month and day', () => {
+    expect(localDateString(new Date(2026, 0, 1))).toBe('2026-01-01');
+  });
+
+  // CANGUPA-144's own reason for not using toISOString(): that converts to
+  // UTC first, which can roll the date over near local midnight depending
+  // on the device's timezone offset. Building the Date from explicit local
+  // components (as the other cases here already do) and reading it back
+  // with the local getters this function uses must agree, whatever the
+  // test machine's own timezone happens to be — this doesn't pin a specific
+  // offset, just that the two stay consistent with each other.
+  it("matches the Date's own local year/month/day, not its UTC ones", () => {
+    const date = new Date(2026, 11, 31, 23, 59);
+    expect(localDateString(date)).toBe(`${date.getFullYear()}-12-31`);
+  });
+});
+
 describe('totalBestMoves', () => {
   it('is zero with no cleared levels', () => {
     expect(totalBestMoves(NO_PROGRESS)).toBe(0);
@@ -313,7 +399,7 @@ describe('parseProgress', () => {
   it('reads saved done levels, the resume level, best moves, hint balance and every lifetime counter', () => {
     expect(
       parseProgress(
-        '{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1},"hints":1,"hintsUsed":5,"undosUsed":2,"perfectClears":7,"perfectStreak":1,"bestPerfectStreak":4,"timePlayedMs":9000}',
+        '{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1},"hints":1,"hintsUsed":5,"undosUsed":2,"perfectClears":7,"perfectStreak":1,"bestPerfectStreak":4,"timePlayedMs":9000,"lastPlayedDate":"2026-03-05","playStreak":6,"bestPlayStreak":8}',
       ),
     ).toEqual({
       done: [0, 2],
@@ -326,6 +412,9 @@ describe('parseProgress', () => {
       perfectStreak: 1,
       bestPerfectStreak: 4,
       timePlayedMs: 9000,
+      lastPlayedDate: '2026-03-05',
+      playStreak: 6,
+      bestPlayStreak: 8,
     });
   });
 
@@ -413,6 +502,30 @@ describe('parseProgress', () => {
     expect(parseProgress('{"timePlayedMs":"2"}').timePlayedMs).toBe(0);
   });
 
+  it('falls back to null/0 when lastPlayedDate/playStreak/bestPlayStreak are missing — a save from before CANGUPA-144 has never recorded a day', () => {
+    const fresh = parseProgress('{"done":[0],"level":0}');
+    expect(fresh.lastPlayedDate).toBeNull();
+    expect(fresh.playStreak).toBe(0);
+    expect(fresh.bestPlayStreak).toBe(0);
+  });
+
+  it('falls back to null when lastPlayedDate is not a plain "YYYY-MM-DD" string', () => {
+    expect(parseProgress('{"lastPlayedDate":"2026-3-5"}').lastPlayedDate).toBeNull();
+    expect(parseProgress('{"lastPlayedDate":"not a date"}').lastPlayedDate).toBeNull();
+    expect(parseProgress('{"lastPlayedDate":20260305}').lastPlayedDate).toBeNull();
+    expect(parseProgress('{"lastPlayedDate":null}').lastPlayedDate).toBeNull();
+  });
+
+  it('reads a well-formed lastPlayedDate as-is', () => {
+    expect(parseProgress('{"lastPlayedDate":"2026-03-05"}').lastPlayedDate).toBe('2026-03-05');
+  });
+
+  it('falls back to 0 when playStreak or bestPlayStreak is not a non-negative integer', () => {
+    expect(parseProgress('{"playStreak":-1}').playStreak).toBe(0);
+    expect(parseProgress('{"playStreak":1.5}').playStreak).toBe(0);
+    expect(parseProgress('{"bestPlayStreak":"2"}').bestPlayStreak).toBe(0);
+  });
+
   it.each(CORRUPT_RECORDS)('reads %s as no progress', (_name, raw) => {
     expect(parseProgress(raw)).toEqual(NO_PROGRESS);
   });
@@ -453,7 +566,7 @@ describe('saving and loading', () => {
     );
 
     expect(await storage.getItem(PROGRESS_KEY)).toBe(
-      '{"done":[0],"level":1,"bestMoves":{"0":5},"hints":2,"hintsUsed":1,"undosUsed":0,"perfectClears":0,"perfectStreak":0,"bestPerfectStreak":0,"timePlayedMs":0}',
+      '{"done":[0],"level":1,"bestMoves":{"0":5},"hints":2,"hintsUsed":1,"undosUsed":0,"perfectClears":0,"perfectStreak":0,"bestPerfectStreak":0,"timePlayedMs":0,"lastPlayedDate":null,"playStreak":0,"bestPlayStreak":0}',
     );
   });
 

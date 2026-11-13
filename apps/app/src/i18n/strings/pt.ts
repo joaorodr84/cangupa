@@ -60,6 +60,8 @@ export const pt: Strings = {
     timePlayedValue: (hours, minutes) => `${hours}h ${minutes}m`,
     perPack: 'Por pacote',
     perPackValue: (cleared, total, moves) => `${cleared}/${total} · ${moves} jogadas`,
+    longestStreak: 'Maior sequência',
+    longestStreakValue: (days) => `${days} dias`,
   },
   achievements: {
     heading: 'Conquistas',

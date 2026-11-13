@@ -31,6 +31,10 @@ Open work is listed in [TODO.md](TODO.md).
   rows, listing one row per level pack with that pack's own cleared-level
   count and total, plus its own summed best-moves total (e.g. "3/5 · 12
   moves").
+- The app's Stats screen now has a "Longest streak" row, showing the
+  longest run of consecutive calendar days with at least one level
+  cleared (e.g. "3 days"). A day only counts once a level is actually
+  cleared on it — just opening the app doesn't extend the streak.
 
 ### Fixed
 

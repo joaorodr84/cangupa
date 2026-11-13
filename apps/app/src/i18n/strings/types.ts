@@ -81,6 +81,10 @@ export interface Strings {
     // order.
     readonly perPack: string;
     readonly perPackValue: (cleared: number, total: number, moves: number) => string;
+    // The longest run of consecutive days with at least one level cleared
+    // (CANGUPA-144).
+    readonly longestStreak: string;
+    readonly longestStreakValue: (days: number) => string;
   };
   // The achievement card grid shown on the Stats screen (CANGUPA-90),
   // displayed the same way as DigiSpin's own (StatsScreen.tsx,

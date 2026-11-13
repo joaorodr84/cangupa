@@ -128,12 +128,6 @@ The priority can change at any time; the ID never does.
   actually performed via a screen reader, given the input model is
   tapping the exact destination tile — rather than a quick fix, so
   parked rather than scoped yet.
-- [P4] `CANGUPA-144` — Show a longest-streak-of-days-played stat on
-  `apps/app`'s `StatsScreen.tsx`. Needs a new, timezone-robust
-  date-tracking scheme (today nothing records *when* a level was
-  played, only *that* it was) and a decision on what counts as "a day
-  played" — any session, or a cleared level. Surfaced and parked by
-  `CANGUPA-91`'s investigation.
 - [P4] `CANGUPA-146` — Bring `CANGUPA-143`'s time-played stat to
   `apps/web-classic`, which has no `AppState` equivalent — needs a
   browser-side visibility/focus timer instead, and its own save-data

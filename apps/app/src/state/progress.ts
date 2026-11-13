@@ -53,6 +53,22 @@ export interface Progress {
   // accumulated by useSessionTimer rather than derived from anything else
   // here — only ever grows, the same shape as hintsUsed/undosUsed.
   readonly timePlayedMs: number;
+  // The local calendar day ("YYYY-MM-DD") a level was last cleared on
+  // (CANGUPA-144), or null before any clear ever happened. Only markDone's
+  // own day-streak bookkeeping reads this; nothing else needs "today" at
+  // all, so it stays a plain comparison value rather than a parsed date.
+  readonly lastPlayedDate: string | null;
+  // How many days in a row, up to and including lastPlayedDate, had at
+  // least one level cleared (CANGUPA-144) — "a day played" means a clear,
+  // not just opening the app, the same standard every other lifetime
+  // counter here already ties to an actual clear rather than a session.
+  // Reset to 1 (not 0) by a clear after a gap, the same way a single
+  // perfect clear starts perfectStreak at 1 rather than 0.
+  readonly playStreak: number;
+  // The longest playStreak ever reached — only ever grows, the same
+  // "best ever" shape bestPerfectStreak already uses, so a streak-length
+  // stat stays meaningful once the live streak later breaks.
+  readonly bestPlayStreak: number;
 }
 
 export const NO_PROGRESS: Progress = {
@@ -66,6 +82,9 @@ export const NO_PROGRESS: Progress = {
   perfectStreak: 0,
   bestPerfectStreak: 0,
   timePlayedMs: 0,
+  lastPlayedDate: null,
+  playStreak: 0,
+  bestPlayStreak: 0,
 };
 
 // A level's index is its place in the packs' play order (CANGUPA-56), which is
@@ -93,6 +112,46 @@ export function isUnlocked(progress: Progress, levelIndex: number, packStart: nu
   return levelIndex === packStart || isDone(progress, levelIndex - 1) || isDone(progress, levelIndex);
 }
 
+// Local (not UTC) calendar-day string "YYYY-MM-DD" (CANGUPA-144) — the
+// timezone-robustness this stat needs: Date#toISOString() converts to UTC
+// first, which can land on the wrong calendar day for part of the globe
+// near local midnight (11pm in a timezone west of UTC is already
+// "tomorrow" in UTC). Local year/month/day stays whatever calendar day the
+// device itself thinks it is.
+export function localDateString(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Whole calendar days between two "YYYY-MM-DD" strings, parsed as local
+// midnight (the bare "T00:00:00" matters: a date-only string with no time
+// at all parses as UTC midnight per spec, the same off-by-one risk
+// localDateString above exists to avoid — parsing with a local time
+// keeps both ends in the same local calendar this stat is tracking).
+function daysBetween(earlier: string, later: string): number {
+  const earlierDate = new Date(`${earlier}T00:00:00`);
+  const laterDate = new Date(`${later}T00:00:00`);
+  return Math.round((laterDate.getTime() - earlierDate.getTime()) / 86_400_000);
+}
+
+// The day-streak markDone below extends, continues, or restarts
+// (CANGUPA-144): unchanged if today was already counted, +1 if today
+// continues directly from lastPlayedDate, or restarted at 1 — a gap is a
+// broken streak, but today's own clear still starts counting immediately,
+// the same "the triggering event itself counts as 1" shape perfectStreak
+// above uses for a single perfect clear.
+function nextPlayStreak(progress: Progress, today: string): number {
+  if (progress.lastPlayedDate === today) {
+    return progress.playStreak;
+  }
+  if (progress.lastPlayedDate !== null && daysBetween(progress.lastPlayedDate, today) === 1) {
+    return progress.playStreak + 1;
+  }
+  return 1;
+}
+
 // Marks a level cleared, with how many moves it took, and keeps the fewest
 // moves it's ever been cleared in. A first-time clear also earns one hint,
 // uncapped (CANGUPA-124) — a replay of an already-done level earns nothing,
@@ -100,18 +159,30 @@ export function isUnlocked(progress: Progress, levelIndex: number, packStart: nu
 // (CANGUPA-90) is whether this clear used no hint and no undo since its
 // last reset — tracked regardless of whether the level was already done,
 // since a clean replay still extends or starts a streak and still counts
-// toward the lifetime perfectClears total. Returns the same record when
-// nothing at all changes — the level was already done, this clear didn't
-// beat its best, it wasn't perfect, and there was no streak to break —
-// so a replay that improves nothing never fires a save.
-export function markDone(progress: Progress, levelIndex: number, moves: number, perfect: boolean): Progress {
+// toward the lifetime perfectClears total. `today` (CANGUPA-144) is the
+// local calendar day this clear counts toward — a parameter rather than
+// read internally so a test can drive it directly, the same shape
+// useSessionTimer's own `now` takes. Returns the same record when nothing
+// at all changes — the level was already done, this clear didn't beat its
+// best, it wasn't perfect, there was no perfect-streak to break, and today
+// was already the last-played day — so a second clear on the same day that
+// improves nothing never fires a save.
+export function markDone(
+  progress: Progress,
+  levelIndex: number,
+  moves: number,
+  perfect: boolean,
+  today: string = localDateString(),
+): Progress {
   const alreadyDone = isDone(progress, levelIndex);
   const best = progress.bestMoves[levelIndex];
   const improves = best === undefined || moves < best;
   const perfectStreak = perfect ? progress.perfectStreak + 1 : 0;
-  if (alreadyDone && !improves && !perfect && progress.perfectStreak === 0) {
+  const sameDay = today === progress.lastPlayedDate;
+  if (alreadyDone && !improves && !perfect && progress.perfectStreak === 0 && sameDay) {
     return progress;
   }
+  const playStreak = nextPlayStreak(progress, today);
   return {
     ...progress,
     done: alreadyDone ? progress.done : [...progress.done, levelIndex].sort((a, b) => a - b),
@@ -120,6 +191,9 @@ export function markDone(progress: Progress, levelIndex: number, moves: number, 
     perfectClears: perfect ? progress.perfectClears + 1 : progress.perfectClears,
     perfectStreak,
     bestPerfectStreak: Math.max(progress.bestPerfectStreak, perfectStreak),
+    lastPlayedDate: today,
+    playStreak,
+    bestPlayStreak: Math.max(progress.bestPlayStreak, playStreak),
   };
 }
 
@@ -285,6 +359,17 @@ export function parseProgress(raw: string | null): Progress {
     // A save from before CANGUPA-143 has none either — same "nothing banked
     // yet" fallback as hintsUsed/undosUsed above.
     const timePlayedMs = nonNegativeIntegerOr(record.timePlayedMs, 0);
+    // A save from before CANGUPA-144 has none of these either — no day
+    // ever recorded, same "nothing banked yet" fallback. Validated against
+    // the exact "YYYY-MM-DD" shape localDateString produces, not just
+    // "is a string", so a hand-edited or otherwise malformed value can't
+    // reach daysBetween's own date parsing.
+    const lastPlayedDate =
+      typeof record.lastPlayedDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(record.lastPlayedDate)
+        ? record.lastPlayedDate
+        : null;
+    const playStreak = nonNegativeIntegerOr(record.playStreak, 0);
+    const bestPlayStreak = nonNegativeIntegerOr(record.bestPlayStreak, 0);
     return {
       done,
       level,
@@ -296,6 +381,9 @@ export function parseProgress(raw: string | null): Progress {
       perfectStreak,
       bestPerfectStreak,
       timePlayedMs,
+      lastPlayedDate,
+      playStreak,
+      bestPlayStreak,
     };
   } catch {
     return NO_PROGRESS;

@@ -63,6 +63,8 @@ export const en: Strings = {
     timePlayedValue: (hours, minutes) => `${hours}h ${minutes}m`,
     perPack: 'Per pack',
     perPackValue: (cleared, total, moves) => `${cleared}/${total} · ${moves} ${moves === 1 ? 'move' : 'moves'}`,
+    longestStreak: 'Longest streak',
+    longestStreakValue: (days) => `${days} ${days === 1 ? 'day' : 'days'}`,
   },
   achievements: {
     heading: 'Achievements',

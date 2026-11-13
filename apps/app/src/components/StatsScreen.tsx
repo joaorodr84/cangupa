@@ -69,6 +69,11 @@ export default function StatsScreen({ totalLevels, packSizes, progress, achievem
           value={t.stats.timePlayedValue(playedHours, playedMinutes)}
           palette={palette}
         />
+        <Row
+          label={t.stats.longestStreak}
+          value={t.stats.longestStreakValue(progress.bestPlayStreak)}
+          palette={palette}
+        />
       </View>
 
       <Text style={[styles.heading, { color: palette.muted }]} accessibilityRole="header">

@@ -27,6 +27,9 @@ function progress(overrides: Partial<Progress>): Progress {
     perfectStreak: 0,
     bestPerfectStreak: 0,
     timePlayedMs: 0,
+    lastPlayedDate: null,
+    playStreak: 0,
+    bestPlayStreak: 0,
     ...overrides,
   };
 }
@@ -72,6 +75,23 @@ test('shows time played as whole hours and minutes', async () => {
 
   expect(screen.getByText('Time played')).toBeTruthy();
   expect(screen.getByText('2h 15m')).toBeTruthy();
+});
+
+// CANGUPA-144: the longest-streak-of-days-played stat, pluralised in
+// English ("1 day" vs "2 days") the same way winPopup.inMoves already is.
+test('shows the longest streak, singular and plural', async () => {
+  const single = progress({ bestPlayStreak: 1 });
+  await render(
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={single} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+  );
+  expect(screen.getByText('Longest streak')).toBeTruthy();
+  expect(screen.getByText('1 day')).toBeTruthy();
+
+  const several = progress({ bestPlayStreak: 5 });
+  await render(
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={several} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+  );
+  expect(screen.getByText('5 days')).toBeTruthy();
 });
 
 // CANGUPA-141: a row per pack, each showing its own cleared count and
