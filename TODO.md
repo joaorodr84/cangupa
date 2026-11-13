@@ -179,24 +179,6 @@ The priority can change at any time; the ID never does.
   above the 3:1 large-text floor — the same kind of small shift
   `@joaorodr84/themes`'s own `LIGHT.textMuted` already took (4.36:1 →
   4.99:1) for exactly this reason.
-- [P2] `CANGUPA-152` — Build a directional-pad control scheme for
-  `apps/app`, as an addition alongside tap rather than a replacement —
-  the same relationship `apps/web-classic`'s existing `WASD`/arrow-key
-  mode (`CANGUPA-66`) has to its own tap/click input. Found feasible by
-  `CANGUPA-98`'s investigation without new game-logic infrastructure:
-  [board.ts](apps/app/src/game/board.ts)'s `legalMoves()` already
-  returns axis-aligned `Move[]` (the 4 cardinal directions in `DIRS`),
-  so a press of up/down/left/right just needs to pick whichever
-  `legalMoves()` entry sits in that direction from the kangaroo's own
-  position and feed it through the same `play()`/`onPressTile` path
-  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx) already
-  wires up. One real wrinkle to resolve, not a code-level given:
-  `legalMoves()` can return both a step (`d===1`) and a jump (`d===2`)
-  in the same direction at once, so a directional press needs an
-  explicit tie-break — defaulting to the step, as the more conservative
-  of the two, is the recommended choice. `CANGUPA-100`'s scoping pass
-  had folded a "one-handed use" angle into this same investigation: a
-  directional pad covers that too, no separate work needed.
 - [P2] `CANGUPA-153` — Add a minimum-touch-target floor to `apps/app`'s
   board tiles. `CANGUPA-98`'s investigation found there isn't just no
   *setting* for tap-target size — there's no enforced *floor* either:

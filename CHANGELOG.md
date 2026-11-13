@@ -47,6 +47,16 @@ Open work is listed in [TODO.md](TODO.md).
   position, then whether it's gone, worn, a Departure or Arrival (with
   which edge), or its kind and visits left, and finally whether the
   solver's hint suggests moving there.
+- The app's board screen now has a four-button directional pad below the
+  board, alongside the existing tap-to-move — not replacing it, the same
+  as the web version's own WASD/arrow-key mode sitting alongside its
+  tap/click input. Always on, with no settings toggle. Pressing a
+  direction plays the legal move that way from the kangaroo's current
+  position (preferring a step over a jump when both are legal), with the
+  same animation, sound and progress tracking a tap on the destination
+  tile already gives, and the same Departure/Arrival direction
+  restrictions. A direction with no legal move right now shows disabled
+  rather than doing nothing.
 
 ### Fixed
 

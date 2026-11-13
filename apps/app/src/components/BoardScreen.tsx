@@ -9,14 +9,15 @@ import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { type Level } from '../game/board';
-import { statusFor } from '../game/boardView';
+import { directionalMove, statusFor, type ArrowDirection } from '../game/boardView';
 import { orientLevel } from '../game/orient';
 import { useBoard } from '../game/useBoard';
 import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 import BoardHud from './BoardHud';
+import DirectionalPad from './DirectionalPad';
 import HelpPopup from './HelpPopup';
-import PlayableBoard from './PlayableBoard';
+import PlayableBoard, { type PlayableBoardHandle } from './PlayableBoard';
 import WinPopup from './WinPopup';
 
 interface BoardScreenProps {
@@ -82,7 +83,17 @@ export default function BoardScreen({
   const startedLandscape = useRef(windowWidth > windowHeight);
   const oriented = useMemo(() => orientLevel(level, startedLandscape.current), [level]);
   const board = useBoard(oriented, hints);
-  const { won, hintFailed, moves, remaining, canUndo, undo, reset, hint, perfect } = board;
+  const { game, won, hintFailed, moves, remaining, canUndo, undo, reset, hint, perfect } = board;
+
+  // The directional pad (CANGUPA-152): BoardScreen owns the handler since it's the one holding
+  // the ref into PlayableBoard's exposed pressTile, the same move-playing path a tap already
+  // uses (falling-lock, hop, sound, onMoved all included) rather than a second one of its own.
+  const playableBoardRef = useRef<PlayableBoardHandle>(null);
+  const canMoveDirection = (direction: ArrowDirection) => !won && directionalMove(game, direction) !== null;
+  const handleDirection = (direction: ArrowDirection) => {
+    const target = directionalMove(game, direction);
+    if (target) playableBoardRef.current?.pressTile(target.x, target.y);
+  };
 
   const wasWon = useRef(false);
   useEffect(() => {
@@ -157,6 +168,7 @@ export default function BoardScreen({
         }}
       >
         <PlayableBoard
+          ref={playableBoardRef}
           board={board}
           anim={anim}
           fall={fall}
@@ -175,6 +187,7 @@ export default function BoardScreen({
         )}
         {helpOpen && <HelpPopup palette={palette} onClose={() => setHelpOpen(false)} />}
       </View>
+      <DirectionalPad palette={palette} canMove={canMoveDirection} onPress={handleDirection} />
       <View style={styles.levelNav}>
         <LevelArrow
           direction="previous"

@@ -143,6 +143,13 @@ export interface Strings {
     // does — opens the store instead of spending a hint — so a screen
     // reader needs the label to say so.
     readonly buyHints: string;
+    // The directional pad (CANGUPA-152), an addition alongside tap rather
+    // than a replacement for it — the same relationship apps/web-classic's
+    // own WASD/arrow-key mode (CANGUPA-66) has to its tap/click input.
+    readonly moveUp: string;
+    readonly moveDown: string;
+    readonly moveLeft: string;
+    readonly moveRight: string;
   };
   readonly board: {
     // Shown in the board's own reserved message area below it (CANGUPA-129,

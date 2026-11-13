@@ -8,6 +8,27 @@ export type ArrowDirection = 'right' | 'left' | 'down' | 'up';
 // Game's arrow directions are an index into its DIRS: right, left, down, up.
 const ARROW_DIRECTIONS: readonly ArrowDirection[] = ['right', 'left', 'down', 'up'];
 
+// The same four vectors as board.ts's own (unexported) DIRS, in ArrowDirection terms rather than
+// an index into it, for directionalMove below to compare a legalMoves() entry's offset against.
+const DIRECTION_VECTOR: Readonly<Record<ArrowDirection, readonly [number, number]>> = {
+  right: [1, 0],
+  left: [-1, 0],
+  down: [0, 1],
+  up: [0, -1],
+};
+
+// A directional-pad press (CANGUPA-152, an addition alongside tap rather than a replacement —
+// the same relationship apps/web-classic's own WASD/arrow-key mode has to its tap/click input):
+// the legalMoves() entry lying in exactly this cardinal direction from the kangaroo's current
+// position, or null when there is none. legalMoves() can return both a step and a jump in the
+// same direction at once; a directional press needs an explicit tie-break, so this prefers the
+// step, the more conservative of the two, the same choice CANGUPA-98's investigation recommended.
+export function directionalMove(game: Game, direction: ArrowDirection): Move | null {
+  const [dx, dy] = DIRECTION_VECTOR[direction];
+  const matches = game.legalMoves().filter((m) => Math.sign(m.x - game.x) === dx && Math.sign(m.y - game.y) === dy);
+  return matches.find((m) => !m.jump) ?? matches[0] ?? null;
+}
+
 export interface TileView {
   readonly x: number;
   readonly y: number;

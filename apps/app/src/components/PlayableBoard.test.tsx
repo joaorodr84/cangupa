@@ -1,7 +1,8 @@
+import { createRef, type Ref } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import * as Sound from '../audio/sound';
-import PlayableBoard from './PlayableBoard';
+import PlayableBoard, { type PlayableBoardHandle } from './PlayableBoard';
 import { type Level } from '../game/board';
 import { useBoard } from '../game/useBoard';
 import { DARK } from '../theme/palette';
@@ -19,16 +20,19 @@ function Harness({
   onMoved,
   maxWidth,
   maxHeight,
+  boardRef,
 }: {
   level: Level;
   fall?: boolean;
   onMoved?: () => void;
   maxWidth?: number;
   maxHeight?: number;
+  boardRef?: Ref<PlayableBoardHandle>;
 }) {
   const board = useBoard(level, true);
   return (
     <PlayableBoard
+      ref={boardRef}
       board={board}
       anim={false}
       fall={fall}
@@ -42,6 +46,21 @@ function Harness({
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+test('pressTile() plays a move exactly like a tap, for the directional pad (CANGUPA-152)', async () => {
+  const onMoved = jest.fn();
+  const boardRef = createRef<PlayableBoardHandle>();
+
+  await render(<Harness level={['S1']} onMoved={onMoved} boardRef={boardRef} />);
+
+  await act(async () => {
+    boardRef.current?.pressTile(1, 0);
+  });
+
+  expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
+  expect(onMoved).toHaveBeenCalledTimes(1);
+  expect(Sound.jump).toHaveBeenCalledTimes(1);
 });
 
 test('tapping the only legal tile moves the kangaroo there', async () => {

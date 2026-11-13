@@ -102,6 +102,10 @@ export const pt: Strings = {
     previousLevel: 'Nível anterior',
     nextLevel: 'Próximo nível',
     buyHints: 'Comprar dicas',
+    moveUp: 'Mover para cima',
+    moveDown: 'Mover para baixo',
+    moveLeft: 'Mover para a esquerda',
+    moveRight: 'Mover para a direita',
   },
   board: {
     blockedDeparture: 'Não podes saír por aí — só pelo lado aberto.',

@@ -5,7 +5,7 @@
 // belongs to the screen that owns useBoard and also renders this
 // (BoardScreen.tsx), so that screen and this component share one Game
 // rather than each calling useBoard and getting their own.
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
@@ -51,7 +51,18 @@ interface PlayableBoardProps {
   readonly onMoved?: () => void;
 }
 
-export default function PlayableBoard({ board, anim, fall, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps) {
+export interface PlayableBoardHandle {
+  // Plays the move to (x, y) exactly as a tap on that tile would (CANGUPA-152): the same
+  // falling-lock guard, hop animation, sound and onMoved callback — so the directional pad
+  // (BoardScreen.tsx, an addition alongside tap rather than a replacement for it) and a real tap
+  // share the one code path instead of a second one needing to be kept in step with it.
+  pressTile(x: number, y: number): void;
+}
+
+const PlayableBoard = forwardRef<PlayableBoardHandle, PlayableBoardProps>(function PlayableBoard(
+  { board, anim, fall, palette, maxWidth, maxHeight, onMoved }: PlayableBoardProps,
+  ref,
+) {
   const { game, tiles, facing, move, won, stuck, reset, tick } = board;
   const t = useStrings();
   const boardRef = useRef<BoardHandle>(null);
@@ -94,6 +105,8 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
       onMoved?.();
     }
   };
+
+  useImperativeHandle(ref, () => ({ pressTile: handlePressTile }));
 
   // A tap on empty board space or a tile with no legal move — ui.js's click
   // handler falls through to the same thing when settings.fall is on. A
@@ -221,7 +234,9 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
       </View>
     </>
   );
-}
+});
+
+export default PlayableBoard;
 
 const styles = StyleSheet.create({
   frame: {

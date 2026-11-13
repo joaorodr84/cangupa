@@ -1,5 +1,5 @@
 import { Game } from './board';
-import { DEFAULT_FACING, facingFor, statusFor, tileAccessibilityLabel, tilesOf } from './boardView';
+import { DEFAULT_FACING, directionalMove, facingFor, statusFor, tileAccessibilityLabel, tilesOf } from './boardView';
 import { en } from '../i18n/strings/en';
 
 const t = en.board;
@@ -128,6 +128,44 @@ describe('tileAccessibilityLabel', () => {
     const tiles = tilesOf(g, { hints: true });
     const tile = tiles.find((tv) => tv.x === 1)!;
     expect(tileAccessibilityLabel(tile, t)).toBe('Row 1, column 2, Arrival tile, opens to the left edge.');
+  });
+});
+
+describe('directionalMove', () => {
+  it('finds the step one tile away in the pressed direction', () => {
+    const g = new Game(['S1', '1.']);
+    expect(directionalMove(g, 'right')).toMatchObject({ x: 1, y: 0, jump: false });
+    expect(directionalMove(g, 'down')).toMatchObject({ x: 0, y: 1, jump: false });
+  });
+
+  it('returns null when there is no legal move that way', () => {
+    const g = new Game(['S1.']);
+    expect(directionalMove(g, 'left')).toBeNull();
+    expect(directionalMove(g, 'down')).toBeNull();
+  });
+
+  it('prefers the step over the jump when legalMoves() offers both in the same direction', () => {
+    // A gap after the step, then one more tile: stepping onto (1,0) and jumping over it to (2,0)
+    // are both legal moves to the right from (0,0).
+    const g = new Game(['S11']);
+    expect(directionalMove(g, 'right')).toMatchObject({ x: 1, y: 0, jump: false });
+  });
+
+  it('falls back to the jump when only a jump is legal that way', () => {
+    // A one-tile gap: (1,0) does not exist, so the only legal move to the right is the jump to
+    // (2,0).
+    const g = new Game(['S.1']);
+    expect(directionalMove(g, 'right')).toMatchObject({ x: 2, y: 0, jump: true });
+  });
+
+  it("respects a Departure tile's own direction restriction", () => {
+    // '>' (1,0) only leaves to the right. Step the kangaroo onto it first — a Departure tile is
+    // never the start tile — then check down comes back null even though (1,1) is a real,
+    // reachable tile directly below it, while right (the one way out) still works.
+    const g = new Game(['S>1', '.1.']);
+    g.play({ x: 1, y: 0 });
+    expect(directionalMove(g, 'down')).toBeNull();
+    expect(directionalMove(g, 'right')).toMatchObject({ x: 2, y: 0 });
   });
 });
 

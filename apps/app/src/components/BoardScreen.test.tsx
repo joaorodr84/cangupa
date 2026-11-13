@@ -65,6 +65,30 @@ test('calls onLevelComplete with the move count exactly once when the level is w
   expect(screen.getByText('Level complete!')).toBeTruthy();
 });
 
+test('pressing a directional-pad button plays the matching move, same as tapping the tile (CANGUPA-152)', async () => {
+  const onLevelComplete = jest.fn();
+
+  await renderScreen({ level: ['S1'], onLevelComplete });
+
+  await fireEvent.press(screen.getByTestId('dpad-right'));
+
+  expect(onLevelComplete).toHaveBeenCalledTimes(1);
+  expect(onLevelComplete).toHaveBeenCalledWith(1, true);
+});
+
+test('a direction with no legal move is disabled on the pad, and pressing it anyway does nothing (CANGUPA-152)', async () => {
+  const onLevelComplete = jest.fn();
+
+  await renderScreen({ level: ['S1'], onLevelComplete });
+
+  const left = screen.getByTestId('dpad-left');
+  expect(left.props.accessibilityState).toEqual({ disabled: true });
+
+  await fireEvent.press(left);
+
+  expect(onLevelComplete).not.toHaveBeenCalled();
+});
+
 test('pressing the back arrow calls onBack', async () => {
   const onBack = jest.fn();
 

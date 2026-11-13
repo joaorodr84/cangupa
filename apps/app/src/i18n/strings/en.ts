@@ -105,6 +105,10 @@ export const en: Strings = {
     previousLevel: 'Previous level',
     nextLevel: 'Next level',
     buyHints: 'Buy hints',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
+    moveLeft: 'Move left',
+    moveRight: 'Move right',
   },
   board: {
     blockedDeparture: "Can't leave that way — only through the open edge.",
