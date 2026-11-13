@@ -116,18 +116,68 @@ The priority can change at any time; the ID never does.
   repo, not this one — `CANGUPA-86`'s own note flagged it as worth
   checking once a fix landed here, but doing it is out of this
   session's scope.
-- [P4] `CANGUPA-140` — Give `apps/app`'s board tiles real screen-reader
-  semantics (position, legality, tile kind). Today's board
-  (`Board.tsx`) has no `accessibilityLabel` per tile, so a screen-reader
-  user gets no information about the board at all — distinct from
-  `CANGUPA-97`'s visual/contrast concerns (which don't help a blind
-  user) and `CANGUPA-98`'s motor/control-scheme ones. Surfaced by
-  `CANGUPA-89`'s audit as a real gap, but flagged there as a
-  substantial design problem — what each tile should announce
-  (coordinates? direction? legal-move state?) and how a move is
-  actually performed via a screen reader, given the input model is
-  tapping the exact destination tile — rather than a quick fix, so
-  parked rather than scoped yet.
+- [P3] `CANGUPA-149` — Implement screen-reader semantics for `apps/app`'s
+  board tiles (`Board.tsx`'s `Tile`), per the design `CANGUPA-140`
+  worked out without shipping code. Today a tile is wrapped in a
+  `Pressable` only when it's a legal destination (`tile.hint`), an
+  empty/no-move tile with the fall setting on, or the kangaroo's own
+  tile (for peek) — anything else (a used-up "gone" tile, a legal-move
+  tile with hints off, any tile once the board's layout order is
+  followed) renders as a bare, non-focusable `View`, so a screen reader
+  cannot explore the board at all between moves, only land on whatever
+  happens to already be interactive.
+
+  The design, worked out against the real shapes in `boardView.ts`'s
+  `TileView` and `board.ts`'s `Move`/`moveKind`:
+  1. **Every existing tile becomes an accessible element**, not just
+     today's pressable ones — `accessibilityRole="button"` on every
+     cell with a tile at all (`game.max[i]` truthy, the same check
+     `tilesOf` already uses to skip a cell with none), `gone` tiles
+     included, so swiping through the board announces every square in
+     its real left-to-right, top-to-bottom order (the same order
+     `tiles.map` already renders in, which needs no change for this —
+     React Native's default accessibility traversal follows render
+     order, not on-screen position). `accessibilityState={{ disabled:
+     !tile.hint }}` on a non-legal tile, rather than leaving it
+     unwrapped, so VoiceOver/TalkBack read it as present but
+     unavailable instead of invisible. The existing `onPress` wiring
+     needs no change at all: double-tapping an enabled element is the
+     platform's own way of "tapping" it, so the same destination-tap
+     input model stays exactly as it is for a sighted player — no
+     redesign of *how* a move is made, only of what gets exposed to
+     explore and target it. (A directional-pad alternative is
+     `CANGUPA-98`'s own, separate, motor-accessibility angle — not a
+     substitute for this and not revisited here.)
+  2. **Label composition**, built from fields `TileView` already
+     carries, in this order: position ("Row Y, column X", 1-based,
+     matching the 1-based numbering `boardHud.level`/`help` already use
+     elsewhere), then one of — `gone`: "Gone, already used"; `worn`:
+     "Common/Gold/Steel tile, you are here"; an arrow tile: "Departure
+     tile, opens to the {direction}" / "Arrival tile, opens to the
+     {direction}" (reusing the exact "opens to"/edge phrasing
+     `help.departureRest`/`arrivalRest` already use, not a new
+     metaphor); otherwise "Common tile" / "Gold tile, N visits left" /
+     "Steel tile, N visits left" (`kind`/`left`). `tile.tip` (the
+     solver's suggested move) appends "Suggested move". New `en`/`pt`
+     i18n strings for every fragment above, following `packText.test.ts`'s
+     own convention of a test that keeps the two locales in step.
+  3. **Open decision for whoever picks this up, not resolved here**:
+     whether a tile's legal/illegal state (`tile.hint`) is exposed via
+     accessibility *regardless* of the `hints` setting. Visually, the
+     legal-move outline only shows when `hints` is on (`settings.hints`)
+     — a sighted player with hints off plays by trial and error. A
+     screen-reader user has no equivalent "find it by eye" fallback, so
+     always exposing legality (ignoring the `hints` setting for
+     accessibility purposes specifically) is the recommended default,
+     but it is a real behavioural choice, not a code-level one, and
+     belongs to the owner.
+  4. **Unscoped, left for whoever picks this up**: whether `tile.jump`
+     (a legal destination reached by a jump rather than a step) is
+     worth its own announcement — flagged as a nice-to-have, not
+     required for a baseline "the board is explorable and playable"
+     fix. No on-device VoiceOver/TalkBack testing has been done against
+     this design; it should be verified on a real device once
+     implemented, not assumed correct from the shapes above alone.
 - [P4] `CANGUPA-146` — Bring `CANGUPA-143`'s time-played stat to
   `apps/web-classic`, which has no `AppState` equivalent — needs a
   browser-side visibility/focus timer instead, and its own save-data

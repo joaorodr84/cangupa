@@ -2609,6 +2609,42 @@ longest-streak stat to apps/app's Stats screen.
 
 ---
 
+## Era 78 — Nov 13 (continued): a design for board accessibility, no code
+
+CANGUPA-89's audit had flagged apps/app's board tiles (`Board.tsx`) as
+having no screen-reader semantics at all, but parked the fix as
+`CANGUPA-140` rather than scoping it on the spot — what each tile should
+announce, and how a move is actually performed via a screen reader,
+given the input model is tapping the exact destination tile, read as a
+substantial design problem rather than a quick fix.
+
+This session worked that design out against the real shapes in
+`boardView.ts`'s `TileView` and `board.ts`'s `Move`/`moveKind`, and
+shipped no code, per an explicit decision to treat `CANGUPA-140` as
+design-only: every tile with content becomes an accessible
+`accessibilityRole="button"` element (not just today's legal-move-only
+`Pressable`s), with `accessibilityState={{ disabled: !tile.hint }}` on a
+non-legal one, and a composed label — 1-based row/column position, then
+kind/visits-left, or Departure/Arrival with its direction reusing
+`help.departureRest`/`arrivalRest`'s own "opens to" phrasing, or "gone,
+already used", plus "Suggested move" for the solver's tip. No redesign
+of how a move is made: double-tapping an accessible element is the
+platform's own activation gesture, so the existing `onPress` wiring
+carries over unchanged. One real behavioural decision is left open
+rather than decided unilaterally — whether legality is exposed via
+accessibility regardless of the `hints` setting — for the owner to make
+later. The full design, that open decision, and an unscoped
+nice-to-have (whether a jump move deserves its own announcement) now
+live in `TODO.md`'s new `CANGUPA-149` entry, the implementation
+follow-up this closes by opening — the same way `CANGUPA-89` itself
+closed by opening `CANGUPA-140`.
+
+Era 78 closes here: Nov 13, one commit, CANGUPA-140 — designed screen-
+reader semantics for apps/app's board tiles and opened CANGUPA-149 to
+implement them.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
