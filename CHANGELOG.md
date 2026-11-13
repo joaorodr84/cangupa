@@ -35,6 +35,11 @@ Open work is listed in [TODO.md](TODO.md).
   longest run of consecutive calendar days with at least one level
   cleared (e.g. "3 days"). A day only counts once a level is actually
   cleared on it — just opening the app doesn't extend the streak.
+- The app now has a Store tab in the footer nav, between Levels and Stats,
+  opened with a shopping-bag icon. It currently holds a Hints section with
+  the same purchase and reward-ad rows already offered in the hint popup,
+  giving a second place to reach the same hint-buying options; the popup
+  itself is unchanged and still reachable from the board and Settings.
 
 ### Fixed
 

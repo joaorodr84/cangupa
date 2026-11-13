@@ -11,6 +11,7 @@ export const pt: Strings = {
   tabs: {
     home: 'Início',
     levels: 'Níveis',
+    store: 'Loja',
     stats: 'Estatísticas',
     settings: 'Definições',
   },

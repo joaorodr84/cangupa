@@ -17,6 +17,11 @@ export interface Strings {
   readonly tabs: {
     readonly home: string;
     readonly levels: string;
+    // The Store tab (CANGUPA-147), sitting between Levels and Stats in the
+    // footer tray — a single consolidated entry point for every in-app
+    // purchase, rather than hints and (eventually) packs each getting their
+    // own.
+    readonly store: string;
     readonly stats: string;
     readonly settings: string;
   };

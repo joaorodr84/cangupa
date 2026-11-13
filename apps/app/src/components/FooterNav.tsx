@@ -18,7 +18,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 
-export type FooterTab = 'home' | 'levels' | 'stats' | 'settings';
+export type FooterTab = 'home' | 'levels' | 'store' | 'stats' | 'settings';
 
 const ICON_SIZE = 28;
 
@@ -42,6 +42,15 @@ function TabIcon({ id, color }: TabIconProps) {
       {id === 'levels' && (
         <Path
           d="M4 6 H20 M4 12 H20 M4 18 H20"
+          stroke={color}
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      )}
+      {id === 'store' && (
+        <Path
+          d="M7.5 9 A2 3.5 0 0 1 11 9 M13 9 A2 3.5 0 0 1 16.5 9 M6 9 H18 L19 20 H5 Z"
           stroke={color}
           strokeWidth={2}
           strokeLinecap="round"
@@ -84,6 +93,7 @@ export default function FooterNav({ active, palette, onSelect, insetBottom }: Fo
   const tabs: readonly { readonly id: FooterTab; readonly label: string }[] = [
     { id: 'home', label: t.tabs.home },
     { id: 'levels', label: t.tabs.levels },
+    { id: 'store', label: t.tabs.store },
     { id: 'stats', label: t.tabs.stats },
     { id: 'settings', label: t.tabs.settings },
   ];

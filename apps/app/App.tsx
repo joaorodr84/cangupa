@@ -16,6 +16,7 @@ import LevelPacksScreen from './src/components/LevelPacksScreen';
 import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import StatsScreen from './src/components/StatsScreen';
+import StoreScreen from './src/components/StoreScreen';
 import { LEVELS, PACK_SIZES } from './src/game/levels';
 import { LanguageContext } from './src/i18n/LanguageContext';
 import { type LanguageSetting } from './src/i18n/locale';
@@ -42,7 +43,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
   // session (e.g. Fast Refresh) — nothing to do either way.
 });
 
-type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
+type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats' | 'store';
 
 // Which panels FooterNav covers (CANGUPA-31) — 'board' (reworked chrome-free
 // in CANGUPA-32) and 'help' (reachable only from the home screen's Rules
@@ -50,7 +51,9 @@ type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
 // a popup instead of a navigation, so it no longer reaches this panel) are
 // deliberately left out.
 function isFooterTab(panel: Panel): panel is FooterTab {
-  return panel === 'home' || panel === 'levels' || panel === 'stats' || panel === 'settings';
+  return (
+    panel === 'home' || panel === 'levels' || panel === 'store' || panel === 'stats' || panel === 'settings'
+  );
 }
 
 // Board and Help are one-level detail screens pushed on top of whichever
@@ -274,6 +277,8 @@ function Shell({
           onBack={() => setOpenPack(null)}
         />
       );
+  } else if (panel === 'store') {
+    content = <StoreScreen palette={palette} onPurchased={onHintsPurchased} />;
   } else if (panel === 'stats') {
     content = (
       <StatsScreen

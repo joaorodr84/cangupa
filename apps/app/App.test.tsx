@@ -241,6 +241,17 @@ test('the settings screen has no back button of its own, unlike the rules screen
   expect(screen.queryByLabelText('‹ Back')).toBeNull();
 });
 
+test('the footer nav opens the store screen with its Hints section', async () => {
+  await render(<App />);
+  await fireEvent.press(await screen.findByTestId('footer-store'));
+
+  expect(await screen.findByText('Hints')).toBeTruthy();
+  // react-native-iap's own manual mock (__mocks__/react-native-iap.ts)
+  // reports connected: false by default, so the store falls back to the
+  // same "connecting" row HintStorePopup shows rather than real products.
+  expect(screen.getByText('Connecting to the store…')).toBeTruthy();
+});
+
 test('the footer nav opens the stats screen, which reflects a cleared level', async () => {
   await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: [0], level: 1, bestMoves: { 0: 3 } }));
 
@@ -272,6 +283,7 @@ test('the board screen has no footer nav of its own', async () => {
 
   expect(screen.queryByTestId('footer-home')).toBeNull();
   expect(screen.queryByTestId('footer-levels')).toBeNull();
+  expect(screen.queryByTestId('footer-store')).toBeNull();
   expect(screen.queryByTestId('footer-stats')).toBeNull();
   expect(screen.queryByTestId('footer-settings')).toBeNull();
 });

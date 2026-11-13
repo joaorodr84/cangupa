@@ -5,6 +5,12 @@
 // reward-video row (CANGUPA-78) above the purchase rows, the free
 // counterpart to buying hints outright — same popup, since both end in the
 // same "add N hints" callback below.
+//
+// The rows themselves (HintStoreRows below) are factored out from the Popup
+// chrome so StoreScreen.tsx (CANGUPA-147) can show the exact same IAP/ad
+// plumbing inside its own tab screen instead of a popup card — one
+// implementation of "what the hint store looks like," two places it's
+// mounted.
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useRewardedHint } from '../ads/useRewardedHint';
@@ -26,6 +32,21 @@ interface HintStorePopupProps {
 
 export default function HintStorePopup({ palette, onClose, onPurchased }: HintStorePopupProps) {
   const t = useStrings();
+
+  return (
+    <Popup palette={palette} heading={t.hintStore.heading} onClose={onClose}>
+      <HintStoreRows palette={palette} onPurchased={onPurchased} />
+    </Popup>
+  );
+}
+
+interface HintStoreRowsProps {
+  readonly palette: Palette;
+  readonly onPurchased: (hints: number) => void;
+}
+
+export function HintStoreRows({ palette, onPurchased }: HintStoreRowsProps) {
+  const t = useStrings();
   const { connected, products, status, buy } = useHintStore(onPurchased);
   const { loaded: adLoaded, status: adStatus, watch: watchAd } = useRewardedHint(onPurchased);
   const ink = { color: palette.ink };
@@ -33,7 +54,7 @@ export default function HintStorePopup({ palette, onClose, onPurchased }: HintSt
   const adDisabled = !adLoaded || adStatus.kind === 'pending';
 
   return (
-    <Popup palette={palette} heading={t.hintStore.heading} onClose={onClose}>
+    <>
       <View style={styles.rows}>
         <View style={[styles.row, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}>
           <Text style={[styles.rowLabel, ink]}>{t.hintStore.hintsLabel(1)}</Text>
@@ -85,7 +106,7 @@ export default function HintStorePopup({ palette, onClose, onPurchased }: HintSt
         </View>
       )}
       {status.kind === 'error' && <Text style={[styles.error, { color: palette.ink }]}>{t.hintStore.error}</Text>}
-    </Popup>
+    </>
   );
 }
 

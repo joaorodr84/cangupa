@@ -14,6 +14,7 @@ export const en: Strings = {
   tabs: {
     home: 'Home',
     levels: 'Levels',
+    store: 'Store',
     stats: 'Stats',
     settings: 'Settings',
   },
