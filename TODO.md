@@ -221,8 +221,11 @@ The priority can change at any time; the ID never does.
   cut and pricing `CANGUPA-96` left open. Not blocking `CANGUPA-92`'s
   first submission — ship with every pack free first, add this as a
   fast-follow.
-- [P2] `CANGUPA-150` — Fix two hardcoded, theme-unaware text colours in
-  `apps/web-classic`'s [style.css](apps/web-classic/style.css), found by
+- [P4] `CANGUPA-150` — Parked: the owner wants `apps/web-classic` work
+  skipped for now, and every part of this task is `apps/web-classic`-only.
+  Revisit once that pause lifts. Fix two hardcoded, theme-unaware text
+  colours in `apps/web-classic`'s [style.css](apps/web-classic/style.css),
+  found by
   `CANGUPA-97`'s contrast audit: the `<select>` element's text
   (`color: #fff` regardless of theme) measures only 2.90:1 against Ice's
   own `--frame`, under even the 3:1 large-text minimum; `#blocked-msg`'s
