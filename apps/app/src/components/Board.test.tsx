@@ -4,16 +4,18 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import Board, { type BoardHandle } from './Board';
 import { Game } from '../game/board';
 import { tilesOf } from '../game/boardView';
+import { en } from '../i18n/strings/en';
 import { DARK } from '../theme/palette';
 
 const palette = DARK;
+const strings = en.board;
 
 test('renders one tile view per existing cell', async () => {
   const g = new Game(['S1.']);
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   expect(screen.getByTestId('tile-0-0')).toBeTruthy();
@@ -25,7 +27,7 @@ test('a legal destination is outlined as a hint', async () => {
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   const hinted = screen.getByTestId('tile-face-1-0');
@@ -55,7 +57,7 @@ test('the solver tip keeps its legal-move outline and gains a muted bordered hal
   const tiles = tilesOf(g, { hints: true, tip: { x: 1, y: 0, jump: false } });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   const tipped = screen.getByTestId('tile-face-1-0');
@@ -86,7 +88,7 @@ test('a jump destination outlines the same as a step, no dashed treatment', asyn
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   const hinted = screen.getByTestId('tile-face-2-0');
@@ -100,7 +102,7 @@ test('a used tile left behind is faded out', async () => {
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   const left = screen.getByTestId('tile-0-0');
@@ -124,7 +126,7 @@ test('hop() does not throw when animations are off', async () => {
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
     />,
   );
 
@@ -146,7 +148,7 @@ test('tapping a hinted tile reports its cell', async () => {
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       onPressTile={onPressTile}
     />,
   );
@@ -161,7 +163,7 @@ test('falls back to a 100% width when none is given', async () => {
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   const flat = [screen.getByTestId('board').props.style].flat();
@@ -182,7 +184,7 @@ test('uses an explicit width when one is given, capping the board (CANGUPA-33)',
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       width={120}
     />,
   );
@@ -197,7 +199,7 @@ test('a tile that is not a legal destination is not pressable', async () => {
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   expect(screen.queryByTestId('tile-press-3-0')).toBeNull();
@@ -222,7 +224,7 @@ test('a tile that is not a legal destination reports its own cell, when a fall h
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       onPressEmpty={onPressEmpty}
     />,
   );
@@ -249,7 +251,7 @@ test('fall() does not throw and calls onComplete (CANGUPA-58)', async () => {
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
     />,
   );
 
@@ -275,7 +277,7 @@ test('tapping empty board space reports it, when a handler is given (CANGUPA-58)
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       onPressEmpty={onPressEmpty}
     />,
   );
@@ -303,7 +305,7 @@ test('a tap on true background reports the cell under it, once the board is meas
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       onPressEmpty={onPressEmpty}
     />,
   );
@@ -334,7 +336,7 @@ test('tapping a hinted tile does not also report an empty-space press', async ()
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       onPressTile={onPressTile}
       onPressEmpty={onPressEmpty}
     />,
@@ -351,7 +353,7 @@ test('holding on the kangaroo fades it, releasing restores it (CANGUPA-71)', asy
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   const roo = () => [screen.getByTestId('roo').props.style].flat();
@@ -369,7 +371,7 @@ test('holding elsewhere on the board does not fade the kangaroo', async () => {
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   await fireEvent(screen.getByTestId('tile-press-1-0'), 'pressIn');
@@ -393,7 +395,7 @@ test('holding on the kangaroo still peeks when a fall handler is given (CANGUPA-
       face="front"
       flip={false}
       palette={palette}
-      anim={false}
+      anim={false} strings={strings}
       onPressEmpty={onPressEmpty}
     />,
   );
@@ -406,12 +408,93 @@ test('holding on the kangaroo still peeks when a fall handler is given (CANGUPA-
   expect(flat.some((s) => s?.opacity === 0.2)).toBe(true);
 });
 
+test('a legal destination is an enabled accessible button with a composed label (CANGUPA-149)', async () => {
+  const g = new Game(['S1.']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const el = screen.getByTestId('tile-press-1-0');
+  expect(el.props.accessibilityRole).toBe('button');
+  expect(el.props.accessibilityState).toEqual({ disabled: false });
+  expect(el.props.accessibilityLabel).toBe('Row 1, column 2, Common tile.');
+});
+
+test('a non-legal tile is still an accessible element, but disabled (CANGUPA-149)', async () => {
+  // A 1x4 row with a two-tile gap: x=3 sits three tiles away, past jump range, so it's never
+  // pressable (see the "not pressable" test above) — but a screen reader should still be able
+  // to land on it and hear it described, rather than it being invisible to one entirely.
+  const g = new Game(['S..1']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const el = screen.getByTestId('tile-3-0').parent;
+  expect(el?.props.accessibilityRole).toBe('button');
+  expect(el?.props.accessibilityState).toEqual({ disabled: true });
+  expect(el?.props.accessibilityLabel).toBe('Row 1, column 4, Common tile.');
+});
+
+test('a gone tile announces as gone, not its kind (CANGUPA-149)', async () => {
+  const g = new Game(['S1']);
+  g.play({ x: 1, y: 0 });
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const el = screen.getByTestId('tile-0-0').parent;
+  expect(el?.props.accessibilityLabel).toBe('Row 1, column 1, Gone, already used.');
+});
+
+test("the kangaroo's own worn tile announces its kind and that it's occupied (CANGUPA-149)", async () => {
+  const g = new Game(['S1']);
+  g.play({ x: 1, y: 0 });
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const el = screen.getByTestId('tile-1-0').parent;
+  expect(el?.props.accessibilityLabel).toBe('Row 1, column 2, Common tile, you are here.');
+});
+
+test('the solver tip appends "Suggested move" to the tile label (CANGUPA-149)', async () => {
+  const g = new Game(['S11']);
+  const tiles = tilesOf(g, { hints: true, tip: { x: 1, y: 0, jump: false } });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const el = screen.getByTestId('tile-press-1-0');
+  expect(el.props.accessibilityLabel).toBe('Row 1, column 2, Common tile. Suggested move');
+});
+
+test('a Departure tile names the edge it opens on (CANGUPA-149)', async () => {
+  const g = new Game(['S>1']);
+  const tiles = tilesOf(g, { hints: true });
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const el = screen.getByTestId('tile-1-0').parent;
+  expect(el?.props.accessibilityLabel).toBe('Row 1, column 2, Departure tile, opens to the right edge.');
+});
+
 test('the kangaroo peek Pressable has no onPress, so a tap there stays a no-op', async () => {
   const g = new Game(['S1.']);
   const tiles = tilesOf(g, { hints: true });
 
   await render(
-    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} />,
+    <Board w={g.w} h={g.h} tiles={tiles} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
   );
 
   expect(screen.getByTestId('tile-roo-0-0').props.onPress).toBeUndefined();

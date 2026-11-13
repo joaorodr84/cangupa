@@ -159,6 +159,30 @@ export interface Strings {
     // (CANGUPA-53), as boardHud.stuck/undoOrRestart; moved down here once
     // the message area below the board reserved its own room.
     readonly noMovesLeft: string;
+    // Per-tile accessibility label pieces (CANGUPA-149, design from
+    // CANGUPA-140), composed by boardView.ts's tileAccessibilityLabel from a
+    // TileView — these are fragments, never spoken on their own. Position
+    // first, then exactly one of tileGone/tileHere*/tileDeparture/
+    // tileArrival/tileCommon/tileGold/tileSteel, then tileSuggestedMove when
+    // the tile is the solver's own tip.
+    readonly tilePosition: (row: number, column: number) => string;
+    readonly tileGone: string;
+    readonly tileHereCommon: string;
+    readonly tileHereGold: string;
+    readonly tileHereSteel: string;
+    readonly tileCommon: string;
+    readonly tileGold: (left: number) => string;
+    readonly tileSteel: (left: number) => string;
+    // Phrasing matches help.departureRest/arrivalRest's own "opens"/edge
+    // language, naming the specific edge this one tile opens on rather than
+    // the Rules screen's generic "the edge the bracket opens on".
+    readonly tileDeparture: (direction: string) => string;
+    readonly tileArrival: (direction: string) => string;
+    readonly tileSuggestedMove: string;
+    readonly directionTop: string;
+    readonly directionBottom: string;
+    readonly directionLeft: string;
+    readonly directionRight: string;
   };
   readonly settings: {
     // The light/dark/system choice (CANGUPA-40), matching DigiSpin's own

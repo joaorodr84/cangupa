@@ -40,6 +40,13 @@ Open work is listed in [TODO.md](TODO.md).
   the same purchase and reward-ad rows already offered in the hint popup,
   giving a second place to reach the same hint-buying options; the popup
   itself is unchanged and still reachable from the board and Settings.
+- The app's board tiles are now all exposed to a screen reader, gone tiles
+  included — not just whichever tile happens to be playable right now — so
+  the whole board can be explored between moves instead of only landing on
+  the few tiles that already accept a tap. Each tile announces its
+  position, then whether it's gone, worn, a Departure or Arrival (with
+  which edge), or its kind and visits left, and finally whether the
+  solver's hint suggests moving there.
 
 ### Fixed
 

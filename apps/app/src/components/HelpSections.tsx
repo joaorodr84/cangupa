@@ -7,7 +7,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import Board, { TileSwatch, type SwatchTile } from './Board';
-import { type TileView } from '../game/boardView';
+import { type TileLabelStrings, type TileView } from '../game/boardView';
 import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 
@@ -51,16 +51,30 @@ function MiniBoard({
   cols,
   tiles,
   palette,
+  strings,
   testID,
 }: {
   readonly cols: number;
   readonly tiles: readonly TileView[];
   readonly palette: Palette;
+  readonly strings: TileLabelStrings;
   readonly testID: string;
 }) {
   return (
     <View style={styles.diagramRow} testID={testID}>
-      <Board w={cols} h={1} tiles={tiles} rooX={0} rooY={0} face="front" flip={false} palette={palette} anim={false} width={cols * 56} />
+      <Board
+        w={cols}
+        h={1}
+        tiles={tiles}
+        rooX={0}
+        rooY={0}
+        face="front"
+        flip={false}
+        palette={palette}
+        anim={false}
+        strings={strings}
+        width={cols * 56}
+      />
     </View>
   );
 }
@@ -79,7 +93,7 @@ export function MovesSection({ palette }: SectionProps) {
     <View style={card}>
       <Text style={[styles.sectionLabel, muted]}>{t.help.movesSection}</Text>
       <View style={styles.list}>
-        <MiniBoard cols={2} tiles={STEP_TILES} palette={palette} testID="help-diagram-step" />
+        <MiniBoard cols={2} tiles={STEP_TILES} palette={palette} strings={t.board} testID="help-diagram-step" />
         <Text style={[styles.caption, muted]}>{t.help.stepCaption}</Text>
         <Text style={ink}>
           {'• '}
@@ -87,9 +101,9 @@ export function MovesSection({ palette }: SectionProps) {
           {t.help.stepRest}
         </Text>
 
-        <MiniBoard cols={3} tiles={JUMP_GAP_TILES} palette={palette} testID="help-diagram-jump-gap" />
+        <MiniBoard cols={3} tiles={JUMP_GAP_TILES} palette={palette} strings={t.board} testID="help-diagram-jump-gap" />
         <Text style={[styles.caption, muted]}>{t.help.jumpGapCaption}</Text>
-        <MiniBoard cols={3} tiles={JUMP_TILE_TILES} palette={palette} testID="help-diagram-jump-tile" />
+        <MiniBoard cols={3} tiles={JUMP_TILE_TILES} palette={palette} strings={t.board} testID="help-diagram-jump-tile" />
         <Text style={[styles.caption, muted]}>{t.help.jumpTileCaption}</Text>
         <Text style={ink}>
           {'• '}

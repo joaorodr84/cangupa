@@ -1,5 +1,8 @@
 import { Game } from './board';
-import { DEFAULT_FACING, facingFor, statusFor, tilesOf } from './boardView';
+import { DEFAULT_FACING, facingFor, statusFor, tileAccessibilityLabel, tilesOf } from './boardView';
+import { en } from '../i18n/strings/en';
+
+const t = en.board;
 
 describe('tilesOf', () => {
   it('skips empty cells', () => {
@@ -91,6 +94,40 @@ describe('tilesOf', () => {
     const tiles = tilesOf(g, { hints: true, tip: { x: 1, y: 0, jump: false } });
     expect(tiles.find((t) => t.x === 1)?.tip).toBe(true);
     expect(tiles.find((t) => t.x === 2)?.tip).toBe(false);
+  });
+});
+
+describe('tileAccessibilityLabel', () => {
+  // A bare fixture rather than a real Game: tileAccessibilityLabel is a pure function of a
+  // TileView, and building one by hand (rather than driving a real board to a particular visits-
+  // left count) is the only way to exercise both the singular and plural wording directly.
+  const base = {
+    x: 1,
+    y: 0,
+    double: false,
+    cracked: false,
+    arrow: null,
+    arrival: null,
+    worn: false,
+    gone: false,
+    hint: false,
+    jump: false,
+    tip: false,
+  } as const;
+
+  it('names a Gold tile with its visits left, pluralised', () => {
+    expect(tileAccessibilityLabel({ ...base, kind: 2, left: 2 }, t)).toBe('Row 1, column 2, Gold tile, 2 visits left.');
+  });
+
+  it('names a Steel tile with one visit left, singular', () => {
+    expect(tileAccessibilityLabel({ ...base, kind: 3, left: 1 }, t)).toBe('Row 1, column 2, Steel tile, 1 visit left.');
+  });
+
+  it('names the Arrival edge rather than the kind, mirroring the direction it is entered from', () => {
+    const g = new Game(['SR1']);
+    const tiles = tilesOf(g, { hints: true });
+    const tile = tiles.find((tv) => tv.x === 1)!;
+    expect(tileAccessibilityLabel(tile, t)).toBe('Row 1, column 2, Arrival tile, opens to the left edge.');
   });
 });
 

@@ -16,7 +16,7 @@ import {
 
 import Svg, { G, Line, Polygon } from 'react-native-svg';
 
-import { type ArrowDirection, type TileView } from '../game/boardView';
+import { tileAccessibilityLabel, type ArrowDirection, type TileLabelStrings, type TileView } from '../game/boardView';
 import { type Palette } from '../theme/palette';
 import Kangaroo, { type Face } from './Kangaroo';
 
@@ -52,6 +52,10 @@ interface BoardProps {
   readonly flip: boolean;
   readonly palette: Palette;
   readonly anim: boolean;
+  // Per-tile accessibility label strings (CANGUPA-149) — the `board` slice of the active
+  // locale's strings table (i18n/strings/types.ts), threaded straight through to
+  // tileAccessibilityLabel so this component itself stays free of any i18n lookup of its own.
+  readonly strings: TileLabelStrings;
   // The cell a blocked move (CANGUPA-129) just targeted, so its tile can flash — undefined most
   // of the time. Cleared by PlayableBoard once the flash's timeout elapses; Board itself has no
   // timer of its own, the same split fallTarget/fallFacing already use there.
@@ -96,7 +100,7 @@ export interface BoardHandle {
 }
 
 const Board = forwardRef<BoardHandle, BoardProps>(function Board(
-  { w, h, tiles, rooX, rooY, face, flip, palette, anim, blockedX, blockedY, width, onPressTile, onPressEmpty }: BoardProps,
+  { w, h, tiles, rooX, rooY, face, flip, palette, anim, strings, blockedX, blockedY, width, onPressTile, onPressEmpty }: BoardProps,
   ref,
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
@@ -209,6 +213,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
           h={h}
           palette={palette}
           anim={anim}
+          label={tileAccessibilityLabel(tile, strings)}
           onPress={onPressTile}
           onPressEmpty={onPressEmpty}
           blocked={tile.x === blockedX && tile.y === blockedY}
@@ -252,6 +257,9 @@ interface TileProps {
   readonly h: number;
   readonly palette: Palette;
   readonly anim: boolean;
+  // This tile's own composed accessibility label (CANGUPA-149), pre-built by Board from
+  // tileAccessibilityLabel so Tile itself doesn't need the strings table.
+  readonly label: string;
   readonly onPress?: (x: number, y: number) => void;
   // Same prop Board received (CANGUPA-64): a tile with no legal move (worn
   // down to nothing, or just out of reach) reports its own cell here instead
@@ -480,7 +488,7 @@ export function TileSwatch({
   );
 }
 
-function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, blocked = false, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
+function Tile({ tile, w, h, palette, anim, label, onPress, onPressEmpty, blocked = false, isRoo = false, onPeekStart, onPeekEnd }: TileProps) {
   const pulse = useRef(new Animated.Value(0)).current;
 
   // Paused for now (CANGUPA-127) while debugging the halo's missing bottom edge, so a moving
@@ -531,11 +539,25 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, blocked = fals
     <View
       style={[styles.cell, { width: `${100 / w}%`, height: `${100 / h}%`, left: `${(100 * tile.x) / w}%`, top: `${(100 * tile.y) / h}%` }]}
     >
+      {/* Every tile with content is an accessible element (CANGUPA-149, design from
+          CANGUPA-140), not just today's legal-move-only Pressable, so a screen reader can
+          explore the whole board between moves — gone tiles included — rather than only land
+          on whatever happens to already be interactive. disabled tracks tile.hint, the same
+          flag that already decides which branch below is actually wired to a press: an
+          accessibilityState that claimed "enabled" on a branch with no real onPress would
+          announce an activation that does nothing. The existing onPress wiring itself needs no
+          change — double-tapping an accessible element is the platform's own activation
+          gesture, so this is only about what gets exposed, never a redesign of how a move is
+          made. */}
       {tile.hint ? (
         <Pressable
           testID={`tile-press-${tile.x}-${tile.y}`}
           style={styles.pressable}
           onPress={() => onPress?.(tile.x, tile.y)}
+          accessible
+          accessibilityRole="button"
+          accessibilityState={{ disabled: false }}
+          accessibilityLabel={label}
         >
           {content}
         </Pressable>
@@ -546,6 +568,10 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, blocked = fals
           onPress={() => onPressEmpty({ x: tile.x, y: tile.y })}
           onPressIn={isRoo ? onPeekStart : undefined}
           onPressOut={isRoo ? onPeekEnd : undefined}
+          accessible
+          accessibilityRole="button"
+          accessibilityState={{ disabled: true }}
+          accessibilityLabel={label}
         >
           {content}
         </Pressable>
@@ -555,11 +581,23 @@ function Tile({ tile, w, h, palette, anim, onPress, onPressEmpty, blocked = fals
           style={styles.pressable}
           onPressIn={onPeekStart}
           onPressOut={onPeekEnd}
+          accessible
+          accessibilityRole="button"
+          accessibilityState={{ disabled: true }}
+          accessibilityLabel={label}
         >
           {content}
         </Pressable>
       ) : (
-        content
+        <View
+          style={styles.pressable}
+          accessible
+          accessibilityRole="button"
+          accessibilityState={{ disabled: true }}
+          accessibilityLabel={label}
+        >
+          {content}
+        </View>
       )}
       {/* The tip's halo (CANGUPA-127): a sibling of the tile itself, not a child of it, so its
           percentage geometry is relative to the full cell, not the (smaller, clipping) lip/face

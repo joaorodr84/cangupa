@@ -37,6 +37,72 @@ export interface TileView {
   readonly tip: boolean;
 }
 
+// Exactly the strings tileAccessibilityLabel below needs from the `board`
+// strings table (i18n/strings/types.ts) — a local shape rather than
+// importing that whole table, so this pure game-logic module stays
+// decoupled from the i18n/UI layer; Strings['board'] is a structural
+// superset of this, so passing it straight through (as Board.tsx does)
+// works with no adapter.
+export interface TileLabelStrings {
+  readonly tilePosition: (row: number, column: number) => string;
+  readonly tileGone: string;
+  readonly tileHereCommon: string;
+  readonly tileHereGold: string;
+  readonly tileHereSteel: string;
+  readonly tileCommon: string;
+  readonly tileGold: (left: number) => string;
+  readonly tileSteel: (left: number) => string;
+  readonly tileDeparture: (direction: string) => string;
+  readonly tileArrival: (direction: string) => string;
+  readonly tileSuggestedMove: string;
+  readonly directionTop: string;
+  readonly directionBottom: string;
+  readonly directionLeft: string;
+  readonly directionRight: string;
+}
+
+function directionLabel(direction: ArrowDirection, t: TileLabelStrings): string {
+  switch (direction) {
+    case 'up':
+      return t.directionTop;
+    case 'down':
+      return t.directionBottom;
+    case 'left':
+      return t.directionLeft;
+    case 'right':
+      return t.directionRight;
+  }
+}
+
+// A screen reader's label for one tile (CANGUPA-149, design from
+// CANGUPA-140): 1-based row/column, then exactly one of gone/here/
+// Departure/Arrival/kind-and-visits-left, then "Suggested move" when this
+// is the solver's own tip. gone beats worn beats arrow/arrival beats the
+// plain kind — the same priority tilesOf's own fields are already mutually
+// exclusive under (a tile can't be both gone and worn, and an arrow/arrival
+// tile is never also a Gold/Steel one).
+export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): string {
+  const position = t.tilePosition(tile.y + 1, tile.x + 1);
+  const state = tile.gone
+    ? t.tileGone
+    : tile.worn
+      ? tile.kind === 3
+        ? t.tileHereSteel
+        : tile.kind === 2
+          ? t.tileHereGold
+          : t.tileHereCommon
+      : tile.arrow
+        ? t.tileDeparture(directionLabel(tile.arrow, t))
+        : tile.arrival
+          ? t.tileArrival(directionLabel(tile.arrival, t))
+          : tile.kind === 3
+            ? t.tileSteel(tile.left)
+            : tile.kind === 2
+              ? t.tileGold(tile.left)
+              : t.tileCommon;
+  return tile.tip ? `${position}, ${state}. ${t.tileSuggestedMove}` : `${position}, ${state}.`;
+}
+
 export interface TilesOptions {
   readonly hints: boolean;
   readonly tip?: Move | null;

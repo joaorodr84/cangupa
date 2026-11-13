@@ -188,6 +188,7 @@ export default function PlayableBoard({ board, anim, fall, palette, maxWidth, ma
         blockedY={blockedTarget?.y}
         palette={palette}
         anim={anim}
+        strings={t.board}
         width={boardWidth}
         onPressTile={handlePressTile}
         onPressEmpty={fall ? handlePressEmpty : undefined}
