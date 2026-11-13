@@ -8,6 +8,7 @@ import {
   NO_PROGRESS,
   parseProgress,
   loadProgress,
+  perPackStats,
   playTimeParts,
   recordUndo,
   spendHint,
@@ -272,6 +273,35 @@ describe('totalBestMoves', () => {
   it("sums every level's best move count", () => {
     const cleared = progress({ done: [0, 1, 2], level: 2, bestMoves: { 0: 3, 1: 5, 2: 2 } });
     expect(totalBestMoves(cleared)).toBe(10);
+  });
+});
+
+describe('perPackStats', () => {
+  it('returns a zero entry per pack with no progress', () => {
+    expect(perPackStats(NO_PROGRESS, [2, 3])).toEqual([
+      { cleared: 0, total: 2, moves: 0 },
+      { cleared: 0, total: 3, moves: 0 },
+    ]);
+  });
+
+  it("walks each pack's own slice of level indices, not the whole flat list", () => {
+    // Pack 0 is levels 0-1, pack 1 is levels 2-4. Level 0 (in pack 0) and
+    // level 3 (in pack 1) are cleared — each pack's own count/total reflect
+    // only its own levels.
+    const played = progress({ done: [0, 3], bestMoves: { 0: 3, 3: 5 } });
+    expect(perPackStats(played, [2, 3])).toEqual([
+      { cleared: 1, total: 2, moves: 3 },
+      { cleared: 1, total: 3, moves: 5 },
+    ]);
+  });
+
+  it('sums every cleared level in a pack, not just one', () => {
+    const played = progress({ done: [0, 1], bestMoves: { 0: 3, 1: 5 } });
+    expect(perPackStats(played, [2])).toEqual([{ cleared: 2, total: 2, moves: 8 }]);
+  });
+
+  it('returns no entries for an empty pack list', () => {
+    expect(perPackStats(NO_PROGRESS, [])).toEqual([]);
   });
 });
 

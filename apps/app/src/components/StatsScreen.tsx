@@ -19,12 +19,15 @@ import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-n
 
 import { useStrings } from '../i18n/useStrings';
 import { ACHIEVEMENTS, type AchievementRecord } from '../state/achievements';
-import { playTimeParts, type Progress, totalBestMoves } from '../state/progress';
+import { perPackStats, playTimeParts, type Progress, totalBestMoves } from '../state/progress';
 import { type Palette } from '../theme/palette';
 import { achievementRows, achievementsPerRow, cardWidth, GAP_PT } from './achievementGrid';
 
 interface StatsScreenProps {
   readonly totalLevels: number;
+  // Pack sizes in play order (CANGUPA-141), the same shape LevelPacksScreen
+  // already takes, for the per-pack breakdown below the summary rows.
+  readonly packSizes: readonly number[];
   readonly progress: Progress;
   readonly achievements: AchievementRecord;
   readonly palette: Palette;
@@ -44,10 +47,11 @@ function formatEarnedDate(iso: string): string {
 const HIDDEN_TITLE = '???';
 const HIDDEN_ICON = 'lock-closed-outline';
 
-export default function StatsScreen({ totalLevels, progress, achievements, palette }: StatsScreenProps) {
+export default function StatsScreen({ totalLevels, packSizes, progress, achievements, palette }: StatsScreenProps) {
   const t = useStrings();
   const cleared = progress.done.length;
   const { hours: playedHours, minutes: playedMinutes } = playTimeParts(progress.timePlayedMs);
+  const packStats = perPackStats(progress, packSizes);
   const { width } = useWindowDimensions();
   const perRow = achievementsPerRow(width);
   const rows = achievementRows(ACHIEVEMENTS, perRow);
@@ -65,6 +69,20 @@ export default function StatsScreen({ totalLevels, progress, achievements, palet
           value={t.stats.timePlayedValue(playedHours, playedMinutes)}
           palette={palette}
         />
+      </View>
+
+      <Text style={[styles.heading, { color: palette.muted }]} accessibilityRole="header">
+        {t.stats.perPack}
+      </Text>
+      <View style={[styles.panel, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}>
+        {packStats.map(({ cleared: packCleared, total, moves }, packIndex) => (
+          <Row
+            key={packIndex}
+            label={t.packs[packIndex]?.name ?? ''}
+            value={t.stats.perPackValue(packCleared, total, moves)}
+            palette={palette}
+          />
+        ))}
       </View>
 
       <Text style={[styles.heading, { color: palette.muted }]} accessibilityRole="header">

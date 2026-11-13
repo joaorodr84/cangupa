@@ -139,14 +139,6 @@ The priority can change at any time; the ID never does.
   actually performed via a screen reader, given the input model is
   tapping the exact destination tile — rather than a quick fix, so
   parked rather than scoped yet.
-- [P3] `CANGUPA-141` — Show a per-pack cleared/best-moves breakdown on
-  `apps/app`'s
-  [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx), alongside
-  today's two global rows. Needs no new saved field: `done`/`bestMoves`
-  ([progress.ts](apps/app/src/state/progress.ts)) plus the existing
-  `PACK_SIZES` ([levels.ts](apps/app/src/game/levels.ts)) already
-  derive each pack's cleared count and summed best moves. Surfaced by
-  `CANGUPA-91`'s investigation.
 - [P4] `CANGUPA-144` — Show a longest-streak-of-days-played stat on
   `apps/app`'s `StatsScreen.tsx`. Needs a new, timezone-robust
   date-tracking scheme (today nothing records *when* a level was

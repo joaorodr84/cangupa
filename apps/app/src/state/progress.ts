@@ -193,6 +193,28 @@ export function totalBestMoves(progress: Progress): number {
   return Object.values(progress.bestMoves).reduce((sum, moves) => sum + moves, 0);
 }
 
+export interface PackStats {
+  readonly cleared: number;
+  readonly total: number;
+  readonly moves: number;
+}
+
+// Each pack's cleared count and summed best-move total (CANGUPA-141), for
+// the stats screen's per-pack breakdown. Needs no new saved field: done and
+// bestMoves, walked against packSizes the same way LevelPacksScreen.tsx
+// already walks it to find where each pack starts, already carry
+// everything this needs.
+export function perPackStats(progress: Progress, packSizes: readonly number[]): readonly PackStats[] {
+  let start = 0;
+  return packSizes.map((size) => {
+    const levelIndices = Array.from({ length: size }, (_, i) => start + i);
+    start += size;
+    const cleared = levelIndices.filter((levelIndex) => isDone(progress, levelIndex)).length;
+    const moves = levelIndices.reduce((sum, levelIndex) => sum + (progress.bestMoves[levelIndex] ?? 0), 0);
+    return { cleared, total: size, moves };
+  });
+}
+
 // Shared by hints/hintsUsed/undosUsed, each a plain non-negative integer
 // counter with its own fallback for a missing or corrupt value.
 function nonNegativeIntegerOr(value: unknown, fallback: number): number {

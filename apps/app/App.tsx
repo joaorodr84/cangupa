@@ -276,7 +276,13 @@ function Shell({
       );
   } else if (panel === 'stats') {
     content = (
-      <StatsScreen totalLevels={LEVELS.length} progress={progress} achievements={achievements} palette={palette} />
+      <StatsScreen
+        totalLevels={LEVELS.length}
+        packSizes={PACK_SIZES}
+        progress={progress}
+        achievements={achievements}
+        palette={palette}
+      />
     );
   } else if (panel === 'help') {
     content = <HelpScreen palette={palette} />;

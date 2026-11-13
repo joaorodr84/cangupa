@@ -2508,6 +2508,28 @@ time-played tracking to apps/app, shown on Stats.
 
 ---
 
+## Era 75 — Nov 13 (continued): a per-pack stats breakdown
+
+CANGUPA-141 added a per-pack cleared/best-moves breakdown to `apps/app`'s
+`StatsScreen.tsx`, below the existing global summary rows. A new "Per
+pack" panel shows one row per pack, each reading `${cleared}/${total} ·
+${moves} moves`. No new saved field was needed: a new `perPackStats` pure
+helper (`state/progress.ts`) walks `done`/`bestMoves` against a
+`packSizes` array the same way `LevelPacksScreen.tsx` already walks it to
+find where each pack starts in the flat level-index list, reusing that
+same derivation rather than re-deriving it a different way.
+`StatsScreen.tsx` gained a new required `packSizes` prop, wired in
+`App.tsx` from the same `PACK_SIZES` constant `LevelPacksScreen` already
+receives. New `stats.perPack`/`stats.perPackValue` i18n strings (en/pt).
+Surfaced by `CANGUPA-91`'s investigation. Verified: `npx tsc --noEmit`
+clean in `apps/app`, full `apps/app` Jest suite green (37/37 suites,
+969/969 tests).
+
+Era 75 closes here: Nov 13, one commit, CANGUPA-141 — added a per-pack
+stats breakdown to apps/app's Stats screen.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

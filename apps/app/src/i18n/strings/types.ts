@@ -76,6 +76,11 @@ export interface Strings {
     // rather than anything finer — nobody needs this stat to the second.
     readonly timePlayed: string;
     readonly timePlayedValue: (hours: number, minutes: number) => string;
+    // The per-pack cleared/best-moves breakdown (CANGUPA-141), below the
+    // summary rows above — one row per entry in packs below, in the same
+    // order.
+    readonly perPack: string;
+    readonly perPackValue: (cleared: number, total: number, moves: number) => string;
   };
   // The achievement card grid shown on the Stats screen (CANGUPA-90),
   // displayed the same way as DigiSpin's own (StatsScreen.tsx,

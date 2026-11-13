@@ -61,6 +61,8 @@ export const en: Strings = {
     undosUsedValue: (undos) => `${undos}`,
     timePlayed: 'Time played',
     timePlayedValue: (hours, minutes) => `${hours}h ${minutes}m`,
+    perPack: 'Per pack',
+    perPackValue: (cleared, total, moves) => `${cleared}/${total} · ${moves} ${moves === 1 ? 'move' : 'moves'}`,
   },
   achievements: {
     heading: 'Achievements',

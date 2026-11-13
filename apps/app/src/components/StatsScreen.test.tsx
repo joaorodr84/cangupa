@@ -33,7 +33,7 @@ function progress(overrides: Partial<Progress>): Progress {
 
 test('shows the summary panel when nothing is cleared yet', async () => {
   await render(
-    <StatsScreen totalLevels={50} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
   );
 
   expect(screen.getByText('Levels cleared')).toBeTruthy();
@@ -47,7 +47,7 @@ test('shows the summary panel when nothing is cleared yet', async () => {
 test('shows the cleared count, total moves, hints used and undos used, with no per-level breakdown', async () => {
   const statsProgress = progress({ done: [0, 2], level: 2, bestMoves: { 0: 3, 2: 7 }, hintsUsed: 4, undosUsed: 6 });
   await render(
-    <StatsScreen totalLevels={50} progress={statsProgress} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={statsProgress} achievements={NO_ACHIEVEMENTS} palette={palette} />,
   );
 
   expect(screen.getByText('Levels cleared')).toBeTruthy();
@@ -67,11 +67,34 @@ test('shows the cleared count, total moves, hints used and undos used, with no p
 test('shows time played as whole hours and minutes', async () => {
   const statsProgress = progress({ timePlayedMs: (2 * 60 + 15) * 60 * 1000 + 59_000 });
   await render(
-    <StatsScreen totalLevels={50} progress={statsProgress} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={statsProgress} achievements={NO_ACHIEVEMENTS} palette={palette} />,
   );
 
   expect(screen.getByText('Time played')).toBeTruthy();
   expect(screen.getByText('2h 15m')).toBeTruthy();
+});
+
+// CANGUPA-141: a row per pack, each showing its own cleared count and
+// summed best-move total — derived from done/bestMoves plus packSizes,
+// no new saved field needed.
+test('shows a per-pack cleared count and summed best-moves total', async () => {
+  // Pack 0 is levels 0-1, pack 1 is levels 2-4 (packSizes [2, 3]). Level 0
+  // cleared in 3, level 3 cleared in 5 — only pack 1 has anything cleared.
+  const statsProgress = progress({ done: [0, 3], bestMoves: { 0: 3, 3: 5 } });
+  await render(
+    <StatsScreen
+      totalLevels={5}
+      packSizes={[2, 3]}
+      progress={statsProgress}
+      achievements={NO_ACHIEVEMENTS}
+      palette={palette}
+    />,
+  );
+
+  expect(screen.getByText('Meadow')).toBeTruthy();
+  expect(screen.getByText('1/2 · 3 moves')).toBeTruthy();
+  expect(screen.getByText('Creek')).toBeTruthy();
+  expect(screen.getByText('1/3 · 5 moves')).toBeTruthy();
 });
 
 // CANGUPA-90: the achievements card grid, displayed the same way as
@@ -79,7 +102,7 @@ test('shows time played as whole hours and minutes', async () => {
 
 test('shows the achievements heading and a hidden-title card for every unearned achievement', async () => {
   await render(
-    <StatsScreen totalLevels={50} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
   );
 
   expect(screen.getByText('Achievements')).toBeTruthy();
@@ -93,7 +116,7 @@ test('shows the achievements heading and a hidden-title card for every unearned 
 
 test('an earned achievement shows its real title, earned date and a different accessibility label', async () => {
   const earned: AchievementRecord = withEarned(NO_ACHIEVEMENTS, ['first-level'], '2026-03-05');
-  await render(<StatsScreen totalLevels={50} progress={NO_PROGRESS} achievements={earned} palette={palette} />);
+  await render(<StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={earned} palette={palette} />);
 
   expect(screen.getByText('First Steps')).toBeTruthy();
   expect(screen.getByLabelText('First Steps: earned')).toBeTruthy();
@@ -104,7 +127,7 @@ test('an earned achievement shows its real title, earned date and a different ac
 
 test('an achievement earned before a date was ever recorded shows no date line', async () => {
   const earned: AchievementRecord = { earned: ['first-level'], earnedDates: {} };
-  await render(<StatsScreen totalLevels={50} progress={NO_PROGRESS} achievements={earned} palette={palette} />);
+  await render(<StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={earned} palette={palette} />);
 
   expect(screen.getByLabelText('First Steps: earned')).toBeTruthy();
   expect(screen.queryByText(/Earned on/)).toBeNull();
@@ -112,7 +135,7 @@ test('an achievement earned before a date was ever recorded shows no date line',
 
 test('every achievement gets its own card, not just the first row', async () => {
   await render(
-    <StatsScreen totalLevels={50} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
   );
 
   // The last achievement in the array (ACHIEVEMENTS.length is 12, more than

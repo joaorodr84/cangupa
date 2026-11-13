@@ -27,6 +27,10 @@ Open work is listed in [TODO.md](TODO.md).
   total time the app has spent open, formatted as whole hours and minutes
   (e.g. "2h 15m"). It keeps counting across sessions, the same as the
   other lifetime stats.
+- The app's Stats screen now has a "Per pack" panel below the summary
+  rows, listing one row per level pack with that pack's own cleared-level
+  count and total, plus its own summed best-moves total (e.g. "3/5 · 12
+  moves").
 
 ### Fixed
 
