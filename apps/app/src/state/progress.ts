@@ -49,6 +49,10 @@ export interface Progress {
   // streak-length achievement stays earned once reached even after the
   // current streak later resets.
   readonly bestPerfectStreak: number;
+  // Lifetime milliseconds spent with the app foregrounded (CANGUPA-143),
+  // accumulated by useSessionTimer rather than derived from anything else
+  // here — only ever grows, the same shape as hintsUsed/undosUsed.
+  readonly timePlayedMs: number;
 }
 
 export const NO_PROGRESS: Progress = {
@@ -61,6 +65,7 @@ export const NO_PROGRESS: Progress = {
   perfectClears: 0,
   perfectStreak: 0,
   bestPerfectStreak: 0,
+  timePlayedMs: 0,
 };
 
 // A level's index is its place in the packs' play order (CANGUPA-56), which is
@@ -143,6 +148,23 @@ export function recordUndo(progress: Progress): Progress {
 // so a malformed or duplicate purchase callback can't silently subtract.
 export function addHints(progress: Progress, amount: number): Progress {
   return amount <= 0 ? progress : { ...progress, hints: progress.hints + amount };
+}
+
+// Adds a session's foregrounded time to the lifetime total (CANGUPA-143),
+// the same guarded-positive shape addHints uses above for an amount that
+// comes from outside pure game logic — here, useSessionTimer, rather than
+// a store purchase.
+export function addTimePlayed(progress: Progress, ms: number): Progress {
+  return ms <= 0 ? progress : { ...progress, timePlayedMs: progress.timePlayedMs + ms };
+}
+
+// Breaks a lifetime ms total into whole hours and the remaining minutes,
+// for the stats screen's "Time played" row (CANGUPA-143). Floors rather
+// than rounds, so the row never claims a minute that hasn't fully elapsed
+// yet.
+export function playTimeParts(ms: number): { hours: number; minutes: number } {
+  const totalMinutes = Math.floor(ms / 60000);
+  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 };
 }
 
 // Where the home screen's Play button should go: the first level, in play
@@ -238,6 +260,9 @@ export function parseProgress(raw: string | null): Progress {
     const perfectClears = nonNegativeIntegerOr(record.perfectClears, 0);
     const perfectStreak = nonNegativeIntegerOr(record.perfectStreak, 0);
     const bestPerfectStreak = nonNegativeIntegerOr(record.bestPerfectStreak, 0);
+    // A save from before CANGUPA-143 has none either — same "nothing banked
+    // yet" fallback as hintsUsed/undosUsed above.
+    const timePlayedMs = nonNegativeIntegerOr(record.timePlayedMs, 0);
     return {
       done,
       level,
@@ -248,6 +273,7 @@ export function parseProgress(raw: string | null): Progress {
       perfectClears,
       perfectStreak,
       bestPerfectStreak,
+      timePlayedMs,
     };
   } catch {
     return NO_PROGRESS;

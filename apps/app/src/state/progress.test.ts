@@ -1,5 +1,6 @@
 import {
   addHints,
+  addTimePlayed,
   firstUnsolvedLevel,
   isDone,
   isUnlocked,
@@ -7,6 +8,7 @@ import {
   NO_PROGRESS,
   parseProgress,
   loadProgress,
+  playTimeParts,
   recordUndo,
   spendHint,
   STARTING_HINTS,
@@ -29,6 +31,7 @@ function progress(overrides: Partial<Progress> = {}): Progress {
     perfectClears: 0,
     perfectStreak: 0,
     bestPerfectStreak: 0,
+    timePlayedMs: 0,
     ...overrides,
   };
 }
@@ -239,6 +242,28 @@ describe('addHints', () => {
   });
 });
 
+describe('addTimePlayed', () => {
+  it('adds the elapsed milliseconds to the lifetime total', () => {
+    expect(addTimePlayed(progress({ timePlayedMs: 1000 }), 500).timePlayedMs).toBe(1500);
+  });
+
+  it('returns the same record for a zero or negative amount, so a stray call never fires a save', () => {
+    const base = progress();
+    expect(addTimePlayed(base, 0)).toBe(base);
+    expect(addTimePlayed(base, -5)).toBe(base);
+  });
+});
+
+describe('playTimeParts', () => {
+  it('floors to the nearest whole minute, not rounding up', () => {
+    expect(playTimeParts(59_000)).toEqual({ hours: 0, minutes: 0 });
+  });
+
+  it('splits a total into whole hours and the remaining minutes', () => {
+    expect(playTimeParts((2 * 60 + 15) * 60 * 1000)).toEqual({ hours: 2, minutes: 15 });
+  });
+});
+
 describe('totalBestMoves', () => {
   it('is zero with no cleared levels', () => {
     expect(totalBestMoves(NO_PROGRESS)).toBe(0);
@@ -258,7 +283,7 @@ describe('parseProgress', () => {
   it('reads saved done levels, the resume level, best moves, hint balance and every lifetime counter', () => {
     expect(
       parseProgress(
-        '{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1},"hints":1,"hintsUsed":5,"undosUsed":2,"perfectClears":7,"perfectStreak":1,"bestPerfectStreak":4}',
+        '{"done":[0,2],"level":3,"bestMoves":{"0":4,"2":1},"hints":1,"hintsUsed":5,"undosUsed":2,"perfectClears":7,"perfectStreak":1,"bestPerfectStreak":4,"timePlayedMs":9000}',
       ),
     ).toEqual({
       done: [0, 2],
@@ -270,6 +295,7 @@ describe('parseProgress', () => {
       perfectClears: 7,
       perfectStreak: 1,
       bestPerfectStreak: 4,
+      timePlayedMs: 9000,
     });
   });
 
@@ -347,6 +373,16 @@ describe('parseProgress', () => {
     expect(parseProgress('{"bestPerfectStreak":-1}').bestPerfectStreak).toBe(0);
   });
 
+  it('falls back to 0 when timePlayedMs is missing — a save from before CANGUPA-143 has not banked any', () => {
+    expect(parseProgress('{"done":[0],"level":0}').timePlayedMs).toBe(0);
+  });
+
+  it('falls back to 0 when timePlayedMs is not a non-negative integer', () => {
+    expect(parseProgress('{"timePlayedMs":-1}').timePlayedMs).toBe(0);
+    expect(parseProgress('{"timePlayedMs":1.5}').timePlayedMs).toBe(0);
+    expect(parseProgress('{"timePlayedMs":"2"}').timePlayedMs).toBe(0);
+  });
+
   it.each(CORRUPT_RECORDS)('reads %s as no progress', (_name, raw) => {
     expect(parseProgress(raw)).toEqual(NO_PROGRESS);
   });
@@ -387,7 +423,7 @@ describe('saving and loading', () => {
     );
 
     expect(await storage.getItem(PROGRESS_KEY)).toBe(
-      '{"done":[0],"level":1,"bestMoves":{"0":5},"hints":2,"hintsUsed":1,"undosUsed":0,"perfectClears":0,"perfectStreak":0,"bestPerfectStreak":0}',
+      '{"done":[0],"level":1,"bestMoves":{"0":5},"hints":2,"hintsUsed":1,"undosUsed":0,"perfectClears":0,"perfectStreak":0,"bestPerfectStreak":0,"timePlayedMs":0}',
     );
   });
 

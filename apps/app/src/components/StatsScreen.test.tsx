@@ -26,6 +26,7 @@ function progress(overrides: Partial<Progress>): Progress {
     perfectClears: 0,
     perfectStreak: 0,
     bestPerfectStreak: 0,
+    timePlayedMs: 0,
     ...overrides,
   };
 }
@@ -59,6 +60,18 @@ test('shows the cleared count, total moves, hints used and undos used, with no p
   expect(screen.getByText('6')).toBeTruthy();
   expect(screen.queryByText('Level 1')).toBeNull();
   expect(screen.queryByText('3 moves')).toBeNull();
+});
+
+// CANGUPA-143: whole hours and minutes, floored, not rounded or shown to
+// the second.
+test('shows time played as whole hours and minutes', async () => {
+  const statsProgress = progress({ timePlayedMs: (2 * 60 + 15) * 60 * 1000 + 59_000 });
+  await render(
+    <StatsScreen totalLevels={50} progress={statsProgress} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+  );
+
+  expect(screen.getByText('Time played')).toBeTruthy();
+  expect(screen.getByText('2h 15m')).toBeTruthy();
 });
 
 // CANGUPA-90: the achievements card grid, displayed the same way as

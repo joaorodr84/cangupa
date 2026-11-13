@@ -72,6 +72,10 @@ export interface Strings {
     readonly hintsUsedValue: (hints: number) => string;
     readonly undosUsed: string;
     readonly undosUsedValue: (undos: number) => string;
+    // Lifetime time played (CANGUPA-143), shown as whole hours and minutes
+    // rather than anything finer — nobody needs this stat to the second.
+    readonly timePlayed: string;
+    readonly timePlayedValue: (hours: number, minutes: number) => string;
   };
   // The achievement card grid shown on the Stats screen (CANGUPA-90),
   // displayed the same way as DigiSpin's own (StatsScreen.tsx,

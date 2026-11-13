@@ -23,6 +23,10 @@ Open work is listed in [TODO.md](TODO.md).
   watch a short reward video to earn 1 extra hint, on top of buying a pack
   with real money. Only available on the app — the web version still has
   no hint balance or store at all.
+- The app's Stats screen now has a "Time played" row, showing the lifetime
+  total time the app has spent open, formatted as whole hours and minutes
+  (e.g. "2h 15m"). It keeps counting across sessions, the same as the
+  other lifetime stats.
 
 ### Fixed
 

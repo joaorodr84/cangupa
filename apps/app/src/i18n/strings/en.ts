@@ -59,6 +59,8 @@ export const en: Strings = {
     hintsUsedValue: (hints) => `${hints}`,
     undosUsed: 'Undos used',
     undosUsedValue: (undos) => `${undos}`,
+    timePlayed: 'Time played',
+    timePlayedValue: (hours, minutes) => `${hours}h ${minutes}m`,
   },
   achievements: {
     heading: 'Achievements',

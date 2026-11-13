@@ -19,7 +19,7 @@ import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-n
 
 import { useStrings } from '../i18n/useStrings';
 import { ACHIEVEMENTS, type AchievementRecord } from '../state/achievements';
-import { type Progress, totalBestMoves } from '../state/progress';
+import { playTimeParts, type Progress, totalBestMoves } from '../state/progress';
 import { type Palette } from '../theme/palette';
 import { achievementRows, achievementsPerRow, cardWidth, GAP_PT } from './achievementGrid';
 
@@ -47,6 +47,7 @@ const HIDDEN_ICON = 'lock-closed-outline';
 export default function StatsScreen({ totalLevels, progress, achievements, palette }: StatsScreenProps) {
   const t = useStrings();
   const cleared = progress.done.length;
+  const { hours: playedHours, minutes: playedMinutes } = playTimeParts(progress.timePlayedMs);
   const { width } = useWindowDimensions();
   const perRow = achievementsPerRow(width);
   const rows = achievementRows(ACHIEVEMENTS, perRow);
@@ -59,6 +60,11 @@ export default function StatsScreen({ totalLevels, progress, achievements, palet
         <Row label={t.stats.totalMoves} value={t.stats.totalMovesValue(totalBestMoves(progress))} palette={palette} />
         <Row label={t.stats.hintsUsed} value={t.stats.hintsUsedValue(progress.hintsUsed)} palette={palette} />
         <Row label={t.stats.undosUsed} value={t.stats.undosUsedValue(progress.undosUsed)} palette={palette} />
+        <Row
+          label={t.stats.timePlayed}
+          value={t.stats.timePlayedValue(playedHours, playedMinutes)}
+          palette={palette}
+        />
       </View>
 
       <Text style={[styles.heading, { color: palette.muted }]} accessibilityRole="header">

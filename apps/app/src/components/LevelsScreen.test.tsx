@@ -18,6 +18,7 @@ function progress(overrides: Partial<Progress>): Progress {
     perfectClears: 0,
     perfectStreak: 0,
     bestPerfectStreak: 0,
+    timePlayedMs: 0,
     ...overrides,
   };
 }

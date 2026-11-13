@@ -147,17 +147,6 @@ The priority can change at any time; the ID never does.
   `PACK_SIZES` ([levels.ts](apps/app/src/game/levels.ts)) already
   derive each pack's cleared count and summed best moves. Surfaced by
   `CANGUPA-91`'s investigation.
-- [P2] `CANGUPA-143` — Track total time played on `apps/app` (an
-  `AppState`-based session timer, accumulated into a new persisted
-  lifetime field) and show it on
-  [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx). Surfaced
-  by `CANGUPA-91`'s investigation as sitting in tension with the
-  deliberate no-timer/no-pressure design `CANGUPA-100` already
-  confirmed (no timer, countdown, or move-limit mechanic anywhere in
-  either app) — the owner confirmed wanting it anyway, so that tension
-  is resolved; what's left is the `AppState` plumbing itself, not a
-  decision. `CANGUPA-146` tracks the same stat for `apps/web-classic`
-  once this lands.
 - [P4] `CANGUPA-144` — Show a longest-streak-of-days-played stat on
   `apps/app`'s `StatsScreen.tsx`. Needs a new, timezone-robust
   date-tracking scheme (today nothing records *when* a level was

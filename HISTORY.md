@@ -2474,6 +2474,38 @@ clean, full apps/app Jest suite green (36/36 suites, 950/950 tests).
 Era 73 closes here: Nov 13, one commit, CANGUPA-138 — stopped apps/app's
 themed splash screen from handing off early to an unstyled frame.
 
+## Era 74 — Nov 13 (continued): tracking time played
+
+CANGUPA-143 added a lifetime `timePlayedMs` field to `apps/app`'s
+`Progress` (`state/progress.ts`), alongside a same-shape `addTimePlayed`
+helper (guarded positive, matching the existing `addHints`) and a pure
+`playTimeParts` helper that splits a millisecond total into whole hours
+plus remaining minutes, floored rather than rounded. A new
+`useSessionTimer` hook (`state/useSessionTimer.ts`) accumulates wall-clock
+foregrounded time from `AppState`'s `change` events, flushing the elapsed
+session length through a callback on backgrounding or unmount, wired into
+`App.tsx` via `useProgress`'s new `recordTimePlayed`. The hook's own
+accumulate/reset logic was factored into a pure, exported
+`createSessionTimer(onElapsed, now)` so it could be unit-tested directly
+without React's render machinery — multiple `renderHook` mounts within one
+spec file turned out not to play well together in this test environment
+(an earlier test's unmount intermittently failed to flush before the next
+test's mount, silently dropping that mount's own `AppState` listener
+registration); chased for a while, with a `Date.now`-mocking interaction
+and React's own scheduler both ruled out as the cause, before the
+pure-logic extraction sidestepped the problem outright. `createSessionTimer`
+now has full test coverage in `state/useSessionTimer.test.ts`, while
+`useSessionTimer` itself gets just one lightweight `renderHook` smoke test
+for the `AppState` wiring. Shown on `StatsScreen.tsx` as a new "Time
+played" row (whole hours and minutes) via new `stats.timePlayed`/
+`timePlayedValue` strings (en/pt). `parseProgress` falls back to 0 for a
+save from before this field existed, the same pattern every other
+lifetime counter here already uses. Verified: `npx tsc --noEmit` clean,
+full `apps/app` Jest suite green (37/37 suites, 964/964 tests).
+
+Era 74 closes here: Nov 13, one commit, CANGUPA-143 — added lifetime
+time-played tracking to apps/app, shown on Stats.
+
 ---
 
 ## Patterns, and what's still open

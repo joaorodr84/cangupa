@@ -56,6 +56,8 @@ export const pt: Strings = {
     hintsUsedValue: (hints) => `${hints}`,
     undosUsed: 'Jogadas desfeitas',
     undosUsedValue: (undos) => `${undos}`,
+    timePlayed: 'Tempo jogado',
+    timePlayedValue: (hours, minutes) => `${hours}h ${minutes}m`,
   },
   achievements: {
     heading: 'Conquistas',

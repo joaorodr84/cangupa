@@ -25,6 +25,7 @@ import { firstUnsolvedLevel, isDone, type Progress } from './src/state/progress'
 import { type Settings } from './src/state/settings';
 import { useAchievements } from './src/state/useAchievements';
 import { useProgress } from './src/state/useProgress';
+import { useSessionTimer } from './src/state/useSessionTimer';
 import { useSettings } from './src/state/useSettings';
 import { DARK, paletteFor, type ThemeMode } from './src/theme/palette';
 
@@ -71,9 +72,24 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
   const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
-  const { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, recordHintsPurchased, clearProgress } =
-    useProgress();
+  const {
+    progress,
+    recordDone,
+    recordLevel,
+    recordHintUsed,
+    recordUndoUsed,
+    recordHintsPurchased,
+    recordTimePlayed,
+    clearProgress,
+  } = useProgress();
   const achievements = useAchievements(progress, LEVELS.length);
+
+  // Tracks lifetime time played (CANGUPA-143) regardless of whether
+  // settings/progress have resolved yet — recordTimePlayed is safe to call
+  // before that (useProgress.persist works off its own ref, not the
+  // possibly-still-null `progress` state), so the session clock starts
+  // from the moment the app root itself mounts, not from first themed paint.
+  useSessionTimer(recordTimePlayed);
 
   // Kept in sync here rather than read fresh on every Sound.jump() call,
   // the same split as the web version's `Sound.enabled` (ui.js sets it,
