@@ -116,18 +116,6 @@ The priority can change at any time; the ID never does.
   repo, not this one — `CANGUPA-86`'s own note flagged it as worth
   checking once a fix landed here, but doing it is out of this
   session's scope.
-- [P2] `CANGUPA-138` — Investigate, and likely fix, a possible
-  splash-to-content flash on `apps/app` startup, most visible in dark
-  mode. `App.tsx`'s loading view (rendered while `useSettings`/
-  `useProgress` await their first AsyncStorage read) has no
-  `backgroundColor`, and no `SplashScreen.preventAutoHideAsync()` call
-  exists anywhere in the app, so Expo's splash auto-hides on first
-  paint — a transparent/white frame can show before the first themed
-  paint. `useColorScheme()` is already imported and used later in the
-  same file; a candidate fix is giving the loading view a background
-  approximated from the OS scheme before `settings` resolves. Surfaced
-  by `CANGUPA-89`'s audit but not confirmed on a real device — verify
-  the flash actually happens before fixing it blind.
 - [P4] `CANGUPA-139` — Theoretical save-write race in `apps/app`'s
   `useProgress`/`useSettings` (`state/useProgress.ts`,
   `state/useSettings.ts`): both hooks fire-and-forget

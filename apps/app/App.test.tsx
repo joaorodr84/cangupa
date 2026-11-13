@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import * as SplashScreen from 'expo-splash-screen';
 
 import App from './App';
 import { PROGRESS_KEY } from './src/state/progress';
@@ -12,6 +13,14 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 // The safe-area provider waits for native metrics Jest does not have, so
 // the library's own mock supplies them (insets of zero).
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
+
+// The real module's exports aren't writable, so hideAsync can't be spied on
+// directly (CANGUPA-138) — a manual mock stands in instead, the same
+// approach the async-storage mock above takes.
+jest.mock('expo-splash-screen', () => ({
+  preventAutoHideAsync: jest.fn(() => Promise.resolve(true)),
+  hideAsync: jest.fn(() => Promise.resolve(true)),
+}));
 
 // @expo/vector-icons' Icon checks expo-font's loadAsync on mount, which
 // never resolves in this test environment and warns that the update was
@@ -29,6 +38,21 @@ afterEach(async () => {
 test('renders without crashing', async () => {
   const { toJSON } = await render(<App />);
   expect(toJSON()).not.toBeNull();
+});
+
+// CANGUPA-138: the native splash is held open (preventAutoHideAsync, called
+// as soon as App.tsx's module loads) until settings/progress have actually
+// finished their first AsyncStorage read, instead of auto-hiding on the
+// first JS paint and exposing the loading view's unstyled background for a
+// frame. This only checks the release half — that it doesn't get stuck open
+// once data is ready — since the hold itself happens before any spy set up
+// inside a test could observe it.
+test('releases the splash once settings and progress have loaded', async () => {
+  expect(SplashScreen.preventAutoHideAsync).toHaveBeenCalled();
+
+  await render(<App />);
+
+  await waitFor(() => expect(SplashScreen.hideAsync).toHaveBeenCalled());
 });
 
 test('starts on the home screen, and the board screen has its own way back to it', async () => {

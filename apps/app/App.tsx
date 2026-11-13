@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LayoutAnimation, Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
 import { initMobileAds } from './src/ads/initMobileAds';
@@ -26,6 +27,19 @@ import { useAchievements } from './src/state/useAchievements';
 import { useProgress } from './src/state/useProgress';
 import { useSettings } from './src/state/useSettings';
 import { DARK, paletteFor, type ThemeMode } from './src/theme/palette';
+
+// CANGUPA-138: without this, Expo auto-hides the native splash (already
+// themed per-mode via app.json's expo-splash-screen plugin) on the first JS
+// paint — which can land before settings/progress finish their first
+// AsyncStorage read below, exposing the loading view's unstyled background
+// for a frame. Held up here, as early as the module can run, and released
+// only once that first read resolves (see the effect in App()), so the
+// themed splash image stays up through the gap instead of a plain frame
+// showing in between it and the real content.
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // Already hidden or already prevented from a previous call in this
+  // session (e.g. Fast Refresh) — nothing to do either way.
+});
 
 type Panel = 'home' | 'board' | 'levels' | 'help' | 'settings' | 'stats';
 
@@ -73,6 +87,14 @@ export default function App() {
   useEffect(() => {
     initMobileAds();
   }, []);
+
+  useEffect(() => {
+    if (settings && progress && achievements) {
+      SplashScreen.hideAsync().catch(() => {
+        // Already hidden — nothing to do.
+      });
+    }
+  }, [settings, progress, achievements]);
 
   if (!settings || !progress || !achievements) {
     return <View style={styles.app} />;
