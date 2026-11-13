@@ -61,7 +61,7 @@ test('calls onLevelComplete with the move count exactly once when the level is w
   await fireEvent.press(screen.getByTestId('tile-press-1-0'));
 
   expect(onLevelComplete).toHaveBeenCalledTimes(1);
-  expect(onLevelComplete).toHaveBeenCalledWith(1);
+  expect(onLevelComplete).toHaveBeenCalledWith(1, true);
   expect(screen.getByText('Level complete!')).toBeTruthy();
 });
 
@@ -191,6 +191,41 @@ test('pressing Undo with nothing to undo does not call onUndoUsed', async () => 
   expect(onUndoUsed).not.toHaveBeenCalled();
 });
 
+test('a hint used this attempt makes the clear not perfect (CANGUPA-90)', async () => {
+  const onLevelComplete = jest.fn();
+  await renderScreen({ level: ['S11'], onLevelComplete });
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
+
+  expect(onLevelComplete).toHaveBeenCalledWith(2, false);
+});
+
+test('an undo used this attempt makes the clear not perfect (CANGUPA-90)', async () => {
+  const onLevelComplete = jest.fn();
+  await renderScreen({ level: ['S11'], onLevelComplete });
+
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  await fireEvent.press(screen.getByLabelText('Undo'));
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
+
+  expect(onLevelComplete).toHaveBeenCalledWith(2, false);
+});
+
+test('restarting clears the not-perfect flag, so a clean replay still counts as perfect (CANGUPA-90)', async () => {
+  const onLevelComplete = jest.fn();
+  await renderScreen({ level: ['S11'], onLevelComplete });
+
+  await fireEvent.press(screen.getByLabelText('Hint'));
+  await fireEvent.press(screen.getByLabelText('Restart'));
+  await fireEvent.press(screen.getByTestId('tile-press-1-0'));
+  await fireEvent.press(screen.getByTestId('tile-press-2-0'));
+
+  expect(onLevelComplete).toHaveBeenCalledWith(2, true);
+});
+
 test('pressing the win popup\'s next-level button calls onNext', async () => {
   const onNext = jest.fn();
 
@@ -241,7 +276,7 @@ test('a turned level is still playable and clears', async () => {
   await renderScreen({ level: ['S1'], onLevelComplete });
   await fireEvent.press(screen.getByTestId('tile-press-0-1'));
 
-  expect(onLevelComplete).toHaveBeenCalledWith(1);
+  expect(onLevelComplete).toHaveBeenCalledWith(1, true);
 });
 
 test('does not turn the board again when the screen rotates mid-level', async () => {

@@ -7,6 +7,21 @@ import { PACK_COLORS, packLabelColorFor } from '../theme/packColors';
 
 const palette = DARK;
 
+function progress(overrides: Partial<Progress>): Progress {
+  return {
+    done: [],
+    level: 0,
+    bestMoves: {},
+    hints: 3,
+    hintsUsed: 0,
+    undosUsed: 0,
+    perfectClears: 0,
+    perfectStreak: 0,
+    bestPerfectStreak: 0,
+    ...overrides,
+  };
+}
+
 test('renders one button per level in the given pack', async () => {
   await render(
     <LevelsScreen
@@ -48,13 +63,13 @@ test('only the first level is unlocked with no progress', async () => {
 });
 
 test('a level unlocks once the one before it is cleared', async () => {
-  const progress: Progress = { done: [0], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
+  const levelProgress = progress({ done: [0], level: 0 });
   const onSelectLevel = jest.fn();
   await render(
     <LevelsScreen
       packIndex={0}
       packSizes={[3]}
-      progress={progress}
+      progress={levelProgress}
       currentLevel={0}
       palette={palette}
       onSelectLevel={onSelectLevel}
@@ -67,12 +82,12 @@ test('a level unlocks once the one before it is cleared', async () => {
 });
 
 test('a cleared level is marked done in the pack colour, with a contrast-safe number', async () => {
-  const progress: Progress = { done: [0], level: 1, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
+  const levelProgress = progress({ done: [0], level: 1 });
   await render(
     <LevelsScreen
       packIndex={0}
       packSizes={[2]}
-      progress={progress}
+      progress={levelProgress}
       currentLevel={1}
       palette={palette}
       onSelectLevel={jest.fn()}
@@ -107,12 +122,12 @@ test('a locked level has a solid background and dimmed text, not a faded cell', 
 });
 
 test('the current level is outlined in the theme ink colour', async () => {
-  const progress: Progress = { done: [0], level: 1, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
+  const levelProgress = progress({ done: [0], level: 1 });
   await render(
     <LevelsScreen
       packIndex={0}
       packSizes={[2]}
-      progress={progress}
+      progress={levelProgress}
       currentLevel={1}
       palette={palette}
       onSelectLevel={jest.fn()}
@@ -174,12 +189,12 @@ test("a pack's first level is unlocked with no progress at all (CANGUPA-77)", as
 });
 
 test("shows the pack's own name, in its own colour, and its blurb in its header", async () => {
-  const progress: Progress = { done: [2], level: 0, bestMoves: {}, hints: 3, hintsUsed: 0, undosUsed: 0 };
+  const levelProgress = progress({ done: [2], level: 0 });
   await render(
     <LevelsScreen
       packIndex={1}
       packSizes={[2, 3]}
-      progress={progress}
+      progress={levelProgress}
       currentLevel={0}
       palette={palette}
       onSelectLevel={jest.fn()}

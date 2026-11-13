@@ -13,6 +13,13 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 // the library's own mock supplies them (insets of zero).
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 
+// @expo/vector-icons' Icon checks expo-font's loadAsync on mount, which
+// never resolves in this test environment and warns that the update was
+// not wrapped in act() — the same stub StatsScreen.test.tsx uses, needed
+// here too since the Stats panel this file opens renders real achievement
+// cards (CANGUPA-90).
+jest.mock('@expo/vector-icons', () => ({ Ionicons: () => null }));
+
 // The mock's in-memory store is one shared module-level object, so a value
 // set in one test is still there for the next one unless cleared.
 afterEach(async () => {

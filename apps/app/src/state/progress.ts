@@ -32,6 +32,23 @@ export interface Progress {
   // Lifetime count of undos actually taken (CANGUPA-145), for the stats
   // screen.
   readonly undosUsed: number;
+  // Lifetime count of "perfect" clears (CANGUPA-90) — a level won without
+  // spending a hint or taking an undo since the attempt's last reset.
+  // Counts every such clear, not just first-time ones, the same lifetime
+  // shape as hintsUsed/undosUsed above.
+  readonly perfectClears: number;
+  // How many perfect clears in a row the player is on right now (CANGUPA-90)
+  // — incremented by a perfect clear, reset to 0 by anything else. Needs its
+  // own field, separate from bestPerfectStreak below: an achievement derived
+  // straight from "current streak" would un-earn itself the moment a streak
+  // breaks, so the achievement checks the high-water mark instead and this
+  // is only here to know whether the next clear continues or breaks it.
+  readonly perfectStreak: number;
+  // The longest perfectStreak ever reached (CANGUPA-90) — only ever grows,
+  // the same "best ever" shape bestMoves already uses per level, so a
+  // streak-length achievement stays earned once reached even after the
+  // current streak later resets.
+  readonly bestPerfectStreak: number;
 }
 
 export const NO_PROGRESS: Progress = {
@@ -41,6 +58,9 @@ export const NO_PROGRESS: Progress = {
   hints: STARTING_HINTS,
   hintsUsed: 0,
   undosUsed: 0,
+  perfectClears: 0,
+  perfectStreak: 0,
+  bestPerfectStreak: 0,
 };
 
 // A level's index is its place in the packs' play order (CANGUPA-56), which is
@@ -71,15 +91,20 @@ export function isUnlocked(progress: Progress, levelIndex: number, packStart: nu
 // Marks a level cleared, with how many moves it took, and keeps the fewest
 // moves it's ever been cleared in. A first-time clear also earns one hint,
 // uncapped (CANGUPA-124) — a replay of an already-done level earns nothing,
-// win or not, since the player already banked that level's hint. Returns
-// the same record when neither changes anything — the level was already
-// done and this clear didn't beat its best — so a replay that doesn't
-// improve on the record never fires a save.
-export function markDone(progress: Progress, levelIndex: number, moves: number): Progress {
+// win or not, since the player already banked that level's hint. `perfect`
+// (CANGUPA-90) is whether this clear used no hint and no undo since its
+// last reset — tracked regardless of whether the level was already done,
+// since a clean replay still extends or starts a streak and still counts
+// toward the lifetime perfectClears total. Returns the same record when
+// nothing at all changes — the level was already done, this clear didn't
+// beat its best, it wasn't perfect, and there was no streak to break —
+// so a replay that improves nothing never fires a save.
+export function markDone(progress: Progress, levelIndex: number, moves: number, perfect: boolean): Progress {
   const alreadyDone = isDone(progress, levelIndex);
   const best = progress.bestMoves[levelIndex];
   const improves = best === undefined || moves < best;
-  if (alreadyDone && !improves) {
+  const perfectStreak = perfect ? progress.perfectStreak + 1 : 0;
+  if (alreadyDone && !improves && !perfect && progress.perfectStreak === 0) {
     return progress;
   }
   return {
@@ -87,6 +112,9 @@ export function markDone(progress: Progress, levelIndex: number, moves: number):
     done: alreadyDone ? progress.done : [...progress.done, levelIndex].sort((a, b) => a - b),
     bestMoves: improves ? { ...progress.bestMoves, [levelIndex]: moves } : progress.bestMoves,
     hints: alreadyDone ? progress.hints : progress.hints + 1,
+    perfectClears: perfect ? progress.perfectClears + 1 : progress.perfectClears,
+    perfectStreak,
+    bestPerfectStreak: Math.max(progress.bestPerfectStreak, perfectStreak),
   };
 }
 
@@ -203,7 +231,24 @@ export function parseProgress(raw: string | null): Progress {
     // got when it was added, not a breaking change to the saved shape.
     const hintsUsed = nonNegativeIntegerOr(record.hintsUsed, 0);
     const undosUsed = nonNegativeIntegerOr(record.undosUsed, 0);
-    return { done, level, bestMoves, hints, hintsUsed, undosUsed };
+    // A save from before CANGUPA-90 has none of these either — same "nothing
+    // banked yet" fallback, so a save written before achievements existed
+    // starts every achievement that depends on them from zero rather than
+    // failing to load.
+    const perfectClears = nonNegativeIntegerOr(record.perfectClears, 0);
+    const perfectStreak = nonNegativeIntegerOr(record.perfectStreak, 0);
+    const bestPerfectStreak = nonNegativeIntegerOr(record.bestPerfectStreak, 0);
+    return {
+      done,
+      level,
+      bestMoves,
+      hints,
+      hintsUsed,
+      undosUsed,
+      perfectClears,
+      perfectStreak,
+      bestPerfectStreak,
+    };
   } catch {
     return NO_PROGRESS;
   }

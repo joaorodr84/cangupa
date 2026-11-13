@@ -159,14 +159,6 @@ The priority can change at any time; the ID never does.
   actually performed via a screen reader, given the input model is
   tapping the exact destination tile — rather than a quick fix, so
   parked rather than scoped yet.
-- [P4] `CANGUPA-90` — Add achievements. Nothing like this exists yet —
-  no engine or UI support, no tracked data beyond `apps/app`'s
-  `Progress` (`done`, `level`, `bestMoves` in
-  [progress.ts](apps/app/src/state/progress.ts)). Unscoped: what counts
-  as an achievement (level/pack milestones, no-hint/no-undo clears,
-  move-count records?), whether it's in-app only or wired to platform
-  services (Game Center on iOS, Google Play Games on Android), and
-  whether `apps/web-classic` gets it too or this is app-only.
 - [P3] `CANGUPA-141` — Show a per-pack cleared/best-moves breakdown on
   `apps/app`'s
   [StatsScreen.tsx](apps/app/src/components/StatsScreen.tsx), alongside

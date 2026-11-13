@@ -69,6 +69,27 @@ export interface Strings {
     readonly undosUsed: string;
     readonly undosUsedValue: (undos: number) => string;
   };
+  // The achievement card grid shown on the Stats screen (CANGUPA-90),
+  // displayed the same way as DigiSpin's own (StatsScreen.tsx,
+  // achievementGrid.ts) — `items` has one entry per
+  // src/state/achievements.ts's own ACHIEVEMENTS array, in the same order;
+  // an achievementsText.test.ts keeps the two in step, the same convention
+  // packText.test.ts already holds en/pt.packs to against game/packs.ts.
+  readonly achievements: {
+    readonly heading: string;
+    // A card's own accessibility label (DigiSpin's own
+    // t.stats.achievementStatus): one element covering its icon, title and
+    // description, rather than a screen reader landing on each in turn.
+    readonly achievementStatus: (title: string, earned: boolean) => string;
+    // "Earned on dd/mm/yyyy" under an earned card's description — empty,
+    // not shown at all, for an unearned one, or an earned one from before
+    // CANGUPA-90's earnedDates existed.
+    readonly earnedOn: (date: string) => string;
+    readonly items: readonly {
+      readonly title: string;
+      readonly description: string;
+    }[];
+  };
   readonly winPopup: {
     readonly levelComplete: string;
     readonly inMoves: (moves: number) => string;

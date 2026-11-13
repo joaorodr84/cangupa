@@ -15,6 +15,13 @@ export function useBoard(level: Level, hints: boolean) {
   // Set for one render after hint() finds no path (ui.js's "Beco sem
   // saída" message), and cleared by anything else that changes the board.
   const [hintFailed, setHintFailed] = useState(false);
+  // Whether a hint or an undo has actually been used since this attempt's
+  // last reset (CANGUPA-90) — a dead-end hint press doesn't count, matching
+  // the same "actually found/took something" gate the hintBalance/undosUsed
+  // stats already apply to their own counters. Drives `perfect` below,
+  // which a caller passes on to progress's own perfect-clear tracking.
+  const [usedHint, setUsedHint] = useState(false);
+  const [usedUndo, setUsedUndo] = useState(false);
 
   // Attempts the move to (x, y). Returns whether it was legal and played, so
   // the caller knows whether to also play the hop animation.
@@ -40,6 +47,7 @@ export function useBoard(level: Level, hints: boolean) {
     if (!game.undo()) return false;
     setTip(null);
     setHintFailed(false);
+    setUsedUndo(true);
     setTick((t) => t + 1);
     return true;
   }, [game]);
@@ -48,6 +56,8 @@ export function useBoard(level: Level, hints: boolean) {
     game.reset();
     setTip(null);
     setHintFailed(false);
+    setUsedHint(false);
+    setUsedUndo(false);
     setTick((t) => t + 1);
   }, [game]);
 
@@ -60,6 +70,7 @@ export function useBoard(level: Level, hints: boolean) {
     const path = game.solve();
     setTip(path ? path[0] : null);
     setHintFailed(!path);
+    if (path) setUsedHint(true);
     setTick((t) => t + 1);
     return path !== null;
   }, [game]);
@@ -75,6 +86,10 @@ export function useBoard(level: Level, hints: boolean) {
     moves: game.moves,
     remaining: game.remaining(),
     canUndo: game.moves > 0,
+    // Whether this attempt is still clean of a hint or an undo (CANGUPA-90)
+    // — read by the caller the moment `won` turns true, so it reflects the
+    // whole run up to the winning move rather than just this render.
+    perfect: !usedHint && !usedUndo,
     move,
     undo,
     reset,

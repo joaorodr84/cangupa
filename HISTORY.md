@@ -2386,6 +2386,51 @@ react-native-google-mobile-ads, and found/fixed a version
 incompatibility with this project's React Native version along the
 way.
 
+## Era 71 — Nov 13: achievements
+
+CANGUPA-90 had sat open since before the task-ID system had much else
+scoped — what counts as an achievement at all was undecided. The
+owner settled it this time: three real categories (level/pack
+milestones, lifetime no-hint/no-undo clears, and consecutive
+perfect-clear streaks), in-app only for now, with Game Center/Google
+Play Games wiring left as a future follow-up. A fourth candidate,
+move-count records, was dropped once useBoard.ts's Game turned out to
+decrement remaining by exactly 1 on every move and win only at
+remaining === 0 — clearing a given level always takes the same number
+of moves, so there is no "better" clear to ever record. A
+lifetime-total-moves category (reusing the existing totalBestMoves
+stat) filled that slot instead, alongside the streak category, per the
+owner's choice between the two.
+
+12 achievements in total, defined in a new src/state/achievements.ts
+as pure predicates over Progress, so clearing progress resets what's
+earnable for free. Displayed the owner's explicitly requested second
+way: the same way DigiSpin shows its own, ported from DigiSpin's
+game/achievements.ts, state/useAchievements.ts, screens/StatsScreen.tsx
+and screens/achievementGrid.ts. That carried two real decisions along
+with it: adding @expo/vector-icons for the same Ionicons glyphs rather
+than hand-drawn SVG, despite FooterNav.tsx documenting a deliberate
+no-vector-icons stance before this; and adding a persisted earned-date
+record after all, even though earning itself stays purely derived — a
+first-earned date can't be recovered from Progress after the fact, so
+a new AchievementRecord and useAchievements hook (ported verbatim from
+DigiSpin) keep it in its own small file. The Stats screen's
+achievements panel became a width-driven card grid, each card an
+Ionicons glyph, title, fixed-three-line description and an earned-on
+date, unearned dimmed onto the page background — replacing this
+task's own earlier flat label/value row list.
+
+Progress gained three fields: perfectClears, perfectStreak and
+bestPerfectStreak, the last kept separate from the live streak so an
+achievement already earned doesn't un-earn itself once a streak later
+breaks. Whether a clear is perfect is tracked per attempt in
+useBoard.ts and threaded through BoardScreen's onLevelComplete and
+App.tsx's onLevelDone alongside the existing move count.
+
+Era 71 closes here: Nov 13, one commit, CANGUPA-90 — added achievements
+to apps/app, in-app only, across three categories, displayed as a
+DigiSpin-style card grid.
+
 ---
 
 ## Patterns, and what's still open

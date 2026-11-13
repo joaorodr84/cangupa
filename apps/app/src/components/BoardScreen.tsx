@@ -39,8 +39,10 @@ interface BoardScreenProps {
   readonly onNext: () => void;
   // Fired once per win (not again until a reset is followed by another win),
   // the moment ui.js's move() would have added the level to progress.done —
-  // with the move count it was cleared in, for CANGUPA-30's per-level best.
-  readonly onLevelComplete?: (moves: number) => void;
+  // with the move count it was cleared in, for CANGUPA-30's per-level best,
+  // and whether this run used no hint and no undo since its last reset, for
+  // CANGUPA-90's perfect-clear achievements.
+  readonly onLevelComplete?: (moves: number, perfect: boolean) => void;
   // Fired once per hint that actually finds a move — not on a dead end,
   // which reveals nothing and so shouldn't cost one (CANGUPA-54).
   readonly onHintUsed?: () => void;
@@ -80,15 +82,15 @@ export default function BoardScreen({
   const startedLandscape = useRef(windowWidth > windowHeight);
   const oriented = useMemo(() => orientLevel(level, startedLandscape.current), [level]);
   const board = useBoard(oriented, hints);
-  const { won, hintFailed, moves, remaining, canUndo, undo, reset, hint } = board;
+  const { won, hintFailed, moves, remaining, canUndo, undo, reset, hint, perfect } = board;
 
   const wasWon = useRef(false);
   useEffect(() => {
     if (won && !wasWon.current) {
-      onLevelComplete?.(moves);
+      onLevelComplete?.(moves, perfect);
     }
     wasWon.current = won;
-  }, [won, moves, onLevelComplete]);
+  }, [won, moves, perfect, onLevelComplete]);
 
   const status = statusFor({ levelNumber, totalLevels, moves, remaining }, { won, hintFailed, hasNext });
 

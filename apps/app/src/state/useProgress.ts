@@ -60,7 +60,8 @@ export function useProgress(storage: Storage = deviceStorage) {
   );
 
   const recordDone = useCallback(
-    (levelIndex: number, moves: number) => persist(markDone(latest.current, levelIndex, moves)),
+    (levelIndex: number, moves: number, perfect: boolean) =>
+      persist(markDone(latest.current, levelIndex, moves, perfect)),
     [persist],
   );
   const recordLevel = useCallback((levelIndex: number) => persist(withLevel(latest.current, levelIndex)), [persist]);

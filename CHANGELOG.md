@@ -11,6 +11,14 @@ Open work is listed in [TODO.md](TODO.md).
 
 ### Added
 
+- The app now has achievements, shown as a card grid on the Stats screen.
+  There are 12 in total: level and pack completion milestones (e.g. first
+  pack cleared, all levels cleared), lifetime "perfect" clears — solving a
+  level without using a hint or an undo — and streaks of consecutive
+  perfect clears, and lifetime total moves made. Each card shows an icon,
+  title and description, plus the date it was earned once unlocked;
+  unearned achievements are shown dimmed. Clearing saved progress also
+  resets which achievements are earned, since they're derived from it.
 - The app's hint store now has a free option above its three paid packs:
   watch a short reward video to earn 1 extra hint, on top of buying a pack
   with real money. Only available on the app — the web version still has

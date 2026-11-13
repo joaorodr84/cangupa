@@ -19,8 +19,10 @@ import { LEVELS, PACK_SIZES } from './src/game/levels';
 import { LanguageContext } from './src/i18n/LanguageContext';
 import { type LanguageSetting } from './src/i18n/locale';
 import { useStrings } from './src/i18n/useStrings';
+import { type AchievementRecord } from './src/state/achievements';
 import { firstUnsolvedLevel, isDone, type Progress } from './src/state/progress';
 import { type Settings } from './src/state/settings';
+import { useAchievements } from './src/state/useAchievements';
 import { useProgress } from './src/state/useProgress';
 import { useSettings } from './src/state/useSettings';
 import { DARK, paletteFor, type ThemeMode } from './src/theme/palette';
@@ -57,6 +59,7 @@ export default function App() {
   const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
   const { progress, recordDone, recordLevel, recordHintUsed, recordUndoUsed, recordHintsPurchased, clearProgress } =
     useProgress();
+  const achievements = useAchievements(progress, LEVELS.length);
 
   // Kept in sync here rather than read fresh on every Sound.jump() call,
   // the same split as the web version's `Sound.enabled` (ui.js sets it,
@@ -71,7 +74,7 @@ export default function App() {
     initMobileAds();
   }, []);
 
-  if (!settings || !progress) {
+  if (!settings || !progress || !achievements) {
     return <View style={styles.app} />;
   }
 
@@ -87,6 +90,7 @@ export default function App() {
           onChangeFall={setFall}
           onChangeLanguage={setLanguage}
           progress={progress}
+          achievements={achievements}
           onLevelDone={recordDone}
           onChangeLevel={recordLevel}
           onHintUsed={recordHintUsed}
@@ -108,7 +112,8 @@ interface ShellProps {
   readonly onChangeFall: (fall: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly progress: Progress;
-  readonly onLevelDone: (levelIndex: number, moves: number) => void;
+  readonly achievements: AchievementRecord;
+  readonly onLevelDone: (levelIndex: number, moves: number, perfect: boolean) => void;
   readonly onChangeLevel: (levelIndex: number) => void;
   readonly onHintUsed: () => void;
   readonly onUndoUsed: () => void;
@@ -125,6 +130,7 @@ function Shell({
   onChangeFall,
   onChangeLanguage,
   progress,
+  achievements,
   onLevelDone,
   onChangeLevel,
   onHintUsed,
@@ -231,7 +237,9 @@ function Shell({
         />
       );
   } else if (panel === 'stats') {
-    content = <StatsScreen totalLevels={LEVELS.length} progress={progress} palette={palette} />;
+    content = (
+      <StatsScreen totalLevels={LEVELS.length} progress={progress} achievements={achievements} palette={palette} />
+    );
   } else if (panel === 'help') {
     content = <HelpScreen palette={palette} />;
   } else if (panel === 'settings') {
@@ -271,7 +279,7 @@ function Shell({
         onBack={() => setPanel(returnTo)}
         onPrevious={() => onChangeLevel(currentLevel - 1)}
         onNext={() => onChangeLevel(currentLevel + 1)}
-        onLevelComplete={(moves) => onLevelDone(currentLevel, moves)}
+        onLevelComplete={(moves, perfect) => onLevelDone(currentLevel, moves, perfect)}
         onHintUsed={onHintUsed}
         onUndoUsed={onUndoUsed}
         onBuyHints={() => setHintStoreOpen(true)}
