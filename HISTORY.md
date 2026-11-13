@@ -2697,6 +2697,49 @@ found.
 
 ---
 
+## Era 80 — Nov 13 (continued): motor accessibility, no code
+
+`apps/web-classic` already has two input modes — tap/click a tile, and
+keyboard (`WASD`/arrow keys, `CANGUPA-66`) — but `apps/app` has only
+one: tapping the exact destination tile (`onPressTile` in
+`PlayableBoard.tsx`). This session investigated three candidates to
+close that gap, shipping no code.
+
+A directional-pad control scheme turned out feasible without new
+game-logic infrastructure: `board.ts`'s `legalMoves()` already returns
+axis-aligned `Move[]` (the 4 cardinal directions in `DIRS`), so a
+press of up/down/left/right just needs to pick whichever
+`legalMoves()` entry sits in that direction from the kangaroo's own
+position and feed it through the same `play()`/`onPressTile` path
+`PlayableBoard.tsx` already wires up. One real wrinkle: `legalMoves()`
+can return both a step and a jump in the same direction at once, so a
+directional press needs an explicit tie-break — defaulting to the
+step, as the more conservative of the two, is the recommended choice.
+Split out as `CANGUPA-152` to build it, additive to tap rather than a
+replacement.
+
+Adjustable tap-target size turned up a sharper gap than a missing
+setting: there's no enforced floor either. `boardLayout.ts`'s
+`fitBoardWidth` has no minimum tile size at all, and no tile anywhere
+sets `hitSlop`, so a large, turned board on a small phone, or any
+height-constrained layout, can render a tile well under Apple HIG's
+44×44pt recommended minimum touch target with nothing to compensate.
+Split out as `CANGUPA-153` to add a minimum `hitSlop` floor; a
+user-facing size preference stays unscoped behind it.
+
+External keyboard/MFi controller support stayed parked: no keyboard or
+gamepad handling exists anywhere in `apps/app` today, and Expo/React
+Native has no first-party API for either, so this needs a new native
+dependency and config plugin with no library picked yet. Split out as
+`CANGUPA-154`, speculative relative to the other two until there's a
+concrete library choice to evaluate.
+
+Era 80 closes here: Nov 13, one commit, CANGUPA-98 — investigated
+motor accessibility for apps/app and opened CANGUPA-152, CANGUPA-153
+and CANGUPA-154.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

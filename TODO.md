@@ -253,22 +253,47 @@ The priority can change at any time; the ID never does.
   on-device check at a large accessibility text size to confirm actual
   clipping before deciding the fix (let the container grow, or cap at a
   `maxFontSizeMultiplier` that still fits).
-- [P3] `CANGUPA-98` — Analyze motor accessibility — maybe add multiple
-  ways of controlling the kangaroo. `apps/web-classic` already has two
-  input modes (tap/click a tile, and keyboard — `WASD`/arrow keys,
-  `KEYDIR` in [ui.js](apps/web-classic/js/ui.js), from `CANGUPA-66`);
-  `apps/app` has only one — tapping the exact destination tile
-  (`onPressTile` in
-  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx)), no
-  keyboard, external game-controller, or directional-pad alternative.
-  Investigate: a directional-pad control scheme (pick a direction, let
-  it resolve via `legalMoves` rather than requiring a precise tap),
-  external keyboard/MFi controller support on iOS, and adjustable
-  tap-target size. `CANGUPA-100`'s scoping pass folded its "one-handed
-  use" situational candidate in here rather than opening a new task:
-  a directional-pad scheme (already on this list) would be the same
-  fix for both one-handed reachability and precise-tap difficulty, so
-  it doesn't need separate investigation.
+- [P2] `CANGUPA-152` — Build a directional-pad control scheme for
+  `apps/app`, as an addition alongside tap rather than a replacement —
+  the same relationship `apps/web-classic`'s existing `WASD`/arrow-key
+  mode (`CANGUPA-66`) has to its own tap/click input. Found feasible by
+  `CANGUPA-98`'s investigation without new game-logic infrastructure:
+  [board.ts](apps/app/src/game/board.ts)'s `legalMoves()` already
+  returns axis-aligned `Move[]` (the 4 cardinal directions in `DIRS`),
+  so a press of up/down/left/right just needs to pick whichever
+  `legalMoves()` entry sits in that direction from the kangaroo's own
+  position and feed it through the same `play()`/`onPressTile` path
+  [PlayableBoard.tsx](apps/app/src/components/PlayableBoard.tsx) already
+  wires up. One real wrinkle to resolve, not a code-level given:
+  `legalMoves()` can return both a step (`d===1`) and a jump (`d===2`)
+  in the same direction at once, so a directional press needs an
+  explicit tie-break — defaulting to the step, as the more conservative
+  of the two, is the recommended choice. `CANGUPA-100`'s scoping pass
+  had folded a "one-handed use" angle into this same investigation: a
+  directional pad covers that too, no separate work needed.
+- [P2] `CANGUPA-153` — Add a minimum-touch-target floor to `apps/app`'s
+  board tiles. `CANGUPA-98`'s investigation found there isn't just no
+  *setting* for tap-target size — there's no enforced *floor* either:
+  [boardLayout.ts](apps/app/src/components/boardLayout.ts)'s
+  `fitBoardWidth` has no minimum tile size at all, and no tile anywhere
+  sets `hitSlop`, so a large, turned board (`CANGUPA-72`'s own
+  portrait-turned Gorge 7×6/Outback 8×7, becoming 6×7/7×8) on a small
+  phone, or any height-constrained layout, can render a tile well under
+  Apple HIG's 44×44pt recommended minimum touch target with nothing to
+  compensate. Most likely fix: a minimum `hitSlop` so the tappable area
+  stays at least 44×44pt even once the rendered tile face shrinks below
+  it, rather than forcing the board itself to stay larger than the
+  screen allows. A user-facing size *preference* on top of this floor
+  stays unscoped, parked behind this landing first.
+- [P4] `CANGUPA-154` — External keyboard/MFi controller
+  support for `apps/app`: no keyboard or gamepad handling exists
+  anywhere in `apps/app` today, and Expo/React Native has no first-party
+  hardware-keyboard or MFi-controller API of its own, so this needs a
+  new native dependency and config plugin — the same shape of lift
+  `CANGUPA-78`'s ad SDK was — without a specific library picked or
+  researched yet. Surfaced by `CANGUPA-98`'s motor-accessibility
+  investigation; still fully unscoped, speculative relative to the two
+  items above until there's a concrete library choice to evaluate.
 - [P4] `CANGUPA-134` — Add a cleared/mastered indicator icon to each pack
   row and the collection header on `apps/app`'s Levels tab
   ([LevelPacksScreen.tsx](apps/app/src/components/LevelPacksScreen.tsx),
