@@ -221,30 +221,35 @@ The priority can change at any time; the ID never does.
   cut and pricing `CANGUPA-96` left open. Not blocking `CANGUPA-92`'s
   first submission — ship with every pack free first, add this as a
   fast-follow.
-- [P2] `CANGUPA-97` — Analyze visual accessibility. Concrete issue
-  already found: `CANGUPA-87`'s proposed tile colours (Departure green,
-  Arrival raspberry red) are exactly the pair hardest to tell apart under
-  red-green colour blindness (~8% of men) — tiles need to stay
-  distinguishable by shape too, the way Gold/Steel already are via a
-  dot-count overlay (`.tile.two::before`/`::after` in
-  [style.css](apps/web-classic/style.css)), not colour alone. Also
-  check: contrast across every theme (`style.css`'s per-`data-theme`
-  `--ink`/`--muted`/`--tile` sets, some combinations untested for
-  contrast), and whether `apps/app`'s text respects OS
-  dynamic-type/font-scaling settings (unconfirmed). Investigation only
-  — didn't land before `CANGUPA-87`/`CANGUPA-88` after all (no owner
-  decision blocked on it, so the batch moved ahead), but the specific
-  colour-pair issue is already mitigated in practice: `apps/app`'s
-  `Board.tsx` draws the same triangle mark on both Departure and Arrival
-  tiles that Gold/Steel already get from their dot-count overlay, so
-  neither depends on colour alone. The contrast and dynamic-type
-  questions are still open. `CANGUPA-100`'s scoping pass folded its
-  "glare/bright-sunlight contrast" situational candidate in here rather
-  than opening a new task: it's the same per-theme contrast question
-  this task already owns, just under harsher outdoor lighting rather
-  than indoor viewing — no separate investigation needed, just test
-  outdoors (or with the screen brightness lowered to approximate it)
-  when this is picked up.
+- [P2] `CANGUPA-150` — Fix two hardcoded, theme-unaware text colours in
+  `apps/web-classic`'s [style.css](apps/web-classic/style.css), found by
+  `CANGUPA-97`'s contrast audit: the `<select>` element's text
+  (`color: #fff` regardless of theme) measures only 2.90:1 against Ice's
+  own `--frame`, under even the 3:1 large-text minimum; `#blocked-msg`'s
+  text (`rgba(255,120,104,.95)` regardless of theme) measures 1.15-1.84:1
+  against Sand and 1.61-2.26:1 against Ice, since it sits directly on the
+  page gradient rather than a panel — both effectively unreadable. Fix by
+  deriving each from the active theme's own variables (`--ink`, or a new
+  per-theme "warning" variable) instead of a fixed hex, the same way
+  every other themed element already works. Also nudge `--muted`'s
+  near-misses the audit found against one gradient stop in three themes
+  — sand vs `--bg2` (3.13:1), ice vs `--bg2` (3.68:1), classic vs `--bg1`
+  (4.22:1), all under the 4.5:1 AA line for normal text though still
+  above the 3:1 large-text floor — the same kind of small shift
+  `@joaorodr84/themes`'s own `LIGHT.textMuted` already took (4.36:1 →
+  4.99:1) for exactly this reason.
+- [P3] `CANGUPA-151` — Two fixed-height text containers in `apps/app`
+  don't grow with a larger OS font-scale setting, risking clipped/
+  truncated text instead of a layout that simply grows with it — found
+  by `CANGUPA-97`'s dynamic-type check, which otherwise confirmed every
+  `Text` already respects OS font scaling by default (no
+  `allowFontScaling={false}`/`maxFontSizeMultiplier` anywhere in
+  `src/`): `StatsScreen.tsx`'s achievement card description
+  (`height: 18 * 3`, `numberOfLines={3}`) and `LevelsScreen.tsx`'s grid
+  cell label (`height: 38`, `lineHeight: 22`, a level number). Needs an
+  on-device check at a large accessibility text size to confirm actual
+  clipping before deciding the fix (let the container grow, or cap at a
+  `maxFontSizeMultiplier` that still fits).
 - [P3] `CANGUPA-98` — Analyze motor accessibility — maybe add multiple
   ways of controlling the kangaroo. `apps/web-classic` already has two
   input modes (tap/click a tile, and keyboard — `WASD`/arrow keys,

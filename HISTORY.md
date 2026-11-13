@@ -2645,6 +2645,58 @@ implement them.
 
 ---
 
+## Era 79 — Nov 13 (continued): visual accessibility, no code
+
+`CANGUPA-97` had already found one concrete issue — `CANGUPA-87`'s
+proposed Departure/Arrival tile colours being exactly the hardest pair
+to tell apart under red-green colour blindness — but left two
+questions open: per-theme contrast across `apps/web-classic`'s
+`style.css`, and whether `apps/app` respects OS dynamic-type/
+font-scaling settings. This session closed both, again shipping no
+code.
+
+Computed WCAG 2.1 contrast ratios for every text colour against both
+ends of `style.css`'s radial gradient background (`--bg1`/`--bg2`)
+across all five themes (cosmos, space, sand, ice, classic). Body text
+(`--ink`) clears 4.5:1 everywhere (7.1-17.6:1). `.muted`/`.note` text
+falls short of 4.5:1 — though still above the 3:1 large-text floor — in
+three themes: sand vs `--bg2` (3.13:1), ice vs `--bg2` (3.68:1), classic
+vs `--bg1` (4.22:1). Two real failures turned up, both from the same
+root cause — a colour hardcoded instead of reading the active theme's
+own variables, the only two spots in the stylesheet that do this: the
+`<select>` text (`color: #fff` regardless of theme) measures 2.90:1
+against Ice's own `--frame`, under even the 3:1 minimum; `#blocked-msg`'s
+text (`rgba(255,120,104,.95)` regardless of theme) measures 1.15-1.84:1
+against Sand and 1.61-2.26:1 against Ice, since it sits directly on the
+page gradient rather than a panel, and 3.76:1 against Classic's
+`--bg1` — all effectively unreadable. Split out as `CANGUPA-150` to fix
+all of it the same way: derive both from the active theme's own
+variables instead of a fixed hex, and nudge `--muted`'s near-misses,
+the same kind of small shift `@joaorodr84/themes`'s own
+`LIGHT.textMuted` already took (4.36:1 → 4.99:1) for exactly this
+reason.
+
+`apps/app`'s dynamic-type question resolved clean: no component
+anywhere in `src/` sets `allowFontScaling={false}` or a
+`maxFontSizeMultiplier`, so every `Text` already follows the OS's
+font-scale setting by default. One real related gap turned up while
+checking, not a contrast issue: two fixed-height text containers that
+don't grow with a larger OS font-scale setting, risking clipped text
+rather than a layout that simply grows — `StatsScreen.tsx`'s
+achievement card description and `LevelsScreen.tsx`'s grid cell label.
+Split out as `CANGUPA-151`.
+
+`CANGUPA-87`/`CANGUPA-88`'s colour-pair concern was only re-confirmed
+as still mitigated here, not revisited — `Board.tsx`'s shared triangle
+mark on both Departure and Arrival tiles already covers it.
+
+Era 79 closes here: Nov 13, one commit, CANGUPA-97 — closed the
+visual-accessibility investigation's contrast and dynamic-type
+questions and opened CANGUPA-150/CANGUPA-151 for the concrete fixes
+found.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
