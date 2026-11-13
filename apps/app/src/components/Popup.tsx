@@ -15,6 +15,7 @@
 import { type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
 
 // Tall enough for one row of pill buttons plus breathing room on both sides.
@@ -29,13 +30,19 @@ interface PopupProps {
 }
 
 export default function Popup({ palette, heading, onClose, children, actions }: PopupProps) {
+  const t = useStrings();
   const ink = { color: palette.ink };
 
   return (
     <View style={styles.overlay} testID="popup-overlay">
       <View testID="popup-card" style={[styles.card, { backgroundColor: palette.bg2, borderColor: palette.panelBorder }]}>
         {onClose && (
-          <Pressable style={styles.close} onPress={onClose}>
+          <Pressable
+            style={styles.close}
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t.common.close}
+          >
             <Text style={[styles.closeLabel, ink]}>✕</Text>
           </Pressable>
         )}

@@ -6,6 +6,7 @@ export const pt: Strings = {
   common: {
     back: '‹ Voltar',
     backToList: 'Voltar à lista',
+    close: 'Fechar',
   },
   tabs: {
     home: 'Início',

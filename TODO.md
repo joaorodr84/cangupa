@@ -116,14 +116,6 @@ The priority can change at any time; the ID never does.
   repo, not this one — `CANGUPA-86`'s own note flagged it as worth
   checking once a fix landed here, but doing it is out of this
   session's scope.
-- [P2] `CANGUPA-137` — Add an accessibility label to `apps/app`'s shared
-  `Popup.tsx` close button (the "✕" `Pressable`, ~lines 38-40), used by
-  `WinPopup`, `HelpPopup`, and the clear-progress confirmation — every
-  popup in the app shares this one component, so it's a single fix.
-  Today it has no `accessibilityLabel`/`accessibilityRole`, so a screen
-  reader announces it by the glyph rather than "Close." Needs a new
-  i18n string (`en`/`pt`) plus `accessibilityRole="button"`. Surfaced
-  by `CANGUPA-89`'s audit.
 - [P2] `CANGUPA-138` — Investigate, and likely fix, a possible
   splash-to-content flash on `apps/app` startup, most visible in dark
   mode. `App.tsx`'s loading view (rendered while `useSettings`/

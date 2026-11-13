@@ -2431,6 +2431,22 @@ Era 71 closes here: Nov 13, one commit, CANGUPA-90 — added achievements
 to apps/app, in-app only, across three categories, displayed as a
 DigiSpin-style card grid.
 
+## Era 72 — Nov 13 (continued): a close-button label for screen readers
+
+CANGUPA-137 closed one of CANGUPA-89's audit findings: apps/app's shared
+Popup.tsx close button (the ✕ Pressable used by WinPopup, HelpPopup, and
+the clear-progress confirmation) had no accessibilityLabel or
+accessibilityRole, so a screen reader announced it only by the glyph
+rather than a word. Fixed with a new common.close i18n string (en:
+"Close", pt: "Fechar") plus accessibilityRole="button" and
+accessibilityLabel on the close Pressable — one change to the shared
+component covers every popup in the app — and a new Popup.test.tsx test
+asserting the accessible role and label. Verified: npx tsc --noEmit
+clean, full apps/app Jest suite green (36/36 suites, 949/949 tests).
+
+Era 72 closes here: Nov 13, one commit, CANGUPA-137 — gave apps/app's
+shared popup close button an accessible label.
+
 ---
 
 ## Patterns, and what's still open

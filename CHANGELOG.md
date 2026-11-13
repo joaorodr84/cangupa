@@ -24,6 +24,13 @@ Open work is listed in [TODO.md](TODO.md).
   with real money. Only available on the app — the web version still has
   no hint balance or store at all.
 
+### Fixed
+
+- The app's shared popup close button (the "✕" in the win popup, the Help
+  popup and the clear-progress confirmation) now has an accessibility
+  label ("Close" in English, "Fechar" in Portuguese) instead of being
+  announced to screen readers only by the glyph itself.
+
 ## 2026-11-12
 
 ### Added

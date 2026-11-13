@@ -9,6 +9,7 @@ export const en: Strings = {
   common: {
     back: '‹ Back',
     backToList: 'Back to the list',
+    close: 'Close',
   },
   tabs: {
     home: 'Home',

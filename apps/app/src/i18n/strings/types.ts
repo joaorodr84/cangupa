@@ -9,6 +9,10 @@ export interface Strings {
     // one pack's level grid to the pack list — distinct from `back` above,
     // which always exits to the board.
     readonly backToList: string;
+    // Popup.tsx's own ✕ close button (CANGUPA-137): shared by every popup
+    // (WinPopup, HelpPopup, the clear-progress confirmation), so a screen
+    // reader has a word for it instead of announcing the glyph itself.
+    readonly close: string;
   };
   readonly tabs: {
     readonly home: string;

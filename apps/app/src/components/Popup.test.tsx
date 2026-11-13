@@ -31,6 +31,16 @@ test('pressing the close button calls onClose', async () => {
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 
+// CANGUPA-137: the ✕ glyph alone gave a screen reader nothing to announce
+// but the character itself — it needs a word, not just a role, to say what
+// the button does.
+test('the close button has an accessible label and role', async () => {
+  await render(<Popup palette={palette} onClose={jest.fn()} />);
+
+  const closeButton = screen.getByRole('button', { name: 'Close' });
+  expect(closeButton).toBeTruthy();
+});
+
 test('shows actions separately from children', async () => {
   await render(
     <Popup palette={palette} heading="A heading" actions={<Text>Do it</Text>}>
