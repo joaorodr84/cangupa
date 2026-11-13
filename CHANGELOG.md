@@ -30,6 +30,9 @@ Open work is listed in [TODO.md](TODO.md).
   popup and the clear-progress confirmation) now has an accessibility
   label ("Close" in English, "Fechar" in Portuguese) instead of being
   announced to screen readers only by the glyph itself.
+- The app's themed splash screen now stays up until settings, progress and
+  achievements have all finished loading, instead of handing off early to
+  a brief unstyled (transparent) frame — most noticeable in dark mode.
 
 ## 2026-11-12
 

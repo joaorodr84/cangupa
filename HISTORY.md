@@ -2447,6 +2447,33 @@ clean, full apps/app Jest suite green (36/36 suites, 949/949 tests).
 Era 72 closes here: Nov 13, one commit, CANGUPA-137 — gave apps/app's
 shared popup close button an accessible label.
 
+## Era 73 — Nov 13 (continued): the splash screen stops handing off early
+
+CANGUPA-138 closed another of CANGUPA-89's audit findings: apps/app's
+native splash — already themed correctly per light/dark mode by
+app.json's expo-splash-screen plugin — was auto-hidden by Expo on the
+first JS paint, with nothing calling
+SplashScreen.preventAutoHideAsync() to stop it. That first paint could
+land before useSettings/useProgress's first AsyncStorage read
+resolved, exposing the loading view's unstyled (transparent)
+background for a frame, most visible in dark mode. Fixed by having
+App.tsx call SplashScreen.preventAutoHideAsync() at module scope, as
+early as possible, and SplashScreen.hideAsync() in a useEffect once
+settings, progress and achievements have all loaded, so the themed
+splash stays up through the gap instead of handing off to an unstyled
+frame. Two new App.test.tsx cases, with a manual expo-splash-screen
+jest.mock since the real module's exports aren't writable for
+jest.spyOn, assert preventAutoHideAsync is called on load and
+hideAsync is called once data is ready. Verified by code reading —
+preventAutoHideAsync/hideAsync is Expo's own documented pattern for
+exactly this gap — not confirmed on a real device, since the task
+itself asked to verify before fixing blind and on-device testing
+wasn't available in that session. Also verified: npx tsc --noEmit
+clean, full apps/app Jest suite green (36/36 suites, 950/950 tests).
+
+Era 73 closes here: Nov 13, one commit, CANGUPA-138 — stopped apps/app's
+themed splash screen from handing off early to an unstyled frame.
+
 ---
 
 ## Patterns, and what's still open
