@@ -109,6 +109,9 @@ export const en: Strings = {
     buy: 'Buy',
     hintsLabel: (count) => `${count} ${count === 1 ? 'hint' : 'hints'}`,
     error: "Couldn't complete the purchase. Try again.",
+    watchAd: 'Watch ad',
+    watchAdLoading: 'Loading ad…',
+    adError: "Couldn't load the ad. Try again.",
   },
   collection: 'Lay of the Land',
   packs: [

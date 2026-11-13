@@ -15,6 +15,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
+    "react-native-google-mobile-ads": "^17.3.1",
     "react-native-iap": "^17.3.6",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-svg": "15.16.0",

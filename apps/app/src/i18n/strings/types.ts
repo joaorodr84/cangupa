@@ -154,6 +154,12 @@ export interface Strings {
     // pattern) since the product list always shows a count, not just "Buy".
     readonly hintsLabel: (count: number) => string;
     readonly error: string;
+    // The reward-video row (CANGUPA-78), alongside the purchase rows above —
+    // its own loaded/not-yet-loaded button label and its own error, since a
+    // failed ad load isn't "the purchase" the shared `error` string names.
+    readonly watchAd: string;
+    readonly watchAdLoading: string;
+    readonly adError: string;
   };
   // The level packs (CANGUPA-56), in play order: entry n is pack n + 1 in
   // src/game/packs.ts, whose own English name and blurb are the same text as

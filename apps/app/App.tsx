@@ -3,6 +3,7 @@ import { LayoutAnimation, Pressable, StyleSheet, useColorScheme, View } from 're
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
+import { initMobileAds } from './src/ads/initMobileAds';
 import * as Sound from './src/audio/sound';
 import BackArrow from './src/components/BackArrow';
 import BoardScreen from './src/components/BoardScreen';
@@ -65,6 +66,10 @@ export default function App() {
       Sound.setEnabled(settings.sound);
     }
   }, [settings]);
+
+  useEffect(() => {
+    initMobileAds();
+  }, []);
 
   if (!settings || !progress) {
     return <View style={styles.app} />;

@@ -2319,6 +2319,75 @@ the first EAS cloud build of apps/app.
 
 ---
 
+## Era 70 — Nov 13 (continued): reward-video hints, and a very real SDK downgrade
+
+CANGUPA-78 was the other half of CANGUPA-54's hint-balance split that
+CANGUPA-79 (IAP) already closed — letting players earn a hint for free
+by watching a rewarded ad, rather than only buying one or earning one
+per level clear.
+
+A new src/ads/useRewardedHint.ts wraps react-native-google-mobile-ads'
+useRewardedAd hook down to exactly what HintStorePopup.tsx needs: a
+loaded flag, an idle/pending/error status, and a watch() call — the
+same shape useHintStore.ts already gives the popup for its purchase
+rows, so the popup treats both reward paths alike. HintStorePopup.tsx
+gained a reward-video row above the existing purchase rows. Uses
+Google's own test ad unit id (TestIds.REWARDED) and AdMob's public
+test app ids in app.json's plugin config — there's no real AdMob
+account yet, left for the owner outside code, the same way CANGUPA-79's
+own closing note left registering real IAP SKUs to the owner. Requests
+non-personalized ads only, sidestepping App Tracking
+Transparency/consent entirely for now — full EEA/UK consent (Google's
+UMP) is its own future follow-up, not decided here.
+
+Getting there surfaced a real upstream incompatibility, not a config
+mistake: react-native-google-mobile-ads@17.4.0, the version first
+picked, fails at runtime on this project's react-native@0.88.1 with
+"Invariant Violation: TurboModuleRegistry.getEnforcing(...):
+'RNGoogleMobileAdsModule' could not be found" — despite CocoaPods
+compiling the native module in correctly, RCT_NEW_ARCH_ENABLED=1
+genuinely reaching its compiler (verified directly in the EAS
+xcodebuild log), and Expo's autolinking finding it. Confirmed it was
+isolated to this one package, not a broader New-Architecture/dev-client
+problem, by temporarily stubbing out every import of it and confirming
+the rest of the app — including other classic native modules like
+@react-native-async-storage/async-storage — ran fine on a real device.
+Downgrading to 17.3.1 fixed it; verified on a real iPhone via an EAS
+development-profile build.
+
+Web turned out to need more than a runtime guard:
+react-native-google-mobile-ads ships no web implementation at all (no
+.web.ts files, no browser field), and one of its spec files statically
+imports react-native's native-only codegenNativeComponent, so Metro
+can't even bundle the package for web, not just fail to run it — a
+Platform.OS === 'web' check inside App.tsx wasn't enough, since Metro
+resolves every require() it can see in the module graph regardless of
+what guards it at runtime. Fixed with Metro's own
+platform-file-resolution convention instead: a new
+useRewardedHint.web.ts (a no-op, same "never connects" idle fallback
+useHintStore.ts already gets for free from react-native-iap's own web
+tolerance) and a new initMobileAds.ts/initMobileAds.web.ts pair that
+App.tsx's launch-time mobileAds().initialize() call was pulled into,
+so App.tsx itself never has a direct reference to
+react-native-google-mobile-ads that Metro could try to resolve for
+web. Verified by fetching the actual web bundle (expo start --web,
+then curling its index.bundle?platform=web) and confirming it built
+clean with no native-only-module errors.
+
+Verified: npx tsc --noEmit clean, full apps/app Jest suite green
+(33/33 suites, 885/885 tests), and manually verified on a real iPhone
+via an EAS development-profile build (ad loads and credits a hint)
+plus a verified-clean expo start --web bundle (ads silently disabled
+there, no errors).
+
+Era 70 closes here: Nov 13, one commit, CANGUPA-78 — added a
+reward-video hint-earning path to apps/app's hint store, built on
+react-native-google-mobile-ads, and found/fixed a version
+incompatibility with this project's React Native version along the
+way.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

@@ -13,6 +13,11 @@ jest.mock('../iap/useHintStore', () => ({
   useHintStore: (onPurchased: (hints: number) => void) => mockUseHintStore(onPurchased),
 }));
 
+const mockUseRewardedHint = jest.fn();
+jest.mock('../ads/useRewardedHint', () => ({
+  useRewardedHint: (onEarned: (hints: number) => void) => mockUseRewardedHint(onEarned),
+}));
+
 interface HintStoreState {
   readonly connected: boolean;
   readonly products: readonly { readonly sku: string; readonly hints: number; readonly displayPrice: string | undefined }[];
@@ -29,6 +34,25 @@ function connectedState(overrides: Partial<HintStoreState> = {}): HintStoreState
     ...overrides,
   };
 }
+
+interface RewardedHintState {
+  readonly loaded: boolean;
+  readonly status: { readonly kind: 'idle' } | { readonly kind: 'pending' } | { readonly kind: 'error'; readonly message: string };
+  readonly watch: () => void;
+}
+
+function rewardedHintState(overrides: Partial<RewardedHintState> = {}): RewardedHintState {
+  return {
+    loaded: true,
+    status: { kind: 'idle' },
+    watch: jest.fn(),
+    ...overrides,
+  };
+}
+
+beforeEach(() => {
+  mockUseRewardedHint.mockReturnValue(rewardedHintState());
+});
 
 test('shows a connecting message instead of products while not yet connected', async () => {
   mockUseHintStore.mockReturnValue({ connected: false, products: [], status: { kind: 'idle' }, buy: jest.fn() });
@@ -61,6 +85,41 @@ test('shows an error message when a purchase fails', async () => {
   await render(<HintStorePopup palette={DARK} onClose={noop} onPurchased={jest.fn()} />);
 
   expect(screen.getByText("Couldn't complete the purchase. Try again.")).toBeTruthy();
+});
+
+test('shows a loading label and disables the ad row until the ad has loaded', async () => {
+  mockUseHintStore.mockReturnValue(connectedState());
+  mockUseRewardedHint.mockReturnValue(rewardedHintState({ loaded: false }));
+  await render(<HintStorePopup palette={DARK} onClose={noop} onPurchased={jest.fn()} />);
+
+  expect(screen.getByText('Loading ad…')).toBeTruthy();
+  expect(screen.getByLabelText('Watch ad 1 hint')).toBeDisabled();
+});
+
+test('pressing the ad row watches the ad once it has loaded', async () => {
+  const watch = jest.fn();
+  mockUseHintStore.mockReturnValue(connectedState());
+  mockUseRewardedHint.mockReturnValue(rewardedHintState({ watch }));
+  await render(<HintStorePopup palette={DARK} onClose={noop} onPurchased={jest.fn()} />);
+
+  await fireEvent.press(screen.getByLabelText('Watch ad 1 hint'));
+  expect(watch).toHaveBeenCalledTimes(1);
+});
+
+test('credits the earned hint through the same onPurchased callback as a purchase', async () => {
+  const onPurchased = jest.fn();
+  mockUseHintStore.mockReturnValue(connectedState());
+  await render(<HintStorePopup palette={DARK} onClose={noop} onPurchased={onPurchased} />);
+
+  expect(mockUseRewardedHint).toHaveBeenCalledWith(onPurchased);
+});
+
+test('shows an error message when the ad fails to load', async () => {
+  mockUseHintStore.mockReturnValue(connectedState());
+  mockUseRewardedHint.mockReturnValue(rewardedHintState({ status: { kind: 'error', message: 'nope' } }));
+  await render(<HintStorePopup palette={DARK} onClose={noop} onPurchased={jest.fn()} />);
+
+  expect(screen.getByText("Couldn't load the ad. Try again.")).toBeTruthy();
 });
 
 test('pressing close calls onClose', async () => {

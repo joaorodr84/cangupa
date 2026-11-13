@@ -106,6 +106,9 @@ export const pt: Strings = {
     buy: 'Comprar',
     hintsLabel: (count) => `${count} dicas`,
     error: 'Não foi possível concluir a compra. Tenta outra vez.',
+    watchAd: 'Ver anúncio',
+    watchAdLoading: 'A carregar o anúncio…',
+    adError: 'Não foi possível carregar o anúncio. Tenta outra vez.',
   },
   collection: 'O Relevo',
   packs: [

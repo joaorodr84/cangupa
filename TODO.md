@@ -70,10 +70,6 @@ The priority can change at any time; the ID never does.
   The "next move" visual itself needs no design work — `.tip`'s pulsing
   yellow outline ([style.css](apps/web-classic/style.css)) already shows
   it, distinct from the plain white `.hint` outline for legal moves.
-- [P4] `CANGUPA-78` — Let players earn an extra hint by watching a reward
-  video, building on `CANGUPA-54`'s hint balance. Unscoped: which ad
-  network/SDK, platform availability (the web has no rewarded-video SDK),
-  and app-store review requirements aren't decided yet.
 - [P4] `CANGUPA-84` — Let some levels be completed in more than one
   distinct, named way, instead of today's single solved/unsolved state —
   e.g. a level offering "finish using the spiral path" and "finish
