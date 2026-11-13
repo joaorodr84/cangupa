@@ -9,6 +9,7 @@
     "expo": "~58.0.22",
     "expo-asset": "~58.0.20",
     "expo-audio": "~58.0.11",
+    "expo-dev-client": "~58.0.20",
     "expo-splash-screen": "~58.0.12",
     "expo-status-bar": "~58.0.4",
     "react": "19.3.0",
@@ -28,6 +29,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
+    "eas-build-pre-install": "bash ./eas-build-pre-install.sh",
     "start": "expo start --port 8761",
     "android": "expo start --android --port 8761",
     "ios": "expo start --ios --port 8761",

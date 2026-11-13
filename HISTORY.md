@@ -2279,6 +2279,46 @@ balance and from a new Settings section.
 
 ---
 
+## Era 69 — Nov 13: unblocking the first EAS cloud build
+
+CANGUPA-148 surfaced while setting up a dev-client build for CANGUPA-78
+(reward-video hints, still in progress on its own branch, not part of
+this commit) — all native-module testing had been happening on Expo
+Go, which can't load custom native modules, so a dev-client build was
+needed at all. Getting one going hit two infra gaps blocking *any*
+first EAS build of apps/app, both unrelated to CANGUPA-78's own
+feature.
+
+First, expo-dev-client was never added as a dependency, even though
+react-native-iap (already in the project since CANGUPA-79) needs a
+native build and has no Expo Go support — a working dev client was
+already overdue.
+
+Second, apps/app/package.json depends on a private GitHub repo over
+SSH (@joaorodr84/themes, resolved as
+git+ssh://git@github.com/joaorodr84/themes.git in the lockfile). EAS
+Build's cloud machines have no SSH key for this GitHub account, so
+npm ci failed outright with "Permission denied (publickey)" on the
+very first build attempt, before even reaching anything task-specific.
+Fixed with a dedicated ed25519 deploy keypair: the public half added
+as a read-only deploy key on the themes repo (gh api
+repos/joaorodr84/themes/keys), the base64-encoded private half stored
+as the SSH_KEY_BASE64 EAS secret (project-scoped, development
+environment, secret visibility, via eas env:create), and a new
+apps/app/eas-build-pre-install.sh wired up via a new
+eas-build-pre-install npm script so EAS restores that key into ~/.ssh
+and trusts github.com before npm ci runs.
+
+Verified: a full EAS development-profile build for iOS succeeded after
+both fixes (build id 0122a9cd-79ec-403a-a70e-48a3e1c91cdd) — before
+them it failed on the SSH clone.
+
+Era 69 closes here: Nov 13, one commit, CANGUPA-148 — added
+expo-dev-client and an EAS pre-install SSH deploy-key hook, unblocking
+the first EAS cloud build of apps/app.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for
