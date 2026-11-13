@@ -153,6 +153,18 @@ test('an achievement earned before a date was ever recorded shows no date line',
   expect(screen.queryByText(/Earned on/)).toBeNull();
 });
 
+test("an achievement card's description has a height floor, not a cap, so a larger OS font scale grows it instead of clipping it (CANGUPA-151)", async () => {
+  await render(
+    <StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,
+  );
+
+  const description = screen.getByText('Clear your first level.');
+  const flat = Object.assign({}, ...[description.props.style].flat());
+  expect(flat.minHeight).toBe(18 * 3);
+  expect(flat.height).toBeUndefined();
+  expect(flat.lineHeight).toBeUndefined();
+});
+
 test('every achievement gets its own card, not just the first row', async () => {
   await render(
     <StatsScreen totalLevels={50} packSizes={[50]} progress={NO_PROGRESS} achievements={NO_ACHIEVEMENTS} palette={palette} />,

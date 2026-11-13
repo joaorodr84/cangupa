@@ -116,9 +116,10 @@ export default function StatsScreen({ totalLevels, packSizes, progress, achievem
                 >
                   <Ionicons name={(earned ? achievement.icon : HIDDEN_ICON) as never} size={28} color={color} />
                   <Text style={[styles.cardTitle, { color }]}>{earned ? text.title : HIDDEN_TITLE}</Text>
-                  {/* Exactly three lines of height, whatever the text needs
+                  {/* At least three lines of height, whatever the text needs
                       (1, 2 or 3), so the line below always sits at the same
-                      spot on every card. */}
+                      spot on every card — see styles.cardDescription for why
+                      this is a floor, not a cap. */}
                   <Text style={[styles.cardDescription, { color: palette.muted }]} numberOfLines={3}>
                     {text.description}
                   </Text>
@@ -195,12 +196,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  // Exactly three lines tall (3 * lineHeight), whatever the actual text
-  // needs, so the line below sits at the same position on every card.
+  // At least three lines tall at the base font scale, whatever the actual
+  // text needs, so the line below sits at the same spot on every card —
+  // but minHeight, not a fixed height (CANGUPA-151, matching styles.card's
+  // own minHeight just above): a fixed height clipped the text instead of
+  // growing with it under a larger OS dynamic-type setting, since neither
+  // it nor a hardcoded lineHeight scales up the way fontSize already does
+  // by default. Leaving lineHeight unset lets each (possibly scaled) line
+  // size itself instead of clipping against a fixed line box.
   cardDescription: {
     fontSize: 13,
-    lineHeight: 18,
-    height: 18 * 3,
+    minHeight: 18 * 3,
     textAlign: 'center',
   },
   // One line tall even when empty (an unearned achievement, or one earned

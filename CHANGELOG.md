@@ -62,6 +62,11 @@ Open work is listed in [TODO.md](TODO.md).
   one is guaranteed to be the one that lands, rather than risking an older
   save overtaking it. No case of this actually happening had been
   reported; this closes the gap on general principle.
+- With a larger OS text-size setting, an achievement's description on the
+  Stats screen now grows its card to fit instead of clipping after three
+  lines. On the Levels screen, the level number inside each grid cell now
+  stops growing past 1.3x the base size, so it keeps fitting inside its
+  cell even for a 3-digit level number instead of clipping against it.
 
 ## 2026-11-12
 

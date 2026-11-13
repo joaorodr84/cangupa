@@ -114,7 +114,19 @@ export default function LevelsScreen({
                     current && styles.current,
                   ]}
                 >
-                  <Text style={[styles.number, { color: done ? labelColor : unlocked ? palette.ink : palette.muted }]}>
+                  {/* The cell itself (styles.cell, sized by levelGrid.ts's squareSize) stays a
+                      fixed MIN_SQUARE_PT(48)-MAX_SQUARE_PT(64) square driven by window width, not
+                      by this label's own text — unlike StatsScreen's card (CANGUPA-151), there's
+                      no simple "let it grow" here without reworking the whole per-row layout
+                      formula. maxFontSizeMultiplier instead caps how far a large OS dynamic-type
+                      setting can scale this one label, so it keeps fitting the smallest square
+                      (a 3-digit level number, up to 500) rather than clipping against it. Not
+                      verified on a real device at a large accessibility text size — flag if it
+                      still clips or still reads too small in practice. */}
+                  <Text
+                    style={[styles.number, { color: done ? labelColor : unlocked ? palette.ink : palette.muted }]}
+                    maxFontSizeMultiplier={1.3}
+                  >
                     {levelIndex + 1}
                   </Text>
                 </Pressable>

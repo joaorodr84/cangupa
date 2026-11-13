@@ -44,6 +44,22 @@ test('renders one button per level in the given pack', async () => {
   }
 });
 
+test("a level number's maxFontSizeMultiplier keeps it from clipping its fixed-size cell under a larger OS font-scale setting (CANGUPA-151)", async () => {
+  await render(
+    <LevelsScreen
+      packIndex={0}
+      packSizes={[5]}
+      progress={NO_PROGRESS}
+      currentLevel={0}
+      palette={palette}
+      onSelectLevel={jest.fn()}
+      onBack={jest.fn()}
+    />,
+  );
+
+  expect(screen.getByText('1').props.maxFontSizeMultiplier).toBe(1.3);
+});
+
 test('only the first level is unlocked with no progress', async () => {
   const onSelectLevel = jest.fn();
   await render(

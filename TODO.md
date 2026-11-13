@@ -179,18 +179,6 @@ The priority can change at any time; the ID never does.
   above the 3:1 large-text floor — the same kind of small shift
   `@joaorodr84/themes`'s own `LIGHT.textMuted` already took (4.36:1 →
   4.99:1) for exactly this reason.
-- [P3] `CANGUPA-151` — Two fixed-height text containers in `apps/app`
-  don't grow with a larger OS font-scale setting, risking clipped/
-  truncated text instead of a layout that simply grows with it — found
-  by `CANGUPA-97`'s dynamic-type check, which otherwise confirmed every
-  `Text` already respects OS font scaling by default (no
-  `allowFontScaling={false}`/`maxFontSizeMultiplier` anywhere in
-  `src/`): `StatsScreen.tsx`'s achievement card description
-  (`height: 18 * 3`, `numberOfLines={3}`) and `LevelsScreen.tsx`'s grid
-  cell label (`height: 38`, `lineHeight: 22`, a level number). Needs an
-  on-device check at a large accessibility text size to confirm actual
-  clipping before deciding the fix (let the container grow, or cap at a
-  `maxFontSizeMultiplier` that still fits).
 - [P2] `CANGUPA-152` — Build a directional-pad control scheme for
   `apps/app`, as an addition alongside tap rather than a replacement —
   the same relationship `apps/web-classic`'s existing `WASD`/arrow-key
