@@ -116,17 +116,6 @@ The priority can change at any time; the ID never does.
   repo, not this one — `CANGUPA-86`'s own note flagged it as worth
   checking once a fix landed here, but doing it is out of this
   session's scope.
-- [P4] `CANGUPA-139` — Theoretical save-write race in `apps/app`'s
-  `useProgress`/`useSettings` (`state/useProgress.ts`,
-  `state/useSettings.ts`): both hooks fire-and-forget
-  `AsyncStorage.setItem` on every change with no write queue, so two
-  rapid updates to the same key could, if their promises resolve out of
-  order, let a stale write land last and silently clobber a newer
-  value. Low real-world likelihood — AsyncStorage calls on the same key
-  are typically processed in call order, though that's not a
-  documented guarantee. Surfaced by `CANGUPA-89`'s audit; parked since
-  no concrete failure has been observed — revisit if a lost-setting or
-  lost-progress report ever comes in.
 - [P4] `CANGUPA-140` — Give `apps/app`'s board tiles real screen-reader
   semantics (position, legality, tile kind). Today's board
   (`Board.tsx`) has no `accessibilityLabel` per tile, so a screen-reader

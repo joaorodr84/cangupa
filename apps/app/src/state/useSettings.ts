@@ -5,6 +5,7 @@ import { type ThemeMode } from '../theme/palette';
 import { deviceStorage } from './deviceStorage';
 import { DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './settings';
 import { type Storage } from './storage';
+import { createWriteQueue } from './writeQueue';
 
 // The saved settings, loaded once and saved on each change. `settings` is
 // null until the saved record has been read, so the board never flashes a
@@ -16,6 +17,13 @@ export function useSettings(storage: Storage = deviceStorage) {
   // DEFAULT_SETTINGS so the app still opens, but a setting changed on top of
   // that fallback must not be saved over whatever was actually on disk.
   const readOk = useRef(false);
+  // Lazily created once and kept for the component's lifetime (CANGUPA-139)
+  // — every save goes through this one queue, so two rapid changes can
+  // never have their writes land out of order.
+  const enqueueWrite = useRef<ReturnType<typeof createWriteQueue> | null>(null);
+  if (enqueueWrite.current === null) {
+    enqueueWrite.current = createWriteQueue();
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +54,7 @@ export function useSettings(storage: Storage = deviceStorage) {
       // A failed save keeps the choice for this session, as the web version's
       // best-effort localStorage write does.
       if (readOk.current) {
-        saveSettings(storage, next).catch(() => undefined);
+        enqueueWrite.current?.(() => saveSettings(storage, next));
       }
     },
     [storage],

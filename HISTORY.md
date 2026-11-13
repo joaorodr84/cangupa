@@ -2530,6 +2530,41 @@ stats breakdown to apps/app's Stats screen.
 
 ---
 
+## Era 76 — Nov 13 (continued): closing the save-write race
+
+CANGUPA-139 fixed the theoretical save-write race CANGUPA-89's audit
+surfaced: `apps/app`'s `useProgress`/`useSettings` each fired every write
+as an independent, unawaited `AsyncStorage.setItem` call with no write
+queue, so two rapid changes to the same key had no guarantee their writes
+would land in call order if the underlying promises happened to settle
+out of order — not a documented guarantee, even though AsyncStorage calls
+on the same key are typically processed in call order in practice. A new
+shared `createWriteQueue` pure function (`state/writeQueue.ts`) chains
+every write onto the promise for the one before it — each write only
+starts once the previous one has settled, resolved or rejected — so the
+save requested last is always the one that lands last, regardless of how
+the underlying storage schedules its own promises; a failed write doesn't
+block the one queued after it, the same best-effort tolerance each call
+already had via its own `.catch(() => undefined)` before this queue
+existed, just chained instead of fired independently. Wired into both
+`useProgress.ts` and `useSettings.ts` in place of their previous
+independent `saveProgress(...).catch(...)`/`saveSettings(...).catch(...)`
+calls, via a lazily-created ref so each hook instance keeps exactly one
+queue for its lifetime. New `writeQueue.test.ts` coverage includes a case
+where the second write's underlying promise is deliberately resolved
+before the first's, to prove the queue — not promise timing — decides the
+order, and a three-write case where the one queued last resolves fastest
+but still lands last. No concrete failure had ever actually been observed
+(this task sat parked for exactly that reason), but the fix removes the
+theoretical gap outright. Verified: `npx tsc --noEmit` clean in
+`apps/app`, full `apps/app` Jest suite green (38/38 suites, 973/973
+tests).
+
+Era 76 closes here: Nov 13, one commit, CANGUPA-139 — closed the
+theoretical save-write race in apps/app's useProgress/useSettings.
+
+---
+
 ## Patterns, and what's still open
 
 Two commits in, the clearest structural choice is already paying for

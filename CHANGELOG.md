@@ -41,6 +41,11 @@ Open work is listed in [TODO.md](TODO.md).
 - The app's themed splash screen now stays up until settings, progress and
   achievements have all finished loading, instead of handing off early to
   a brief unstyled (transparent) frame — most noticeable in dark mode.
+- Progress and settings saves are now queued instead of fired off
+  independently, so if changes happen in rapid succession the most recent
+  one is guaranteed to be the one that lands, rather than risking an older
+  save overtaking it. No case of this actually happening had been
+  reported; this closes the gap on general principle.
 
 ## 2026-11-12
 
