@@ -195,13 +195,36 @@ The priority can change at any time; the ID never does.
   stays unscoped, parked behind this landing first.
 - [P4] `CANGUPA-154` — External keyboard/MFi controller
   support for `apps/app`: no keyboard or gamepad handling exists
-  anywhere in `apps/app` today, and Expo/React Native has no first-party
-  hardware-keyboard or MFi-controller API of its own, so this needs a
-  new native dependency and config plugin — the same shape of lift
-  `CANGUPA-78`'s ad SDK was — without a specific library picked or
-  researched yet. Surfaced by `CANGUPA-98`'s motor-accessibility
-  investigation; still fully unscoped, speculative relative to the two
-  items above until there's a concrete library choice to evaluate.
+  anywhere in `apps/app` today. Surfaced by `CANGUPA-98`'s
+  motor-accessibility investigation. Now actually researched (2026-11-13),
+  and still parked — no concrete library clears a reasonable bar yet:
+  - **MFi/gamepad bridge**: nothing found. Every `react-native-game*`/
+    `react-native-gamepad*`/`react-native-joystick` package on npm turned
+    out to be an on-screen virtual control (or a browser Gamepad API
+    wrapper), not a bridge to Apple's native `GCController`/MFi framework
+    — there is no React Native wrapper for it at all, native-module or
+    otherwise. Building one from scratch (a new native module, roughly
+    the lift `CANGUPA-78`'s ad SDK was) is the only path, with nothing
+    picked.
+  - **Hardware keyboard (arrow keys)**: React Native 0.84 (apps/app is on
+    0.88) added built-in `onKeyDown`/`onKeyUp` — but **Android only**,
+    per React Native's own 0.84 release notes, with no mention of which
+    component exposes it, no documented event shape, and no iOS
+    coverage at all — not something to build a cross-platform feature on
+    today, and iOS is this app's primary target (the open `CANGUPA-92`
+    App Store submission). The small third-party packages that do cover
+    iOS (`expo-key-event`, `react-native-external-keyboard`,
+    `react-native-nitro-keyevent`) are all low-adoption (tens to a few
+    hundred weekly downloads, single-digit GitHub stars, one needs
+    hand-written native `MainActivity` edits anyway, defeating the point
+    of depending on it) — exactly the profile of package the 2026
+    "Shai-Hulud" npm supply-chain worm targeted. Not worth the trust
+    exposure for a P4, nobody-asked-for-it-yet feature.
+  Conclusion: still parked, not for lack of looking now but because
+  nothing found is worth shipping. Revisit if RN's Android keyboard
+  support gains iOS parity, a maintained MFi wrapper appears, or a
+  concrete player request changes the P4 priority enough to justify the
+  smaller libraries' trust trade-off anyway.
 - [P4] `CANGUPA-134` — Add a cleared/mastered indicator icon to each pack
   row and the collection header on `apps/app`'s Levels tab
   ([LevelPacksScreen.tsx](apps/app/src/components/LevelPacksScreen.tsx),
