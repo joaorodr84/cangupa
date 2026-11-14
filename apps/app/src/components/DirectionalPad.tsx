@@ -16,13 +16,15 @@ import { type Palette } from '../theme/palette';
 const BUTTON_SIZE = 44;
 const GAP = 6;
 
-// The same chevron paths BoardScreen.tsx's own LevelArrow already draws, plus their vertical
-// equivalents (a 90-degree turn of the same shape) for up/down.
-const CHEVRON: Readonly<Record<ArrowDirection, string>> = {
-  right: 'M9 6 L15 12 L9 18',
-  left: 'M15 6 L9 12 L15 18',
-  down: 'M6 9 L12 15 L18 9',
-  up: 'M6 15 L12 9 L18 15',
+// A solid triangle arrowhead per direction (CANGUPA-155, picked over the open
+// chevron this replaced for more presence/game-like weight) — each one a
+// 12x12 triangle centred in the 24x24 viewBox, matching the chevron's own
+// footprint before it.
+const TRIANGLE: Readonly<Record<ArrowDirection, string>> = {
+  right: 'M8 6 L8 18 L18 12 Z',
+  left: 'M16 6 L16 18 L6 12 Z',
+  down: 'M6 8 L18 8 L12 18 Z',
+  up: 'M6 16 L18 16 L12 6 Z',
 };
 
 interface DirectionalPadProps {
@@ -56,8 +58,8 @@ export default function DirectionalPad({ palette, canMove, onPress }: Directiona
         accessibilityState={{ disabled: !enabled }}
         style={[styles.button, { backgroundColor: palette.panel }, !enabled && styles.disabled]}
       >
-        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={palette.ink} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <Path d={CHEVRON[direction]} />
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill={palette.ink}>
+          <Path d={TRIANGLE[direction]} />
         </Svg>
       </Pressable>
     );
