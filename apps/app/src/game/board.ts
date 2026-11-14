@@ -7,6 +7,9 @@
 //   R L D U   an Arrival tile (CANGUPA-104): needs one visit, and can only be ENTERED by moving in
 //             that direction (steps and jumps alike) — the mirror of a Departure's restriction,
 //             checked on arrival instead of on departure. Never the start tile.
+//   #         a Pillar (CANGUPA-159): a solid block, not a tile. It is never landed on and needs
+//             no visit, and a jump cannot pass over it — a jump whose middle square is a pillar
+//             is not a move. Steps are unaffected, since a step has no middle square.
 // Coordinates: x is the column, y the row, both counted from the top-left.
 //
 // cells[i] is how many visits a tile still needs. The start tile counts as
@@ -46,6 +49,11 @@ export class Game {
   readonly dir: Int8Array;
   // the direction of travel an Arrival tile must be entered by, as an index into DIRS; -1 otherwise
   readonly arrival: Int8Array;
+  // 1 where a Pillar stands. Kept apart from max (which stays 0 there) rather than given a
+  // visit count of its own: a pillar must never count towards remaining(), never be a
+  // destination, and never enter the solver's memo key, and all three already follow from
+  // max being 0.
+  readonly pillar: Uint8Array;
   readonly start: number;
   cells!: Uint8Array;
   pos!: number;
@@ -57,6 +65,7 @@ export class Game {
     this.max = new Uint8Array(this.w * this.h);
     this.dir = new Int8Array(this.w * this.h).fill(-1);
     this.arrival = new Int8Array(this.w * this.h).fill(-1);
+    this.pillar = new Uint8Array(this.w * this.h);
     let start = -1;
     rows.forEach((row, y) => {
       for (let x = 0; x < this.w; x++) {
@@ -71,7 +80,7 @@ export class Game {
         } else if (ARRIVALS.includes(c)) {
           this.max[i] = 1;
           this.arrival[i] = ARRIVALS.indexOf(c);
-        }
+        } else if (c === '#') this.pillar[i] = 1;
         if (c === 'S' || c === 's' || c === 'T') start = i;
       }
     });
@@ -118,7 +127,8 @@ export class Game {
   }
 
   // Steps of one tile, plus jumps of two. Standing on a Departure tile, only
-  // the way it points; landing on an Arrival tile, only moving the way it opens.
+  // the way it points; landing on an Arrival tile, only moving the way it opens;
+  // and never a jump over a Pillar.
   legalMoves(cells: Uint8Array = this.cells, pos: number = this.pos): Move[] {
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
@@ -131,6 +141,8 @@ export class Game {
         const y = py + dy * d;
         if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
         const i = y * this.w + x;
+        // the middle square of a jump is one step from pos in the same direction
+        if (d === 2 && this.pillar[pos + dx + dy * this.w]) continue;
         if (this.arrival[i] >= 0 && k !== this.arrival[i]) continue;
         if (cells[i] > 0) out.push({ x, y, jump: d === 2 });
       }
@@ -169,6 +181,12 @@ export class Game {
   //                       (CANGUPA-129, a bug-fix follow-up) rather than one shared 'blocked', so
   //                       a caller that explains *why* (PlayableBoard's on-screen warning) doesn't
   //                       have to re-derive which rule tripped.
+  //   'blocked-pillar'    in shape and not a Departure violation, but a Pillar (CANGUPA-159) is in
+  //                       the way: the target is the pillar itself, or the jump would pass over
+  //                       one. Never falls: a pillar is solid, so walking into it is refused, not
+  //                       a drop into the pit. Checked before the Arrival rule and before
+  //                       'empty', so a jump over a pillar onto nothing is still refused rather
+  //                       than sinking the level.
   //   'empty'             in shape, no arrow forbids it, but there's nothing to land on (no tile,
   //                       or a used-up one) — falls, same as always.
   //   'legal'             a real legalMoves() destination (only reachable here if the caller
@@ -178,7 +196,7 @@ export class Game {
     x: number,
     y: number,
     pos: number = this.pos,
-  ): 'none' | 'blocked-departure' | 'blocked-arrival' | 'empty' | 'legal' {
+  ): 'none' | 'blocked-departure' | 'blocked-pillar' | 'blocked-arrival' | 'empty' | 'legal' {
     if (!this.inMoveShape(x, y, pos)) return 'none';
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
@@ -187,6 +205,7 @@ export class Game {
     const k = DIRS.findIndex(([ddx, ddy]) => ddx === dx && ddy === dy);
     const i = y * this.w + x;
     if (this.dir[pos] >= 0 && k !== this.dir[pos]) return 'blocked-departure';
+    if (this.pillar[i] || (Math.abs(x - px || y - py) === 2 && this.pillar[pos + dx + dy * this.w])) return 'blocked-pillar';
     if (this.arrival[i] >= 0 && this.cells[i] > 0 && k !== this.arrival[i]) return 'blocked-arrival';
     return this.cells[i] > 0 ? 'legal' : 'empty';
   }

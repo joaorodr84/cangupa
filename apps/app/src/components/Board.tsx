@@ -14,9 +14,16 @@ import {
   View,
 } from 'react-native';
 
-import Svg, { G, Line, Polygon } from 'react-native-svg';
+import Svg, { Ellipse, G, Line, Polygon } from 'react-native-svg';
 
-import { tileAccessibilityLabel, type ArrowDirection, type TileLabelStrings, type TileView } from '../game/boardView';
+import {
+  pillarAccessibilityLabel,
+  tileAccessibilityLabel,
+  type ArrowDirection,
+  type PillarView,
+  type TileLabelStrings,
+  type TileView,
+} from '../game/boardView';
 import { type Palette } from '../theme/palette';
 import Kangaroo, { type Face } from './Kangaroo';
 
@@ -46,6 +53,9 @@ interface BoardProps {
   readonly w: number;
   readonly h: number;
   readonly tiles: readonly TileView[];
+  // The level's Pillars (CANGUPA-159), drawn in the pit between the tiles. Optional, since
+  // most boards have none and the help screen's diagrams never do.
+  readonly pillars?: readonly PillarView[];
   readonly rooX: number;
   readonly rooY: number;
   readonly face: Face;
@@ -100,7 +110,7 @@ export interface BoardHandle {
 }
 
 const Board = forwardRef<BoardHandle, BoardProps>(function Board(
-  { w, h, tiles, rooX, rooY, face, flip, palette, anim, strings, blockedX, blockedY, width, onPressTile, onPressEmpty }: BoardProps,
+  { w, h, tiles, pillars = [], rooX, rooY, face, flip, palette, anim, strings, blockedX, blockedY, width, onPressTile, onPressEmpty }: BoardProps,
   ref,
 ) {
   const hopAnim = useRef(new Animated.Value(0)).current;
@@ -205,6 +215,17 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
       onLayout={handleLayout}
       onPress={onPressEmpty && ((e) => onPressEmpty(cellAt(e)))}
     >
+      {pillars.map((pillar) => (
+        <Pillar
+          key={`pillar-${pillar.x}-${pillar.y}`}
+          pillar={pillar}
+          w={w}
+          h={h}
+          palette={palette}
+          label={pillarAccessibilityLabel(pillar, strings)}
+          blocked={pillar.x === blockedX && pillar.y === blockedY}
+        />
+      ))}
       {tiles.map((tile) => (
         <Tile
           key={`${tile.x}-${tile.y}`}
@@ -620,6 +641,67 @@ function Tile({ tile, w, h, palette, anim, label, onPress, onPressEmpty, blocked
       {blocked && (
         <View
           testID={`tile-blocked-outline-${tile.x}-${tile.y}`}
+          pointerEvents="none"
+          style={[styles.tipHalo, { borderColor: palette.blocked }]}
+        />
+      )}
+    </View>
+  );
+}
+
+// The eight corners of a pillar's outline, in the same 64 by 57 face space the tile marks use.
+// Squashed to 0.9 of its height so it reads as a column top seen from slightly above, like the
+// tiles' own lip suggests, rather than a flat regular octagon.
+function octagon(cx: number, cy: number, r: number): string {
+  return Array.from({ length: 8 }, (_, n) => {
+    const a = Math.PI / 8 + (n * Math.PI) / 4;
+    return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a) * 0.9).toFixed(1)}`;
+  }).join(' ');
+}
+
+// A Pillar (CANGUPA-159): a solid block standing in the pit, which a jump cannot pass over. The
+// eight-sided limestone design picked on tools/visualizers/tile-down-under.html (CANGUPA-158),
+// with that page's numbers: a shadow thrown down and to the right, the body, a lighter top
+// 5 units above it, and the body colour again inside the top's rim. It has no lip, no mark and
+// a smaller footprint than a tile on purpose — everything a tile has says "you can stand here".
+// Never pressable: with the fall setting on, a tap on it reaches the board's own Pressable
+// underneath, which reports the cell, and moveKind() refuses it as 'blocked-pillar'.
+function Pillar({
+  pillar,
+  w,
+  h,
+  palette,
+  label,
+  blocked,
+}: {
+  readonly pillar: PillarView;
+  readonly w: number;
+  readonly h: number;
+  readonly palette: Palette;
+  readonly label: string;
+  readonly blocked: boolean;
+}) {
+  return (
+    <View
+      testID={`pillar-${pillar.x}-${pillar.y}`}
+      pointerEvents="none"
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={label}
+      style={[styles.cell, { width: `${100 / w}%`, height: `${100 / h}%`, left: `${(100 * pillar.x) / w}%`, top: `${(100 * pillar.y) / h}%` }]}
+    >
+      <View style={styles.lip}>
+        <Svg style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
+          <Ellipse cx={37} cy={35.5} rx={20} ry={17} fill="rgba(0,0,0,0.32)" />
+          <Polygon points={octagon(32, 31.5, 20)} fill={palette.pillar} />
+          <Polygon points={octagon(32, 26.5, 20)} fill={palette.pillarTop} />
+          <Polygon points={octagon(32, 26.5, 13)} fill={palette.pillar} />
+        </Svg>
+      </View>
+      {/* The same flash a blocked tile gets (CANGUPA-129), on the pillar that did the blocking. */}
+      {blocked && (
+        <View
+          testID={`pillar-blocked-outline-${pillar.x}-${pillar.y}`}
           pointerEvents="none"
           style={[styles.tipHalo, { borderColor: palette.blocked }]}
         />

@@ -76,6 +76,7 @@ export interface TileLabelStrings {
   readonly tileDeparture: (direction: string) => string;
   readonly tileArrival: (direction: string) => string;
   readonly tileSuggestedMove: string;
+  readonly pillar: string;
   readonly directionTop: string;
   readonly directionBottom: string;
   readonly directionLeft: string;
@@ -122,6 +123,38 @@ export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): str
               ? t.tileGold(tile.left)
               : t.tileCommon;
   return tile.tip ? `${position}, ${state}. ${t.tileSuggestedMove}` : `${position}, ${state}.`;
+}
+
+// A Pillar (CANGUPA-159): a solid block on an otherwise empty cell. Its own list, not an entry in
+// tilesOf's, because none of TileView's fields mean anything for it — it has no visits, is never
+// worn or gone, and is never a destination — and every consumer of TileView would have had to
+// learn to skip it.
+export interface PillarView {
+  readonly x: number;
+  readonly y: number;
+}
+
+export function pillarsOf(game: Game): readonly PillarView[] {
+  const pillars: PillarView[] = [];
+  for (let i = 0; i < game.pillar.length; i++) {
+    if (game.pillar[i]) pillars.push({ x: i % game.w, y: (i / game.w) | 0 });
+  }
+  return pillars;
+}
+
+// A screen reader's label for a pillar: the same 1-based row/column lead-in a tile gets, so the
+// two read as cells of one grid.
+export function pillarAccessibilityLabel(pillar: PillarView, t: TileLabelStrings): string {
+  return `${t.tilePosition(pillar.y + 1, pillar.x + 1)}, ${t.pillar}.`;
+}
+
+// The pillar a refused move ran into (CANGUPA-159), so the board can flash the thing that
+// stopped it, not the tile that was tapped: the target cell when that is the pillar itself,
+// otherwise the middle square of the jump. Null when (x, y) is not a 'blocked-pillar' move.
+export function blockingPillar(game: Game, x: number, y: number): PillarView | null {
+  if (game.moveKind(x, y) !== 'blocked-pillar') return null;
+  if (game.pillar[y * game.w + x]) return { x, y };
+  return { x: (game.x + x) / 2, y: (game.y + y) / 2 };
 }
 
 export interface TilesOptions {
@@ -186,9 +219,10 @@ export interface StatusProgress {
   readonly remaining: number;
 }
 
-// A tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129) — the same union Game.moveKind()
-// (board.ts) returns two members of, and PlayableBoard's own local state's type.
-export type BlockedReason = 'blocked-departure' | 'blocked-arrival';
+// A tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129) or by a Pillar in the way
+// (CANGUPA-159) — the same union Game.moveKind() (board.ts) returns three members of, and
+// PlayableBoard's own local state's type.
+export type BlockedReason = 'blocked-departure' | 'blocked-arrival' | 'blocked-pillar';
 
 // Ported from ui.js's render()'s status-line branches, plus hint()'s dead-end
 // message. `hintFailed` wins over won/playing: it is the direct response to

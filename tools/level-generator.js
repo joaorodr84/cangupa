@@ -28,10 +28,17 @@ const MOVES = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 //   arrivals   how many one-visit tiles (not the start, not already an arrow) become Arrival tiles
 //              (CANGUPA-104). An Arrival takes the direction the walk enters its tile by, so the
 //              walk stays a valid solution — the mirror of how an arrow takes its exit direction.
-function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, arrivals = 0 }, rand) {
+//   pillars    at most this many empty squares become Pillars (CANGUPA-159). A pillar only goes
+//              where the walk never jumped across, so the walk stays a valid solution, and only
+//              between two tiles facing each other across it, so it always removes a jump some
+//              other route could have used. A square that blocks nothing is left empty: a pillar
+//              there would be decoration the player has to rule out. So a level may get fewer
+//              than asked for, or none.
+function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, arrivals = 0, pillars = 0 }, rand) {
   const visits = new Map(); // cell index -> times landed on
   const exits = new Map();  // cell index -> the direction (index into MOVES) the walk first left it by
   const entries = new Map(); // cell index -> the direction (index into MOVES) the walk first entered it by
+  const jumped = new Set();  // cell index of every middle square a jump of the walk passed over
   let x = (rand() * width) | 0, y = (rand() * height) | 0;
   const start = y * width + x;
   visits.set(start, 1);
@@ -53,7 +60,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
         // jumps are rarer than steps; revisiting a tile is rarer than a fresh one, except a
         // tile stuck on two visits when two is not allowed: that one is wanted again
         const weight = (dist === 2 ? jump : 1 - jump) * (seen ? .35 : 1) * (noTwo && seen === 2 ? 3 : 1);
-        options.push({ nx, ny, i, weight, k });
+        options.push({ nx, ny, i, weight, k, over: dist === 2 ? (y + dy) * width + x + dx : -1 });
       }
     }
     if (!options.length) return null;
@@ -63,6 +70,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
 
     if (!exits.has(y * width + x)) exits.set(y * width + x, pick.k);
     if (!entries.has(pick.i)) entries.set(pick.i, pick.k);
+    if (pick.over >= 0) jumped.add(pick.over);
     if (visits.get(pick.i) === 1) doubleCount++;
     visits.set(pick.i, (visits.get(pick.i) || 0) + 1);
     x = pick.nx; y = pick.ny;
@@ -87,12 +95,27 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     for (const i of candidates.slice(0, arrivals)) arrivalAt.set(i, 'RLDU'[entries.get(i)]); // MOVES is in the order right, left, down, up
   }
 
+  // Pillars (CANGUPA-159): empty squares the walk never jumped over, with a tile on both sides
+  // along a row or a column, in a random order.
+  const pillarAt = new Set();
+  if (pillars > 0) {
+    const tile = (c, r) => c >= 0 && r >= 0 && c < width && r < height && visits.has(r * width + c);
+    const candidates = [];
+    for (let i = 0; i < width * height; i++) {
+      if (visits.has(i) || jumped.has(i)) continue;
+      const c = i % width, r = (i / width) | 0;
+      if ((tile(c - 1, r) && tile(c + 1, r)) || (tile(c, r - 1) && tile(c, r + 1))) candidates.push(i);
+    }
+    for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
+    for (const i of candidates.slice(0, pillars)) pillarAt.add(i);
+  }
+
   const rows = [];
   for (let r = 0; r < height; r++) {
     let row = '';
     for (let c = 0; c < width; c++) {
       const i = r * width + c, count = visits.get(i) || 0;
-      row += !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : arrivalAt.has(i) ? arrivalAt.get(i)
+      row += pillarAt.has(i) ? '#' : !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : arrivalAt.has(i) ? arrivalAt.get(i)
         : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
     }
     rows.push(row);

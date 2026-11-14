@@ -9,7 +9,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import { StyleSheet, Text, View } from 'react-native';
 
 import * as Sound from '../audio/sound';
-import { facingFor, type BlockedReason, type Facing } from '../game/boardView';
+import { blockingPillar, facingFor, pillarsOf, type BlockedReason, type Facing } from '../game/boardView';
 import { type UseBoardResult } from '../game/useBoard';
 import { useStrings } from '../i18n/useStrings';
 import { type Palette } from '../theme/palette';
@@ -132,8 +132,10 @@ const PlayableBoard = forwardRef<PlayableBoardHandle, PlayableBoardProps>(functi
     if (falling || won) return;
     const kind = target ? game.moveKind(target.x, target.y) : 'empty';
     if (kind === 'none') return;
-    if (kind === 'blocked-departure' || kind === 'blocked-arrival') {
-      setBlockedTarget(target ?? null);
+    if (kind === 'blocked-departure' || kind === 'blocked-arrival' || kind === 'blocked-pillar') {
+      // A pillar in the way (CANGUPA-159) flashes the pillar, not the tile that was tapped:
+      // on a jump the tapped tile is a perfectly good one, and the reason sits between.
+      setBlockedTarget((target && blockingPillar(game, target.x, target.y)) ?? target ?? null);
       setBlockedReason(kind);
       boardRef.current?.shake();
       Sound.blocked();
@@ -193,6 +195,7 @@ const PlayableBoard = forwardRef<PlayableBoardHandle, PlayableBoardProps>(functi
         w={game.w}
         h={game.h}
         tiles={displayTiles}
+        pillars={pillarsOf(game)}
         rooX={fallTarget?.x ?? game.x}
         rooY={fallTarget?.y ?? game.y}
         face={fallFacing?.face ?? facing.face}
@@ -217,7 +220,9 @@ const PlayableBoard = forwardRef<PlayableBoardHandle, PlayableBoardProps>(functi
   const message = blockedReason
     ? blockedReason === 'blocked-departure'
       ? t.board.blockedDeparture
-      : t.board.blockedArrival
+      : blockedReason === 'blocked-pillar'
+        ? t.board.blockedPillar
+        : t.board.blockedArrival
     : stuck
       ? t.board.noMovesLeft
       : null;

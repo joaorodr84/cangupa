@@ -161,6 +161,9 @@ export interface Strings {
     // same term the Rules screen already uses for this.
     readonly blockedDeparture: string;
     readonly blockedArrival: string;
+    // A Pillar (CANGUPA-159) is in the way: the tap was on the pillar itself, or on a jump
+    // that would pass over one.
+    readonly blockedPillar: string;
     // Shown the same way (CANGUPA-130/132) once no legal moves remain at
     // all — used to swap in above the board, in BoardHud's own status line
     // (CANGUPA-53), as boardHud.stuck/undoOrRestart; moved down here once
@@ -185,6 +188,8 @@ export interface Strings {
     // the Rules screen's generic "the edge the bracket opens on".
     readonly tileDeparture: (direction: string) => string;
     readonly tileArrival: (direction: string) => string;
+    // A Pillar's own label (CANGUPA-159), after the same tilePosition lead-in a tile gets.
+    readonly pillar: string;
     readonly tileSuggestedMove: string;
     readonly directionTop: string;
     readonly directionBottom: string;

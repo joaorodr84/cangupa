@@ -117,6 +117,58 @@ arrivalPath.forEach(m => g.play(m));
 assert.ok(g.won);
 assert.strictEqual(new Game(['SL1']).start, 0);      // an Arrival is never the start
 
+// a Pillar (`#`, CANGUPA-159): a solid block that is not a tile, and a jump cannot pass over it
+g = new Game(['S#1', '1..']);
+assert.strictEqual(g.max[1], 0);                     // not a tile: needs no visit
+assert.strictEqual(g.pillar[1], 1);
+assert.strictEqual(g.remaining(), 2);                // and does not count towards clearing the level
+assert.deepStrictEqual(to(g), [[0, 1]]);             // the jump right over it is gone; the step down is not
+assert.deepStrictEqual(to(new Game(['S.1', '1..'])), [[2, 0], [0, 1]]); // the same level with a gap: the jump is open
+assert.strictEqual(g.moveKind(2, 0), 'blocked-pillar'); // the jump over it
+assert.strictEqual(g.moveKind(1, 0), 'blocked-pillar'); // a step onto the pillar itself: refused, not a fall
+assert.strictEqual(new Game(['S#.']).moveKind(2, 0), 'blocked-pillar'); // over a pillar onto nothing: still refused
+g = new Game(['S1', '#1']);                           // steps beside a pillar are unaffected
+assert.deepStrictEqual(to(g), [[1, 0]]);
+assert.ok(g.solve());
+g = new Game(['>#1', 'S..']);                         // a Departure violation is reported as that, pillar or not
+g.play({ x: 0, y: 0 });
+assert.strictEqual(g.moveKind(0, 1), 'blocked-departure');
+assert.strictEqual(g.moveKind(2, 0), 'blocked-pillar'); // the way it points, but over the pillar
+assert.strictEqual(new Game(['S#1']).solve(), null);  // a pillar can make a level unwinnable: the solver sees it
+assert.strictEqual(new Game(['S#1']).start, 0);       // a pillar is never the start
+assert.strictEqual(measure(['S#1', '111']).solutions, 1); // the top row is walled off: down, right, right, up is the only way
+assert.strictEqual(measure(['S.1', '111']).solutions, 3); // with a gap there instead, the jump across opens two more
+assert.ok(fillsBox(['S1', '11']) && !fillsBox(['S1#', '11.'])); // a column holding only a pillar is still empty
+
+// the generator's own Pillar support (CANGUPA-159): the walk must stay a solution with its pillars in
+// place (verifyLevel), every pillar must sit on a square the level leaves empty, and each must stand
+// between two tiles, where it removes a jump.
+{
+  const rand = makeRng(7);
+  let sawPillar = 0, made = 0;
+  for (let n = 0; n < 300; n++) {
+    const rows = randomWalk({ width: 6, height: 5, steps: 16, doubles: 2, jump: .35, pillars: 3 }, rand);
+    if (!rows) continue;
+    made++;
+    verifyLevel(rows);
+    const tileAt = (x, y) => y >= 0 && y < rows.length && x >= 0 && x < 6 && !'.#'.includes(rows[y][x]);
+    let count = 0;
+    rows.forEach((row, y) => [...row].forEach((c, x) => {
+      if (c !== '#') return;
+      count++;
+      assert.ok((tileAt(x - 1, y) && tileAt(x + 1, y)) || (tileAt(x, y - 1) && tileAt(x, y + 1)),
+        `pillar at ${x},${y} blocks no jump in ${rows.join('/')}`);
+    }));
+    assert.ok(count <= 3, `asked for at most 3 pillars, got ${count}`);
+    if (count) sawPillar++;
+  }
+  // about 60% at these settings (172 of 288): the rest have no empty square between two tiles that the
+  // walk did not itself jump across, and get none rather than a pillar that blocks nothing
+  assert.ok(sawPillar > made * .5, `expected more than half of ${made} walks to place a pillar, saw ${sawPillar}`);
+  // a pillar turns with the board like any undirected square: the 8 variants of a level stay the same puzzle
+  assert.strictEqual(canonical(['S#1', '1..']), canonical(['1S', '.#', '.1']));
+}
+
 // the generator's own Arrival support (CANGUPA-104): a walk that places Arrival tiles must still
 // produce a solvable level, the same guarantee arrows already have. Not shipped in any pack yet
 // (CANGUPA-88) -- this only proves the walk-marking logic itself is self-consistent.

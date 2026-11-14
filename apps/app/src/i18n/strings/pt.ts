@@ -110,6 +110,7 @@ export const pt: Strings = {
   board: {
     blockedDeparture: 'Não podes saír por aí — só pelo lado aberto.',
     blockedArrival: 'Não podes entrar por aí — só pelo lado aberto.',
+    blockedPillar: 'Há um pilar no caminho — não podes saltar por cima.',
     noMovesLeft: 'Sem jogadas. Desfaz ou reinicia.',
     tilePosition: (row, column) => `Linha ${row}, coluna ${column}`,
     tileGone: 'Desapareceu, já usada',
@@ -121,6 +122,7 @@ export const pt: Strings = {
     tileSteel: (left) => `Casa de aço, ${left} visitas restantes`,
     tileDeparture: (direction) => `Casa de partida, abre para o lado ${direction}`,
     tileArrival: (direction) => `Casa de chegada, abre para o lado ${direction}`,
+    pillar: 'Pilar, impede saltos por cima',
     tileSuggestedMove: 'Jogada sugerida',
     directionTop: 'de cima',
     directionBottom: 'de baixo',

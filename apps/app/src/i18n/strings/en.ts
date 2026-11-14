@@ -113,6 +113,7 @@ export const en: Strings = {
   board: {
     blockedDeparture: "Can't leave that way — only through the open edge.",
     blockedArrival: "Can't enter that way — only through the open edge.",
+    blockedPillar: "A pillar is in the way — you can't jump over it.",
     noMovesLeft: 'No moves left. Undo or restart.',
     tilePosition: (row, column) => `Row ${row}, column ${column}`,
     tileGone: 'Gone, already used',
@@ -124,6 +125,7 @@ export const en: Strings = {
     tileSteel: (left) => `Steel tile, ${left} ${left === 1 ? 'visit' : 'visits'} left`,
     tileDeparture: (direction) => `Departure tile, opens to the ${direction} edge`,
     tileArrival: (direction) => `Arrival tile, opens to the ${direction} edge`,
+    pillar: 'Pillar, blocks jumps over it',
     tileSuggestedMove: 'Suggested move',
     directionTop: 'top',
     directionBottom: 'bottom',

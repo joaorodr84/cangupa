@@ -174,20 +174,9 @@ The priority can change at any time; the ID never does.
   open decisions at the end of that file. `CANGUPA-72` has to land before
   the 7×6 and 8×7 packs ship, and `CANGUPA-106` before the collection can
   be sold.
-- [P3] `CANGUPA-159` — Add the Pillar tile (`#`): a solid block that is
-  never landed on and blocks any jump whose middle square it is. Rule and
-  design ideas are in
-  [docs/down-under-collection.md](docs/down-under-collection.md). Covers
-  the rule in both engines (`apps/web-classic/js/game.js`, which the
-  generator and solver load, and `apps/app`'s
-  [board.ts](apps/app/src/game/board.ts)), rules assertions for it,
-  [level-generator.js](tools/level-generator.js)'s walk placing pillars
-  without breaking its own solution, a `pillars` column in
-  [pack-plan.js](tools/pack-plan.js), board rotation and mirroring in
-  [pack-generator.js](tools/pack-generator.js) and the app's `orient.ts`,
-  drawing it in `apps/app`, and its how-to-play, blocked-move and
-  accessibility strings in `en` and `pt`. First of the three because it is
-  the smallest and adds no tile state.
+  Also owed here, because the help screen only lists a tile once it ships in
+  a level: the how-to-play row for each new tile (`HelpSections.tsx`'s
+  `TilesSection`, strings in `en` and `pt`).
 - [P3] `CANGUPA-160` — Add the Mud tile (`m`): one visit, can be stepped off
   but not jumped off. Same scope as `CANGUPA-159` — both engines, rules
   assertions, the generator's walk only stepping from mud, a `mud` column

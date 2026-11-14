@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import Board, { type BoardHandle } from './Board';
 import { Game } from '../game/board';
-import { tilesOf } from '../game/boardView';
+import { pillarsOf, tilesOf } from '../game/boardView';
 import { en } from '../i18n/strings/en';
 import { DARK } from '../theme/palette';
 
@@ -498,4 +498,31 @@ test('the kangaroo peek Pressable has no onPress, so a tap there stays a no-op',
   );
 
   expect(screen.getByTestId('tile-roo-0-0').props.onPress).toBeUndefined();
+});
+
+test('draws a pillar in its own cell, labelled for a screen reader, and not as a tile (CANGUPA-159)', async () => {
+  const g = new Game(['S#1', '1..']);
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tilesOf(g, { hints: true })} pillars={pillarsOf(g)} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  const pillar = screen.getByTestId('pillar-1-0');
+  expect(pillar.props.accessibilityLabel).toBe('Row 1, column 2, Pillar, blocks jumps over it.');
+  expect(pillar.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ left: `${100 / 3}%`, top: '0%' })]));
+  expect(screen.queryByTestId('tile-1-0')).toBeNull(); // no tile under it
+  expect(screen.queryByTestId('pillar-blocked-outline-1-0')).toBeNull();
+});
+
+test('flashes the pillar a blocked move ran into (CANGUPA-159)', async () => {
+  const g = new Game(['S#1', '1..']);
+
+  await render(
+    <Board
+      w={g.w} h={g.h} tiles={tilesOf(g, { hints: true })} pillars={pillarsOf(g)} rooX={g.x} rooY={g.y} face="front" flip={false}
+      palette={palette} anim={false} strings={strings} blockedX={1} blockedY={0}
+    />,
+  );
+
+  expect(screen.getByTestId('pillar-blocked-outline-1-0')).toBeTruthy();
 });

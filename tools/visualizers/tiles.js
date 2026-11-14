@@ -69,6 +69,10 @@ function bracketMark(direction, isEnter) {
   };
 }
 const BOARD = { page: '#0c0d10', pit: '#1c1f26' };
+// A Pillar (CANGUPA-159): eight-sided pale limestone, the design picked on tile-down-under.html
+// (CANGUPA-158) and the colours apps/app's palette.ts carries for it. Not a tile, so it has no
+// lip and no mark and is drawn smaller than one.
+const PILLAR = { body: '#b9ad98', top: '#e6dcc9' };
 // The kangaroo's own colours (apps/app/src/components/Kangaroo.tsx): body fur for the fill,
 // its outline brown for the rim, so the start mark reads as "the kangaroo stood here".
 const KANGAROO = { fill: '#d9954f', rim: '#5a3515' };
@@ -95,6 +99,17 @@ function sketch(rows, width, label, box = 120) {
     for (let x = 0; x < w; x++) {
       const c = row[x] || '.';
       if (c === '.') continue;
+      if (c === '#') {
+        const cx = pad + x * cell + cell / 2, cy = pad + y * cell + cell / 2, r = cell * .3;
+        const oct = (rad, dy) => Array.from({ length: 8 }, (_, n) => {
+          const a = Math.PI / 8 + n * Math.PI / 4;
+          return `${(cx + rad * Math.cos(a)).toFixed(2)},${(cy + dy + rad * Math.sin(a) * .9).toFixed(2)}`;
+        }).join(' ');
+        add(svg, 'polygon', { points: oct(r, cell * .04), fill: PILLAR.body });
+        add(svg, 'polygon', { points: oct(r, -cell * .04), fill: PILLAR.top });
+        add(svg, 'polygon', { points: oct(r * .62, -cell * .04), fill: PILLAR.body });
+        continue;
+      }
       const kind = START_OF[c] || c;
       const t = ARROW_KEYS.includes(c) ? DEPARTURE : ARRIVAL_KEYS.includes(c) ? ARRIVAL : TILES[kind];
       if (!t) continue;

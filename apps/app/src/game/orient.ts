@@ -12,7 +12,7 @@ import { type Level } from './board';
 // An arrow (Departure) tile points a way, and swapping rows for columns swaps its axis: a tile
 // pointing right now points down, one pointing up now points left, and the other two likewise.
 // An Arrival tile (CANGUPA-104) turns the same way, with its own character set. Every other
-// character stays.
+// character stays, a Pillar (CANGUPA-159) included: it has no direction to turn.
 const TRANSPOSED: Readonly<Record<string, string>> = { '>': 'v', v: '>', '<': '^', '^': '<', R: 'D', D: 'R', L: 'U', U: 'L' };
 
 export function orientLevel(level: Level, landscape: boolean): Level {

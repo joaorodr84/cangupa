@@ -63,19 +63,24 @@ const hasGold = rows => /[2s]/.test(rows.join(''));
 const hasSteel = rows => /[3T]/.test(rows.join(''));
 const hasArrow = rows => /[><v^]/.test(rows.join(''));
 const hasArrival = rows => /[RLDU]/.test(rows.join(''));
+const hasPillar = rows => rows.join('').includes('#');
 // Whether a level has every kind the plan entry lists (Common is always there).
 function hasKinds(spec, rows) {
   const kinds = kindsOf(spec);
   return (!kinds.includes(2) || hasGold(rows)) && (!kinds.includes(3) || hasSteel(rows))
-    && (!spec.arrows || hasArrow(rows)) && (!spec.arrivals || hasArrival(rows));
+    && (!spec.arrows || hasArrow(rows)) && (!spec.arrivals || hasArrival(rows))
+    && (!spec.pillars || hasPillar(rows));
 }
 // The kinds a pack's plan entry allows (default: Normal and Gold, as before CANGUPA-68).
 const kindsOf = spec => spec.tiles || [1, 2];
 
+// A Pillar (CANGUPA-159) is not a tile, so a row or column holding only pillars is still empty:
+// the rule is about ground to stand on, and a board edged by a lone pillar would read as a
+// level drawn off-centre.
 function fillsBox(rows) {
   const w = rows[0].length;
-  if (rows.some(r => !/[^.]/.test(r))) return false;
-  for (let x = 0; x < w; x++) if (rows.every(r => r[x] === '.')) return false;
+  if (rows.some(r => !/[^.#]/.test(r))) return false;
+  for (let x = 0; x < w; x++) if (rows.every(r => r[x] === '.' || r[x] === '#')) return false;
   return true;
 }
 
@@ -101,8 +106,11 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     // a share of candidates get no arrows/arrivals at all, so a pack that introduces them can open with levels that lack them
     const arrows = m.arrows && (spec.mixes || rand() >= .12) ? Math.floor(steps * lerp(m.arrows, rand())) : 0;
     const arrivals = m.arrivals && (spec.mixes || rand() >= .12) ? Math.floor(steps * lerp(m.arrivals, rand())) : 0;
+    // pillars are a count, not a share of the landings: they sit on empty squares, which a
+    // long walk has fewer of, so scaling them with the walk would ask for most where fewest fit
+    const pillars = m.pillars && (spec.mixes || rand() >= .12) ? Math.round(lerp(m.pillars, rand())) : 0;
     const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
-      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows, arrivals }, rand);
+      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows, arrivals, pillars }, rand);
     if (!rows || !fillsBox(rows)) continue;
     const key = canonical(rows);
     if (seen.has(key)) continue;
@@ -120,7 +128,7 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
       effort: s.effort,
       bits: exact ? Number(exact.bits.toFixed(2)) : null,
       solutions: exact ? exact.solutions : null,
-      visits: rows.join('').split('').reduce((a, c) => a + (c === '.' ? 0 : c === '2' || c === 's' ? 2 : 1), 0),
+      visits: rows.join('').split('').reduce((a, c) => a + (c === '.' || c === '#' ? 0 : c === '2' || c === 's' ? 2 : 1), 0),
     });
   }
   return pool;
@@ -183,10 +191,10 @@ function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
     effort: s.effort,
     bits: exact ? Number(exact.bits.toFixed(2)) : null,
     solutions: exact ? exact.solutions : null,
-    visits: rows.join('').split('').reduce((a, c) => a + (c === '.' ? 0 : c === '2' || c === 's' ? 2 : 1), 0),
+    visits: rows.join('').split('').reduce((a, c) => a + (c === '.' || c === '#' ? 0 : c === '2' || c === 's' ? 2 : 1), 0),
   };
 }
 
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasArrival, hasKinds, kindsOf };
+module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasArrival, hasPillar, hasKinds, kindsOf };

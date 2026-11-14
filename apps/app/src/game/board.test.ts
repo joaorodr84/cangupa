@@ -165,3 +165,48 @@ describe('Arrival tiles (CANGUPA-104)', () => {
     expect(g.won).toBe(true);
   });
 });
+
+describe('pillars (CANGUPA-159)', () => {
+  const to = (g: Game) => g.legalMoves().map((m) => [m.x, m.y]);
+
+  test('a pillar is not a tile: no visit, never a destination, and it does not count towards clearing', () => {
+    const g = new Game(['S#1', '1..']);
+    expect(g.max[1]).toBe(0);
+    expect(g.pillar[1]).toBe(1);
+    expect(g.remaining()).toBe(2);
+    expect(g.start).toBe(0);
+  });
+
+  test('a jump cannot pass over a pillar, where the same jump over a gap can', () => {
+    expect(to(new Game(['S#1', '1..']))).toEqual([[0, 1]]); // only the step down
+    expect(to(new Game(['S.1', '1..']))).toEqual([[2, 0], [0, 1]]);
+  });
+
+  test('a step beside a pillar is unaffected', () => {
+    const g = new Game(['S1', '#1']);
+    expect(to(g)).toEqual([[1, 0]]);
+    expect(g.solve()).not.toBeNull();
+  });
+
+  test('moveKind refuses the pillar itself and a jump over one, live tile beyond it or not', () => {
+    const g = new Game(['S#1', '1..']);
+    expect(g.moveKind(1, 0)).toBe('blocked-pillar'); // a step onto the pillar: refused, not a fall
+    expect(g.moveKind(2, 0)).toBe('blocked-pillar'); // the jump over it onto a live tile
+    expect(new Game(['S#.']).moveKind(2, 0)).toBe('blocked-pillar'); // over it onto nothing: still not a fall
+    expect(g.moveKind(0, 1)).toBe('legal'); // the step down is untouched
+  });
+
+  test('a Departure violation is still reported as that when a pillar is also involved', () => {
+    const g = new Game(['>#1', 'S..']);
+    g.play({ x: 0, y: 0 });
+    expect(g.moveKind(0, 1)).toBe('blocked-departure');
+    expect(g.moveKind(2, 0)).toBe('blocked-pillar'); // the way it points, but over the pillar
+  });
+
+  test('the solver sees a pillar: it can make a level unwinnable', () => {
+    expect(new Game(['S#1']).solve()).toBeNull();
+    expect(new Game(['S.1']).solve()).not.toBeNull();
+    expect(new Game(['S#1', '111']).countSolutions(10)).toBe(1); // down, right, right, up
+    expect(new Game(['S.1', '111']).countSolutions(10)).toBe(3); // the jump across opens two more
+  });
+});

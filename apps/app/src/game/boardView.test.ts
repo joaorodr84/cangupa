@@ -1,5 +1,15 @@
 import { Game } from './board';
-import { DEFAULT_FACING, directionalMove, facingFor, statusFor, tileAccessibilityLabel, tilesOf } from './boardView';
+import {
+  blockingPillar,
+  DEFAULT_FACING,
+  directionalMove,
+  facingFor,
+  pillarAccessibilityLabel,
+  pillarsOf,
+  statusFor,
+  tileAccessibilityLabel,
+  tilesOf,
+} from './boardView';
 import { en } from '../i18n/strings/en';
 
 const t = en.board;
@@ -224,5 +234,32 @@ describe('statusFor', () => {
       kind: 'hintFailed',
       ...progress,
     });
+  });
+});
+
+describe('pillars (CANGUPA-159)', () => {
+  it('lists pillars apart from tiles', () => {
+    const g = new Game(['S#1', '1.#']);
+    expect(pillarsOf(g)).toEqual([{ x: 1, y: 0 }, { x: 2, y: 1 }]);
+    expect(tilesOf(g, { hints: true }).map((tile) => [tile.x, tile.y])).toEqual([[0, 0], [2, 0], [0, 1]]);
+    expect(pillarsOf(new Game(['S1']))).toEqual([]);
+  });
+
+  it('labels a pillar with its row and column like a tile', () => {
+    expect(pillarAccessibilityLabel({ x: 1, y: 0 }, t)).toBe('Row 1, column 2, Pillar, blocks jumps over it.');
+  });
+
+  it('names the pillar a refused move ran into: the middle of a jump, or the tapped cell itself', () => {
+    const g = new Game(['S#1', '1..']);
+    expect(blockingPillar(g, 2, 0)).toEqual({ x: 1, y: 0 }); // the jump: the pillar sits between
+    expect(blockingPillar(g, 1, 0)).toEqual({ x: 1, y: 0 }); // the pillar itself
+    expect(blockingPillar(g, 0, 1)).toBeNull(); // a legal step
+    const down = new Game(['S', '#', '1']);
+    expect(blockingPillar(down, 0, 2)).toEqual({ x: 0, y: 1 });
+  });
+
+  it('a directional press never takes the jump over a pillar', () => {
+    expect(directionalMove(new Game(['S#1', '1..']), 'right')).toBeNull();
+    expect(directionalMove(new Game(['S.1', '1..']), 'right')).toEqual({ x: 2, y: 0, jump: true });
   });
 });

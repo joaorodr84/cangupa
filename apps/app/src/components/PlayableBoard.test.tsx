@@ -405,3 +405,28 @@ test('an Arrival tile only lets the kangaroo enter the way it names (CANGUPA-104
   expect(screen.queryByTestId('tile-press-1-0')).toBeNull();
   expect(screen.getByTestId('tile-press-2-0')).toBeTruthy();
 });
+
+test('a jump over a pillar shakes instead of falling, flashes the pillar and says why (CANGUPA-159)', async () => {
+  // 'S#1' / '1..': the tile at (2,0) is live and exactly a jump away, but a pillar stands between.
+  // Before the Pillar rule knew about moveKind this would have been 'empty' and sunk the level.
+  await render(<Harness level={['S#1', '1..']} fall />);
+
+  expect(screen.getByTestId('pillar-1-0')).toBeTruthy();
+  expect(screen.queryByTestId('tile-press-2-0')).toBeNull(); // not offered as a move
+
+  await act(async () => {
+    fireEvent.press(screen.getByTestId('tile-empty-2-0'));
+  });
+
+  expect(Sound.blocked).toHaveBeenCalledTimes(1);
+  expect(Sound.fall).not.toHaveBeenCalled();
+  expect(screen.getByTestId('pillar-blocked-outline-1-0')).toBeTruthy(); // the pillar, not the tapped tile
+  expect(screen.queryByTestId('tile-blocked-outline-2-0')).toBeNull();
+  expect(screen.getByText("A pillar is in the way — you can't jump over it.")).toBeTruthy();
+  expect(screen.getByTestId('tile-press-0-1')).toBeTruthy(); // not reset: the step down is still there
+
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  });
+  expect(screen.queryByTestId('pillar-blocked-outline-1-0')).toBeNull();
+});

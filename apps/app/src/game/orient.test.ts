@@ -103,3 +103,13 @@ test('a turned level with an Arrival tile is the same puzzle', () => {
 // Fixing that is
 // CANGUPA-72's own job (a better search, solving off the UI thread, or storing each level's
 // solution), not this task's.
+
+test('a pillar turns with its level and keeps blocking the same jump (CANGUPA-159)', () => {
+  const original = ['S#1', '1..', '1..', '111'];
+  const turned = orientLevel(original, true);
+  expect(turned).toEqual(['S111', '#..1', '1..1']);
+  // the jump the pillar blocks ran right; turned, it runs down, and is still blocked
+  expect(new Game(original).moveKind(2, 0)).toBe('blocked-pillar');
+  expect(new Game(turned).moveKind(0, 2)).toBe('blocked-pillar');
+  expect(new Game(turned).countSolutions(10)).toBe(new Game(original).countSolutions(10));
+});

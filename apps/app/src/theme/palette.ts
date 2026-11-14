@@ -48,6 +48,11 @@ export interface Palette {
   // colour before CANGUPA-87 moved it to green and freed this one up.
   readonly tileArrival: string;
   readonly edgeArrival: string;
+  // The Pillar (CANGUPA-159): pale limestone, its body and its lighter top. Picked on
+  // tools/visualizers/tile-down-under.html (CANGUPA-158) over a dark basalt, which nearly
+  // vanished against the dark pit. Fixed across both modes like the tile colours.
+  readonly pillar: string;
+  readonly pillarTop: string;
   // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on
   // steel, and on the green Departure and raspberry Arrival tiles.
   readonly mark2: string;
@@ -95,6 +100,8 @@ export const DARK: Palette = {
   edgeDeparture: '#7cd48f',
   tileArrival: '#9d1057',
   edgeArrival: '#ba5889',
+  pillar: '#b9ad98',
+  pillarTop: '#e6dcc9',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markDeparture: '#ffffff',
@@ -123,6 +130,8 @@ export const LIGHT: Palette = {
   edgeDeparture: '#7cd48f',
   tileArrival: '#9d1057',
   edgeArrival: '#ba5889',
+  pillar: '#b9ad98',
+  pillarTop: '#e6dcc9',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markDeparture: '#ffffff',
