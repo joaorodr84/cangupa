@@ -159,6 +159,84 @@ The priority can change at any time; the ID never does.
   cut and pricing `CANGUPA-96` left open. Not blocking `CANGUPA-92`'s
   first submission — ship with every pack free first, add this as a
   fast-follow.
+- [P3] `CANGUPA-157` — Generate "Down Under", a second, paid collection of
+  500 levels (10 packs of 50, boards 5×5 to 8×7) that is harder than Lay of
+  the Land through three new tiles — Pillar, Mud and Tunnel — rather than
+  bigger boards. The full plan lives in
+  [docs/down-under-collection.md](docs/down-under-collection.md): pack
+  names, board sizes and what each pack teaches, the tile rules and design
+  ideas, pack icon ideas, and the pack sentences in English and Portuguese.
+  This task is the generation itself: the ten plan entries in
+  [pack-plan.js](tools/pack-plan.js), running the generator, and wiring the
+  packs, names, blurbs, icons and colours into `apps/app`. Blocked on
+  `CANGUPA-159`, `CANGUPA-160` and `CANGUPA-161` (the three tiles) and
+  `CANGUPA-162` (more than one collection), and on the owner confirming the
+  open decisions at the end of that file. `CANGUPA-72` has to land before
+  the 7×6 and 8×7 packs ship, and `CANGUPA-106` before the collection can
+  be sold.
+- [P3] `CANGUPA-158` — Build a review page for the look of the three new
+  Down Under tiles (Pillar, Mud, Tunnel), the way
+  `tools/visualizers/tile-marks.html` settled Departure and Arrival: each
+  design idea from
+  [docs/down-under-collection.md](docs/down-under-collection.md)'s "New
+  tiles" section drawn side by side, in light and dark, at real board
+  sizes down to the smallest a turned 8×7 gives. The outcome is the owner's
+  pick of a Pillar shape and colour, a Mud mark, and a way of telling two
+  Tunnel pairs apart without colour, recorded back in that file. Comes
+  before the drawing half of `CANGUPA-159` to `CANGUPA-161`; their rule
+  halves do not wait on it.
+- [P3] `CANGUPA-159` — Add the Pillar tile (`#`): a solid block that is
+  never landed on and blocks any jump whose middle square it is. Rule and
+  design ideas are in
+  [docs/down-under-collection.md](docs/down-under-collection.md). Covers
+  the rule in both engines (`apps/web-classic/js/game.js`, which the
+  generator and solver load, and `apps/app`'s
+  [board.ts](apps/app/src/game/board.ts)), rules assertions for it,
+  [level-generator.js](tools/level-generator.js)'s walk placing pillars
+  without breaking its own solution, a `pillars` column in
+  [pack-plan.js](tools/pack-plan.js), board rotation and mirroring in
+  [pack-generator.js](tools/pack-generator.js) and the app's `orient.ts`,
+  drawing it in `apps/app`, and its how-to-play, blocked-move and
+  accessibility strings in `en` and `pt`. First of the three because it is
+  the smallest and adds no tile state.
+- [P3] `CANGUPA-160` — Add the Mud tile (`m`): one visit, can be stepped off
+  but not jumped off. Same scope as `CANGUPA-159` — both engines, rules
+  assertions, the generator's walk only stepping from mud, a `mud` column
+  and `intro` kind in the plan, drawing, and strings in `en` and `pt` — per
+  [docs/down-under-collection.md](docs/down-under-collection.md).
+- [P3] `CANGUPA-161` — Add the Tunnel tile (`a`/`a`, `b`/`b`), the
+  teleporter pair: landing on one mouth moves you to its twin and uses up
+  both. Same scope as `CANGUPA-159`, per
+  [docs/down-under-collection.md](docs/down-under-collection.md), and the
+  largest of the three: a move's destination is no longer where it lands,
+  which reaches undo, the hint solver, the hop animation and the
+  generator's walk (which must place both mouths as a pair and never land
+  on either again). Needs the two open rule questions in that file answered
+  first: may the start be a mouth, may a jump pass over one.
+- [P3] `CANGUPA-162` — Support more than one collection, end to end. Today
+  [pack-plan.js](tools/pack-plan.js) exports one flat `PACKS` list,
+  `packs.json` and the generated
+  [packs.ts](apps/app/src/game/packs.ts) hold one list of ten, `collection`
+  is a single string in the locale files, and `PackIcon`/`PACK_COLORS`
+  index by pack number 0 to 9. Needs: a collection level in the plan and
+  the generated files, with `OVERLAP` carrying across from one
+  collection's last pack to the next one's first; per-collection names,
+  blurbs, icons and colours; the Levels tab listing collections; and saved
+  progress that still loads for existing players (a `BREAKING CHANGE` to
+  the save shape if pack indices stop being global). Also check anything
+  that counts "every pack", such as the Collector achievement. Does not
+  include locking or selling a collection, which is `CANGUPA-106`.
+- [P3] `CANGUPA-163` — Have the generator write one solution per level to a
+  separate file (`tools/solutions.json`, same pack and level order as
+  `packs.json`). `search` in [difficulty.js](tools/difficulty.js) already
+  finds a solution for every level it scores but keeps only the number of
+  choices at each step; it should keep the moves too. The 500 shipped
+  levels need no regenerating: run the solver once over `packs.json` as it
+  is. Add a test that replays every stored solution and checks it clears
+  its level. Opens up `CANGUPA-72`'s third option (hints from a stored
+  solution), which stays that task's call; a stored solution only helps
+  while the player is still on its path, and a turned level needs its
+  moves turned the same way.
 - [P4] `CANGUPA-150` — Parked: the owner wants `apps/web-classic` work
   skipped for now, and every part of this task is `apps/web-classic`-only.
   Revisit once that pause lifts. Fix two hardcoded, theme-unaware text
