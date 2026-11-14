@@ -52,6 +52,7 @@ interface SettingsScreenProps {
   readonly onChangeAnim: (anim: boolean) => void;
   readonly onChangeSound: (sound: boolean) => void;
   readonly onChangeFall: (fall: boolean) => void;
+  readonly onChangeDirectionalPad: (directionalPad: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly onClearProgress: () => void;
   // Opens the hint store popup (CANGUPA-79) — this row exists to stock up
@@ -68,6 +69,7 @@ export default function SettingsScreen({
   onChangeAnim,
   onChangeSound,
   onChangeFall,
+  onChangeDirectionalPad,
   onChangeLanguage,
   onClearProgress,
   onOpenHintStore,
@@ -141,6 +143,14 @@ export default function SettingsScreen({
           <ToggleRow testID="toggle-fall" label={t.settings.fall} value={settings.fall} onChange={onChangeFall} ink={ink} />
           <RowDivider palette={palette} />
           <ToggleRow testID="toggle-sound" label={t.settings.sound} value={settings.sound} onChange={onChangeSound} ink={ink} />
+          <RowDivider palette={palette} />
+          <ToggleRow
+            testID="toggle-directional-pad"
+            label={t.settings.directionalPad}
+            value={settings.directionalPad}
+            onChange={onChangeDirectionalPad}
+            ink={ink}
+          />
         </View>
 
         <Text style={[styles.sectionLabel, muted]}>{t.settings.hintStoreSection}</Text>

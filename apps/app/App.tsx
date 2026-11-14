@@ -74,7 +74,7 @@ function isFooterTab(panel: Panel): panel is FooterTab {
 // the same guard apps/web-classic/js/ui.js gets for free from localStorage
 // being synchronous, and DigiSpin's App.tsx also uses for AsyncStorage.
 export default function App() {
-  const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage } = useSettings();
+  const { settings, setThemeMode, setHints, setAnim, setSound, setFall, setDirectionalPad, setLanguage } = useSettings();
   const {
     progress,
     recordDone,
@@ -129,6 +129,7 @@ export default function App() {
           onChangeAnim={setAnim}
           onChangeSound={setSound}
           onChangeFall={setFall}
+          onChangeDirectionalPad={setDirectionalPad}
           onChangeLanguage={setLanguage}
           progress={progress}
           achievements={achievements}
@@ -151,6 +152,7 @@ interface ShellProps {
   readonly onChangeAnim: (anim: boolean) => void;
   readonly onChangeSound: (sound: boolean) => void;
   readonly onChangeFall: (fall: boolean) => void;
+  readonly onChangeDirectionalPad: (directionalPad: boolean) => void;
   readonly onChangeLanguage: (language: LanguageSetting) => void;
   readonly progress: Progress;
   readonly achievements: AchievementRecord;
@@ -169,6 +171,7 @@ function Shell({
   onChangeAnim,
   onChangeSound,
   onChangeFall,
+  onChangeDirectionalPad,
   onChangeLanguage,
   progress,
   achievements,
@@ -301,6 +304,7 @@ function Shell({
         onChangeAnim={onChangeAnim}
         onChangeSound={onChangeSound}
         onChangeFall={onChangeFall}
+        onChangeDirectionalPad={onChangeDirectionalPad}
         onChangeLanguage={onChangeLanguage}
         onClearProgress={() => {
           onClearProgress();
@@ -321,6 +325,7 @@ function Shell({
         hintBalance={progress.hints}
         anim={settings.anim}
         fall={settings.fall}
+        directionalPad={settings.directionalPad}
         palette={palette}
         levelNumber={currentLevel + 1}
         totalLevels={LEVELS.length}

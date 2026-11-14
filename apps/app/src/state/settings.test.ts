@@ -28,16 +28,20 @@ describe('parseSettings', () => {
     expect(parseSettings(`{"${key}":false}`)[key]).toBe(false);
   });
 
-  // `fall` defaults to false (unlike the other toggles, which default true),
-  // so reading it back has to check `true` to actually prove a saved value
-  // was read rather than just the default coming through unchanged.
-  it('reads a saved fall toggle', () => {
-    expect(parseSettings('{"fall":true}').fall).toBe(true);
+  // `fall` and `directionalPad` default to false (unlike the other toggles,
+  // which default true), so reading either back has to check `true` to
+  // actually prove a saved value was read rather than just the default
+  // coming through unchanged.
+  it.each(['fall', 'directionalPad'] as const)('reads a saved %s toggle', (key) => {
+    expect(parseSettings(`{"${key}":true}`)[key]).toBe(true);
   });
 
-  it.each(['hints', 'anim', 'sound', 'fall'] as const)('keeps the default %s when it was not saved as a boolean', (key) => {
-    expect(parseSettings(`{"${key}":"false"}`)[key]).toBe(DEFAULT_SETTINGS[key]);
-  });
+  it.each(['hints', 'anim', 'sound', 'fall', 'directionalPad'] as const)(
+    'keeps the default %s when it was not saved as a boolean',
+    (key) => {
+      expect(parseSettings(`{"${key}":"false"}`)[key]).toBe(DEFAULT_SETTINGS[key]);
+    },
+  );
 
   it('ignores fields it does not know, so a record from a later version still reads', () => {
     expect(parseSettings('{"themeMode":"light","turbo":true}')).toEqual({ ...DEFAULT_SETTINGS, themeMode: 'light' });
@@ -65,6 +69,7 @@ describe('saving and loading', () => {
       anim: false,
       sound: false,
       fall: true,
+      directionalPad: true,
       language: 'pt' as const,
     };
 
@@ -79,7 +84,7 @@ describe('saving and loading', () => {
     await saveSettings(storage, DEFAULT_SETTINGS);
 
     expect(await storage.getItem(SETTINGS_KEY)).toBe(
-      '{"themeMode":"system","hints":true,"anim":true,"sound":true,"fall":false,"language":"system"}',
+      '{"themeMode":"system","hints":true,"anim":true,"sound":true,"fall":false,"directionalPad":false,"language":"system"}',
     );
   });
 

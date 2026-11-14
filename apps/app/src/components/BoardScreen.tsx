@@ -31,6 +31,10 @@ interface BoardScreenProps {
   // Rule option (CANGUPA-58, off by default): tapping the board where there
   // is no legal move falls instead of doing nothing.
   readonly fall: boolean;
+  // Shows the directional pad (CANGUPA-152) below the board — an opt-in
+  // setting (CANGUPA-156), off by default, since tap-to-move alone already
+  // plays every level.
+  readonly directionalPad: boolean;
   readonly palette: Palette;
   readonly levelNumber: number;
   readonly totalLevels: number;
@@ -62,6 +66,7 @@ export default function BoardScreen({
   hintBalance,
   anim,
   fall,
+  directionalPad,
   palette,
   levelNumber,
   totalLevels,
@@ -187,7 +192,7 @@ export default function BoardScreen({
         )}
         {helpOpen && <HelpPopup palette={palette} onClose={() => setHelpOpen(false)} />}
       </View>
-      <DirectionalPad palette={palette} canMove={canMoveDirection} onPress={handleDirection} />
+      {directionalPad && <DirectionalPad palette={palette} canMove={canMoveDirection} onPress={handleDirection} />}
       <View style={styles.levelNav}>
         <LevelArrow
           direction="previous"

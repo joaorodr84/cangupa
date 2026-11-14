@@ -15,6 +15,7 @@ function renderScreen(overrides: Partial<Parameters<typeof SettingsScreen>[0]> =
     onChangeAnim: jest.fn(),
     onChangeSound: jest.fn(),
     onChangeFall: jest.fn(),
+    onChangeDirectionalPad: jest.fn(),
     onChangeLanguage: jest.fn(),
     onClearProgress: jest.fn(),
     onOpenHintStore: jest.fn(),
@@ -48,11 +49,21 @@ test('toggling a switch reports its new value', async () => {
   expect(onChangeHints).toHaveBeenCalledWith(false);
 });
 
+test('toggling the directional-pad switch reports its new value (CANGUPA-156)', async () => {
+  const onChangeDirectionalPad = jest.fn();
+  const { result } = renderScreen({ onChangeDirectionalPad, settings: { ...DEFAULT_SETTINGS, directionalPad: false } });
+  await result;
+
+  fireEvent(screen.getByTestId('toggle-directional-pad'), 'valueChange', true);
+  expect(onChangeDirectionalPad).toHaveBeenCalledWith(true);
+});
+
 test.each([
   ['toggle-hints', 'hints'] as const,
   ['toggle-anim', 'anim'] as const,
   ['toggle-sound', 'sound'] as const,
   ['toggle-fall', 'fall'] as const,
+  ['toggle-directional-pad', 'directionalPad'] as const,
 ])('each switch reflects its own setting (%s)', async (testID, key) => {
   await renderScreen({ settings: { ...DEFAULT_SETTINGS, [key]: false } }).result;
   expect(screen.getByTestId(testID).props.value).toBe(false);

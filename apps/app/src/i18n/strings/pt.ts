@@ -136,6 +136,7 @@ export const pt: Strings = {
     anim: 'Animações',
     sound: 'Som',
     fall: 'Cair ao não haver jogada',
+    directionalPad: 'Teclado direcional',
     data: 'Dados',
     clearProgress: 'Apagar progresso',
     clearProgressTitle: 'Tens a certeza de que queres apagar o teu progresso?',

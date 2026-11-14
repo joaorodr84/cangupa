@@ -65,7 +65,8 @@ export function useSettings(storage: Storage = deviceStorage) {
   const setAnim = useCallback((anim: boolean) => update({ anim }), [update]);
   const setSound = useCallback((sound: boolean) => update({ sound }), [update]);
   const setFall = useCallback((fall: boolean) => update({ fall }), [update]);
+  const setDirectionalPad = useCallback((directionalPad: boolean) => update({ directionalPad }), [update]);
   const setLanguage = useCallback((language: LanguageSetting) => update({ language }), [update]);
 
-  return { settings, setThemeMode, setHints, setAnim, setSound, setFall, setLanguage };
+  return { settings, setThemeMode, setHints, setAnim, setSound, setFall, setDirectionalPad, setLanguage };
 }

@@ -31,6 +31,7 @@ function screenProps(overrides: Partial<Parameters<typeof BoardScreen>[0]> & { l
     hintBalance: 3,
     anim: false,
     fall: false,
+    directionalPad: false,
     palette,
     levelNumber: 1,
     totalLevels: 50,
@@ -65,10 +66,16 @@ test('calls onLevelComplete with the move count exactly once when the level is w
   expect(screen.getByText('Level complete!')).toBeTruthy();
 });
 
+test('the directional pad is hidden unless its own setting is on (CANGUPA-156)', async () => {
+  await renderScreen({ level: ['S1.'] });
+
+  expect(screen.queryByTestId('directional-pad')).toBeNull();
+});
+
 test('pressing a directional-pad button plays the matching move, same as tapping the tile (CANGUPA-152)', async () => {
   const onLevelComplete = jest.fn();
 
-  await renderScreen({ level: ['S1'], onLevelComplete });
+  await renderScreen({ level: ['S1'], onLevelComplete, directionalPad: true });
 
   await fireEvent.press(screen.getByTestId('dpad-right'));
 
@@ -79,7 +86,7 @@ test('pressing a directional-pad button plays the matching move, same as tapping
 test('a direction with no legal move is disabled on the pad, and pressing it anyway does nothing (CANGUPA-152)', async () => {
   const onLevelComplete = jest.fn();
 
-  await renderScreen({ level: ['S1'], onLevelComplete });
+  await renderScreen({ level: ['S1'], onLevelComplete, directionalPad: true });
 
   const left = screen.getByTestId('dpad-left');
   expect(left.props.accessibilityState).toEqual({ disabled: true });

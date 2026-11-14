@@ -7,6 +7,15 @@ game does now, not how it was built.
 
 Open work is listed in [TODO.md](TODO.md).
 
+## 2026-11-14
+
+### Changed
+
+- The app's directional pad below the board is now off by default, with a
+  new "Directional pad" toggle in Settings' Gameplay group to turn it
+  back on — tap-to-move remains the default input, and the pad no longer
+  shows on the board until a player opts into it.
+
 ## 2026-11-13
 
 ### Added

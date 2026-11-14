@@ -139,6 +139,7 @@ export const en: Strings = {
     anim: 'Animations',
     sound: 'Sound',
     fall: 'Fall when there is no move',
+    directionalPad: 'Directional pad',
     data: 'Data',
     clearProgress: 'Clear progress',
     clearProgressTitle: 'Are you sure you want to clear your progress?',
