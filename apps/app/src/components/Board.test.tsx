@@ -526,3 +526,21 @@ test('flashes the pillar a blocked move ran into (CANGUPA-159)', async () => {
 
   expect(screen.getByTestId('pillar-blocked-outline-1-0')).toBeTruthy();
 });
+
+test('draws a mud tile in its own colours with the wavy mark, and no tally strokes (CANGUPA-160)', async () => {
+  const g = new Game(['Sm1']);
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tilesOf(g, { hints: true })} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  expect(screen.getByTestId('tile-mud-1-0')).toBeTruthy();
+  expect(screen.queryByTestId('tile-mud-2-0')).toBeNull(); // the plain tile beside it has none
+  expect(screen.queryByTestId('tile-strokes-1-0')).toBeNull();
+  const lipStyle = Object.assign({}, ...[screen.getByTestId('tile-1-0').props.style].flat());
+  expect(lipStyle.backgroundColor).toBe(palette.edgeMud);
+  const faceStyle = Object.assign({}, ...[screen.getByTestId('tile-face-1-0').props.style].flat());
+  expect(faceStyle.backgroundColor).toBe(palette.tileMud);
+  expect(faceStyle.top).toBe(2);
+  expect(faceStyle.bottom).toBe(2);
+});

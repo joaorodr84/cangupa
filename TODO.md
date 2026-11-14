@@ -177,11 +177,6 @@ The priority can change at any time; the ID never does.
   Also owed here, because the help screen only lists a tile once it ships in
   a level: the how-to-play row for each new tile (`HelpSections.tsx`'s
   `TilesSection`, strings in `en` and `pt`).
-- [P3] `CANGUPA-160` — Add the Mud tile (`m`): one visit, can be stepped off
-  but not jumped off. Same scope as `CANGUPA-159` — both engines, rules
-  assertions, the generator's walk only stepping from mud, a `mud` column
-  and `intro` kind in the plan, drawing, and strings in `en` and `pt` — per
-  [docs/down-under-collection.md](docs/down-under-collection.md).
 - [P3] `CANGUPA-161` — Add the Tunnel tile (`a`/`a`, `b`/`b`), the
   teleporter pair: landing on one mouth moves you to its twin and uses up
   both. Same scope as `CANGUPA-159`, per

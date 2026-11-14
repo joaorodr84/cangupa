@@ -113,3 +113,13 @@ test('a pillar turns with its level and keeps blocking the same jump (CANGUPA-15
   expect(new Game(turned).moveKind(0, 2)).toBe('blocked-pillar');
   expect(new Game(turned).countSolutions(10)).toBe(new Game(original).countSolutions(10));
 });
+
+test('mud turns with its level unchanged and keeps its rule (CANGUPA-160)', () => {
+  const original = ['Sm.1', '.1..', '.1..'];
+  const turned = orientLevel(original, false);
+  expect(turned).toEqual(['S..', 'm11', '...', '1..']);
+  const g = new Game(turned);
+  g.play({ x: 0, y: 1 });
+  expect(g.moveKind(0, 3)).toBe('blocked-mud'); // the jump that ran right now runs down
+  expect(g.moveKind(2, 1)).toBe('blocked-mud');
+});

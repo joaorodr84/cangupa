@@ -46,6 +46,8 @@ export interface TileView {
   // the mirror of `arrow`: the opposite edge from the direction of travel Game.arrival actually
   // stores, since that's the side the triangle mark (and the player) reads as "open".
   readonly arrival: ArrowDirection | null;
+  // A Mud tile (CANGUPA-160): it can be stepped off but not jumped off.
+  readonly mud: boolean;
   // Used up and the kangaroo is standing on it.
   readonly worn: boolean;
   // Used up and the kangaroo has moved off it: it has dropped away.
@@ -70,11 +72,13 @@ export interface TileLabelStrings {
   readonly tileHereCommon: string;
   readonly tileHereGold: string;
   readonly tileHereSteel: string;
+  readonly tileHereMud: string;
   readonly tileCommon: string;
   readonly tileGold: (left: number) => string;
   readonly tileSteel: (left: number) => string;
   readonly tileDeparture: (direction: string) => string;
   readonly tileArrival: (direction: string) => string;
+  readonly tileMud: string;
   readonly tileSuggestedMove: string;
   readonly pillar: string;
   readonly directionTop: string;
@@ -100,7 +104,8 @@ function directionLabel(direction: ArrowDirection, t: TileLabelStrings): string 
 // CANGUPA-140): 1-based row/column, then exactly one of gone/here/
 // Departure/Arrival/kind-and-visits-left, then "Suggested move" when this
 // is the solver's own tip. gone beats worn beats arrow/arrival beats the
-// plain kind — the same priority tilesOf's own fields are already mutually
+// Mud beats the plain kind, standing on it included: its rule is about leaving, so "you are here"
+// on a Mud tile is exactly when a listener needs to hear it is one. The rest is the same priority tilesOf's own fields are already mutually
 // exclusive under (a tile can't be both gone and worn, and an arrow/arrival
 // tile is never also a Gold/Steel one).
 export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): string {
@@ -108,7 +113,9 @@ export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): str
   const state = tile.gone
     ? t.tileGone
     : tile.worn
-      ? tile.kind === 3
+      ? tile.mud
+        ? t.tileHereMud
+        : tile.kind === 3
         ? t.tileHereSteel
         : tile.kind === 2
           ? t.tileHereGold
@@ -117,7 +124,9 @@ export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): str
         ? t.tileDeparture(directionLabel(tile.arrow, t))
         : tile.arrival
           ? t.tileArrival(directionLabel(tile.arrival, t))
-          : tile.kind === 3
+          : tile.mud
+            ? t.tileMud
+            : tile.kind === 3
             ? t.tileSteel(tile.left)
             : tile.kind === 2
               ? t.tileGold(tile.left)
@@ -186,6 +195,7 @@ export function tilesOf(game: Game, { hints, tip = null }: TilesOptions): readon
       arrow: game.dir[i] >= 0 ? ARROW_DIRECTIONS[game.dir[i]] : null,
       // ^ 1 flips right<->left (0<->1) and down<->up (2<->3) — DIRS' own pairing (see board.ts).
       arrival: game.arrival[i] >= 0 ? ARROW_DIRECTIONS[game.arrival[i] ^ 1] : null,
+      mud: game.mud[i] === 1,
       worn: left === 0 && i === game.pos,
       gone: left === 0 && i !== game.pos,
       hint: Boolean(target) && hints,
@@ -219,10 +229,10 @@ export interface StatusProgress {
   readonly remaining: number;
 }
 
-// A tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129) or by a Pillar in the way
-// (CANGUPA-159) — the same union Game.moveKind() (board.ts) returns three members of, and
-// PlayableBoard's own local state's type.
-export type BlockedReason = 'blocked-departure' | 'blocked-arrival' | 'blocked-pillar';
+// A tap forbidden by a Departure/Arrival arrow rule (CANGUPA-129), by a Pillar in the way
+// (CANGUPA-159) or by a jump off Mud (CANGUPA-160) — the same union Game.moveKind() (board.ts)
+// returns four members of, and PlayableBoard's own local state's type.
+export type BlockedReason = 'blocked-departure' | 'blocked-arrival' | 'blocked-pillar' | 'blocked-mud';
 
 // Ported from ui.js's render()'s status-line branches, plus hint()'s dead-end
 // message. `hintFailed` wins over won/playing: it is the direct response to

@@ -16,7 +16,7 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
-const { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow, hasArrival, hasPillar } = require('./pack-generator.js');
+const { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow, hasArrival, hasPillar, hasMud } = require('./pack-generator.js');
 const { designs } = require('./pack-designs.js');
 const { writeVisualizers } = require('./gen-visualizers.js');
 const { writeSolutions } = require('./gen-solutions.js');
@@ -26,7 +26,7 @@ const DESIGNED_PER_PACK = 6;
 // A pack that introduces a tile (its plan entry's `intro`) opens with this many levels that do not
 // have it, so the pack starts gently. Every level after them is at least as hard as the last of those.
 const INTRO_PLAIN = 4;
-const INTRO_KIND = { gold: hasGold, steel: hasSteel, arrow: hasArrow, arrival: hasArrival, pillar: hasPillar };
+const INTRO_KIND = { gold: hasGold, steel: hasSteel, arrow: hasArrow, arrival: hasArrival, pillar: hasPillar, mud: hasMud };
 const CACHE = path.join(__dirname, '.cache');
 const OUT_JSON = path.join(__dirname, 'packs.json');
 const OUT_TS = path.join(__dirname, '../apps/app/src/game/packs.ts');

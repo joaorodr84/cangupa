@@ -44,10 +44,12 @@
 //                be left in the way its triangle points
 //   arrivals     [lo, hi] share of landings that become Arrival tiles (CANGUPA-104): one visit, and
 //                it can only be entered moving the way its triangle points — the mirror of arrows
+//   mud          [lo, hi] share of landings that become Mud tiles (CANGUPA-160): one visit, and it can
+//                be stepped off but not jumped off
 //   pillars      [lo, hi] how many Pillars (CANGUPA-159) a level may get: solid blocks on empty squares
 //                that a jump cannot pass over. A count, not a share like the columns above, and an
 //                upper bound: a pillar is only placed where it blocks a jump between two tiles
-//   intro        the kind this pack introduces ('gold', 'steel', 'arrow', 'arrival' or 'pillar'): its first few
+//   intro        the kind this pack introduces ('gold', 'steel', 'arrow', 'arrival', 'pillar' or 'mud'): its first few
 //                levels (INTRO_PLAIN in gen-packs.js) do not have it, so the pack starts gently
 //   mixes        variants a pack alternates between, level by level (pack 6: Common, Departures and
 //                Gold, then Common, Departures and Steel; pack 8 the same with Arrival in place of

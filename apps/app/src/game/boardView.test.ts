@@ -118,6 +118,7 @@ describe('tileAccessibilityLabel', () => {
     cracked: false,
     arrow: null,
     arrival: null,
+    mud: false,
     worn: false,
     gone: false,
     hint: false,
@@ -261,5 +262,27 @@ describe('pillars (CANGUPA-159)', () => {
   it('a directional press never takes the jump over a pillar', () => {
     expect(directionalMove(new Game(['S#1', '1..']), 'right')).toBeNull();
     expect(directionalMove(new Game(['S.1', '1..']), 'right')).toEqual({ x: 2, y: 0, jump: true });
+  });
+});
+
+describe('mud tiles (CANGUPA-160)', () => {
+  it('flags mud on its tile view and on no other', () => {
+    const tiles = tilesOf(new Game(['Sm1']), { hints: true });
+    expect(tiles.map((tile) => tile.mud)).toEqual([false, true, false]);
+  });
+
+  it('labels a mud tile with its rule, standing on it included', () => {
+    const g = new Game(['Sm1']);
+    const before = tilesOf(g, { hints: true }).find((tile) => tile.x === 1)!;
+    expect(tileAccessibilityLabel(before, t)).toBe('Row 1, column 2, Mud tile, can be stepped off but not jumped off.');
+    g.play({ x: 1, y: 0 });
+    const on = tilesOf(g, { hints: true }).find((tile) => tile.x === 1)!;
+    expect(tileAccessibilityLabel(on, t)).toBe('Row 1, column 2, Mud tile, you are here, steps only.');
+  });
+
+  it('a directional press from mud takes the step and never the jump', () => {
+    const g = new Game(['Sm.1']);
+    g.play({ x: 1, y: 0 });
+    expect(directionalMove(g, 'right')).toBeNull(); // the only thing that way is a jump
   });
 });

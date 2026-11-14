@@ -210,3 +210,44 @@ describe('pillars (CANGUPA-159)', () => {
     expect(new Game(['S.1', '111']).countSolutions(10)).toBe(3); // the jump across opens two more
   });
 });
+
+describe('mud tiles (CANGUPA-160)', () => {
+  const to = (g: Game) => g.legalMoves().map((m) => [m.x, m.y]);
+
+  test('mud is an ordinary one-visit tile for clearing the level, and never the start', () => {
+    const g = new Game(['Sm1', '.1.', '.1.']);
+    expect(g.max[1]).toBe(1);
+    expect(g.mud[1]).toBe(1);
+    expect(g.remaining()).toBe(4);
+    expect(g.start).toBe(0);
+  });
+
+  test('standing on mud, only steps are legal, where a plain tile also offers the jump', () => {
+    const g = new Game(['Sm1', '.1.', '.1.']);
+    g.play({ x: 1, y: 0 });
+    expect(to(g)).toEqual([[2, 0], [1, 1]]);
+    const dry = new Game(['S11', '.1.', '.1.']);
+    dry.play({ x: 1, y: 0 });
+    expect(to(dry)).toEqual([[2, 0], [1, 1], [1, 2]]);
+  });
+
+  test('jumping onto mud is unrestricted', () => {
+    expect(to(new Game(['S.m']))).toEqual([[2, 0]]);
+  });
+
+  test('moveKind refuses a jump off mud whatever is at the target, and leaves steps alone', () => {
+    const g = new Game(['Sm1', '.1.', '.1.']);
+    g.play({ x: 1, y: 0 });
+    expect(g.moveKind(1, 2)).toBe('blocked-mud'); // onto a live tile
+    expect(g.moveKind(1, 1)).toBe('legal');
+    expect(g.moveKind(0, 0)).toBe('empty'); // a step onto the used-up start: nothing there, as ever
+    const bare = new Game(['Sm.', '...', '...']);
+    bare.play({ x: 1, y: 0 });
+    expect(bare.moveKind(1, 2)).toBe('blocked-mud'); // onto nothing: refused, not a fall
+  });
+
+  test('the solver sees mud: it can make a level unwinnable', () => {
+    expect(new Game(['Sm.1']).solve()).toBeNull();
+    expect(new Game(['S1.1']).solve()).not.toBeNull();
+  });
+});

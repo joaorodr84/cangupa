@@ -10,6 +10,8 @@
 //   #         a Pillar (CANGUPA-159): a solid block, not a tile. It is never landed on and needs
 //             no visit, and a jump cannot pass over it — a jump whose middle square is a pillar
 //             is not a move. Steps are unaffected, since a step has no middle square.
+//   m         a Mud tile (CANGUPA-160): needs one visit, and can be stepped off but not jumped
+//             off. Jumping onto it is unrestricted. Never the start tile.
 // Coordinates: x is the column, y the row, both counted from the top-left.
 //
 // cells[i] is how many visits a tile still needs. The start tile counts as
@@ -54,6 +56,9 @@ export class Game {
   // destination, and never enter the solver's memo key, and all three already follow from
   // max being 0.
   readonly pillar: Uint8Array;
+  // 1 where the tile is Mud. A flag beside max, like dir and arrival: Mud is an ordinary
+  // one-visit tile in every way but how it can be left.
+  readonly mud: Uint8Array;
   readonly start: number;
   cells!: Uint8Array;
   pos!: number;
@@ -66,6 +71,7 @@ export class Game {
     this.dir = new Int8Array(this.w * this.h).fill(-1);
     this.arrival = new Int8Array(this.w * this.h).fill(-1);
     this.pillar = new Uint8Array(this.w * this.h);
+    this.mud = new Uint8Array(this.w * this.h);
     let start = -1;
     rows.forEach((row, y) => {
       for (let x = 0; x < this.w; x++) {
@@ -81,6 +87,10 @@ export class Game {
           this.max[i] = 1;
           this.arrival[i] = ARRIVALS.indexOf(c);
         } else if (c === '#') this.pillar[i] = 1;
+        else if (c === 'm') {
+          this.max[i] = 1;
+          this.mud[i] = 1;
+        }
         if (c === 'S' || c === 's' || c === 'T') start = i;
       }
     });
@@ -128,15 +138,17 @@ export class Game {
 
   // Steps of one tile, plus jumps of two. Standing on a Departure tile, only
   // the way it points; landing on an Arrival tile, only moving the way it opens;
-  // and never a jump over a Pillar.
+  // never a jump over a Pillar; and standing on Mud, steps only.
   legalMoves(cells: Uint8Array = this.cells, pos: number = this.pos): Move[] {
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
     const out: Move[] = [];
+    // how far a move from here may reach: Mud holds the player to a step
+    const reach = this.mud[pos] ? 1 : 2;
     for (let k = 0; k < DIRS.length; k++) {
       if (this.dir[pos] >= 0 && k !== this.dir[pos]) continue;
       const [dx, dy] = DIRS[k];
-      for (let d = 1; d <= 2; d++) {
+      for (let d = 1; d <= reach; d++) {
         const x = px + dx * d;
         const y = py + dy * d;
         if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
@@ -181,6 +193,9 @@ export class Game {
   //                       (CANGUPA-129, a bug-fix follow-up) rather than one shared 'blocked', so
   //                       a caller that explains *why* (PlayableBoard's on-screen warning) doesn't
   //                       have to re-derive which rule tripped.
+  //   'blocked-mud'       in shape and not a Departure violation, but the move is a jump and the
+  //                       player stands on a Mud tile (CANGUPA-160) — whatever is at the target,
+  //                       like 'blocked-departure': the rule is about leaving, so it never falls.
   //   'blocked-pillar'    in shape and not a Departure violation, but a Pillar (CANGUPA-159) is in
   //                       the way: the target is the pillar itself, or the jump would pass over
   //                       one. Never falls: a pillar is solid, so walking into it is refused, not
@@ -196,7 +211,7 @@ export class Game {
     x: number,
     y: number,
     pos: number = this.pos,
-  ): 'none' | 'blocked-departure' | 'blocked-pillar' | 'blocked-arrival' | 'empty' | 'legal' {
+  ): 'none' | 'blocked-departure' | 'blocked-mud' | 'blocked-pillar' | 'blocked-arrival' | 'empty' | 'legal' {
     if (!this.inMoveShape(x, y, pos)) return 'none';
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
@@ -205,6 +220,7 @@ export class Game {
     const k = DIRS.findIndex(([ddx, ddy]) => ddx === dx && ddy === dy);
     const i = y * this.w + x;
     if (this.dir[pos] >= 0 && k !== this.dir[pos]) return 'blocked-departure';
+    if (this.mud[pos] && Math.abs(x - px || y - py) === 2) return 'blocked-mud';
     if (this.pillar[i] || (Math.abs(x - px || y - py) === 2 && this.pillar[pos + dx + dy * this.w])) return 'blocked-pillar';
     if (this.arrival[i] >= 0 && this.cells[i] > 0 && k !== this.arrival[i]) return 'blocked-arrival';
     return this.cells[i] > 0 ? 'legal' : 'empty';

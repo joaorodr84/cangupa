@@ -73,6 +73,9 @@ const BOARD = { page: '#0c0d10', pit: '#1c1f26' };
 // (CANGUPA-158) and the colours apps/app's palette.ts carries for it. Not a tile, so it has no
 // lip and no mark and is drawn smaller than one.
 const PILLAR = { body: '#b9ad98', top: '#e6dcc9' };
+// A Mud tile (CANGUPA-160): brown with a lighter lip and two wavy lines, the design picked on
+// tile-down-under.html (CANGUPA-158), in apps/app's palette.ts colours.
+const MUD = { face: '#8a5a2b', lip: '#bb8a55', mark: '#f6e6cc' };
 // The kangaroo's own colours (apps/app/src/components/Kangaroo.tsx): body fur for the fill,
 // its outline brown for the rim, so the start mark reads as "the kangaroo stood here".
 const KANGAROO = { fill: '#d9954f', rim: '#5a3515' };
@@ -111,12 +114,21 @@ function sketch(rows, width, label, box = 120) {
         continue;
       }
       const kind = START_OF[c] || c;
-      const t = ARROW_KEYS.includes(c) ? DEPARTURE : ARRIVAL_KEYS.includes(c) ? ARRIVAL : TILES[kind];
+      const t = c === 'm' ? MUD : ARROW_KEYS.includes(c) ? DEPARTURE : ARRIVAL_KEYS.includes(c) ? ARRIVAL : TILES[kind];
       if (!t) continue;
       const fx = pad + x * cell + gap / 2, fy = pad + y * cell + gap / 2;
       const fw = cell - gap, fh = cell - gap - lip, rx = Math.max(1, cell / 6);
       add(svg, 'rect', { x: fx, y: fy + lip, width: fw, height: fh, rx, fill: t.lip });
       add(svg, 'rect', { x: fx, y: fy, width: fw, height: fh, rx, fill: t.face });
+      if (c === 'm') {
+        // the two wavy lines, from the app's 64 by 57 face space
+        for (const wy of [21, 36]) {
+          const sx = fw / 64, sy = fh / 57, p = (px, py) => `${(fx + px * sx).toFixed(2)} ${(fy + py * sy).toFixed(2)}`;
+          add(svg, 'path', { d: `M${p(14, wy)}Q${p(20, wy - 7)} ${p(26, wy)}T${p(38, wy)}T${p(50, wy)}`, fill: 'none',
+            stroke: t.mark, 'stroke-width': Math.max(1, 4 * sx), 'stroke-linecap': 'round' });
+        }
+        continue;
+      }
       const direction = DEPARTURE_DIR[c] || ARRIVAL_DIR[c];
       if (direction) {
         const conv = ([px, py]) => [fx + px / 64 * fw, fy + py / 57 * fh];

@@ -164,6 +164,8 @@ export interface Strings {
     // A Pillar (CANGUPA-159) is in the way: the tap was on the pillar itself, or on a jump
     // that would pass over one.
     readonly blockedPillar: string;
+    // A jump was tried from a Mud tile (CANGUPA-160), which can only be stepped off.
+    readonly blockedMud: string;
     // Shown the same way (CANGUPA-130/132) once no legal moves remain at
     // all — used to swap in above the board, in BoardHud's own status line
     // (CANGUPA-53), as boardHud.stuck/undoOrRestart; moved down here once
@@ -189,6 +191,10 @@ export interface Strings {
     readonly tileDeparture: (direction: string) => string;
     readonly tileArrival: (direction: string) => string;
     // A Pillar's own label (CANGUPA-159), after the same tilePosition lead-in a tile gets.
+    // A Mud tile (CANGUPA-160) and the same tile while the kangaroo stands on it. Both say the
+    // rule, since the mark on the tile (two wavy lines) only says "wet ground".
+    readonly tileMud: string;
+    readonly tileHereMud: string;
     readonly pillar: string;
     readonly tileSuggestedMove: string;
     readonly directionTop: string;

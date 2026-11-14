@@ -140,6 +140,46 @@ assert.strictEqual(measure(['S#1', '111']).solutions, 1); // the top row is wall
 assert.strictEqual(measure(['S.1', '111']).solutions, 3); // with a gap there instead, the jump across opens two more
 assert.ok(fillsBox(['S1', '11']) && !fillsBox(['S1#', '11.'])); // a column holding only a pillar is still empty
 
+// a Mud tile (`m`, CANGUPA-160): one visit, and it can be stepped off but not jumped off
+g = new Game(['Sm1', '.1.', '.1.']);
+assert.strictEqual(g.max[1], 1);
+assert.strictEqual(g.mud[1], 1);
+assert.strictEqual(g.remaining(), 4);                // an ordinary tile for clearing the level
+g.play({ x: 1, y: 0 });                              // stepping onto it is unrestricted
+assert.deepStrictEqual(to(g), [[2, 0], [1, 1]]);     // the steps right and down; not the jump down to (1,2)
+const dry = new Game(['S11', '.1.', '.1.']);          // the same level without mud: the jump down is open
+dry.play({ x: 1, y: 0 });
+assert.deepStrictEqual(to(dry), [[2, 0], [1, 1], [1, 2]]);
+assert.strictEqual(g.moveKind(1, 2), 'blocked-mud'); // the jump, onto a live tile
+assert.strictEqual(g.moveKind(1, 1), 'legal');
+g = new Game(['S.m']);
+assert.deepStrictEqual(to(g), [[2, 0]]);             // jumping ONTO mud is fine
+g = new Game(['Sm.', '...', '.1.']);
+g.play({ x: 1, y: 0 });
+assert.strictEqual(g.moveKind(1, 2), 'blocked-mud'); // refused, where from a plain tile it would be legal
+assert.strictEqual(g.moveKind(0, 0), 'empty');       // a step onto a used-up tile is still just empty
+assert.ok(g.stuck);                                  // and the solver agrees there is no way out
+assert.strictEqual(new Game(['Sm.1']).solve(), null);
+assert.ok(new Game(['S1.1']).solve());               // the same level is winnable when it is not mud
+assert.strictEqual(new Game(['Sm1']).start, 0);      // mud is never the start
+
+// the generator's own Mud support (CANGUPA-160): the walk must stay a solution with its mud in place
+{
+  const rand = makeRng(11);
+  let sawMud = 0, made = 0;
+  for (let n = 0; n < 300; n++) {
+    const rows = randomWalk({ width: 6, height: 5, steps: 16, doubles: 2, jump: .35, mud: 3, arrows: 1, arrivals: 1 }, rand);
+    if (!rows) continue;
+    made++;
+    verifyLevel(rows);
+    const count = (rows.join('').match(/m/g) || []).length;
+    assert.ok(count <= 3, `asked for at most 3 mud tiles, got ${count}`);
+    if (count) sawMud++;
+  }
+  assert.ok(sawMud > made * .9, `expected nearly all of ${made} walks to place a mud tile, saw ${sawMud}`);
+  assert.strictEqual(canonical(['Sm1', '1..']), canonical(['1S', '.m', '.1'])); // undirected: it turns as it is
+}
+
 // the generator's own Pillar support (CANGUPA-159): the walk must stay a solution with its pillars in
 // place (verifyLevel), every pillar must sit on a square the level leaves empty, and each must stand
 // between two tiles, where it removes a jump.

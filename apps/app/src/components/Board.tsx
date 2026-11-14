@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-import Svg, { Ellipse, G, Line, Polygon } from 'react-native-svg';
+import Svg, { Ellipse, G, Line, Path, Polygon } from 'react-native-svg';
 
 import {
   pillarAccessibilityLabel,
@@ -349,14 +349,16 @@ const LIP_HEIGHT = 4;
 // raspberry whatever its visits, otherwise the kind sets it. Typed on just the three fields
 // either one reads, not the full TileView, so TileSwatch below can call them without the fields
 // (worn, gone, hint, ...) that only make sense for a tile actually on the board.
-function faceColor(tile: Pick<TileView, 'kind' | 'arrow' | 'arrival'>, palette: Palette): string {
+function faceColor(tile: Pick<SwatchTile, 'kind' | 'arrow' | 'arrival' | 'mud'>, palette: Palette): string {
   if (tile.arrow) return palette.tileDeparture;
   if (tile.arrival) return palette.tileArrival;
+  if (tile.mud) return palette.tileMud;
   return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
 }
-function edgeColor(tile: Pick<TileView, 'kind' | 'arrow' | 'arrival'>, palette: Palette): string {
+function edgeColor(tile: Pick<SwatchTile, 'kind' | 'arrow' | 'arrival' | 'mud'>, palette: Palette): string {
   if (tile.arrow) return palette.edgeDeparture;
   if (tile.arrival) return palette.edgeArrival;
+  if (tile.mud) return palette.edgeMud;
   return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
 }
 
@@ -469,9 +471,25 @@ function ArrowMark({
   );
 }
 
+// The Mud tile's mark (CANGUPA-160): two wavy lines, the design picked on
+// tools/visualizers/tile-down-under.html (CANGUPA-158) with that page's own path data, in the
+// same 64 by 57 face space as ArrowMark. It was the one candidate still readable at 28 px; it
+// says "wet ground", not "no jumping", so the blocked-move message and the accessibility label
+// carry the rule itself.
+function MudMark({ x, y, color }: { readonly x: number; readonly y: number; readonly color: string }) {
+  return (
+    <Svg testID={`tile-mud-${x}-${y}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
+      <Path d="M14 21q6-7 12 0t12 0 12 0" stroke={color} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <Path d="M14 36q6-7 12 0t12 0 12 0" stroke={color} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </Svg>
+  );
+}
+
 // Everything a static tile face needs to draw itself — no worn/gone/hint/jump/tip, since those
 // only mean something for a tile that's actually part of a playable board.
-export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'arrival'>;
+// `mud` is optional here, unlike on TileView, so the swatches written before Mud existed
+// (HelpSections.tsx's Gold/Steel/Departure/Arrival rows) stay valid as they are.
+export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'arrival'> & { readonly mud?: boolean };
 
 // A tile's face, lip and visit/direction mark with none of the real Tile's Pressable,
 // animation or kangaroo — for anywhere else in the app that wants to show what a tile kind
@@ -502,6 +520,7 @@ export function TileSwatch({
     >
       {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
       {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
+      {tile.mud && <MudMark x={tile.x} y={tile.y} color={palette.markMud} />}
       {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
         <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}
@@ -539,6 +558,10 @@ function Tile({ tile, w, h, palette, anim, label, onPress, onPressEmpty, blocked
         style={[
           styles.face,
           { backgroundColor: faceColor(tile, palette) },
+          // Mud sits lower than its neighbours (CANGUPA-160): half the lip shows below the face
+          // and the face starts that much further down, so its bottom edge stays on the same
+          // line as the other tiles' while its top is sunk.
+          tile.mud && styles.faceSunk,
           // No single fixed colour read against all 5 tiles' own face/lip colours (CANGUPA-126's
           // search topped out at 1.4:1 worst case), so the legal-move outline uses the theme's
           // own ink colour instead. Shown even when the tile is also the tip (CANGUPA-127) — a
@@ -549,6 +572,7 @@ function Tile({ tile, w, h, palette, anim, label, onPress, onPressEmpty, blocked
       >
         {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
         {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
+        {tile.mud && <MudMark x={tile.x} y={tile.y} color={palette.markMud} />}
         {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
           <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
         )}
@@ -758,6 +782,10 @@ const styles = StyleSheet.create({
     bottom: LIP_HEIGHT,
     left: 0,
     borderRadius: TIP_RADIUS,
+  },
+  faceSunk: {
+    top: LIP_HEIGHT / 2,
+    bottom: LIP_HEIGHT / 2,
   },
   // The solver tip's halo (CANGUPA-127) — positioned within the cell (a sibling of styles.lip,
   // not nested inside it), a few percent outside the tile's own footprint. See TIP_HALO_GAP's

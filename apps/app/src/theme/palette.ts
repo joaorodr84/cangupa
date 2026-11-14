@@ -53,6 +53,13 @@ export interface Palette {
   // vanished against the dark pit. Fixed across both modes like the tile colours.
   readonly pillar: string;
   readonly pillarTop: string;
+  // The Mud tile (CANGUPA-160): an earth brown well below Gold's lightness so the two never
+  // read as one family, with a lip lighter than its face for the reason Departure's is (a dark
+  // face's darker lip vanishes on the dark board) and a cream mark. Picked on
+  // tools/visualizers/tile-down-under.html (CANGUPA-158).
+  readonly tileMud: string;
+  readonly edgeMud: string;
+  readonly markMud: string;
   // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on
   // steel, and on the green Departure and raspberry Arrival tiles.
   readonly mark2: string;
@@ -102,6 +109,9 @@ export const DARK: Palette = {
   edgeArrival: '#ba5889',
   pillar: '#b9ad98',
   pillarTop: '#e6dcc9',
+  tileMud: '#8a5a2b',
+  edgeMud: '#bb8a55',
+  markMud: '#f6e6cc',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markDeparture: '#ffffff',
@@ -132,6 +142,9 @@ export const LIGHT: Palette = {
   edgeArrival: '#ba5889',
   pillar: '#b9ad98',
   pillarTop: '#e6dcc9',
+  tileMud: '#8a5a2b',
+  edgeMud: '#bb8a55',
+  markMud: '#f6e6cc',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markDeparture: '#ffffff',

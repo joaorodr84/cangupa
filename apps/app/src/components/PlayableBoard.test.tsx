@@ -430,3 +430,26 @@ test('a jump over a pillar shakes instead of falling, flashes the pillar and say
   });
   expect(screen.queryByTestId('pillar-blocked-outline-1-0')).toBeNull();
 });
+
+test('a jump off mud shakes instead of falling and says why (CANGUPA-160)', async () => {
+  // 'Sm1' / '.1.' / '.1.': from the mud at (1,0), the tile at (1,2) is live and a jump away.
+  await render(<Harness level={['Sm1', '.1.', '.1.']} fall />);
+  await fireEvent.press(screen.getByTestId('tile-press-1-0')); // step onto the mud
+
+  expect(screen.queryByTestId('tile-press-1-2')).toBeNull(); // the jump is not offered
+  expect(screen.getByTestId('tile-press-1-1')).toBeTruthy(); // the step is
+
+  await act(async () => {
+    fireEvent.press(screen.getByTestId('tile-empty-1-2'));
+  });
+
+  expect(Sound.blocked).toHaveBeenCalledTimes(1);
+  expect(Sound.fall).not.toHaveBeenCalled();
+  expect(screen.getByTestId('tile-blocked-outline-1-2')).toBeTruthy();
+  expect(screen.getByText('Stuck in the mud — you can step off it, but not jump.')).toBeTruthy();
+
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  });
+  expect(screen.queryByTestId('tile-blocked-outline-1-2')).toBeNull();
+});
