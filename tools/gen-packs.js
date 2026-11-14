@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Builds tools/packs.json (and apps/app/src/game/packs.ts) from tools/pack-plan.js, then
-// regenerates tools/visualizers/{level-packs,level-difficulty}.html so they never go stale.
+// Builds tools/packs.json (and apps/app/src/game/packs.ts) from tools/pack-plan.js, writes one
+// solution per level to tools/solutions.json (gen-solutions.js), then regenerates tools/visualizers/{level-packs,level-difficulty}.html so they never go stale.
 //
 //   node tools/gen-packs.js                 build every pack, measuring pools in parallel
 //   node tools/gen-packs.js --reselect      reuse cached pools, redo only the picking
@@ -19,6 +19,7 @@ const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
 const { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow, hasArrival } = require('./pack-generator.js');
 const { designs } = require('./pack-designs.js');
 const { writeVisualizers } = require('./gen-visualizers.js');
+const { writeSolutions } = require('./gen-solutions.js');
 
 // How many designed layouts (pack-designs.js) each pack takes, when enough are valid.
 const DESIGNED_PER_PACK = 6;
@@ -162,6 +163,7 @@ function writeTs(packs) {
   const packs = select(pools, frozen);
   fs.writeFileSync(OUT_JSON, JSON.stringify({ seed, packs }, null, 1) + '\n');
   writeTs(packs);
+  writeSolutions(packs);
   writeVisualizers(packs);
   packs.forEach((p, i) => {
     const s = p.levels.map(l => l.pathBits);

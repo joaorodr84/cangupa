@@ -8,6 +8,7 @@ const path = require('path');
 const { canonical, fillsBox } = require('./pack-generator.js');
 const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
 const { makeRng, randomWalk, verifyLevel } = require('./level-generator.js');
+const { encode, replay } = require('./gen-solutions.js');
 
 // rules
 let g = new Game(['S1.', '.2.']);
@@ -229,4 +230,33 @@ if (fs.existsSync(packsFile)) {
   });
 }
 
-console.log(`ok: rules and ${LEVELS.length} levels solvable` + (packCount ? `, ${packCount} pack levels` : ''));
+// stored solutions (tools/solutions.json, built by tools/gen-solutions.js, CANGUPA-163)
+// the format first: a lowercase letter is a step, an uppercase one a jump
+assert.strictEqual(encode(search(['S.1', '..1']).moves, 0, 3), 'Rd');   // jump the gap, step down
+assert.ok(replay(['S.1', '..1'], 'Rd'));
+assert.ok(!replay(['S.1', '..1'], 'rd'));                              // a step onto the gap is not a move
+assert.ok(!replay(['S.1', '..1'], 'R'));                               // legal, but stops short of clearing
+assert.ok(!replay(['S.1', '..1'], 'Rx'));                              // not a move letter
+assert.ok(!replay(['S>1', '.1.'], 'rdR'));                             // leaving a Departure the wrong way
+let solutionCount = 0;
+if (fs.existsSync(packsFile)) {
+  const { packs } = JSON.parse(fs.readFileSync(packsFile, 'utf8'));
+  const solutionsFile = path.join(__dirname, 'solutions.json');
+  assert.ok(fs.existsSync(solutionsFile), 'tools/solutions.json is missing: run node tools/gen-solutions.js');
+  const solved = JSON.parse(fs.readFileSync(solutionsFile, 'utf8')).packs;
+  assert.strictEqual(solved.length, packs.length, 'solutions.json: pack count matches packs.json');
+  packs.forEach((pack, i) => {
+    const label = `solutions.json pack ${i + 1} ${pack.name}`;
+    assert.strictEqual(solved[i].name, pack.name, `${label}: is for pack "${solved[i].name}" instead`);
+    assert.strictEqual(solved[i].solutions.length, pack.levels.length, `${label}: solution count`);
+    // replaying on the level in packs.json is also what catches the two files drifting apart:
+    // a solution left over from a level that has since been regenerated will not clear the new one
+    pack.levels.forEach((lv, j) => {
+      assert.ok(replay(lv.rows, solved[i].solutions[j]), `${label} level ${j + 1}: stored solution does not clear the level`);
+      solutionCount++;
+    });
+  });
+}
+
+console.log(`ok: rules and ${LEVELS.length} levels solvable` + (packCount ? `, ${packCount} pack levels` : '')
+  + (solutionCount ? `, ${solutionCount} stored solutions replayed` : ''));

@@ -76,11 +76,14 @@ function measure(rows, { budget = 2000000, rules } = {}) {
 // `effort` is that count: how much a systematic solver has to think. Also reads
 // the branching along the solution it found: `pathBits` sums log2(legal moves)
 // at each step, an upper bound on the luck needed to retrace that one path.
+// `moves` is that solution itself (CANGUPA-163): the search always found one and
+// used to keep only how many choices each step had, so nothing could be written
+// down for a level but its score.
 function search(rows, { cap = 3000000, rules } = {}) {
   const game = new Game(rows, rules);
   const dead = new Set();
   let nodes = 0, capped = false, bits = 0, forced = 0;
-  const path = [];
+  const path = [], trail = [];
   const rec = (cells, pos) => {
     if (game.remaining(cells) === 0) return true;
     const k = pos + ':' + cells.join('');
@@ -90,9 +93,9 @@ function search(rows, { cap = 3000000, rules } = {}) {
     for (const m of moves) {
       const next = Uint8Array.from(cells), i = m.y * game.w + m.x;
       next[i] -= 1;
-      path.push(moves.length);
+      path.push(moves.length); trail.push(m);
       if (rec(next, i)) return true;
-      path.pop();
+      path.pop(); trail.pop();
       if (capped) return false;
     }
     dead.add(k);
@@ -103,7 +106,7 @@ function search(rows, { cap = 3000000, rules } = {}) {
   const ok = rec(first, game.start);
   if (!ok) return null;
   for (const n of path) { bits += Math.log2(n); if (n === 1) forced++; }
-  return { effort: nodes, pathBits: bits, decisions: path.length - forced, steps: path.length };
+  return { effort: nodes, pathBits: bits, decisions: path.length - forced, steps: path.length, moves: trail };
 }
 
 // Random play: `runs` seeded playouts picking a legal move uniformly. `survival`

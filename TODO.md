@@ -226,17 +226,6 @@ The priority can change at any time; the ID never does.
   the save shape if pack indices stop being global). Also check anything
   that counts "every pack", such as the Collector achievement. Does not
   include locking or selling a collection, which is `CANGUPA-106`.
-- [P3] `CANGUPA-163` — Have the generator write one solution per level to a
-  separate file (`tools/solutions.json`, same pack and level order as
-  `packs.json`). `search` in [difficulty.js](tools/difficulty.js) already
-  finds a solution for every level it scores but keeps only the number of
-  choices at each step; it should keep the moves too. The 500 shipped
-  levels need no regenerating: run the solver once over `packs.json` as it
-  is. Add a test that replays every stored solution and checks it clears
-  its level. Opens up `CANGUPA-72`'s third option (hints from a stored
-  solution), which stays that task's call; a stored solution only helps
-  while the player is still on its path, and a turned level needs its
-  moves turned the same way.
 - [P4] `CANGUPA-150` — Parked: the owner wants `apps/web-classic` work
   skipped for now, and every part of this task is `apps/web-classic`-only.
   Revisit once that pause lifts. Fix two hardcoded, theme-unaware text
