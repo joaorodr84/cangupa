@@ -10,36 +10,57 @@
 // pack opens on tap — a pack is never locked by sequence, only the levels
 // inside one can be (state/progress.ts's isUnlocked), same as before.
 //
-// The packs sit inside one card per collection (CANGUPA-133), whose header
-// — the collection's name, with the same bare count summed over every pack
-// on the right — collapses and expands the rows below it on tap. With a
-// single collection this only tidies the list away; it is shaped as a card
-// so a second collection is another card under this one rather than a
-// second flat run of rows with only a pill between them. Whether it is
-// collapsed is the caller's state, not this component's: opening a pack
-// unmounts this screen (App.tsx swaps it for LevelsScreen), and state held
-// here would spring back open on every return from a pack.
+// The packs sit inside one card per collection (CANGUPA-133, more than one made real by
+// CANGUPA-162), each a run of consecutive packs (packs.ts's own COLLECTIONS: the first
+// collection's card holds packSizes[0..collections[0].packCount), the next card the packs after
+// that, and so on) — its header, the collection's name with the same bare count summed over
+// just its own packs on the right, collapses and expands the rows below it on tap. pack indices
+// stay global across every card, not reset per collection, the same index saved progress,
+// PACK_COLORS and PackIcon already key by. Which cards are collapsed is the caller's state, not
+// this component's, keyed by collection index: opening a pack unmounts this screen (App.tsx
+// swaps it for LevelsScreen), and state held here would spring every card back open on every
+// return from a pack.
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import PackIcon from './PackIcon';
 import { useStrings } from '../i18n/useStrings';
+import { type Collection } from '../game/packs';
 import { isDone, type Progress } from '../state/progress';
 import { type Palette } from '../theme/palette';
 import { PACK_COLORS, packLabelColorFor } from '../theme/packColors';
 
 interface LevelPacksScreenProps {
-  // How many levels each pack has, in pack order; level indices run on from
-  // one pack to the next, so a pack starts where the one before it ends.
+  readonly collections: readonly Collection[];
+  // How many levels each pack has, in pack order, across every collection; level indices run on
+  // from one pack to the next, so a pack starts where the one before it ends.
   readonly packSizes: readonly number[];
   readonly progress: Progress;
   readonly palette: Palette;
-  readonly collapsed: boolean;
-  readonly onToggleCollapsed: () => void;
+  // Which collections, by index into `collections`, have their card folded away.
+  readonly collapsed: ReadonlySet<number>;
+  readonly onToggleCollapsed: (collectionIndex: number) => void;
   readonly onOpenPack: (packIndex: number) => void;
 }
 
+// Splits the flat, global `packSizes` into one slice per collection, each carrying the global
+// pack index its first entry starts at — so a card's own rows can still key PACK_COLORS,
+// PackIcon and t.packs by that same global index, unaffected by which card they happen to sit in.
+function collectionSlices(
+  collections: readonly Collection[],
+  packSizes: readonly number[],
+): readonly { readonly packIndexStart: number; readonly sizes: readonly number[] }[] {
+  let packIndexStart = 0;
+  return collections.map((collection) => {
+    const sizes = packSizes.slice(packIndexStart, packIndexStart + collection.packCount);
+    const slice = { packIndexStart, sizes };
+    packIndexStart += collection.packCount;
+    return slice;
+  });
+}
+
 export default function LevelPacksScreen({
+  collections,
   packSizes,
   progress,
   palette,
@@ -49,84 +70,93 @@ export default function LevelPacksScreen({
 }: LevelPacksScreenProps) {
   const t = useStrings();
 
-  let start = 0;
+  let levelStart = 0;
   const packs = packSizes.map((count, packIndex) => {
-    const levels = Array.from({ length: count }, (_, i) => start + i);
-    start += count;
+    const levels = Array.from({ length: count }, (_, i) => levelStart + i);
+    levelStart += count;
     const cleared = levels.filter((levelIndex) => isDone(progress, levelIndex)).length;
     return { packIndex, levels, cleared };
   });
-  const totalLevels = start;
-  const totalCleared = packs.reduce((sum, pack) => sum + pack.cleared, 0);
 
   return (
     <ScrollView contentContainerStyle={styles.list}>
-      <View style={[styles.card, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}>
-        <Pressable
-          testID="collection-toggle"
-          onPress={onToggleCollapsed}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: !collapsed }}
-          style={({ pressed }) => [styles.header, pressed && styles.pressed]}
-        >
-          <View style={styles.text}>
-            <Text accessibilityRole="header" style={[styles.title, { color: palette.ink }]}>
-              {t.collection}
-            </Text>
-          </View>
-          <Text testID="collection-count" style={[styles.collectionCount, { color: palette.muted }]}>
-            {totalCleared}/{totalLevels}
-          </Text>
-          {/* Points up while open ("tap to fold away") and down while closed,
-              the usual disclosure convention. */}
-          <Svg
-            testID={collapsed ? 'collection-chevron-down' : 'collection-chevron-up'}
-            width={22}
-            height={22}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={palette.muted}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
+      {collectionSlices(collections, packSizes).map(({ packIndexStart, sizes }, collectionIndex) => {
+        const collectionPacks = packs.slice(packIndexStart, packIndexStart + sizes.length);
+        const totalLevels = sizes.reduce((sum, size) => sum + size, 0);
+        const totalCleared = collectionPacks.reduce((sum, pack) => sum + pack.cleared, 0);
+        const isCollapsed = collapsed.has(collectionIndex);
+        return (
+          <View
+            key={collectionIndex}
+            style={[styles.card, { backgroundColor: palette.panel, borderColor: palette.panelBorder }]}
           >
-            <Path d={collapsed ? 'M6 9 L12 15 L18 9' : 'M6 15 L12 9 L18 15'} />
-          </Svg>
-        </Pressable>
-        {!collapsed && (
-          <View style={styles.rows}>
-            {packs.map(({ packIndex, levels, cleared }) => {
-              const text = t.packs[packIndex];
-              const color = PACK_COLORS[packIndex % PACK_COLORS.length];
-              return (
-                <Pressable
-                  key={packIndex}
-                  testID={`pack-${packIndex + 1}`}
-                  onPress={() => onOpenPack(packIndex)}
-                  accessibilityRole="button"
-                  // palette.control, not the palette.panel a row used before
-                  // the card existed: the card itself is panel now, and a
-                  // panel row on a panel card has no edge at all.
-                  style={({ pressed }) => [styles.row, { backgroundColor: palette.control }, pressed && styles.pressed]}
-                >
-                  <View testID={`pack-swatch-${packIndex + 1}`} style={[styles.swatch, { backgroundColor: color }]}>
-                    <PackIcon pack={packIndex} color={packLabelColorFor(packIndex)} />
-                  </View>
-                  <View style={styles.text}>
-                    <Text style={[styles.name, { color: palette.ink }]}>{text?.name ?? ''}</Text>
-                    <Text style={{ color: palette.muted }}>
-                      {t.packRange(levels[0] + 1, levels[levels.length - 1] + 1)}
-                    </Text>
-                  </View>
-                  <Text testID={`pack-count-${packIndex + 1}`} style={[styles.packCount, { color: palette.muted }]}>
-                    {cleared}/{levels.length}
-                  </Text>
-                </Pressable>
-              );
-            })}
+            <Pressable
+              testID={`collection-toggle-${collectionIndex}`}
+              onPress={() => onToggleCollapsed(collectionIndex)}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: !isCollapsed }}
+              style={({ pressed }) => [styles.header, pressed && styles.pressed]}
+            >
+              <View style={styles.text}>
+                <Text accessibilityRole="header" style={[styles.title, { color: palette.ink }]}>
+                  {t.collections[collectionIndex] ?? ''}
+                </Text>
+              </View>
+              <Text testID={`collection-count-${collectionIndex}`} style={[styles.collectionCount, { color: palette.muted }]}>
+                {totalCleared}/{totalLevels}
+              </Text>
+              {/* Points up while open ("tap to fold away") and down while closed,
+                  the usual disclosure convention. */}
+              <Svg
+                testID={isCollapsed ? `collection-chevron-down-${collectionIndex}` : `collection-chevron-up-${collectionIndex}`}
+                width={22}
+                height={22}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={palette.muted}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <Path d={isCollapsed ? 'M6 9 L12 15 L18 9' : 'M6 15 L12 9 L18 15'} />
+              </Svg>
+            </Pressable>
+            {!isCollapsed && (
+              <View style={styles.rows}>
+                {collectionPacks.map(({ packIndex, levels, cleared }) => {
+                  const text = t.packs[packIndex];
+                  const color = PACK_COLORS[packIndex % PACK_COLORS.length];
+                  return (
+                    <Pressable
+                      key={packIndex}
+                      testID={`pack-${packIndex + 1}`}
+                      onPress={() => onOpenPack(packIndex)}
+                      accessibilityRole="button"
+                      // palette.control, not the palette.panel a row used before
+                      // the card existed: the card itself is panel now, and a
+                      // panel row on a panel card has no edge at all.
+                      style={({ pressed }) => [styles.row, { backgroundColor: palette.control }, pressed && styles.pressed]}
+                    >
+                      <View testID={`pack-swatch-${packIndex + 1}`} style={[styles.swatch, { backgroundColor: color }]}>
+                        <PackIcon pack={packIndex} color={packLabelColorFor(packIndex)} />
+                      </View>
+                      <View style={styles.text}>
+                        <Text style={[styles.name, { color: palette.ink }]}>{text?.name ?? ''}</Text>
+                        <Text style={{ color: palette.muted }}>
+                          {t.packRange(levels[0] + 1, levels[levels.length - 1] + 1)}
+                        </Text>
+                      </View>
+                      <Text testID={`pack-count-${packIndex + 1}`} style={[styles.packCount, { color: palette.muted }]}>
+                        {cleared}/{levels.length}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
           </View>
-        )}
-      </View>
+        );
+      })}
     </ScrollView>
   );
 }

@@ -8,10 +8,30 @@
 // own levels independently (CANGUPA-77) — only order within a pack is
 // enforced, not finishing the pack before it.
 import { type Level } from './board';
-import { PACKS } from './packs';
+import { COLLECTIONS, PACKS, type Collection } from './packs';
 
 export const LEVELS: readonly Level[] = PACKS.flatMap((pack) => pack.levels);
 
 // How many levels each pack has, in pack order: the levels screen turns a
 // level index into a pack by walking these.
 export const PACK_SIZES: readonly number[] = PACKS.map((pack) => pack.levels.length);
+
+// Which packs belong to which named collection (CANGUPA-162), by position: the first
+// COLLECTIONS[0].packCount entries of PACK_SIZES/PACKS are the first collection's own, and so
+// on. Re-exported from packs.ts here rather than imported from there directly by every screen
+// that also wants PACK_SIZES, so both live behind the one module.
+export { COLLECTIONS, type Collection };
+
+// How many levels a run of `packCount` packs, from the front of `packSizes`, adds up to — pulled
+// out as its own function (rather than inlined where FIRST_COLLECTION_LEVEL_COUNT below uses it)
+// so a test can check the arithmetic against a small made-up collection, without needing
+// Down Under's own real pack sizes to exist yet to prove the formula holds once they do.
+export function collectionLevelCount(packSizes: readonly number[], packCount: number): number {
+  return packSizes.slice(0, packCount).reduce((sum, size) => sum + size, 0);
+}
+
+// How many levels the first collection alone has (Lay of the Land) — the scope of the
+// "Collector" achievement (achievements.ts's 'all-packs': "clear every pack in your first
+// collection"), which must stay fixed at this number as later collections are added, not grow
+// to match LEVELS.length.
+export const FIRST_COLLECTION_LEVEL_COUNT: number = collectionLevelCount(PACK_SIZES, COLLECTIONS[0].packCount);

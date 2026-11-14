@@ -15,7 +15,15 @@ const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
-const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
+const { PACKS, COLLECTIONS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
+
+// CANGUPA-162: COLLECTIONS' own packCount fields must account for every pack in PACKS, with
+// none left over and none double-counted — checked here rather than left to surface later as
+// a wrong card on the Levels tab or a pack with no collection to sit in at all.
+const collectionPacks = COLLECTIONS.reduce((n, c) => n + c.packCount, 0);
+if (collectionPacks !== PACKS.length) {
+  throw new Error(`COLLECTIONS' pack counts sum to ${collectionPacks}, but PACKS has ${PACKS.length}`);
+}
 const { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, score, hasGold, hasSteel, hasArrow, hasArrival, hasPillar, hasMud, hasTunnel } = require('./pack-generator.js');
 const { designs } = require('./pack-designs.js');
 const { writeVisualizers } = require('./gen-visualizers.js');
@@ -152,6 +160,12 @@ function writeTs(packs) {
     lines.push('    ],', '  },');
   }
   lines.push('];', '');
+  // CANGUPA-162: which of the packs above belong to which named collection, by position — see
+  // pack-plan.js's own COLLECTIONS comment for why this is kept apart from Pack itself.
+  lines.push('export type Collection = { name: string; packCount: number };', '');
+  lines.push('export const COLLECTIONS: readonly Collection[] = [');
+  for (const c of COLLECTIONS) lines.push(`  { name: ${JSON.stringify(c.name)}, packCount: ${c.packCount} },`);
+  lines.push('];', '');
   fs.writeFileSync(OUT_TS, lines.join('\n'));
 }
 
@@ -161,7 +175,7 @@ function writeTs(packs) {
   // the packs.json being replaced: where the frozen packs come from
   const frozen = fs.existsSync(OUT_JSON) ? JSON.parse(fs.readFileSync(OUT_JSON, 'utf8')).packs : [];
   const packs = select(pools, frozen);
-  fs.writeFileSync(OUT_JSON, JSON.stringify({ seed, packs }, null, 1) + '\n');
+  fs.writeFileSync(OUT_JSON, JSON.stringify({ seed, collections: COLLECTIONS, packs }, null, 1) + '\n');
   writeTs(packs);
   writeSolutions(packs);
   writeVisualizers(packs);

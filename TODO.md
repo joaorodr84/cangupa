@@ -169,8 +169,8 @@ The priority can change at any time; the ID never does.
   This task is the generation itself: the ten plan entries in
   [pack-plan.js](tools/pack-plan.js), running the generator, and wiring the
   packs, names, blurbs, icons and colours into `apps/app`. The three tiles
-  (`CANGUPA-159`, `CANGUPA-160`, `CANGUPA-161`) are done; still blocked on
-  `CANGUPA-162` (more than one collection), on the owner confirming the
+  (`CANGUPA-159`, `CANGUPA-160`, `CANGUPA-161`) and multi-collection support
+  (`CANGUPA-162`) are done; still blocked on the owner confirming the
   remaining open decisions at the end of that file, and on deciding the
   ten packs' own `pillars`/`mud`/`tunnels` ranges (no plan entry sets them
   yet — the table in the doc names the pack and board, not the numbers).
@@ -179,19 +179,6 @@ The priority can change at any time; the ID never does.
   Also owed here, because the help screen only lists a tile once it ships in
   a level: the how-to-play row for each new tile (`HelpSections.tsx`'s
   `TilesSection`, strings in `en` and `pt`).
-- [P3] `CANGUPA-162` — Support more than one collection, end to end. Today
-  [pack-plan.js](tools/pack-plan.js) exports one flat `PACKS` list,
-  `packs.json` and the generated
-  [packs.ts](apps/app/src/game/packs.ts) hold one list of ten, `collection`
-  is a single string in the locale files, and `PackIcon`/`PACK_COLORS`
-  index by pack number 0 to 9. Needs: a collection level in the plan and
-  the generated files, with `OVERLAP` carrying across from one
-  collection's last pack to the next one's first; per-collection names,
-  blurbs, icons and colours; the Levels tab listing collections; and saved
-  progress that still loads for existing players (a `BREAKING CHANGE` to
-  the save shape if pack indices stop being global). Also check anything
-  that counts "every pack", such as the Collector achievement. Does not
-  include locking or selling a collection, which is `CANGUPA-106`.
 - [P4] `CANGUPA-150` — Parked: the owner wants `apps/web-classic` work
   skipped for now, and every part of this task is `apps/web-classic`-only.
   Revisit once that pause lifts. Fix two hardcoded, theme-unaware text

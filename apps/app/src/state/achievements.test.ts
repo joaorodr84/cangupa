@@ -8,7 +8,7 @@ import {
   saveAchievementRecord,
   withEarned,
 } from './achievements';
-import { LEVELS, PACK_SIZES } from '../game/levels';
+import { FIRST_COLLECTION_LEVEL_COUNT, LEVELS, PACK_SIZES } from '../game/levels';
 import { NO_PROGRESS, type Progress } from './progress';
 import { CORRUPT_RECORDS, memoryStorage } from './storage.testUtil';
 
@@ -60,6 +60,15 @@ describe('milestone achievements', () => {
     const everything = progress({ done: Array.from({ length: LEVELS.length }, (_, i) => i) });
     expect(find('all-packs').isEarned(everything, LEVELS.length)).toBe(true);
     expect(find('all-packs').isEarned(progress({ done: [0] }), LEVELS.length)).toBe(false);
+  });
+
+  it("all-packs is scoped to the first collection's own level count, not the `totalLevels` argument (CANGUPA-162)", () => {
+    // Today FIRST_COLLECTION_LEVEL_COUNT and LEVELS.length are the same number (one
+    // collection), so this only proves the predicate truly ignores its second argument — a
+    // deliberately wrong one here — rather than happening to agree with it by coincidence.
+    const everything = progress({ done: Array.from({ length: FIRST_COLLECTION_LEVEL_COUNT }, (_, i) => i) });
+    expect(find('all-packs').isEarned(everything, 99999)).toBe(true);
+    expect(find('all-packs').isEarned(progress({ done: [0] }), 99999)).toBe(false);
   });
 });
 

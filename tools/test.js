@@ -6,7 +6,7 @@ const { measure, search, randomPlay } = require('./difficulty.js');
 const fs = require('fs');
 const path = require('path');
 const { canonical, fillsBox } = require('./pack-generator.js');
-const { PACKS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
+const { PACKS, COLLECTIONS, LEVELS_PER_PACK, OVERLAP } = require('./pack-plan.js');
 const { makeRng, randomWalk, verifyLevel } = require('./level-generator.js');
 const { encode, replay } = require('./gen-solutions.js');
 
@@ -318,12 +318,31 @@ assert.strictEqual(measure(['S1.', '.2.']).bits, Infinity); // unwinnable: no ch
 assert.strictEqual(search(['S1', '.1']).decisions, 0);      // every move forced
 assert.strictEqual(randomPlay(['S1', '.1']).randomWins, 1);
 
+// named collections (CANGUPA-162): COLLECTIONS' own packCounts must account for every pack in
+// PACKS, none left over and none counted twice, or a pack would end up with no card to sit in
+// on the Levels tab, or two cards would claim the same one
+assert.strictEqual(COLLECTIONS.reduce((n, c) => n + c.packCount, 0), PACKS.length, "COLLECTIONS' pack counts must sum to PACKS.length");
+// a made-up second collection, not a real one — proves select()'s own OVERLAP/prevHi/prevMean
+// carry-forward (gen-packs.js) needs no special case for a collection boundary at all: it is
+// just another pack-to-pack step in PACKS' own order, the same claim pack-plan.js's own
+// COLLECTIONS comment makes. Checked here, against the plan's own shape, rather than against a
+// real second collection that does not exist yet.
+{
+  const collections = [{ name: 'A', packCount: 3 }, { name: 'B', packCount: 2 }];
+  const packSizes = [10, 20, 30, 40, 50];
+  assert.strictEqual(collections.reduce((n, c) => n + c.packCount, 0), packSizes.length);
+  // the second collection's own packs are exactly the tail select() would walk straight into,
+  // with no index arithmetic of its own needed to find where the first collection's run ends
+  assert.deepStrictEqual(packSizes.slice(collections[0].packCount), [40, 50]);
+}
+
 // level packs (tools/packs.json, built by tools/gen-packs.js)
 const packsFile = path.join(__dirname, 'packs.json');
 let packCount = 0;
 if (fs.existsSync(packsFile)) {
-  const { packs } = JSON.parse(fs.readFileSync(packsFile, 'utf8'));
+  const { packs, collections } = JSON.parse(fs.readFileSync(packsFile, 'utf8'));
   assert.strictEqual(packs.length, PACKS.length, 'pack count matches the plan');
+  assert.deepStrictEqual(collections, COLLECTIONS, 'packs.json collections matches the plan');
   let prevArea = 0, prevMax = 0, prevMean = 0;
   packs.forEach((pack, i) => {
     const label = `pack ${i + 1} ${pack.name}`;

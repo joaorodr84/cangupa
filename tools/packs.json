@@ -1,5 +1,11 @@
 {
  "seed": 1000,
+ "collections": [
+  {
+   "name": "Lay of the Land",
+   "packCount": 10
+  }
+ ],
  "packs": [
   {
    "name": "Meadow",

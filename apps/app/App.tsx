@@ -17,7 +17,7 @@ import LevelsScreen from './src/components/LevelsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import StatsScreen from './src/components/StatsScreen';
 import StoreScreen from './src/components/StoreScreen';
-import { LEVELS, PACK_SIZES } from './src/game/levels';
+import { COLLECTIONS, LEVELS, PACK_SIZES } from './src/game/levels';
 import { LanguageContext } from './src/i18n/LanguageContext';
 import { type LanguageSetting } from './src/i18n/locale';
 import { useStrings } from './src/i18n/useStrings';
@@ -192,20 +192,30 @@ function Shell({
   // list without using its own back arrow is tapping the Levels tab again
   // while already on it.
   const [openPack, setOpenPack] = useState<number | null>(null);
-  // Whether the pack list's collection card is folded away (CANGUPA-133).
-  // Held here rather than in LevelPacksScreen, which unmounts whenever a
-  // pack is open, so the card is found as it was left on the way back.
-  // Session-only on purpose — not saved with settings: with one collection,
-  // a card that stayed collapsed across launches would open the Levels tab
-  // onto an empty-looking screen. Revisit when a second collection exists.
-  const [packsCollapsed, setPacksCollapsed] = useState(false);
-  const togglePacksCollapsed = () => {
+  // Which collection cards on the pack list are folded away (CANGUPA-133), by collection
+  // index — a Set rather than one flat boolean now that CANGUPA-162 makes more than one card
+  // possible, each collapsing independently. Held here rather than in LevelPacksScreen, which
+  // unmounts whenever a pack is open, so every card is found exactly as it was left on the way
+  // back. Session-only on purpose — not saved with settings: with only Lay of the Land's one
+  // card, a card that stayed collapsed across launches would open the Levels tab onto an
+  // empty-looking screen; a second real collection would at least leave its own card showing,
+  // but there's still no clear win to persisting this, so it stays exactly as CANGUPA-133 left it.
+  const [packsCollapsed, setPacksCollapsed] = useState<ReadonlySet<number>>(new Set());
+  const togglePacksCollapsed = (collectionIndex: number) => {
     // Eases the card's height change instead of snapping it; skipped when
     // the player has turned animations off.
     if (settings.anim) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }
-    setPacksCollapsed((collapsed) => !collapsed);
+    setPacksCollapsed((collapsed) => {
+      const next = new Set(collapsed);
+      if (next.has(collectionIndex)) {
+        next.delete(collectionIndex);
+      } else {
+        next.add(collectionIndex);
+      }
+      return next;
+    });
   };
   // Which panel Board/Help should return to (CANGUPA-86, widened by
   // CANGUPA-103) — set by `goTo` every time either opens, defaulting to
@@ -262,6 +272,7 @@ function Shell({
     content =
       openPack === null ? (
         <LevelPacksScreen
+          collections={COLLECTIONS}
           packSizes={PACK_SIZES}
           progress={progress}
           palette={palette}

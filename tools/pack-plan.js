@@ -96,7 +96,25 @@ const LEVELS_PER_PACK = 50;
 // 6.9-8.3 pathBits. At 0.65 each pack keeps a ramp and the game still only goes up.
 const OVERLAP = 0.65;
 
-module.exports = { PACKS, LEVELS_PER_PACK, OVERLAP };
+// Named collections (CANGUPA-162): each one a run of consecutive packs, PACKS' own order — the
+// first COLLECTIONS[0].packCount packs belong to the first collection, the next
+// COLLECTIONS[1].packCount to the second, and so on; the counts must sum to PACKS.length
+// (gen-packs.js asserts this before writing anything). Kept apart from PACKS itself, not a
+// `collection` field on each pack entry, so select() in pack-generator.js never needs to know a
+// boundary is there: it already carries OVERLAP's prevHi/prevMean from one pack to the next in
+// order, and a collection boundary is just another one of those steps, not a special case — the
+// second collection's own easiest pack starts from the first's hardest exactly the way Ridge
+// already starts from Billabong's.
+//
+// Lay of the Land is the only one today. A second, paid collection ("Down Under",
+// docs/down-under-collection.md) is planned (CANGUPA-157) but not here yet: CANGUPA-162 only
+// built the capacity for more than one, and that capacity is otherwise untested by a single
+// real entry alone — tools/test.js exercises it against a synthetic second collection instead.
+const COLLECTIONS = [
+  { name: 'Lay of the Land', packCount: 10 },
+];
+
+module.exports = { PACKS, COLLECTIONS, LEVELS_PER_PACK, OVERLAP };
 
 // Meadow's 50 levels before CANGUPA-82 raised its steps floor from .60 to .80 for a
 // steeper ramp (pathBits 0-6.17, several with zero decisions at all). Not wired into

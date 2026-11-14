@@ -113,7 +113,7 @@ test('the collection card collapses and expands, and reopening the Levels tab fi
   await fireEvent.press(await screen.findByTestId('footer-levels'));
   expect(screen.getByTestId('pack-1')).toBeTruthy();
 
-  await fireEvent.press(screen.getByTestId('collection-toggle'));
+  await fireEvent.press(screen.getByTestId('collection-toggle-0'));
   expect(screen.queryByTestId('pack-1')).toBeNull();
 
   // Held in App, not in the pack list itself, so leaving the tab keeps it.
@@ -121,7 +121,7 @@ test('the collection card collapses and expands, and reopening the Levels tab fi
   await fireEvent.press(screen.getByTestId('footer-levels'));
   expect(screen.queryByTestId('pack-1')).toBeNull();
 
-  await fireEvent.press(screen.getByTestId('collection-toggle'));
+  await fireEvent.press(screen.getByTestId('collection-toggle-0'));
   expect(screen.getByTestId('pack-1')).toBeTruthy();
 });
 

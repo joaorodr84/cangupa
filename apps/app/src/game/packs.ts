@@ -585,3 +585,9 @@ export const PACKS: readonly Pack[] = [
     ],
   },
 ];
+
+export type Collection = { name: string; packCount: number };
+
+export const COLLECTIONS: readonly Collection[] = [
+  { name: "Lay of the Land", packCount: 10 },
+];

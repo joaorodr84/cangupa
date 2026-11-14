@@ -231,10 +231,21 @@ European Portuguese with the informal "tu", like the existing ones.
    though its own UI work is paused. No pack entry uses any of the three
    yet — `pillars`/`mud`/`tunnels` ranges per pack is `CANGUPA-157`'s own
    open decision, not part of adding the tiles themselves.
-3. **`CANGUPA-162`**, more than one collection, in the tools and the app.
-   Today `collection` is a single string in the locale files, `PACKS` is one
-   flat list of ten, and `PackIcon` and `PACK_COLORS` index by pack number
-   0 to 9.
+3. **`CANGUPA-162`**, more than one collection. Done: `tools/pack-plan.js`
+   now exports `COLLECTIONS` (a named run of packs, by `packCount`,
+   alongside `PACKS` rather than a field on each pack — so `OVERLAP`'s own
+   carry-forward in `pack-generator.js` never needs to know a boundary is
+   there), carried through `packs.json`/`packs.ts` by `gen-packs.js`, with
+   `apps/app`'s `levels.ts` re-exporting it and deriving
+   `FIRST_COLLECTION_LEVEL_COUNT` (what the "Collector" achievement now
+   checks, instead of every level across every collection).
+   `LevelPacksScreen.tsx` renders one collapsible card per collection,
+   each independently, and `t.collections` replaces the old single
+   `t.collection` string. `PACKS` stays one flat, global list and `PACK_COLORS`/
+   `PackIcon`/`t.packs` stay indexed by that same global pack number — a
+   second collection just means more entries in each of those three, which
+   is content (`CANGUPA-157`'s own job when it adds Down Under's ten packs),
+   not something `CANGUPA-162` had to restructure.
 4. **`CANGUPA-163`**, one stored solution per level in a separate file. Not
    a blocker, but best in place before 500 new levels are generated so they
    get solutions in the same run.

@@ -167,7 +167,7 @@ export const en: Strings = {
     watchAdLoading: 'Loading ad…',
     adError: "Couldn't load the ad. Try again.",
   },
-  collection: 'Lay of the Land',
+  collections: ['Lay of the Land'],
   packs: [
     {
       name: 'Meadow',

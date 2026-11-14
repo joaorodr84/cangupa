@@ -26,7 +26,7 @@
 // record against. `moves` below (lifetime moves across every cleared
 // level) and `streak` (consecutive perfect clears) fill that category's
 // intended spot instead, per the owner's call.
-import { PACK_SIZES } from '../game/levels';
+import { FIRST_COLLECTION_LEVEL_COUNT, PACK_SIZES } from '../game/levels';
 import { type Progress, totalBestMoves } from './progress';
 import { type Storage } from './storage';
 
@@ -81,7 +81,11 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     id: 'all-packs',
     category: 'milestone',
     icon: 'trophy-outline',
-    isEarned: (progress, totalLevels) => progress.done.length >= totalLevels,
+    // "Clear every pack in your first collection" (en.ts) — FIRST_COLLECTION_LEVEL_COUNT, not
+    // the `totalLevels` this predicate is called with (CANGUPA-162): totalLevels is every level
+    // across every collection, and would silently make this harder to earn, or stop being
+    // earnable by an existing save at all, the moment a second collection's levels are added.
+    isEarned: (progress) => progress.done.length >= FIRST_COLLECTION_LEVEL_COUNT,
   },
   { id: 'perfect-1', category: 'perfect', icon: 'leaf-outline', isEarned: (progress) => progress.perfectClears >= 1 },
   {

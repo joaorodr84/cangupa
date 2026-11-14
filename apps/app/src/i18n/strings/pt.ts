@@ -164,7 +164,7 @@ export const pt: Strings = {
     watchAdLoading: 'A carregar o anúncio…',
     adError: 'Não foi possível carregar o anúncio. Tenta outra vez.',
   },
-  collection: 'O Relevo',
+  collections: ['O Relevo'],
   packs: [
     {
       name: 'Prado',
