@@ -1,0 +1,378 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Down Under tiles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* A review page for the three tiles the Down Under collection adds (CANGUPA-158): Pillar, Mud
+   and Tunnel. Same purpose tile-marks.html served for Departure and Arrival — look at the
+   candidates on the game's own tile shape before any of them is built into Board.tsx. Each
+   tile gets a gallery of its candidates; the board at the bottom then shows whichever
+   candidates are picked, together with the five existing tiles, on both pit colours and at
+   three sizes, because a mark that reads on a 96px swatch can be noise at 28px.
+
+   The candidates come from docs/down-under-collection.md's "New tiles" section. The picks
+   made here are meant to be written back there; nothing on this page is loaded by the app. */
+:root{
+  --bg:#0f1720; --surface:#17222c; --ink:#eef3f2; --muted:#8fa3ac; --rule:#273944;
+  --accent:#5fd68a;
+  /* the game's own tile colours (apps/app/src/theme/palette.ts), the same in both themes */
+  --face-common:#4cc9f0; --edge-common:#1f7a99;
+  --face-gold:#ffc857; --edge-gold:#a8741a; --mark-gold:#3b2a06;
+  --face-steel:#587790; --edge-steel:#3c5162;
+  --face-departure:#2f9e44; --edge-departure:#7cd48f;
+  --face-arrival:#9d1057; --edge-arrival:#ba5889;
+  /* the board's pit in each theme, as tile-outlines.html records them */
+  --pit-dark:#1c1f26; --pit-light:#d9dee6;
+  /* proposed, not in palette.ts yet. Mud: an earth brown kept well below Gold's lightness so
+     the two never read as one family. Its lip is lighter than its face for the reason
+     Departure's is: a dark face's darker lip disappears against the dark pit. */
+  --face-mud:#8a5a2b; --edge-mud:#bb8a55; --mark-mud:#f6e6cc;
+  /* Tunnel: violet, the one hue no existing tile uses. */
+  --face-tunnel:#7a4fd0; --edge-tunnel:#4b2c8f; --hole-tunnel:#1b1030; --ring-tunnel:#d9c9ff;
+  /* Pillar, two candidate stones: a warm dark basalt and a pale limestone. */
+  --basalt:#4b4038; --basalt-top:#857567; --limestone:#b9ad98; --limestone-top:#e6dcc9;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f3efe6; --surface:#ffffff; --ink:#1c2420; --muted:#5a6b65; --rule:#dcd4c2; --accent:#0e7a43;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f3efe6; --surface:#ffffff; --ink:#1c2420; --muted:#5a6b65; --rule:#dcd4c2; --accent:#0e7a43;
+  color-scheme: light;
+}
+*{box-sizing:border-box;}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Source Sans 3', system-ui, sans-serif;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+.wrap{max-width:760px; margin:0 auto; padding-block:48px 64px;}
+h1,h2,h3{font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0;}
+h1{font-size:clamp(1.9rem,6vw,2.6rem); font-weight:600; letter-spacing:-0.01em;}
+h2{font-size:1.45rem; font-weight:600; margin-bottom:4px;}
+h3{font-size:1.05rem; font-weight:600; margin:26px 0 4px;}
+.kicker,.optionkicker{
+  font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 8px;
+}
+.lede{color:var(--muted); font-size:1.02rem; line-height:1.6; max-width:64ch; margin:14px 0 0;}
+p code, li code{
+  font-family:'IBM Plex Mono', monospace; font-size:0.86em; background:var(--surface);
+  padding:0.12em 0.4em; border-radius:5px; color:var(--ink);
+}
+header{padding-bottom:36px; border-bottom:1px solid var(--rule);}
+section{padding-block:40px; border-bottom:1px solid var(--rule);}
+section:last-of-type{border-bottom:none;}
+.rule-line{color:var(--muted); line-height:1.6; margin:10px 0 0; max-width:64ch;}
+.rule-line strong{color:var(--ink); font-weight:600;}
+
+/* --- candidate gallery: each card shows the candidate on both pit colours --- */
+.gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; margin-top:16px;}
+/* a Tunnel card shows two tiles in each pit, so its cards need twice the room */
+.gallery.pairs{grid-template-columns:repeat(auto-fill,minmax(290px,1fr));}
+.card{
+  background:var(--surface); border:1px solid var(--rule); border-radius:12px; padding:12px;
+  display:flex; flex-direction:column; gap:10px; cursor:pointer;
+}
+.card:has(input:checked){border-color:var(--accent); box-shadow:0 0 0 1px var(--accent);}
+.card .pits{display:flex; gap:8px;}
+.card .pit{flex:1; border-radius:8px; padding:10px 6px; display:flex; justify-content:center; gap:6px;}
+.card .name{font-weight:600; font-size:0.95rem; display:flex; gap:8px; align-items:center;}
+.card .note{color:var(--muted); font-size:0.84rem; line-height:1.45;}
+.card input{accent-color:var(--accent); margin:0;}
+.pit.dark{background:var(--pit-dark);} .pit.light{background:var(--pit-light);}
+
+/* --- a tile, sized by --s (its width). 64 by 57 with a 6-deep lip is the app's own face --- */
+.cell{
+  width:var(--s); height:calc(var(--s) * 57 / 64); flex:0 0 auto; position:relative;
+  border-radius:calc(var(--s) * 14 / 64);
+}
+.cell.tile{
+  background:var(--face); border-bottom:calc(var(--s) * 6 / 64) solid var(--edge);
+  box-shadow:0 calc(var(--s) * 2 / 64) 0 rgba(0,0,0,0.15);
+}
+/* Mud's "sunk" look: half the lip and pushed down by the other half, so its face sits lower
+   than its neighbours' while its bottom edge stays on the same line. */
+.cell.tile.sunk{border-bottom-width:calc(var(--s) * 3 / 64); margin-top:calc(var(--s) * 3 / 64); height:calc(var(--s) * 54 / 64);}
+.cell svg{position:absolute; inset:0; width:100%; height:100%; display:block; overflow:visible;}
+.cell .roo{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:calc(var(--s) * 0.42);}
+
+/* --- board mock --- */
+.controls{display:flex; flex-wrap:wrap; gap:8px 18px; margin:16px 0 4px; color:var(--muted); font-size:0.9rem;}
+.controls label{display:flex; gap:6px; align-items:center; cursor:pointer;}
+.controls input{accent-color:var(--accent);}
+.boards{display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; margin-top:16px;}
+.boardwrap{display:flex; flex-direction:column; gap:6px;}
+.boardwrap .size{font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted);}
+.board{display:grid; gap:calc(var(--s) / 8); padding:calc(var(--s) / 6); border-radius:calc(var(--s) / 4);}
+.board.dark{background:var(--pit-dark);} .board.light{background:var(--pit-light);}
+.grey .board, .grey .card .pit{filter:grayscale(1);}
+.picked{
+  margin-top:18px; padding:14px 16px; background:var(--surface); border:1px solid var(--rule);
+  border-radius:10px; line-height:1.6;
+}
+.picked strong{font-weight:600;}
+footer{padding-top:28px; color:var(--muted); font-size:0.88rem; line-height:1.6;}
+</style>
+
+<div class="wrap" id="wrap">
+
+  <header>
+    <p class="kicker">Cangupa — Down Under tile designs</p>
+    <h1>Pillar, Mud and Tunnel</h1>
+    <p class="lede">Three new tiles, several candidate looks for each. Pick one per tile; the
+      board at the bottom redraws with your picks next to the five tiles the game already has,
+      on the dark and the light pit and at three sizes. The smallest is about what a turned
+      8×7 board gives on a small phone, which is where a design that looked fine tends to fall
+      apart.</p>
+  </header>
+
+  <section>
+    <p class="optionkicker">Tile 1 of 3 — <code>#</code></p>
+    <h2>Pillar</h2>
+    <p class="rule-line">A solid block that is <strong>not a tile</strong>: never landed on,
+      never needs a visit, and a jump cannot pass over it. So it must not look like ground. It
+      sits in the pit, smaller than a tile, with no lip and no mark, and reads as taller than
+      its neighbours from a lighter top and a shadow thrown to one side.</p>
+    <div class="gallery" id="gallery-pillar"></div>
+  </section>
+
+  <section>
+    <p class="optionkicker">Tile 2 of 3 — <code>m</code></p>
+    <h2>Mud</h2>
+    <p class="rule-line">One visit. You can <strong>step off it but not jump off it</strong>.
+      Every candidate uses the same brown and the same sunk face (half a lip, set lower than
+      the tiles beside it); what differs is the mark, which has to carry the rule without
+      relying on colour.</p>
+    <div class="gallery" id="gallery-mud"></div>
+  </section>
+
+  <section>
+    <p class="optionkicker">Tile 3 of 3 — <code>a</code>/<code>a</code>, <code>b</code>/<code>b</code></p>
+    <h2>Tunnel</h2>
+    <p class="rule-line">A pair of mouths: land on one and you come out of its twin, and both
+      are used up. Every candidate is a dark hole in a violet tile. What needs choosing is how
+      <strong>two pairs on one board are told apart</strong> without colour. Each card shows a
+      mouth of pair <code>a</code> beside a mouth of pair <code>b</code>.</p>
+    <div class="gallery pairs" id="gallery-tunnel"></div>
+  </section>
+
+  <section>
+    <p class="optionkicker">Together</p>
+    <h2>On a board</h2>
+    <p class="rule-line">One 5×5 board holding every tile kind: two pillars, two mud tiles, two
+      tunnel pairs, and the existing Common, Gold, Steel, Departure and Arrival. Switch on
+      greyscale to check that nothing depends on hue alone.</p>
+    <div class="controls">
+      <label><input type="checkbox" id="grey"> Greyscale</label>
+    </div>
+    <div class="boards" id="boards"></div>
+    <div class="picked" id="picked"></div>
+  </section>
+
+  <footer>
+    Mockups only — nothing here has touched <code>Board.tsx</code> or <code>palette.ts</code>.
+    The colours for Mud, Tunnel and both Pillar stones are proposals. The picks belong in
+    <code>docs/down-under-collection.md</code>, which <code>CANGUPA-159</code> to
+    <code>CANGUPA-161</code> draw from.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // Every mark is drawn in the app's own 64 by 57 face space, like tile-marks.html's, so a
+  // chosen design ports to Board.tsx's SVG with its numbers unchanged.
+  var W = 64, H = 57, CX = 32, CY = 28.5;
+  function svg(inner){ return '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' + inner + '</svg>'; }
+
+  // ---- Pillar ----------------------------------------------------------------------------
+  // The stone is 38 to 40 across in a 64-wide cell, about 60%, and its shadow carries the whole
+  // shape to about 70%. Smaller than a tile on purpose: a pillar drawn at full tile size reads
+  // as a dark tile you could stand on.
+  function octagon(cx, cy, r){
+    var pts = [];
+    for (var i = 0; i < 8; i++){
+      var a = Math.PI / 8 + i * Math.PI / 4;
+      pts.push((cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a) * 0.9).toFixed(1));
+    }
+    return pts.join(" ");
+  }
+  function pillar(shape, stone){
+    var body = "var(--" + stone + ")", top = "var(--" + stone + "-top)";
+    var shadow = '<ellipse cx="' + (CX + 5) + '" cy="' + (CY + 7) + '" rx="20" ry="17" fill="rgba(0,0,0,0.32)"/>';
+    if (shape === "round"){
+      return svg(shadow +
+        '<ellipse cx="' + CX + '" cy="' + (CY + 3) + '" rx="19" ry="17" fill="' + body + '"/>' +
+        '<ellipse cx="' + CX + '" cy="' + (CY - 2) + '" rx="19" ry="17" fill="' + top + '"/>' +
+        '<ellipse cx="' + CX + '" cy="' + (CY - 2) + '" rx="12" ry="10.5" fill="' + body + '"/>');
+    }
+    if (shape === "octagon"){
+      return svg(shadow +
+        '<polygon points="' + octagon(CX, CY + 3, 20) + '" fill="' + body + '"/>' +
+        '<polygon points="' + octagon(CX, CY - 2, 20) + '" fill="' + top + '"/>' +
+        '<polygon points="' + octagon(CX, CY - 2, 13) + '" fill="' + body + '"/>');
+    }
+    // "stalagmite": seen from above, a cone is rings closing in on an off-centre tip
+    return svg(shadow +
+      '<ellipse cx="' + CX + '" cy="' + (CY + 2) + '" rx="20" ry="18" fill="' + body + '"/>' +
+      '<ellipse cx="' + (CX - 2) + '" cy="' + (CY - 1) + '" rx="14" ry="12.5" fill="none" stroke="' + top + '" stroke-width="2.5"/>' +
+      '<ellipse cx="' + (CX - 4) + '" cy="' + (CY - 4) + '" rx="7.5" ry="6.5" fill="none" stroke="' + top + '" stroke-width="2.5"/>' +
+      '<ellipse cx="' + (CX - 5) + '" cy="' + (CY - 6) + '" rx="2.6" ry="2.3" fill="' + top + '"/>');
+  }
+  var PILLARS = [
+    { id: "round-basalt", name: "Round, basalt", note: "A column top with a lighter rim. Dark stone: strongest on the light pit.", draw: function(){ return pillar("round", "basalt"); } },
+    { id: "round-limestone", name: "Round, limestone", note: "The same column in pale stone: strongest on the dark pit, closer to a tile in lightness.", draw: function(){ return pillar("round", "limestone"); } },
+    { id: "octagon-basalt", name: "Eight-sided, basalt", note: "Corners make it read as built or cut, less like a round tile seen small.", draw: function(){ return pillar("octagon", "basalt"); } },
+    { id: "octagon-limestone", name: "Eight-sided, limestone", note: "The cut shape in pale stone.", draw: function(){ return pillar("octagon", "limestone"); } },
+    { id: "stalagmite-basalt", name: "Stalagmite, basalt", note: "Rings closing on a tip, the cave reading. The most detail, so the first to blur when small.", draw: function(){ return pillar("stalagmite", "basalt"); } }
+  ];
+
+  // ---- Mud -------------------------------------------------------------------------------
+  var MUD_STROKE = 'stroke="var(--mark-mud)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+  var MUDS = [
+    { id: "waves", name: "Two wavy lines", note: "Reads as wet ground. Says what it is, not what it forbids.",
+      draw: function(){ return svg(
+        '<path d="M14 21q6-7 12 0t12 0 12 0" ' + MUD_STROKE + '/>' +
+        '<path d="M14 36q6-7 12 0t12 0 12 0" ' + MUD_STROKE + '/>'); } },
+    { id: "no-jump", name: "Crossed-out jump", note: "A hop arc with a bar through it. The most literal: it states the rule.",
+      draw: function(){ return svg(
+        '<path d="M13 40C17 10 47 10 51 40" ' + MUD_STROKE + '/>' +
+        '<path d="M44 33l7 7 3-9" ' + MUD_STROKE + '/>' +
+        '<path d="M19 44L45 12" ' + MUD_STROKE + '/>'); } },
+    { id: "drips", name: "Drips", note: "Three drips hanging from the top edge. Decorative; leaves the centre of the face clear.",
+      draw: function(){ return svg(
+        '<path d="M18 6v10" ' + MUD_STROKE + '/><circle cx="18" cy="22" r="3" fill="var(--mark-mud)"/>' +
+        '<path d="M32 6v18" ' + MUD_STROKE + '/><circle cx="32" cy="30" r="3" fill="var(--mark-mud)"/>' +
+        '<path d="M46 6v7" ' + MUD_STROKE + '/><circle cx="46" cy="19" r="3" fill="var(--mark-mud)"/>'); } },
+    { id: "footprint", name: "Sunk footprints", note: "Two paw prints pressed in. Fits the kangaroo, says \"stuck\" rather than \"wet\".",
+      draw: function(){ return svg(
+        '<ellipse cx="23" cy="31" rx="6" ry="11" transform="rotate(-12 23 31)" fill="var(--mark-mud)"/>' +
+        '<ellipse cx="42" cy="26" rx="6" ry="11" transform="rotate(12 42 26)" fill="var(--mark-mud)"/>'); } }
+  ];
+
+  // ---- Tunnel ----------------------------------------------------------------------------
+  function hole(rx, ry){ return '<ellipse cx="' + CX + '" cy="' + CY + '" rx="' + rx + '" ry="' + ry + '" fill="var(--hole-tunnel)"/>'; }
+  function ring(rx, ry){ return '<ellipse cx="' + CX + '" cy="' + CY + '" rx="' + rx + '" ry="' + ry + '" fill="none" stroke="var(--ring-tunnel)" stroke-width="2.5"/>'; }
+  function diamond(r, attrs){
+    return '<polygon points="' + CX + ',' + (CY - r) + ' ' + (CX + r * 1.12) + ',' + CY + ' ' + CX + ',' + (CY + r) + ' ' + (CX - r * 1.12) + ',' + CY + '" ' + attrs + '/>';
+  }
+  var TUNNELS = [
+    { id: "rings", name: "One ring, two rings", note: "Pair a has one ring round the hole, pair b has two. Same shape, so both read as \"tunnel\" first.",
+      draw: function(pair){ return svg(hole(11, 10) + ring(15, 13.5) + (pair === "b" ? ring(20.5, 18.5) : "")); } },
+    { id: "shape", name: "Round hole, diamond hole", note: "Pair a is round, pair b is a diamond. The clearest difference at small sizes; the diamond is less of a burrow.",
+      draw: function(pair){
+        return svg(pair === "b"
+          ? diamond(19, 'fill="none" stroke="var(--ring-tunnel)" stroke-width="2.5" stroke-linejoin="round"') + diamond(13, 'fill="var(--hole-tunnel)"')
+          : hole(13, 11.5) + ring(18, 16)); } },
+    { id: "dots", name: "One dot, two dots", note: "The same ringed hole on both, with one or two dots beneath it, like the tally strokes on Gold and Steel.",
+      draw: function(pair){
+        var dots = pair === "b"
+          ? '<circle cx="26" cy="47" r="3" fill="var(--ring-tunnel)"/><circle cx="38" cy="47" r="3" fill="var(--ring-tunnel)"/>'
+          : '<circle cx="32" cy="47" r="3" fill="var(--ring-tunnel)"/>';
+        return svg('<ellipse cx="32" cy="22" rx="11" ry="9.5" fill="var(--hole-tunnel)"/>' +
+          '<ellipse cx="32" cy="22" rx="15.5" ry="13.5" fill="none" stroke="var(--ring-tunnel)" stroke-width="2.5"/>' + dots); } }
+  ];
+
+  // ---- the existing tiles, simplified to what is needed to judge the new ones beside them ----
+  // Tally strokes sit 22% of the width apart about the centre, as Board.tsx's Strokes does.
+  function strokes(count, color){
+    var out = "";
+    for (var i = 0; i < count; i++){
+      var x = W * (0.5 + (i - (count - 1) / 2) * 0.22);
+      out += '<line x1="' + (x + 4) + '" y1="16" x2="' + (x - 4) + '" y2="41" stroke="' + color + '" stroke-width="5" stroke-linecap="round"/>';
+    }
+    return svg(out);
+  }
+  // The doorway bracket of CANGUPA-107, opening to the right, drawn by eye rather than ported:
+  // it is here as a neighbour, not under review.
+  function bracket(inward){
+    var m = 'stroke="#ffffff" stroke-linecap="round"';
+    var arrow = inward
+      ? '<line x1="56" y1="28.5" x2="34" y2="28.5" ' + m + ' stroke-width="5"/><polygon points="34,19 22,28.5 34,38" fill="#ffffff"/>'
+      : '<line x1="24" y1="28.5" x2="46" y2="28.5" ' + m + ' stroke-width="5"/><polygon points="46,19 58,28.5 46,38" fill="#ffffff"/>';
+    return svg('<path d="M48 11H14V46H48" fill="none" ' + m + ' stroke-width="3" stroke-linejoin="round"/>' + arrow);
+  }
+
+  // The page opens on the owner's picks (2026-11-14), so it shows what was chosen; the other
+  // candidates stay selectable as the record of what was turned down.
+  var picks = { pillar: "octagon-limestone", mud: "waves", tunnel: "shape" };
+  function find(list, id){ return list.filter(function(o){ return o.id === id; })[0]; }
+
+  function tile(face, inner, extra){
+    return '<div class="cell tile' + (extra || "") + '" style="--face:var(--face-' + face + ');--edge:var(--edge-' + face + ')">' + (inner || "") + '</div>';
+  }
+  function cellFor(ch){
+    switch (ch){
+      case ".": return '<div class="cell"></div>';
+      case "#": return '<div class="cell">' + find(PILLARS, picks.pillar).draw() + '</div>';
+      case "m": return tile("mud", find(MUDS, picks.mud).draw(), " sunk");
+      case "a": case "b": return tile("tunnel", find(TUNNELS, picks.tunnel).draw(ch));
+      case "S": return tile("common", '<span class="roo">🦘</span>');
+      case "1": return tile("common");
+      case "2": return tile("gold", strokes(2, "var(--mark-gold)"));
+      case "3": return tile("steel", strokes(3, "#ffffff"));
+      case ">": return tile("departure", bracket(false));
+      case "L": return tile("arrival", bracket(true));
+    }
+    return "";
+  }
+
+  // ---- galleries ----
+  function gallery(hostId, group, list, sample){
+    var host = document.getElementById(hostId);
+    list.forEach(function(opt){
+      var card = document.createElement("label");
+      card.className = "card";
+      var cells = sample(opt);
+      card.innerHTML =
+        '<div class="pits"><div class="pit dark" style="--s:52px">' + cells + '</div>' +
+        '<div class="pit light" style="--s:52px">' + cells + '</div></div>' +
+        '<span class="name"><input type="radio" name="' + group + '" value="' + opt.id + '"' +
+          (picks[group] === opt.id ? " checked" : "") + '>' + opt.name + '</span>' +
+        '<span class="note">' + opt.note + '</span>';
+      card.querySelector("input").addEventListener("change", function(){ picks[group] = opt.id; drawBoards(); });
+      host.appendChild(card);
+    });
+  }
+  gallery("gallery-pillar", "pillar", PILLARS, function(o){ return '<div class="cell">' + o.draw() + '</div>'; });
+  gallery("gallery-mud", "mud", MUDS, function(o){ return tile("mud", o.draw(), " sunk"); });
+  gallery("gallery-tunnel", "tunnel", TUNNELS, function(o){ return tile("tunnel", o.draw("a")) + tile("tunnel", o.draw("b")); });
+
+  // ---- board ----
+  // Not a real level (nothing checks it is solvable): laid out so each new tile sits next to
+  // the existing tile it is most likely to be confused with — Mud by Gold, Tunnel by Arrival
+  // and Steel, a Pillar between two Commons where a jump would cross it.
+  var ROWS = ["S1#1a", "1m231", ">1.mb", "1b#L1", "a1321"];
+  // 64 is the page's comfortable size; 40 is a 7-wide (turned 8×7) board on a 320pt phone;
+  // 28 is under that, to see what breaks first.
+  var SIZES = [64, 40, 28];
+  function drawBoards(){
+    var host = document.getElementById("boards");
+    host.innerHTML = "";
+    SIZES.forEach(function(size){
+      ["dark", "light"].forEach(function(theme){
+        var wrap = document.createElement("div");
+        wrap.className = "boardwrap";
+        wrap.innerHTML = '<span class="size">' + size + 'px, ' + theme + ' pit</span>' +
+          '<div class="board ' + theme + '" style="--s:' + size + 'px;grid-template-columns:repeat(' + ROWS[0].length + ',' + size + 'px)">' +
+          ROWS.join("").split("").map(cellFor).join("") + '</div>';
+        host.appendChild(wrap);
+      });
+    });
+    document.getElementById("picked").innerHTML = "Picked: <strong>Pillar</strong> " + find(PILLARS, picks.pillar).name.toLowerCase() +
+      " · <strong>Mud</strong> " + find(MUDS, picks.mud).name.toLowerCase() +
+      " · <strong>Tunnel</strong> " + find(TUNNELS, picks.tunnel).name.toLowerCase();
+  }
+  drawBoards();
+  document.getElementById("grey").addEventListener("change", function(e){
+    document.getElementById("wrap").classList.toggle("grey", e.target.checked);
+  });
+})();
+</script>
+</body></html>

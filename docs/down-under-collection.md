@@ -85,6 +85,12 @@ characters proposed below are free.
   crosses, and prefer squares that block a jump the walk did *not* take, so
   the pillar removes wrong answers and leaves the solution intact.
 
+**Chosen (`CANGUPA-158`): eight-sided, in pale limestone** (`#b9ad98` body,
+`#e6dcc9` top, as drawn on
+[tile-down-under.html](../tools/visualizers/tile-down-under.html)). The dark
+basalt first proposed below nearly disappears on the dark pit, and the cut
+corners keep a pillar apart from a round Tunnel mouth at small sizes.
+
 Design ideas:
 
 - It must read as "obstacle", not "ground". Give it a smaller footprint than
@@ -104,6 +110,11 @@ Design ideas:
 - **Why it is hard:** it removes half the exits from a square, and the
   player only notices once they are standing on it.
 - **Generator:** when the walk stands on a mud tile, it only picks steps.
+
+**Chosen (`CANGUPA-158`): two wavy lines**, in cream `#f6e6cc` on a brown
+`#8a5a2b` face with a lighter `#bb8a55` lip, drawn sunk (half a lip). It was
+the one mark still readable at 28 px. It says "wet ground" and not "no
+jumping", so the how-to-play text has to carry the rule.
 
 Design ideas:
 
@@ -132,6 +143,11 @@ The teleporter pair, renamed to fit the theme: a burrow with two mouths.
   at any other point of the walk.
 - **Limits for a first version:** one pair per level in Burrow, up to two
   pairs from Warren on.
+
+**Chosen (`CANGUPA-158`): pair `a` is a round hole, pair `b` a diamond
+hole**, each with one light ring, on a violet `#7a4fd0` face with a `#4b2c8f`
+lip. Ring count (one ring against two) kept both mouths round but the second
+ring was lost at 28 px.
 
 Design ideas:
 
@@ -201,7 +217,7 @@ European Portuguese with the informal "tu", like the existing ones.
 `CANGUPA-157` is the generation itself. It depends on these tasks:
 
 1. **`CANGUPA-158`**, a review page to choose how the three tiles look.
-   Only the drawing half of the tile tasks waits on it.
+   Done: the picks are recorded under each tile above.
 2. **`CANGUPA-159` Pillar, `CANGUPA-160` Mud, `CANGUPA-161` Tunnel**, in
    that order, smallest first. Each covers the rule in both engines, the
    generator's walk, the plan column, the drawing and the strings. Both
@@ -234,6 +250,3 @@ European Portuguese with the informal "tu", like the existing ones.
   pass over a mouth without entering it. Proposed: no and yes.
 - Whether Pillar may also appear in Lay of the Land's packs later, or stays
   exclusive to the paid collection.
-- Which Mud mark and which way of telling Tunnel pairs apart, best settled
-  on a review page like `tools/visualizers/tile-marks.html` did for
-  Departure and Arrival.

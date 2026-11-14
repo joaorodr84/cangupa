@@ -174,17 +174,6 @@ The priority can change at any time; the ID never does.
   open decisions at the end of that file. `CANGUPA-72` has to land before
   the 7×6 and 8×7 packs ship, and `CANGUPA-106` before the collection can
   be sold.
-- [P3] `CANGUPA-158` — Build a review page for the look of the three new
-  Down Under tiles (Pillar, Mud, Tunnel), the way
-  `tools/visualizers/tile-marks.html` settled Departure and Arrival: each
-  design idea from
-  [docs/down-under-collection.md](docs/down-under-collection.md)'s "New
-  tiles" section drawn side by side, in light and dark, at real board
-  sizes down to the smallest a turned 8×7 gives. The outcome is the owner's
-  pick of a Pillar shape and colour, a Mud mark, and a way of telling two
-  Tunnel pairs apart without colour, recorded back in that file. Comes
-  before the drawing half of `CANGUPA-159` to `CANGUPA-161`; their rule
-  halves do not wait on it.
 - [P3] `CANGUPA-159` — Add the Pillar tile (`#`): a solid block that is
   never landed on and blocks any jump whose middle square it is. Rule and
   design ideas are in
