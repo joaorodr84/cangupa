@@ -41,9 +41,9 @@ function measure(rows, { budget = 2000000, rules } = {}) {
     const moves = game.legalMoves(cells, pos);
     let p = 0, n = 0, win = false;
     for (const m of moves) {
-      const next = Uint8Array.from(cells), i = m.y * game.w + m.x;
-      next[i] -= 1;
-      const r = rec(next, i);
+      const next = Uint8Array.from(cells);
+      const dest = game.land(next, m.y * game.w + m.x);
+      const r = rec(next, dest);
       p += r.p; n += r.n; win = win || r.win;
     }
     const out = { p: moves.length ? p / moves.length : 0, n, win };
@@ -91,10 +91,10 @@ function search(rows, { cap = 3000000, rules } = {}) {
     if (++nodes > cap) { capped = true; return false; }
     const moves = game.legalMoves(cells, pos);
     for (const m of moves) {
-      const next = Uint8Array.from(cells), i = m.y * game.w + m.x;
-      next[i] -= 1;
+      const next = Uint8Array.from(cells);
+      const dest = game.land(next, m.y * game.w + m.x);
       path.push(moves.length); trail.push(m);
-      if (rec(next, i)) return true;
+      if (rec(next, dest)) return true;
       path.pop(); trail.pop();
       if (capped) return false;
     }

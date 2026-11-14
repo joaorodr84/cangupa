@@ -123,3 +123,20 @@ test('mud turns with its level unchanged and keeps its rule (CANGUPA-160)', () =
   expect(g.moveKind(0, 3)).toBe('blocked-mud'); // the jump that ran right now runs down
   expect(g.moveKind(2, 1)).toBe('blocked-mud');
 });
+
+test('a tunnel pair turns with its level and keeps the same twin relationship (CANGUPA-161)', () => {
+  // 'S.a1' / '1..a': pair a's mouths at (2,0) and (3,1).
+  const original = ['S.a1', '1..a'];
+  const turned = orientLevel(original, false);
+  expect(turned).toEqual(['S1', '..', 'a.', '1a']);
+
+  const g1 = new Game(original);
+  g1.play({ x: 2, y: 0 }); // enters the mouth at (2,0)
+  expect(g1.x).toBe(3); // warped to its twin, (3,1)
+  expect(g1.y).toBe(1);
+
+  const g2 = new Game(turned);
+  g2.play({ x: 0, y: 2 }); // the same mouth, now at (0,2)
+  expect(g2.x).toBe(1); // warped to its twin, now at (1,3)
+  expect(g2.y).toBe(3);
+});

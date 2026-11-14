@@ -544,3 +544,38 @@ test('draws a mud tile in its own colours with the wavy mark, and no tally strok
   expect(faceStyle.top).toBe(2);
   expect(faceStyle.bottom).toBe(2);
 });
+
+test('draws a tunnel mouth with the round hole for pair a and the diamond for pair b (CANGUPA-161)', async () => {
+  const g = new Game(['Sa1b', '.a.b']);
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tilesOf(g, { hints: true })} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  expect(screen.getByTestId('tile-tunnel-1-0-a')).toBeTruthy();
+  expect(screen.getByTestId('tile-tunnel-1-1-a')).toBeTruthy();
+  expect(screen.getByTestId('tile-tunnel-3-0-b')).toBeTruthy();
+  expect(screen.getByTestId('tile-tunnel-3-1-b')).toBeTruthy();
+  expect(screen.queryByTestId('tile-tunnel-2-0-a')).toBeNull(); // the plain tile between them has none
+  const faceStyle = Object.assign({}, ...[screen.getByTestId('tile-face-1-0').props.style].flat());
+  expect(faceStyle.backgroundColor).toBe(palette.tileTunnel);
+});
+
+test('after a warp, the entered mouth is gone and the twin is worn under the kangaroo (CANGUPA-161)', async () => {
+  const g = new Game(['S.a', '1.a']);
+  g.play({ x: 2, y: 0 }); // jump onto the mouth; the real move, played before this render
+
+  await render(
+    <Board w={g.w} h={g.h} tiles={tilesOf(g, { hints: true })} rooX={g.x} rooY={g.y} face="front" flip={false} palette={palette} anim={false} strings={strings} />,
+  );
+
+  // the entered mouth (2,0): used up and vacated
+  const leftLip = Object.assign({}, ...[screen.getByTestId('tile-2-0').props.style].flat());
+  expect(leftLip.opacity).toBe(0);
+  // the twin (2,1): used up but still occupied — the kangaroo's own slot sits there instead
+  const twinLip = Object.assign({}, ...[screen.getByTestId('tile-2-1').props.style].flat());
+  expect(twinLip.opacity).toBe(0.82);
+  expect(screen.getByTestId('roo').props.style).toEqual(
+    expect.arrayContaining([expect.objectContaining({ left: `${(100 * 2) / 3}%`, top: `${(100 * 1) / 2}%` })]),
+  );
+});

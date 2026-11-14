@@ -125,6 +125,8 @@ export const pt: Strings = {
     tileArrival: (direction) => `Casa de chegada, abre para o lado ${direction}`,
     tileMud: 'Casa de lama, sai-se com um passo mas não a saltar',
     tileHereMud: 'Casa de lama, estás aqui, só passos',
+    tileTunnel: 'Casa de toca, teletransporta para a sua gémea',
+    tileHereTunnel: 'Casa de toca, estás aqui, depois de teletransportado',
     pillar: 'Pilar, impede saltos por cima',
     tileSuggestedMove: 'Jogada sugerida',
     directionTop: 'de cima',

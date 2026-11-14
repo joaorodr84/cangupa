@@ -32,14 +32,22 @@ const OUT = path.join(__dirname, 'solutions.json');
 const LETTERS = 'rldu'; // the same order as game.js's DIRS: right, left, down, up
 const VECS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
-// The moves search() found, as a string. `start` is the cell index the level starts on.
-function encode(moves, start, width) {
+// The moves search() found, as a string, for `game` (a fresh Game for the same level). Takes
+// the Game itself, not just its start cell and width, because each move's *own* x/y (what
+// search() recorded, i.e. the mouth the player tapped) is not necessarily where the next
+// move's direction has to be measured from: a Tunnel mouth (CANGUPA-161) warps the player to
+// its twin, so the position this function tracks has to follow game.tunnel the same way
+// land() does, or every move after the first tunnel use would be encoded from the wrong cell.
+function encode(game, moves) {
+  const { start, w: width } = game;
   let x = start % width, y = (start / width) | 0, out = '';
   for (const m of moves) {
     const dx = Math.sign(m.x - x), dy = Math.sign(m.y - y);
     const k = VECS.findIndex(([vx, vy]) => vx === dx && vy === dy);
     out += m.jump ? LETTERS[k].toUpperCase() : LETTERS[k];
-    x = m.x; y = m.y;
+    const landed = m.y * width + m.x;
+    const dest = game.tunnel[landed] >= 0 ? game.tunnel[landed] : landed;
+    x = dest % width; y = (dest / width) | 0;
   }
   return out;
 }
@@ -70,7 +78,7 @@ function solutionsFor(packs) {
     solutions: pack.levels.map((lv, j) => {
       const found = search(lv.rows, { cap: CAP });
       if (!found) throw new Error(`pack ${i + 1} ${pack.name} level ${j + 1}: no solution found`);
-      return encode(found.moves, new Game(lv.rows).start, pack.width);
+      return encode(new Game(lv.rows), found.moves);
     }),
   }));
 }

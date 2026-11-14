@@ -12,6 +12,11 @@
 //             is not a move. Steps are unaffected, since a step has no middle square.
 //   m         a Mud tile (CANGUPA-160): needs one visit, and can be stepped off but not jumped
 //             off. Jumping onto it is unrestricted. Never the start tile.
+//   a a, b b  a Tunnel pair (CANGUPA-161): two mouths sharing one letter. Landing on either
+//             mouth moves the player to its twin instead, and both mouths are used up by that
+//             one move — the two mouths are not independent tiles, they are the same move
+//             whichever one is entered. Up to two pairs per level ('a' and 'b'). Never the
+//             start tile, and a jump may pass freely over a live mouth without entering it.
 // Coordinates: x is the column, y the row, both counted from the top-left.
 //
 // cells[i] is how many visits a tile still needs. The start tile counts as
@@ -42,6 +47,8 @@ const DIRS: ReadonlyArray<readonly [number, number]> = [
 const ARROWS = '><v^';
 // the Arrival characters, in the same order as DIRS: entered moving right, left, down, up
 const ARRIVALS = 'RLDU';
+// the Tunnel pair characters: both mouths of pair k share TUNNELS[k]
+const TUNNELS = 'ab';
 
 export class Game {
   readonly w: number;
@@ -59,6 +66,15 @@ export class Game {
   // 1 where the tile is Mud. A flag beside max, like dir and arrival: Mud is an ordinary
   // one-visit tile in every way but how it can be left.
   readonly mud: Uint8Array;
+  // the twin's cell index for each Tunnel mouth, -1 everywhere else. Landing on a mouth warps
+  // the player here instead (see land() below) — kept as a plain lookup rather than, say, a
+  // pair id, since every place that needs to act on a mouth (land(), the view's own tunnelPair
+  // below) only ever needs "where does this one send you" or "which letter is this", never both
+  // at once.
+  readonly tunnel: Int16Array;
+  // 0 or 1 for a Tunnel mouth (an index into 'ab'), -1 everywhere else — the view's own use,
+  // so boardView.ts can show the right hole shape without redoing TUNNELS.indexOf(c) itself.
+  readonly tunnelPair: Int8Array;
   readonly start: number;
   cells!: Uint8Array;
   pos!: number;
@@ -72,7 +88,10 @@ export class Game {
     this.arrival = new Int8Array(this.w * this.h).fill(-1);
     this.pillar = new Uint8Array(this.w * this.h);
     this.mud = new Uint8Array(this.w * this.h);
+    this.tunnel = new Int16Array(this.w * this.h).fill(-1);
+    this.tunnelPair = new Int8Array(this.w * this.h).fill(-1);
     let start = -1;
+    const tunnelMouths = new Map<number, number[]>();
     rows.forEach((row, y) => {
       for (let x = 0; x < this.w; x++) {
         const c = row[x] || '.';
@@ -90,11 +109,24 @@ export class Game {
         else if (c === 'm') {
           this.max[i] = 1;
           this.mud[i] = 1;
+        } else if (TUNNELS.includes(c)) {
+          this.max[i] = 1;
+          const k = TUNNELS.indexOf(c);
+          this.tunnelPair[i] = k;
+          const cells = tunnelMouths.get(k) ?? [];
+          cells.push(i);
+          tunnelMouths.set(k, cells);
         }
         if (c === 'S' || c === 's' || c === 'T') start = i;
       }
     });
     if (start < 0) throw new Error('level has no start');
+    // Pair up each Tunnel letter's mouths: exactly two per letter used, each twinned to the other.
+    for (const [k, cells] of tunnelMouths) {
+      if (cells.length !== 2) throw new Error(`tunnel pair '${TUNNELS[k]}' has ${cells.length} mouths, needs exactly 2`);
+      this.tunnel[cells[0]] = cells[1];
+      this.tunnel[cells[1]] = cells[0];
+    }
     this.start = start;
     this.reset();
   }
@@ -138,7 +170,9 @@ export class Game {
 
   // Steps of one tile, plus jumps of two. Standing on a Departure tile, only
   // the way it points; landing on an Arrival tile, only moving the way it opens;
-  // never a jump over a Pillar; and standing on Mud, steps only.
+  // never a jump over a Pillar; standing on Mud, steps only. A live Tunnel mouth is an
+  // ordinary destination here — the warp it causes is play()/solve()/countSolutions()'s own
+  // business (land(), below), not a restriction on which moves are legal.
   legalMoves(cells: Uint8Array = this.cells, pos: number = this.pos): Move[] {
     const px = pos % this.w;
     const py = (pos / this.w) | 0;
@@ -226,11 +260,23 @@ export class Game {
     return this.cells[i] > 0 ? 'legal' : 'empty';
   }
 
+  // Lands on cell i: uses up its visit and, if i is a live Tunnel mouth, also uses up its
+  // twin's and returns the twin's index instead of i — the single place the Tunnel rule
+  // actually takes effect. play()/solve()/countSolutions() all go through this rather than
+  // decrementing cells[i] and continuing from i themselves, so none of the three can drift out
+  // of step with the rule — solve()/countSolutions() in particular, which never call play().
+  land(cells: Uint8Array, i: number): number {
+    cells[i] -= 1;
+    const twin = this.tunnel[i];
+    if (twin < 0) return i;
+    cells[twin] -= 1;
+    return twin;
+  }
+
   // Play a move from legalMoves().
   play(move: Pick<Move, 'x' | 'y'>): void {
     this.history.push({ pos: this.pos, cells: Uint8Array.from(this.cells) });
-    this.pos = move.y * this.w + move.x;
-    this.cells[this.pos] -= 1;
+    this.pos = this.land(this.cells, move.y * this.w + move.x);
   }
 
   undo(): boolean {
@@ -251,10 +297,9 @@ export class Game {
       if (dead.has(k)) return false;
       for (const m of this.legalMoves(cells, pos)) {
         const next = Uint8Array.from(cells);
-        const i = m.y * this.w + m.x;
-        next[i] -= 1;
+        const dest = this.land(next, m.y * this.w + m.x);
         path.push(m);
-        if (rec(next, i)) return true;
+        if (rec(next, dest)) return true;
         path.pop();
       }
       dead.add(k);
@@ -276,9 +321,8 @@ export class Game {
       let n = 0;
       for (const m of this.legalMoves(cells, pos)) {
         const next = Uint8Array.from(cells);
-        const i = m.y * this.w + m.x;
-        next[i] -= 1;
-        n = Math.min(cap, n + rec(next, i));
+        const dest = this.land(next, m.y * this.w + m.x);
+        n = Math.min(cap, n + rec(next, dest));
         if (n >= cap) break;
       }
       memo.set(k, n);

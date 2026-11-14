@@ -49,7 +49,11 @@
 //   pillars      [lo, hi] how many Pillars (CANGUPA-159) a level may get: solid blocks on empty squares
 //                that a jump cannot pass over. A count, not a share like the columns above, and an
 //                upper bound: a pillar is only placed where it blocks a jump between two tiles
-//   intro        the kind this pack introduces ('gold', 'steel', 'arrow', 'arrival', 'pillar' or 'mud'): its first few
+//   tunnels      [lo, hi] how many Tunnel pairs (CANGUPA-161) a level may get, up to 2. A count like
+//                pillars, not a share: a pair is two single-visit mouths, landing on either one
+//                moving the player to the other and using both up at once
+//   intro        the kind this pack introduces ('gold', 'steel', 'arrow', 'arrival', 'pillar', 'mud' or
+//                'tunnel'): its first few
 //                levels (INTRO_PLAIN in gen-packs.js) do not have it, so the pack starts gently
 //   mixes        variants a pack alternates between, level by level (pack 6: Common, Departures and
 //                Gold, then Common, Departures and Steel; pack 8 the same with Arrival in place of

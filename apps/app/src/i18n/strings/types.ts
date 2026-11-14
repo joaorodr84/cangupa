@@ -195,6 +195,11 @@ export interface Strings {
     // rule, since the mark on the tile (two wavy lines) only says "wet ground".
     readonly tileMud: string;
     readonly tileHereMud: string;
+    // A Tunnel mouth (CANGUPA-161) and the same tile the moment a warp lands the player on it.
+    // Pair-agnostic, like the drawn hole/ring mark names no pair either: which of the two it is
+    // changes nothing a screen reader user can act on.
+    readonly tileTunnel: string;
+    readonly tileHereTunnel: string;
     readonly pillar: string;
     readonly tileSuggestedMove: string;
     readonly directionTop: string;

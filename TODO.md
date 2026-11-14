@@ -168,24 +168,17 @@ The priority can change at any time; the ID never does.
   ideas, pack icon ideas, and the pack sentences in English and Portuguese.
   This task is the generation itself: the ten plan entries in
   [pack-plan.js](tools/pack-plan.js), running the generator, and wiring the
-  packs, names, blurbs, icons and colours into `apps/app`. Blocked on
-  `CANGUPA-159`, `CANGUPA-160` and `CANGUPA-161` (the three tiles) and
-  `CANGUPA-162` (more than one collection), and on the owner confirming the
-  open decisions at the end of that file. `CANGUPA-72` has to land before
-  the 7×6 and 8×7 packs ship, and `CANGUPA-106` before the collection can
-  be sold.
+  packs, names, blurbs, icons and colours into `apps/app`. The three tiles
+  (`CANGUPA-159`, `CANGUPA-160`, `CANGUPA-161`) are done; still blocked on
+  `CANGUPA-162` (more than one collection), on the owner confirming the
+  remaining open decisions at the end of that file, and on deciding the
+  ten packs' own `pillars`/`mud`/`tunnels` ranges (no plan entry sets them
+  yet — the table in the doc names the pack and board, not the numbers).
+  `CANGUPA-72` has to land before the 7×6 and 8×7 packs ship, and
+  `CANGUPA-106` before the collection can be sold.
   Also owed here, because the help screen only lists a tile once it ships in
   a level: the how-to-play row for each new tile (`HelpSections.tsx`'s
   `TilesSection`, strings in `en` and `pt`).
-- [P3] `CANGUPA-161` — Add the Tunnel tile (`a`/`a`, `b`/`b`), the
-  teleporter pair: landing on one mouth moves you to its twin and uses up
-  both. Same scope as `CANGUPA-159`, per
-  [docs/down-under-collection.md](docs/down-under-collection.md), and the
-  largest of the three: a move's destination is no longer where it lands,
-  which reaches undo, the hint solver, the hop animation and the
-  generator's walk (which must place both mouths as a pair and never land
-  on either again). Needs the two open rule questions in that file answered
-  first: may the start be a mouth, may a jump pass over one.
 - [P3] `CANGUPA-162` — Support more than one collection, end to end. Today
   [pack-plan.js](tools/pack-plan.js) exports one flat `PACKS` list,
   `packs.json` and the generated

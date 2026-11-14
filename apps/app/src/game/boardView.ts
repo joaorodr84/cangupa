@@ -8,6 +8,12 @@ export type ArrowDirection = 'right' | 'left' | 'down' | 'up';
 // Game's arrow directions are an index into its DIRS: right, left, down, up.
 const ARROW_DIRECTIONS: readonly ArrowDirection[] = ['right', 'left', 'down', 'up'];
 
+// A Tunnel mouth's pair (CANGUPA-161) — which of the (at most two) pairs on the board it
+// belongs to, so Board.tsx can draw the right hole shape. Game's own tunnelPair is an index
+// into this same order.
+export type TunnelPair = 'a' | 'b';
+const TUNNEL_PAIRS: readonly TunnelPair[] = ['a', 'b'];
+
 // The same four vectors as board.ts's own (unexported) DIRS, in ArrowDirection terms rather than
 // an index into it, for directionalMove below to compare a legalMoves() entry's offset against.
 const DIRECTION_VECTOR: Readonly<Record<ArrowDirection, readonly [number, number]>> = {
@@ -48,6 +54,11 @@ export interface TileView {
   readonly arrival: ArrowDirection | null;
   // A Mud tile (CANGUPA-160): it can be stepped off but not jumped off.
   readonly mud: boolean;
+  // A Tunnel mouth (CANGUPA-161), and which pair it belongs to, or null for any other tile.
+  // Landing on it (play(), not this view) moves the player to its twin instead and uses both
+  // up — nothing here needs to know that; worn/gone already read correctly either way, since
+  // they come from the real Game state after the warp, not from this field.
+  readonly tunnel: TunnelPair | null;
   // Used up and the kangaroo is standing on it.
   readonly worn: boolean;
   // Used up and the kangaroo has moved off it: it has dropped away.
@@ -73,12 +84,14 @@ export interface TileLabelStrings {
   readonly tileHereGold: string;
   readonly tileHereSteel: string;
   readonly tileHereMud: string;
+  readonly tileHereTunnel: string;
   readonly tileCommon: string;
   readonly tileGold: (left: number) => string;
   readonly tileSteel: (left: number) => string;
   readonly tileDeparture: (direction: string) => string;
   readonly tileArrival: (direction: string) => string;
   readonly tileMud: string;
+  readonly tileTunnel: string;
   readonly tileSuggestedMove: string;
   readonly pillar: string;
   readonly directionTop: string;
@@ -104,10 +117,11 @@ function directionLabel(direction: ArrowDirection, t: TileLabelStrings): string 
 // CANGUPA-140): 1-based row/column, then exactly one of gone/here/
 // Departure/Arrival/kind-and-visits-left, then "Suggested move" when this
 // is the solver's own tip. gone beats worn beats arrow/arrival beats the
-// Mud beats the plain kind, standing on it included: its rule is about leaving, so "you are here"
-// on a Mud tile is exactly when a listener needs to hear it is one. The rest is the same priority tilesOf's own fields are already mutually
-// exclusive under (a tile can't be both gone and worn, and an arrow/arrival
-// tile is never also a Gold/Steel one).
+// Mud and Tunnel both beat the plain kind, standing on them included: Mud's rule is about
+// leaving, and Tunnel's "here" is only ever the twin a warp just landed the player on, so "you
+// are here" is exactly when a listener needs to hear which one it is. The rest is the same
+// priority tilesOf's own fields are already mutually exclusive under (a tile can't be both gone
+// and worn, and an arrow/arrival/mud/tunnel tile is never also a Gold/Steel one).
 export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): string {
   const position = t.tilePosition(tile.y + 1, tile.x + 1);
   const state = tile.gone
@@ -115,22 +129,26 @@ export function tileAccessibilityLabel(tile: TileView, t: TileLabelStrings): str
     : tile.worn
       ? tile.mud
         ? t.tileHereMud
-        : tile.kind === 3
-        ? t.tileHereSteel
-        : tile.kind === 2
-          ? t.tileHereGold
-          : t.tileHereCommon
+        : tile.tunnel
+          ? t.tileHereTunnel
+          : tile.kind === 3
+            ? t.tileHereSteel
+            : tile.kind === 2
+              ? t.tileHereGold
+              : t.tileHereCommon
       : tile.arrow
         ? t.tileDeparture(directionLabel(tile.arrow, t))
         : tile.arrival
           ? t.tileArrival(directionLabel(tile.arrival, t))
           : tile.mud
             ? t.tileMud
-            : tile.kind === 3
-            ? t.tileSteel(tile.left)
-            : tile.kind === 2
-              ? t.tileGold(tile.left)
-              : t.tileCommon;
+            : tile.tunnel
+              ? t.tileTunnel
+              : tile.kind === 3
+                ? t.tileSteel(tile.left)
+                : tile.kind === 2
+                  ? t.tileGold(tile.left)
+                  : t.tileCommon;
   return tile.tip ? `${position}, ${state}. ${t.tileSuggestedMove}` : `${position}, ${state}.`;
 }
 
@@ -196,6 +214,7 @@ export function tilesOf(game: Game, { hints, tip = null }: TilesOptions): readon
       // ^ 1 flips right<->left (0<->1) and down<->up (2<->3) — DIRS' own pairing (see board.ts).
       arrival: game.arrival[i] >= 0 ? ARROW_DIRECTIONS[game.arrival[i] ^ 1] : null,
       mud: game.mud[i] === 1,
+      tunnel: game.tunnelPair[i] >= 0 ? TUNNEL_PAIRS[game.tunnelPair[i]] : null,
       worn: left === 0 && i === game.pos,
       gone: left === 0 && i !== game.pos,
       hint: Boolean(target) && hints,

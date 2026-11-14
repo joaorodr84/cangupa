@@ -23,6 +23,7 @@ import {
   type PillarView,
   type TileLabelStrings,
   type TileView,
+  type TunnelPair,
 } from '../game/boardView';
 import { type Palette } from '../theme/palette';
 import Kangaroo, { type Face } from './Kangaroo';
@@ -349,16 +350,18 @@ const LIP_HEIGHT = 4;
 // raspberry whatever its visits, otherwise the kind sets it. Typed on just the three fields
 // either one reads, not the full TileView, so TileSwatch below can call them without the fields
 // (worn, gone, hint, ...) that only make sense for a tile actually on the board.
-function faceColor(tile: Pick<SwatchTile, 'kind' | 'arrow' | 'arrival' | 'mud'>, palette: Palette): string {
+function faceColor(tile: Pick<SwatchTile, 'kind' | 'arrow' | 'arrival' | 'mud' | 'tunnel'>, palette: Palette): string {
   if (tile.arrow) return palette.tileDeparture;
   if (tile.arrival) return palette.tileArrival;
   if (tile.mud) return palette.tileMud;
+  if (tile.tunnel) return palette.tileTunnel;
   return tile.kind === 3 ? palette.tile3 : tile.kind === 2 ? palette.tile2 : palette.tile;
 }
-function edgeColor(tile: Pick<SwatchTile, 'kind' | 'arrow' | 'arrival' | 'mud'>, palette: Palette): string {
+function edgeColor(tile: Pick<SwatchTile, 'kind' | 'arrow' | 'arrival' | 'mud' | 'tunnel'>, palette: Palette): string {
   if (tile.arrow) return palette.edgeDeparture;
   if (tile.arrival) return palette.edgeArrival;
   if (tile.mud) return palette.edgeMud;
+  if (tile.tunnel) return palette.edgeTunnel;
   return tile.kind === 3 ? palette.edge3 : tile.kind === 2 ? palette.edge2 : palette.edge;
 }
 
@@ -485,11 +488,35 @@ function MudMark({ x, y, color }: { readonly x: number; readonly y: number; read
   );
 }
 
+// A Tunnel mouth's mark (CANGUPA-161): a dark hole with one light ring, the design picked on
+// tools/visualizers/tile-down-under.html (CANGUPA-158) — round for pair 'a', a diamond outline
+// for pair 'b', since two pairs on one board have to be told apart without relying on colour.
+// Centred and sized exactly as that page's "shape" candidate, in the same 64 by 57 face space
+// as every other mark.
+function TunnelMark({ x, y, pair, hole, ring }: { readonly x: number; readonly y: number; readonly pair: TunnelPair; readonly hole: string; readonly ring: string }) {
+  const cx = 32, cy = 28.5;
+  if (pair === 'b') {
+    const diamond = (r: number) => `${cx},${cy - r} ${cx + r * 1.12},${cy} ${cx},${cy + r} ${cx - r * 1.12},${cy}`;
+    return (
+      <Svg testID={`tile-tunnel-${x}-${y}-${pair}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
+        <Polygon points={diamond(19)} fill="none" stroke={ring} strokeWidth={2.5} strokeLinejoin="round" />
+        <Polygon points={diamond(13)} fill={hole} />
+      </Svg>
+    );
+  }
+  return (
+    <Svg testID={`tile-tunnel-${x}-${y}-${pair}`} pointerEvents="none" style={StyleSheet.absoluteFill} viewBox="0 0 64 57" preserveAspectRatio="none">
+      <Ellipse cx={cx} cy={cy} rx={18} ry={16} fill="none" stroke={ring} strokeWidth={2.5} />
+      <Ellipse cx={cx} cy={cy} rx={13} ry={11.5} fill={hole} />
+    </Svg>
+  );
+}
+
 // Everything a static tile face needs to draw itself — no worn/gone/hint/jump/tip, since those
 // only mean something for a tile that's actually part of a playable board.
-// `mud` is optional here, unlike on TileView, so the swatches written before Mud existed
-// (HelpSections.tsx's Gold/Steel/Departure/Arrival rows) stay valid as they are.
-export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'arrival'> & { readonly mud?: boolean };
+// `mud`/`tunnel` are optional here, unlike on TileView, so the swatches written before either
+// existed (HelpSections.tsx's Gold/Steel/Departure/Arrival rows) stay valid as they are.
+export type SwatchTile = Pick<TileView, 'x' | 'y' | 'kind' | 'left' | 'arrow' | 'arrival'> & { readonly mud?: boolean; readonly tunnel?: TunnelPair | null };
 
 // A tile's face, lip and visit/direction mark with none of the real Tile's Pressable,
 // animation or kangaroo — for anywhere else in the app that wants to show what a tile kind
@@ -521,6 +548,7 @@ export function TileSwatch({
       {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
       {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
       {tile.mud && <MudMark x={tile.x} y={tile.y} color={palette.markMud} />}
+      {tile.tunnel && <TunnelMark x={tile.x} y={tile.y} pair={tile.tunnel} hole={palette.tunnelHole} ring={palette.tunnelRing} />}
       {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
         <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
       )}
@@ -573,6 +601,7 @@ function Tile({ tile, w, h, palette, anim, label, onPress, onPressEmpty, blocked
         {tile.arrow && <ArrowMark x={tile.x} y={tile.y} kind="arrow" direction={tile.arrow} color={palette.markDeparture} />}
         {tile.arrival && <ArrowMark x={tile.x} y={tile.y} kind="arrival" direction={tile.arrival} color={palette.markArrival} />}
         {tile.mud && <MudMark x={tile.x} y={tile.y} color={palette.markMud} />}
+        {tile.tunnel && <TunnelMark x={tile.x} y={tile.y} pair={tile.tunnel} hole={palette.tunnelHole} ring={palette.tunnelRing} />}
         {!tile.arrow && !tile.arrival && tile.kind >= 2 && tile.left >= 1 && (
           <Strokes x={tile.x} y={tile.y} count={tile.left} color={tile.kind === 3 ? palette.mark3 : palette.mark2} />
         )}

@@ -251,3 +251,55 @@ describe('mud tiles (CANGUPA-160)', () => {
     expect(new Game(['S1.1']).solve()).not.toBeNull();
   });
 });
+
+describe('tunnels (CANGUPA-161)', () => {
+  const to = (g: Game) => g.legalMoves().map((m) => [m.x, m.y]);
+
+  test('a mouth is an ordinary one-visit tile, twinned to the other cell sharing its letter', () => {
+    const g = new Game(['S.a', '1.a']);
+    expect(g.max[2]).toBe(1);
+    expect(g.max[5]).toBe(1);
+    expect(g.tunnel[2]).toBe(5);
+    expect(g.tunnel[5]).toBe(2);
+    expect(g.remaining()).toBe(3);
+    expect(g.start).toBe(0); // never the start
+  });
+
+  test('landing on either mouth moves the player to its twin and uses both up at once', () => {
+    const g = new Game(['S.a', '1.a']);
+    g.play({ x: 2, y: 0 }); // jump onto the mouth at (2,0)
+    expect(g.pos).toBe(5); // standing on the twin, not where the tap landed
+    expect(g.at(2, 0)).toBe(0);
+    expect(g.at(2, 1)).toBe(0);
+    expect(g.remaining()).toBe(1);
+  });
+
+  test('undo restores both mouths and the position in one step, from the pre-move snapshot', () => {
+    const g = new Game(['S.a', '1.a']);
+    g.play({ x: 2, y: 0 });
+    expect(g.undo()).toBe(true);
+    expect(g.pos).toBe(0);
+    expect(g.remaining()).toBe(3);
+  });
+
+  test('solve()/countSolutions() warp through a mouth too, not just play()', () => {
+    const g = new Game(['S.a', '1.a']);
+    const path = g.solve()!;
+    expect(path).toHaveLength(2);
+    path.forEach((m) => g.play(m));
+    expect(g.won).toBe(true);
+    // 2, not 1: either mouth may be entered first (warping to the other), and both clear it
+    expect(new Game(['S.a', '1.a']).countSolutions(10)).toBe(2);
+  });
+
+  test('a jump passes freely over a live mouth without entering it, unlike a Pillar', () => {
+    // 'Sa1.a': the mouth at (1,0) sits in the middle of the jump to (2,0); its twin at (4,0) is
+    // unrelated to that jump.
+    expect(to(new Game(['Sa1.a']))).toEqual([[1, 0], [2, 0]]);
+  });
+
+  test('a mismatched pair throws when the level is built', () => {
+    expect(() => new Game(['Sa1'])).toThrow("tunnel pair 'a' has 1 mouths, needs exactly 2");
+    expect(() => new Game(['Sa1', 'aa.'])).toThrow("tunnel pair 'a' has 3 mouths, needs exactly 2");
+  });
+});

@@ -14,7 +14,7 @@ import { type Palette } from '../theme/palette';
 // Shared fields for every synthetic tile these diagrams ever need: Common
 // only, no Gold/Steel/Departure/Arrival — kind/arrow/arrival stay fixed so a
 // tile literal only has to say where it is and what state it's in.
-const COMMON = { double: false, cracked: false, kind: 1, arrow: null, arrival: null, mud: false, tip: false } as const;
+const COMMON = { double: false, cracked: false, kind: 1, arrow: null, arrival: null, mud: false, tunnel: null, tip: false } as const;
 
 // The kangaroo's own starting tile: a Common tile has one visit, and
 // `board.ts`'s `reset()` always spends it just for standing there (see

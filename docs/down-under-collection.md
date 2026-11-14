@@ -143,6 +143,9 @@ The teleporter pair, renamed to fit the theme: a burrow with two mouths.
   at any other point of the walk.
 - **Limits for a first version:** one pair per level in Burrow, up to two
   pairs from Warren on.
+- **Decided (`CANGUPA-161`):** the start tile is never a mouth. A jump may
+  pass over a mouth without entering it, the same as any other live tile —
+  Pillar stays the only tile a jump cannot pass over.
 
 **Chosen (`CANGUPA-158`): pair `a` is a round hole, pair `b` a diamond
 hole**, each with one light ring, on a violet `#7a4fd0` face with a `#4b2c8f`
@@ -218,14 +221,16 @@ European Portuguese with the informal "tu", like the existing ones.
 
 1. **`CANGUPA-158`**, a review page to choose how the three tiles look.
    Done: the picks are recorded under each tile above.
-2. **`CANGUPA-159` Pillar, `CANGUPA-160` Mud, `CANGUPA-161` Tunnel**, in
-   that order, smallest first. Each covers the rule in both engines, the
+2. **`CANGUPA-159` Pillar, `CANGUPA-160` Mud, `CANGUPA-161` Tunnel.** Done,
+   in that order, smallest first. Each covers the rule in both engines, the
    generator's walk, the plan column, the drawing and the strings. Both
    engines, because the generator and solver in `tools/` load
    `apps/web-classic/js/game.js` while the app plays with
    [board.ts](../apps/app/src/game/board.ts): a rule that lands in only one
    gives levels the app cannot play. This touches `apps/web-classic` even
-   though its own UI work is paused.
+   though its own UI work is paused. No pack entry uses any of the three
+   yet — `pillars`/`mud`/`tunnels` ranges per pack is `CANGUPA-157`'s own
+   open decision, not part of adding the tiles themselves.
 3. **`CANGUPA-162`**, more than one collection, in the tools and the app.
    Today `collection` is a single string in the locale files, `PACKS` is one
    flat list of ten, and `PackIcon` and `PACK_COLORS` index by pack number
@@ -246,7 +251,5 @@ European Portuguese with the informal "tu", like the existing ones.
   Under" at all.
 - Whether Sinkhole is the free taster, or the first few levels of every pack.
 - Price.
-- Tunnel rules at the edges: may the start tile be a mouth, and may a jump
-  pass over a mouth without entering it. Proposed: no and yes.
 - Whether Pillar may also appear in Lay of the Land's packs later, or stays
   exclusive to the paid collection.

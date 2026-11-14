@@ -119,6 +119,7 @@ describe('tileAccessibilityLabel', () => {
     arrow: null,
     arrival: null,
     mud: false,
+    tunnel: null,
     worn: false,
     gone: false,
     hint: false,
@@ -284,5 +285,36 @@ describe('mud tiles (CANGUPA-160)', () => {
     const g = new Game(['Sm.1']);
     g.play({ x: 1, y: 0 });
     expect(directionalMove(g, 'right')).toBeNull(); // the only thing that way is a jump
+  });
+});
+
+describe('tunnel mouths (CANGUPA-161)', () => {
+  it('flags both mouths with their pair letter, and no other tile', () => {
+    const tiles = tilesOf(new Game(['S.a', '1.a']), { hints: true });
+    expect(tiles.map((tile) => tile.tunnel)).toEqual([null, 'a', null, 'a']);
+  });
+
+  it('tells pair a from pair b', () => {
+    // 'Sa1b' / '.a.b': pair a's mouths at (1,0)/(1,1), pair b's at (3,0)/(3,1).
+    const g = new Game(['Sa1b', '.a.b']);
+    const at = (x: number, y: number) => tilesOf(g, { hints: true }).find((tile) => tile.x === x && tile.y === y)!;
+    expect(at(1, 0).tunnel).toBe('a');
+    expect(at(1, 1).tunnel).toBe('a');
+    expect(at(3, 0).tunnel).toBe('b');
+    expect(at(3, 1).tunnel).toBe('b');
+    expect(at(2, 0).tunnel).toBeNull();
+  });
+
+  it('labels a mouth with its rule, and differently once a warp lands the player on it', () => {
+    const g = new Game(['S.a', '1.a']);
+    const before = tilesOf(g, { hints: true }).find((tile) => tile.x === 2 && tile.y === 0)!;
+    expect(tileAccessibilityLabel(before, t)).toBe('Row 1, column 3, Tunnel tile, teleports to its twin.');
+    g.play({ x: 2, y: 0 }); // warps to the twin at (2,1)
+    const twin = tilesOf(g, { hints: true }).find((tile) => tile.x === 2 && tile.y === 1)!;
+    expect(tileAccessibilityLabel(twin, t)).toBe('Row 2, column 3, Tunnel tile, you are here, after teleporting.');
+  });
+
+  it('a directional press may enter a mouth like any other tile', () => {
+    expect(directionalMove(new Game(['S.a', '1.a']), 'right')).toEqual({ x: 2, y: 0, jump: true });
   });
 });

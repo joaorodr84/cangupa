@@ -65,12 +65,13 @@ const hasArrow = rows => /[><v^]/.test(rows.join(''));
 const hasArrival = rows => /[RLDU]/.test(rows.join(''));
 const hasPillar = rows => rows.join('').includes('#');
 const hasMud = rows => rows.join('').includes('m');
+const hasTunnel = rows => /[ab]/.test(rows.join(''));
 // Whether a level has every kind the plan entry lists (Common is always there).
 function hasKinds(spec, rows) {
   const kinds = kindsOf(spec);
   return (!kinds.includes(2) || hasGold(rows)) && (!kinds.includes(3) || hasSteel(rows))
     && (!spec.arrows || hasArrow(rows)) && (!spec.arrivals || hasArrival(rows))
-    && (!spec.pillars || hasPillar(rows)) && (!spec.mud || hasMud(rows));
+    && (!spec.pillars || hasPillar(rows)) && (!spec.mud || hasMud(rows)) && (!spec.tunnels || hasTunnel(rows));
 }
 // The kinds a pack's plan entry allows (default: Normal and Gold, as before CANGUPA-68).
 const kindsOf = spec => spec.tiles || [1, 2];
@@ -111,8 +112,11 @@ function buildPool(spec, { seed, count, cap = 150000, exactBudget = 40000 }) {
     // pillars are a count, not a share of the landings: they sit on empty squares, which a
     // long walk has fewer of, so scaling them with the walk would ask for most where fewest fit
     const pillars = m.pillars && (spec.mixes || rand() >= .12) ? Math.round(lerp(m.pillars, rand())) : 0;
+    // tunnels are a count of pairs too, for the same reason pillars is one, and capped the same
+    // way randomWalk caps them (at most 2, 'a' and 'b')
+    const tunnels = m.tunnels && (spec.mixes || rand() >= .12) ? Math.round(lerp(m.tunnels, rand())) : 0;
     const rows = randomWalk({ width: spec.width, height: spec.height, steps, doubles, jump,
-      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows, arrivals, pillars, mud }, rand);
+      maxVisits: Math.max(...kinds), noTwo: kinds.includes(3) && !kinds.includes(2), arrows, arrivals, pillars, mud, tunnels }, rand);
     if (!rows || !fillsBox(rows)) continue;
     const key = canonical(rows);
     if (seen.has(key)) continue;
@@ -199,4 +203,4 @@ function score(rows, { cap = 150000, exactBudget = 40000 } = {}) {
 
 const quantile = (sorted, q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
 
-module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasArrival, hasPillar, hasMud, hasKinds, kindsOf };
+module.exports = { buildPool, pick, pickAlternating, quantile, canonical, fillsBox, variants, score, hasGold, hasSteel, hasArrow, hasArrival, hasPillar, hasMud, hasTunnel, hasKinds, kindsOf };

@@ -209,6 +209,78 @@ assert.strictEqual(new Game(['Sm1']).start, 0);      // mud is never the start
   assert.strictEqual(canonical(['S#1', '1..']), canonical(['1S', '.#', '.1']));
 }
 
+// a Tunnel pair (`a`/`a`, CANGUPA-161): landing on either mouth moves the player to its twin,
+// using up both at once. 'S.a' / '1.a': the mouths sit at (2,0) and (2,1).
+g = new Game(['S.a', '1.a']);
+assert.strictEqual(g.max[2], 1);                     // an ordinary one-visit tile for clearing
+assert.strictEqual(g.max[5], 1);
+assert.strictEqual(g.tunnel[2], 5);                  // twinned to each other
+assert.strictEqual(g.tunnel[5], 2);
+assert.strictEqual(g.remaining(), 3);
+assert.deepStrictEqual(to(g), [[2, 0], [0, 1]]);     // the mouth is a legal destination like any tile
+g.play({ x: 2, y: 0 });                              // jump onto the mouth
+assert.strictEqual(g.pos, 5);                        // standing on the TWIN, not where the tap landed
+assert.strictEqual(g.at(2, 0), 0);                   // the entered mouth: used up
+assert.strictEqual(g.at(2, 1), 0);                   // the twin: also used up, by that one move
+assert.strictEqual(g.remaining(), 1);                // only the plain tile at (0,1) is left
+assert.ok(g.undo() && g.pos === 0 && g.remaining() === 3); // undo restores both mouths and the start
+const tunnelGame = new Game(['S.a', '1.a']);
+const tunnelPath = tunnelGame.solve();
+assert.strictEqual(tunnelPath.length, 2);            // jump to the mouth, then on from the twin
+tunnelPath.forEach(m => tunnelGame.play(m));
+assert.ok(tunnelGame.won);
+assert.strictEqual(new Game(['S.a', '1.a']).start, 0); // a mouth is never the start
+assert.throws(() => new Game(['Sa1']), /tunnel pair 'a' has 1 mouths, needs exactly 2/);
+assert.throws(() => new Game(['Sa1', 'aa.']), /tunnel pair 'a' has 3 mouths, needs exactly 2/);
+// a jump may pass freely over a live mouth without entering it (the owner's decision, CANGUPA-161) —
+// unlike a Pillar, a mouth in the middle of a jump is not a move it blocks. 'Sa1.a': the mouth at
+// (1,0) sits in the middle of the jump from the start to (2,0); its twin at (4,0) is unrelated.
+assert.deepStrictEqual(to(new Game(['Sa1.a'])), [[1, 0], [2, 0]]); // both the step onto the mouth and the jump over it
+// countSolutions/measure also warp through the mouth, not just solve()/play() — 2, not 1: either
+// mouth may be entered first (warping to the other), and both ways clear the level
+assert.strictEqual(new Game(['S.a', '1.a']).countSolutions(10), 2);
+assert.strictEqual(measure(['S.a', '1.a']).solutions, 2);
+// the stored-solution format (CANGUPA-163) stays correct through a warp: the move after one is
+// encoded from the twin, not from the mouth the player actually tapped
+{
+  const rows = ['S.a', '1.a'];
+  const found = search(rows, { cap: 150000 });
+  const sol = encode(new Game(rows), found.moves);
+  assert.strictEqual(sol, 'RL');                     // jump right onto the mouth, then jump left from the twin —
+                                                      // 'L' because (2,1) to (0,1) is itself 2 tiles, not because
+                                                      // of anything the warp does to the move's own distance
+  assert.ok(replay(rows, sol));
+}
+
+// the generator's own Tunnel support (CANGUPA-161): unlike every other tile above, a tunnel has
+// to be placed as the walk goes, not painted on afterwards — landing on a mouth moves the walk
+// itself. Checks every walk's own mouths pair up correctly, stay single-visit, and the walk
+// (with the warp) still clears, with every other mechanic mixed in at once.
+{
+  const rand = makeRng(13);
+  let made = 0, sawOne = 0, sawTwo = 0;
+  for (let n = 0; n < 300; n++) {
+    const rows = randomWalk({ width: 7, height: 6, steps: 22, doubles: 2, jump: .3, tunnels: 2, arrows: 1, arrivals: 1, mud: 1, pillars: 1 }, rand);
+    if (!rows) continue;
+    made++;
+    verifyLevel(rows); // throws if the walk's own path, now including its warps, does not clear
+    const text = rows.join('');
+    const a = (text.match(/a/g) || []).length, b = (text.match(/b/g) || []).length;
+    assert.ok(a === 0 || a === 2, `pair a appears ${a} times in ${rows.join('/')}`);
+    assert.ok(b === 0 || b === 2, `pair b appears ${b} times in ${rows.join('/')}`);
+    if (a === 2) sawOne++;
+    if (a === 2 && b === 2) sawTwo++;
+  }
+  assert.ok(sawOne > made * .9, `expected nearly all of ${made} walks to place pair a, saw ${sawOne}`);
+  assert.ok(sawTwo > made * .9, `expected nearly all of ${made} walks to place both pairs, saw ${sawTwo}`);
+  // undirected like a Pillar: turning the board relabels coordinates, not which cells are twinned
+  assert.strictEqual(canonical(['S.a', '1.a']), canonical(['S1', '..', 'aa']));
+}
+
+// too few steps left to fit a pair at all: tunnels asked for but not placed fails outright,
+// rather than silently shipping a level with fewer than asked
+assert.strictEqual(randomWalk({ width: 2, height: 1, steps: 2, doubles: 0, jump: 0, tunnels: 1 }, makeRng(1)), null);
+
 // the generator's own Arrival support (CANGUPA-104): a walk that places Arrival tiles must still
 // produce a solvable level, the same guarantee arrows already have. Not shipped in any pack yet
 // (CANGUPA-88) -- this only proves the walk-marking logic itself is self-consistent.
@@ -324,7 +396,7 @@ if (fs.existsSync(packsFile)) {
 
 // stored solutions (tools/solutions.json, built by tools/gen-solutions.js, CANGUPA-163)
 // the format first: a lowercase letter is a step, an uppercase one a jump
-assert.strictEqual(encode(search(['S.1', '..1']).moves, 0, 3), 'Rd');   // jump the gap, step down
+assert.strictEqual(encode(new Game(['S.1', '..1']), search(['S.1', '..1']).moves), 'Rd');   // jump the gap, step down
 assert.ok(replay(['S.1', '..1'], 'Rd'));
 assert.ok(!replay(['S.1', '..1'], 'rd'));                              // a step onto the gap is not a move
 assert.ok(!replay(['S.1', '..1'], 'R'));                               // legal, but stops short of clearing

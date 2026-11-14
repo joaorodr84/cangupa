@@ -128,6 +128,8 @@ export const en: Strings = {
     tileArrival: (direction) => `Arrival tile, opens to the ${direction} edge`,
     tileMud: 'Mud tile, can be stepped off but not jumped off',
     tileHereMud: 'Mud tile, you are here, steps only',
+    tileTunnel: 'Tunnel tile, teleports to its twin',
+    tileHereTunnel: 'Tunnel tile, you are here, after teleporting',
     pillar: 'Pillar, blocks jumps over it',
     tileSuggestedMove: 'Suggested move',
     directionTop: 'top',

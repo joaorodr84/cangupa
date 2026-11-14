@@ -38,7 +38,17 @@ const MOVES = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 //              other route could have used. A square that blocks nothing is left empty: a pillar
 //              there would be decoration the player has to rule out. So a level may get fewer
 //              than asked for, or none.
-function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, arrivals = 0, pillars = 0, mud = 0 }, rand) {
+//   tunnels    this many Tunnel pairs (CANGUPA-161), up to 2 ('a' and 'b'). Unlike every tile
+//              above, a tunnel cannot be painted onto a walk after the fact: landing on a mouth
+//              moves the walk itself, not just what a later move is allowed to do from where it
+//              already was, so the walk has to take the teleport as one of its own steps. At a
+//              handful of chosen steps, instead of the usual move, the walk steps or jumps onto
+//              a fresh cell (the first mouth) and continues from a second, unrelated fresh cell
+//              (its twin) as if it had been there all along. Both mouths are then off limits to
+//              every later step, matching the rule that neither may be landed on again. A walk
+//              that cannot find a fresh cell for one of the two, at the step chosen for it,
+//              fails outright (returns null) rather than placing fewer than asked.
+function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo = false, arrows = 0, arrivals = 0, pillars = 0, mud = 0, tunnels = 0 }, rand) {
   const visits = new Map(); // cell index -> times landed on
   const exits = new Map();  // cell index -> the direction (index into MOVES) the walk first left it by
   const entries = new Map(); // cell index -> the direction (index into MOVES) the walk first entered it by
@@ -49,7 +59,58 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
   visits.set(start, 1);
   let doubleCount = 0;
 
+  // Tunnel mouths (CANGUPA-161): cell index -> pair index (0 for 'a', 1 for 'b'), decided before
+  // the walk so the steps that place them are known as the loop reaches each one. Chosen from
+  // every step but the first (the start's own first move still behaves normally) and the last
+  // (so the walk always has at least one further line, from the twin, to validate the "no mouth
+  // landed on again" rule against) — picked without replacement, so two pairs never share a step.
+  const tunnelAt = new Map();
+  const tunnelSteps = new Set();
+  if (tunnels > 0) {
+    const want = Math.min(tunnels, 2);
+    const candidates = [];
+    for (let s = 1; s < steps - 1; s++) candidates.push(s);
+    for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
+    for (const s of candidates.slice(0, want)) tunnelSteps.add(s);
+  }
+  let tunnelsPlaced = 0;
+
   for (let n = 1; n < steps; n++) {
+    if (tunnelSteps.has(n)) {
+      // The one step/jump that doesn't land where it reaches: a fresh cell reachable from here
+      // (the mouth) sends the walk on from a second, unrelated fresh cell (its twin) instead.
+      // Candidates are built the same way as any other step, just narrowed to cells nobody has
+      // visited yet — a mouth is always a first, and only, visit.
+      const options = [];
+      for (let k = 0; k < MOVES.length; k++) {
+        const [dx, dy] = MOVES[k];
+        for (const dist of [1, 2]) {
+          const nx = x + dx * dist, ny = y + dy * dist, i = ny * width + nx;
+          if (nx < 0 || ny < 0 || nx >= width || ny >= height || visits.has(i)) continue;
+          options.push({ nx, ny, i, weight: dist === 2 ? jump : 1 - jump, k, over: dist === 2 ? (y + dy) * width + x + dx : -1 });
+        }
+      }
+      if (!options.length) return null;
+      let roll = rand() * options.reduce((sum, o) => sum + o.weight, 0), mouth = options[0];
+      for (const o of options) { if ((roll -= o.weight) <= 0) { mouth = o; break; } }
+
+      const free = [];
+      for (let i = 0; i < width * height; i++) if (!visits.has(i) && i !== mouth.i) free.push(i);
+      if (!free.length) return null;
+      const twin = free[(rand() * free.length) | 0];
+
+      if (!exits.has(y * width + x)) exits.set(y * width + x, mouth.k);
+      if (!entries.has(mouth.i)) entries.set(mouth.i, mouth.k);
+      if (mouth.over >= 0) { jumped.add(mouth.over); jumpedFrom.add(y * width + x); }
+      visits.set(mouth.i, 1);
+      visits.set(twin, 1);
+      tunnelAt.set(mouth.i, tunnelsPlaced);
+      tunnelAt.set(twin, tunnelsPlaced);
+      tunnelsPlaced++;
+      x = twin % width; y = (twin / width) | 0;
+      continue;
+    }
+
     const options = [];
     for (let k = 0; k < MOVES.length; k++) {
       const [dx, dy] = MOVES[k];
@@ -61,7 +122,9 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
         // The start is never one of those: reset() in board.js/board.ts spends one of its visits
         // just for standing there, so a start revisited into a Gold or Steel tile would begin
         // already one visit short of full strength (CANGUPA-82) -- it always stays a 1-visit tile.
-        if (seen >= maxVisits || (seen === 1 && doubleCount >= doubles) || (i === start && seen >= 1)) continue;
+        // A Tunnel mouth (CANGUPA-161) is excluded the same final way, for the same reason: once
+        // placed it stays at exactly one visit, forever, with no exception for `doubles`.
+        if (seen >= maxVisits || (seen === 1 && doubleCount >= doubles) || (i === start && seen >= 1) || tunnelAt.has(i)) continue;
         // jumps are rarer than steps; revisiting a tile is rarer than a fresh one, except a
         // tile stuck on two visits when two is not allowed: that one is wanted again
         const weight = (dist === 2 ? jump : 1 - jump) * (seen ? .35 : 1) * (noTwo && seen === 2 ? 3 : 1);
@@ -80,13 +143,14 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     visits.set(pick.i, (visits.get(pick.i) || 0) + 1);
     x = pick.nx; y = pick.ny;
   }
+  if (tunnels > 0 && tunnelsPlaced < Math.min(tunnels, 2)) return null; // ran out of room for a pair
 
   if (noTwo && [...visits.values()].includes(2)) return null; // a tile left on two visits would be a Gold tile
 
   // arrow tiles: some of the tiles visited once and left by a move, in a random order
   const arrowAt = new Map();
   if (arrows > 0) {
-    const candidates = [...exits.keys()].filter(i => i !== start && visits.get(i) === 1);
+    const candidates = [...exits.keys()].filter(i => i !== start && visits.get(i) === 1 && !tunnelAt.has(i));
     for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
     for (const i of candidates.slice(0, arrows)) arrowAt.set(i, '><v^'[exits.get(i)]); // MOVES is in the order right, left, down, up
   }
@@ -95,7 +159,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
   // any already an arrow (a tile cannot be both), in a random order.
   const arrivalAt = new Map();
   if (arrivals > 0) {
-    const candidates = [...entries.keys()].filter(i => i !== start && visits.get(i) === 1 && !arrowAt.has(i));
+    const candidates = [...entries.keys()].filter(i => i !== start && visits.get(i) === 1 && !arrowAt.has(i) && !tunnelAt.has(i));
     for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
     for (const i of candidates.slice(0, arrivals)) arrivalAt.set(i, 'RLDU'[entries.get(i)]); // MOVES is in the order right, left, down, up
   }
@@ -104,7 +168,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
   // already an arrow or an Arrival (a tile is one kind), in a random order.
   const mudAt = new Set();
   if (mud > 0) {
-    const candidates = [...exits.keys()].filter(i => i !== start && visits.get(i) === 1 && !jumpedFrom.has(i) && !arrowAt.has(i) && !arrivalAt.has(i));
+    const candidates = [...exits.keys()].filter(i => i !== start && visits.get(i) === 1 && !jumpedFrom.has(i) && !arrowAt.has(i) && !arrivalAt.has(i) && !tunnelAt.has(i));
     for (let n = candidates.length - 1; n > 0; n--) { const j = (rand() * (n + 1)) | 0; [candidates[n], candidates[j]] = [candidates[j], candidates[n]]; }
     for (const i of candidates.slice(0, mud)) mudAt.add(i);
   }
@@ -129,7 +193,7 @@ function randomWalk({ width, height, steps, doubles, jump, maxVisits = 2, noTwo 
     let row = '';
     for (let c = 0; c < width; c++) {
       const i = r * width + c, count = visits.get(i) || 0;
-      row += pillarAt.has(i) ? '#' : mudAt.has(i) ? 'm' : !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : arrivalAt.has(i) ? arrivalAt.get(i)
+      row += pillarAt.has(i) ? '#' : mudAt.has(i) ? 'm' : tunnelAt.has(i) ? 'ab'[tunnelAt.get(i)] : !count ? '.' : arrowAt.has(i) ? arrowAt.get(i) : arrivalAt.has(i) ? arrivalAt.get(i)
         : i === start ? (count === 3 ? 'T' : count === 2 ? 's' : 'S') : String(count);
     }
     rows.push(row);

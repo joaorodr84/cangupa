@@ -76,6 +76,10 @@ const PILLAR = { body: '#b9ad98', top: '#e6dcc9' };
 // A Mud tile (CANGUPA-160): brown with a lighter lip and two wavy lines, the design picked on
 // tile-down-under.html (CANGUPA-158), in apps/app's palette.ts colours.
 const MUD = { face: '#8a5a2b', lip: '#bb8a55', mark: '#f6e6cc' };
+// A Tunnel mouth (CANGUPA-161): violet with a dark hole and a light ring, the design picked on
+// tile-down-under.html (CANGUPA-158) — round for pair 'a', a diamond outline for pair 'b', the
+// two ways of telling a level's pairs apart without colour.
+const TUNNEL = { face: '#7a4fd0', lip: '#4b2c8f', hole: '#1b1030', ring: '#d9c9ff' };
 // The kangaroo's own colours (apps/app/src/components/Kangaroo.tsx): body fur for the fill,
 // its outline brown for the rim, so the start mark reads as "the kangaroo stood here".
 const KANGAROO = { fill: '#d9954f', rim: '#5a3515' };
@@ -114,7 +118,7 @@ function sketch(rows, width, label, box = 120) {
         continue;
       }
       const kind = START_OF[c] || c;
-      const t = c === 'm' ? MUD : ARROW_KEYS.includes(c) ? DEPARTURE : ARRIVAL_KEYS.includes(c) ? ARRIVAL : TILES[kind];
+      const t = c === 'm' ? MUD : c === 'a' || c === 'b' ? TUNNEL : ARROW_KEYS.includes(c) ? DEPARTURE : ARRIVAL_KEYS.includes(c) ? ARRIVAL : TILES[kind];
       if (!t) continue;
       const fx = pad + x * cell + gap / 2, fy = pad + y * cell + gap / 2;
       const fw = cell - gap, fh = cell - gap - lip, rx = Math.max(1, cell / 6);
@@ -126,6 +130,19 @@ function sketch(rows, width, label, box = 120) {
           const sx = fw / 64, sy = fh / 57, p = (px, py) => `${(fx + px * sx).toFixed(2)} ${(fy + py * sy).toFixed(2)}`;
           add(svg, 'path', { d: `M${p(14, wy)}Q${p(20, wy - 7)} ${p(26, wy)}T${p(38, wy)}T${p(50, wy)}`, fill: 'none',
             stroke: t.mark, 'stroke-width': Math.max(1, 4 * sx), 'stroke-linecap': 'round' });
+        }
+        continue;
+      }
+      if (c === 'a' || c === 'b') {
+        const cx = fx + fw / 2, cy = fy + fh / 2, sx = fw / 64, sy = fh / 57;
+        if (c === 'b') {
+          const diamond = (r) => [[0, -r], [r * 1.12, 0], [0, r], [-r * 1.12, 0]]
+            .map(([dx, dy]) => `${(cx + dx * sx).toFixed(2)},${(cy + dy * sy).toFixed(2)}`).join(' ');
+          add(svg, 'polygon', { points: diamond(19), fill: 'none', stroke: t.ring, 'stroke-width': Math.max(1, 2.5 * sx), 'stroke-linejoin': 'round' });
+          add(svg, 'polygon', { points: diamond(13), fill: t.hole });
+        } else {
+          add(svg, 'ellipse', { cx, cy, rx: 18 * sx, ry: 16 * sy, fill: 'none', stroke: t.ring, 'stroke-width': Math.max(1, 2.5 * sx) });
+          add(svg, 'ellipse', { cx, cy, rx: 13 * sx, ry: 11.5 * sy, fill: t.hole });
         }
         continue;
       }

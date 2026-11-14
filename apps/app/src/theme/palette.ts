@@ -60,6 +60,14 @@ export interface Palette {
   readonly tileMud: string;
   readonly edgeMud: string;
   readonly markMud: string;
+  // The Tunnel mouth (CANGUPA-161): violet, the one hue no other tile uses, with a dark hole and
+  // a light ring — round for pair 'a', a diamond outline for pair 'b', the way two pairs on one
+  // board are told apart without colour. Picked on tools/visualizers/tile-down-under.html
+  // (CANGUPA-158).
+  readonly tileTunnel: string;
+  readonly edgeTunnel: string;
+  readonly tunnelHole: string;
+  readonly tunnelRing: string;
   // The marks drawn on a tile, each the colour that reads best on its face: dark on gold, white on
   // steel, and on the green Departure and raspberry Arrival tiles.
   readonly mark2: string;
@@ -112,6 +120,10 @@ export const DARK: Palette = {
   tileMud: '#8a5a2b',
   edgeMud: '#bb8a55',
   markMud: '#f6e6cc',
+  tileTunnel: '#7a4fd0',
+  edgeTunnel: '#4b2c8f',
+  tunnelHole: '#1b1030',
+  tunnelRing: '#d9c9ff',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markDeparture: '#ffffff',
@@ -145,6 +157,10 @@ export const LIGHT: Palette = {
   tileMud: '#8a5a2b',
   edgeMud: '#bb8a55',
   markMud: '#f6e6cc',
+  tileTunnel: '#7a4fd0',
+  edgeTunnel: '#4b2c8f',
+  tunnelHole: '#1b1030',
+  tunnelRing: '#d9c9ff',
   mark2: '#3b2a06',
   mark3: '#ffffff',
   markDeparture: '#ffffff',
